@@ -1,3 +1,0 @@
-ProblemFilters.exclude[Problem]("akka.grpc.javadsl.ServerReflection.*")
-ProblemFilters.exclude[Problem]("akka.grpc.scaladsl.ServerReflection.*")
-ProblemFilters.exclude[Problem]("grpc.reflection.v1alpha.reflection.ServerReflectionHandler.*")
