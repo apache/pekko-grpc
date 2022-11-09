@@ -1,2 +1,0 @@
-ProblemFilters.exclude[DirectMissingMethodProblem]("akka.grpc.scaladsl.ServiceHandler.handlerNotFound")
-ProblemFilters.exclude[DirectMissingMethodProblem]("akka.grpc.scaladsl.ServiceHandler.handler")

@@ -1,2 +1,0 @@
-ProblemFilters.exclude[DirectMissingMethodProblem]("com.google.protobuf.descriptor.*.of")
-ProblemFilters.exclude[DirectMissingMethodProblem]("grpc.reflection.v1alpha.reflection.*.of")

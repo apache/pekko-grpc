@@ -1,5 +1,0 @@
-# Use ClassicActorSystemProvider instead of classic ActorSystem
-# source-compatible, but not binary-compatible
-ProblemFilters.exclude[IncompatibleMethTypeProblem]("akka.grpc.GrpcClientSettings.fromConfig")
-ProblemFilters.exclude[IncompatibleMethTypeProblem]("akka.grpc.GrpcClientSettings.connectToServiceAt")
-ProblemFilters.exclude[IncompatibleMethTypeProblem]("akka.grpc.GrpcClientSettings.usingServiceDiscovery")

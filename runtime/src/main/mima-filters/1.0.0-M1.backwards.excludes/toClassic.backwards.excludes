@@ -1,2 +1,0 @@
-# Was already marked to be deleted
-ProblemFilters.exclude[DirectMissingMethodProblem]("akka.grpc.scaladsl.GrpcExceptionHandler.toClassic")

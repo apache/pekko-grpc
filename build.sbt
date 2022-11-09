@@ -51,8 +51,7 @@ lazy val runtime = Project(id = akkaGrpcRuntimeName, base = file("runtime"))
     scalaVersion := Dependencies.Versions.CrossScalaForLib.head)
   .settings(
     mimaFailOnNoPrevious := true,
-    mimaPreviousArtifacts :=
-      previousStableVersion.value.map(v => Set(organization.value %% "akka-grpc-runtime" % v)).getOrElse(Set.empty),
+    mimaPreviousArtifacts := Set.empty, //temporarily disable mima checks
     AutomaticModuleName.settings("akka.grpc.runtime"),
     ReflectiveCodeGen.generatedLanguages := Seq("Scala"),
     ReflectiveCodeGen.extraGenerators := Seq("ScalaMarshallersCodeGenerator"),
