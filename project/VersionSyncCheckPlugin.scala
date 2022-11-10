@@ -53,9 +53,9 @@ object VersionSyncCheckPlugin extends AutoPlugin {
             .lines(path)
             .iterator
             .asScala
-            .collect({
+            .collect {
               case VersionRegex(version) => version
-            })
+            }
             .toSeq)
 
       log.info("Sanity checking regex extraction against known files")

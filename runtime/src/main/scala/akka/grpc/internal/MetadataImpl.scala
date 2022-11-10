@@ -4,7 +4,7 @@
 
 package akka.grpc.internal
 
-import java.util.{ Locale, Optional, List => jList, Map => jMap }
+import java.util.{ List => jList, Locale, Map => jMap, Optional }
 
 import scala.collection.JavaConverters._
 import scala.collection.immutable

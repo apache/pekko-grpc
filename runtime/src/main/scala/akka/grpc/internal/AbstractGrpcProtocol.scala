@@ -118,15 +118,16 @@ object AbstractGrpcProtocol {
       else x => Flow[ByteString].via(preDecodeFlow).via(x)
 
     // strict decoder
-    def decoder(bs: ByteString): ByteString = try {
-      val reader = new ByteReader(strictAdapter(bs))
-      val frameType = reader.readByte()
-      val length = reader.readIntBE()
-      val data = reader.take(length)
-      if (reader.hasRemaining) throw new IllegalStateException("Unexpected data")
-      if ((frameType & 0x80) == 0) codec.uncompress((frameType & 1) == 1, data)
-      else throw new IllegalStateException("Cannot read unknown frame")
-    } catch { case ByteStringParser.NeedMoreData => throw new MissingParameterException }
+    def decoder(bs: ByteString): ByteString =
+      try {
+        val reader = new ByteReader(strictAdapter(bs))
+        val frameType = reader.readByte()
+        val length = reader.readIntBE()
+        val data = reader.take(length)
+        if (reader.hasRemaining) throw new IllegalStateException("Unexpected data")
+        if ((frameType & 0x80) == 0) codec.uncompress((frameType & 1) == 1, data)
+        else throw new IllegalStateException("Cannot read unknown frame")
+      } catch { case ByteStringParser.NeedMoreData => throw new MissingParameterException }
 
     GrpcProtocolReader(codec, decoder, adapter(Flow.fromGraph(new GrpcFramingDecoderStage(codec, decodeFrame))))
   }
@@ -154,8 +155,8 @@ object AbstractGrpcProtocol {
 
           override def parse(reader: ByteReader): ParseResult[Frame] =
             try ParseResult(
-              Some(deframe(frameType, codec.uncompress(compression, reader.take(length)))),
-              ReadFrameHeader)
+                Some(deframe(frameType, codec.uncompress(compression, reader.take(length)))),
+                ReadFrameHeader)
             catch {
               case s: StatusException =>
                 failStage(s) // handle explicitly to avoid noisy log

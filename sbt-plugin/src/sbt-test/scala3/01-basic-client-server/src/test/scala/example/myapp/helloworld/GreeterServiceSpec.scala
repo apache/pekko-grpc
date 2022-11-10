@@ -12,7 +12,7 @@ import example.myapp.helloworld.grpc._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.concurrent.PatienceConfiguration
 import org.scalatest.matchers.should.Matchers
-import org.scalatest.time.{ Span, Millis, Seconds }
+import org.scalatest.time.{ Millis, Seconds, Span }
 import org.scalatest.wordspec.AnyWordSpec
 
 class GreeterServiceSpec extends AnyWordSpec with Matchers with ScalaFutures:
@@ -26,14 +26,12 @@ class GreeterServiceSpec extends AnyWordSpec with Matchers with ScalaFutures:
   val client = GreeterServiceClient(
     GrpcClientSettings.connectToServiceAt(
       "localhost",
-      binding.localAddress.getPort
-    ).withTls(false)
-  )
+      binding.localAddress.getPort).withTls(false))
 
   "A GreeterService" should {
     "respond to a unary request" in {
       val reply = client.sayHello(HelloRequest("Dave"))
       val r = scala.concurrent.Await.result(reply, 10.seconds)
-      r.message shouldBe("Hello, Dave!")
+      r.message shouldBe "Hello, Dave!"
     }
   }

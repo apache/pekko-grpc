@@ -64,8 +64,8 @@ private[grpc] object PercentEncoding {
         // Manually implement URL encoding, per the gRPC spec.
         if (isEscapingChar(b)) {
           escapedBytes.update(wi, '%')
-          escapedBytes.update(wi + 1, HexArr((b >> 4) & 0xf))
-          escapedBytes.update(wi + 2, HexArr(b & 0xf))
+          escapedBytes.update(wi + 1, HexArr((b >> 4) & 0xF))
+          escapedBytes.update(wi + 2, HexArr(b & 0xF))
           wi += 3
         } else {
           escapedBytes.update(wi, b)

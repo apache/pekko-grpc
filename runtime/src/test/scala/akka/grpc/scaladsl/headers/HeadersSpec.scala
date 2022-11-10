@@ -24,7 +24,7 @@ class HeadersSpec extends AnyWordSpec with Matchers {
         // \udc37 is a low surrogate, a lone surrogate character is getting decoded as ? with UTF-8
         ("my favorite character is \udc37", "my favorite character is ?"),
         // a pair of surrogate characters is fine
-        ("my favorite character is " + 0xdbff.toChar + 0xdfff.toChar, "my favorite character is %F4%8F%BF%BF"))
+        ("my favorite character is " + 0xDBFF.toChar + 0xDFFF.toChar, "my favorite character is %F4%8F%BF%BF"))
 
       forAll(inAndExpectedOut) { (in, expected) =>
         new `Status-Message`(in).value() should equal(expected)

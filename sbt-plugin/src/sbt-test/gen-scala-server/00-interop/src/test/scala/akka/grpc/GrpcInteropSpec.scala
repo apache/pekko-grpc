@@ -1,10 +1,10 @@
 package akka.grpc.interop
 
-import akka.stream.{Materializer, SystemMaterializer}
+import akka.stream.{ Materializer, SystemMaterializer }
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.headers.RawHeader
 import akka.http.scaladsl.server.RouteResult.Complete
-import akka.http.scaladsl.server.{Directive0, Directives, Route}
+import akka.http.scaladsl.server.{ Directive0, Directives, Route }
 
 import io.grpc.testing.integration.TestServiceHandlerFactory
 import io.grpc.testing.integration.test.TestService
@@ -18,7 +18,8 @@ import io.grpc.testing.integration.test.TestServiceHandler
 class GrpcInteropIoWithAkkaSpec extends GrpcInteropTests(IoGrpcJavaServerProvider, AkkaHttpClientProviderScala)
 
 class GrpcInteropAkkaScalaWithIoSpec extends GrpcInteropTests(AkkaHttpServerProviderScala, IoGrpcJavaClientProvider)
-class GrpcInteropAkkaScalaWithAkkaSpec extends GrpcInteropTests(AkkaHttpServerProviderScala, AkkaHttpClientProviderScala)
+class GrpcInteropAkkaScalaWithAkkaSpec
+    extends GrpcInteropTests(AkkaHttpServerProviderScala, AkkaHttpClientProviderScala)
 
 class GrpcInteropAkkaJavaWithIoSpec extends GrpcInteropTests(AkkaHttpServerProviderJava, IoGrpcJavaClientProvider)
 class GrpcInteropAkkaJavaWithAkkaSpec extends GrpcInteropTests(AkkaHttpServerProviderJava, AkkaHttpClientProviderScala)
@@ -76,8 +77,7 @@ object AkkaHttpServerProviderJava extends AkkaHttpServerProvider {
 
   val pendingCases =
     Set(
-      "custom_metadata"
-    )
+      "custom_metadata")
 
   val server = new AkkaGrpcServerJava((mat, sys) => {
     TestServiceHandlerFactory.create(new JavaTestServiceImpl(mat), sys)

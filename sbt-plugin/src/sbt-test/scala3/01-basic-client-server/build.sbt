@@ -7,5 +7,4 @@ scalacOptions += "-Xfatal-warnings"
 enablePlugins(AkkaGrpcPlugin)
 
 libraryDependencies ++= Seq(
-  "org.scalatest" %% "scalatest" % "3.2.9" % "test"
-)
+  "org.scalatest" %% "scalatest" % "3.2.9" % "test")

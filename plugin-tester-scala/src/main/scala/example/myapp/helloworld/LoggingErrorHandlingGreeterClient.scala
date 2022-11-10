@@ -21,7 +21,7 @@ object LoggingErrorHandlingGreeterClient {
     // Create a client-side stub for the service
     val client: GreeterServiceClient = GreeterServiceClient(clientSettings)
 
-    //#client-calls
+    // #client-calls
     val successful = client.sayHello(HelloRequest("Martin"))
     Await.result(successful, 10.seconds)
     sys.log.info("Call succeeded")
@@ -33,7 +33,7 @@ object LoggingErrorHandlingGreeterClient {
     val failedBecauseEmpty = client.sayHello(HelloRequest(""))
     Await.result(failedBecauseEmpty.failed, 10.seconds)
     sys.log.info("Call with empty name failed")
-    //#client-calls
+    // #client-calls
 
     sys.terminate()
   }

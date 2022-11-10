@@ -7,7 +7,7 @@ package akka.grpc.sbt
 import akka.grpc.gen.CodeGenerator.ScalaBinaryVersion
 import akka.grpc.gen.scaladsl.{ ScalaClientCodeGenerator, ScalaServerCodeGenerator, ScalaTraitCodeGenerator }
 import akka.grpc.gen.javadsl.{ JavaClientCodeGenerator, JavaInterfaceCodeGenerator, JavaServerCodeGenerator }
-import akka.grpc.gen.{ BuildInfo, ProtocSettings, Logger => GenLogger }
+import akka.grpc.gen.{ BuildInfo, Logger => GenLogger, ProtocSettings }
 import protocbridge.Generator
 import sbt.Keys._
 import sbt._

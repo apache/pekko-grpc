@@ -15,7 +15,7 @@ import akka.http.javadsl.marshalling.Marshaller
 import akka.http.javadsl.model.{ HttpRequest, HttpResponse }
 import akka.http.javadsl.server.Route
 import akka.http.javadsl.server.directives.RouteAdapter
-import akka.http.scaladsl.marshalling.{ ToResponseMarshaller, Marshaller => sMarshaller }
+import akka.http.scaladsl.marshalling.{ Marshaller => sMarshaller, ToResponseMarshaller }
 import akka.grpc.scaladsl
 import akka.http.scaladsl.server.directives.MarshallingDirectives
 import akka.japi.function.{ Function => JFunction }
