@@ -26,10 +26,10 @@ lazy val codegen = Project(id = akkaGrpcCodegenId, base = file("codegen"))
     },
     buildInfoKeys ++= Seq[BuildInfoKey](organization, name, version, scalaVersion, sbtVersion),
     buildInfoKeys += "runtimeArtifactName" -> akkaGrpcRuntimeName,
-    buildInfoKeys += "akkaVersion" → Dependencies.Versions.akka,
-    buildInfoKeys += "akkaHttpVersion" → Dependencies.Versions.akkaHttp,
-    buildInfoKeys += "grpcVersion" → Dependencies.Versions.grpc,
-    buildInfoKeys += "googleProtobufVersion" → Dependencies.Versions.googleProtobuf,
+    buildInfoKeys += "akkaVersion" -> Dependencies.Versions.akka,
+    buildInfoKeys += "akkaHttpVersion" -> Dependencies.Versions.akkaHttp,
+    buildInfoKeys += "grpcVersion" -> Dependencies.Versions.grpc,
+    buildInfoKeys += "googleProtobufVersion" -> Dependencies.Versions.googleProtobuf,
     buildInfoPackage := "akka.grpc.gen",
     (Compile / assembly / artifact) := {
       val art = (Compile / assembly / artifact).value
@@ -40,7 +40,7 @@ lazy val codegen = Project(id = akkaGrpcCodegenId, base = file("codegen"))
       Some(sbtassembly.AssemblyPlugin.defaultUniversalScript(shebang = true))),
     crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
     scalaVersion := scala212)
-  .settings(addArtifact((Compile / assembly / artifact), assembly))
+  .settings(addArtifact(Compile / assembly / artifact, assembly))
   .settings(addArtifact(Artifact(akkaGrpcCodegenId, "bat", "bat", "bat"), mkBatAssemblyTask))
 
 lazy val runtime = Project(id = akkaGrpcRuntimeName, base = file("runtime"))
@@ -51,7 +51,7 @@ lazy val runtime = Project(id = akkaGrpcRuntimeName, base = file("runtime"))
     scalaVersion := Dependencies.Versions.CrossScalaForLib.head)
   .settings(
     mimaFailOnNoPrevious := true,
-    mimaPreviousArtifacts := Set.empty, //temporarily disable mima checks
+    mimaPreviousArtifacts := Set.empty, // temporarily disable mima checks
     AutomaticModuleName.settings("akka.grpc.runtime"),
     ReflectiveCodeGen.generatedLanguages := Seq("Scala"),
     ReflectiveCodeGen.extraGenerators := Seq("ScalaMarshallersCodeGenerator"),
@@ -80,7 +80,7 @@ lazy val scalapbProtocPlugin = Project(id = akkaGrpcProtocPluginId, base = file(
   .settings(
     crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
     scalaVersion := Dependencies.Versions.CrossScalaForPlugin.head)
-  .settings(addArtifact((Compile / assembly / artifact), assembly))
+  .settings(addArtifact(Compile / assembly / artifact, assembly))
   .settings(addArtifact(Artifact(akkaGrpcProtocPluginId, "bat", "bat", "bat"), mkBatAssemblyTask))
   .enablePlugins(ReproducibleBuildsPlugin)
 
@@ -150,7 +150,7 @@ lazy val interopTests = Project(id = "akka-grpc-interop-tests", base = file("int
             reStartArgs.value,
             startArgsParser.parsed)
         }
-        .dependsOn((Compile / products))
+        .dependsOn(Compile / products)
         .evaluated
     })))
 

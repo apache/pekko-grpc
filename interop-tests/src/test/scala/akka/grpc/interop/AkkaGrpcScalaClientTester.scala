@@ -185,7 +185,7 @@ class AkkaGrpcScalaClientTester(val settings: Settings, backend: String)(implici
 
   def customMetadata(): Unit = {
     // unary call
-    val binaryHeaderValue = akka.util.ByteString.fromInts(0xababab)
+    val binaryHeaderValue = akka.util.ByteString.fromInts(0xABABAB)
     val unaryResponseFuture = client
       .unaryCall()
       .addHeader("x-grpc-test-echo-initial", "test_initial_metadata_value")
@@ -207,7 +207,7 @@ class AkkaGrpcScalaClientTester(val settings: Settings, backend: String)(implici
         .fullDuplexCall()
         .addHeader("x-grpc-test-echo-initial", "test_initial_metadata_value")
         // this one is returned as trailer
-        .addHeader("x-grpc-test-echo-trailing-bin", akka.util.ByteString.fromInts(0xababab))
+        .addHeader("x-grpc-test-echo-trailing-bin", akka.util.ByteString.fromInts(0xABABAB))
         .invokeWithMetadata(
           Source.single(
             StreamingOutputCallRequest(

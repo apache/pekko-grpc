@@ -32,13 +32,13 @@ object LiftedGreeterClient {
 
     sys.scheduler.scheduleWithFixedDelay(1.second, 1.second) { () => Try(singleRequestReply()) }
 
-    //#with-metadata
+    // #with-metadata
     def singleRequestReply(): Unit = {
       sys.log.info("Performing request")
       val reply = client.sayHello().addHeader("key", "value").invoke(HelloRequest("Alice"))
       println(s"got single reply: ${Await.result(reply, 5.seconds).message}")
     }
-    //#with-metadata
+    // #with-metadata
 
     def streamingRequest(): Unit = {
       val requests = List("Alice", "Bob", "Peter").map(HelloRequest(_))

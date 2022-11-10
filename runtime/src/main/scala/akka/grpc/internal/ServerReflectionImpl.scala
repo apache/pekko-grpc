@@ -47,8 +47,7 @@ final class ServerReflectionImpl private (fileDescriptors: Map[String, FileDescr
           val list =
             findExtensionNumbersForContainingType(
               container,
-              fileDescriptors
-            ) // TODO should we throw a NOT_FOUND if we don't know the container type at all?
+              fileDescriptors) // TODO should we throw a NOT_FOUND if we don't know the container type at all?
           Out.AllExtensionNumbersResponse(ExtensionNumberResponse(container, list))
         case In.ListServices(_) =>
           val list = services.map(s => ServiceResponse(s))
@@ -96,9 +95,9 @@ object ServerReflectionImpl {
     (splitNext(if (fileDesc.getPackage.isEmpty) symbol else symbol.drop(fileDesc.getPackage.length + 1)) match {
       case ("", "")            => false
       case (typeOrService, "") =>
-        //fileDesc.findEnumTypeByName(typeOrService) != null || // TODO investigate if this is expected
+        // fileDesc.findEnumTypeByName(typeOrService) != null || // TODO investigate if this is expected
         fileDesc.findMessageTypeByName(typeOrService) != null ||
-          fileDesc.findServiceByName(typeOrService) != null
+        fileDesc.findServiceByName(typeOrService) != null
       case (service, method) =>
         Option(fileDesc.findServiceByName(service)).exists(_.findMethodByName(method) != null)
     })

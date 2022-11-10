@@ -5,12 +5,12 @@ import scala.concurrent.Future
 import scala.reflect.ClassTag
 import scala.collection.immutable
 
-import akka.grpc.scaladsl.{GrpcMarshalling}
+import akka.grpc.scaladsl.GrpcMarshalling
 
 import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.grpc._
-import akka.stream.scaladsl.{Flow, Source}
+import akka.stream.scaladsl.{ Flow, Source }
 import akka.stream.{ Materializer, SystemMaterializer }
 
 import com.google.protobuf.ByteString
@@ -31,19 +31,19 @@ object TestServiceImpl {
 }
 
 /**
-  * Implementation of the generated service.
-  *
-  * Essentially porting the client code from [[io.grpc.testing.integration.TestServiceImpl]] against our API's
-  *
-  * The same implementation is also be found as part of the 'non-scripted' tests at
-  * /interop-tests/src/test/scala/akka/grpc/interop/TestServiceImpl.scala
-  */
+ * Implementation of the generated service.
+ *
+ * Essentially porting the client code from [[io.grpc.testing.integration.TestServiceImpl]] against our API's
+ *
+ * The same implementation is also be found as part of the 'non-scripted' tests at
+ * /interop-tests/src/test/scala/akka/grpc/interop/TestServiceImpl.scala
+ */
 class TestServiceImpl(implicit sys: ActorSystem) extends TestService {
   import TestServiceImpl._
 
   implicit val mat: Materializer = SystemMaterializer(sys).materializer
   implicit val ec: ExecutionContext = sys.dispatcher
-  
+
   override def emptyCall(req: Empty) =
     Future.successful(Empty())
 
@@ -55,13 +55,14 @@ class TestServiceImpl(implicit sys: ActorSystem) extends TestService {
         val responseStatus = Status.fromCodeValue(requestStatus.code).withDescription(requestStatus.message)
         //  - Either one of the following works
         Future.failed(new GrpcServiceException(responseStatus))
-        // throw new GrpcServiceException(responseStatus)
+      // throw new GrpcServiceException(responseStatus)
     }
   }
 
   override def cacheableUnaryCall(in: SimpleRequest): Future[SimpleResponse] = ???
 
-  override def fullDuplexCall(in: Source[StreamingOutputCallRequest, NotUsed]): Source[StreamingOutputCallResponse, NotUsed] =
+  override def fullDuplexCall(
+      in: Source[StreamingOutputCallRequest, NotUsed]): Source[StreamingOutputCallResponse, NotUsed] =
     in.map(req => {
       req.responseStatus.foreach(reqStatus =>
         throw new GrpcServiceException(
@@ -70,9 +71,11 @@ class TestServiceImpl(implicit sys: ActorSystem) extends TestService {
     }).mapConcat(
       _.responseParameters.to[immutable.Seq]).via(parametersToResponseFlow)
 
-  override def halfDuplexCall(in: Source[StreamingOutputCallRequest, NotUsed]): Source[StreamingOutputCallResponse, NotUsed] = ???
+  override def halfDuplexCall(
+      in: Source[StreamingOutputCallRequest, NotUsed]): Source[StreamingOutputCallResponse, NotUsed] = ???
 
-  override def streamingInputCall(in: Source[StreamingInputCallRequest, NotUsed]): Future[StreamingInputCallResponse] = {
+  override def streamingInputCall(
+      in: Source[StreamingInputCallRequest, NotUsed]): Future[StreamingInputCallResponse] = {
     in
       .map(_.payload.map(_.body.size).getOrElse(0))
       .runFold(0)(_ + _)
