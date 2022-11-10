@@ -33,34 +33,34 @@ class AuthenticatedGreeterServer(system: ActorSystem) {
     implicit val sys: ActorSystem = system
     implicit val ec: ExecutionContext = sys.dispatcher
 
-    //#http-route
+    // #http-route
     // A Route to authenticate with
     val authenticationRoute: Route = path("login") {
       get {
         complete("Psst, please use token XYZ!")
       }
     }
-    //#http-route
+    // #http-route
 
-    //#grpc-route
+    // #grpc-route
     // Create service handlers
     val handler: HttpRequest => Future[HttpResponse] =
       GreeterServiceHandler(new GreeterServiceImpl())
 
     // As a Route
     val handlerRoute: Route = handle(handler)
-    //#grpc-route
+    // #grpc-route
 
-    //#grpc-protected
+    // #grpc-protected
     // A directive to authorize calls
     val authorizationDirective: Directive0 =
       headerValueByName("token").flatMap { token =>
         if (token == "XYZ") pass
         else reject
       }
-    //#grpc-protected
+    // #grpc-protected
 
-    //#combined
+    // #combined
     val route = concat(
       authenticationRoute,
       authorizationDirective {
@@ -69,7 +69,7 @@ class AuthenticatedGreeterServer(system: ActorSystem) {
 
     // Bind service handler servers to localhost:8082
     val binding = Http().newServerAt("127.0.0.1", 8082).bind(route)
-    //#combined
+    // #combined
 
     // report successful binding
     binding.foreach { binding => println(s"gRPC server bound to: ${binding.localAddress}") }

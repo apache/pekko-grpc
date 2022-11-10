@@ -79,7 +79,7 @@ object AbstractGenerateMojo {
   def parseGeneratorSettings(generatorSettings: java.util.Map[String, String]): Seq[String] = {
     import scala.collection.JavaConverters._
     generatorSettings.asScala.filter(_._2.toLowerCase() != "false").keys.toSeq.map { params =>
-      "[A-Z]".r.replaceAllIn(params, (s => s"_${s.group(0).toLowerCase()}"))
+      "[A-Z]".r.replaceAllIn(params, s => s"_${s.group(0).toLowerCase()}")
     }
   }
 }
@@ -131,7 +131,7 @@ abstract class AbstractGenerateMojo @Inject() (buildContext: BuildContext) exten
     var directoryFound = false
     protoPaths.forEach { protoPath =>
       // verify proto dir exists
-      //https://maven.apache.org/plugin-developers/common-bugs.html#Resolving_Relative_Paths
+      // https://maven.apache.org/plugin-developers/common-bugs.html#Resolving_Relative_Paths
       val protoDir = {
         val protoFile = new File(protoPath)
         if (!protoFile.isAbsolute()) {

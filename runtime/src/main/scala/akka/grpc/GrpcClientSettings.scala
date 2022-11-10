@@ -134,14 +134,14 @@ object GrpcClientSettings {
       getOptionalInt(clientConfiguration, "connection-attempts"),
       None,
       getOptionalString(clientConfiguration, "override-authority"),
-      getOptionalString(clientConfiguration, "ssl-provider").map({
+      getOptionalString(clientConfiguration, "ssl-provider").map {
         case "jdk"            => SslProvider.JDK
         case "openssl"        => SslProvider.OPENSSL
         case "openssl_refcnt" => SslProvider.OPENSSL_REFCNT
         case other =>
           throw new IllegalArgumentException(
             s"ssl-provider: expected empty, 'jdk', 'openssl' or 'openssl_refcnt', but got [$other]")
-      }),
+      },
       None,
       getOptionalString(clientConfiguration, "trusted").map(SSLContextUtils.trustManagerFromResource),
       getPotentiallyInfiniteDuration(clientConfiguration, "deadline"),

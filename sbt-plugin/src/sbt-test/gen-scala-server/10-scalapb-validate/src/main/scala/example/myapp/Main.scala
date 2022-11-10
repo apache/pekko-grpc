@@ -1,6 +1,6 @@
 package example.myapp
 
-import scala.util.{Failure, Success, Try}
+import scala.util.{ Failure, Success, Try }
 import scalapb.validate._
 
 import example.myapp.helloworld.grpc.HelloRequest

@@ -2,19 +2,26 @@ package akka.grpc.interop
 
 import java.io.InputStream
 
-import akka.grpc.{GrpcClientSettings, GrpcResponseMetadata, SSLContextUtils}
+import akka.grpc.{ GrpcClientSettings, GrpcResponseMetadata, SSLContextUtils }
 import akka.stream.{ Materializer, SystemMaterializer }
 import akka.actor.ActorSystem
-import akka.stream.scaladsl.{Keep, Sink, Source}
+import akka.stream.scaladsl.{ Keep, Sink, Source }
 import com.google.protobuf.ByteString
-import io.grpc.testing.integration.messages.{Payload, ResponseParameters, SimpleRequest, StreamingOutputCallRequest, StreamingOutputCallResponse, _}
+import io.grpc.testing.integration.messages.{
+  Payload,
+  ResponseParameters,
+  SimpleRequest,
+  StreamingOutputCallRequest,
+  StreamingOutputCallResponse,
+  _
+}
 import io.grpc.testing.integration.empty.Empty
-import io.grpc.testing.integration2.{ChannelBuilder, ClientTester, Settings}
-import io.grpc.{ManagedChannel, Status, StatusRuntimeException}
+import io.grpc.testing.integration2.{ ChannelBuilder, ClientTester, Settings }
+import io.grpc.{ ManagedChannel, Status, StatusRuntimeException }
 import org.junit.Assert._
 
 import scala.concurrent.duration._
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.{ Await, ExecutionContext, Future }
 import scala.util.Failure
 import scala.util.control.NoStackTrace
 
@@ -22,13 +29,13 @@ import scala.util.control.NoStackTrace
 import io.grpc.testing.integration.test.{ TestServiceClient, UnimplementedServiceClient }
 
 /**
-  * ClientTester implementation that uses the generated akka-grpc Scala client to exercise a server under test.
-  *
-  * Essentially porting the client code from [[io.grpc.testing.integration.AbstractInteropTest]] against our Java API's
-  *
-  * The same implementation is also be found as part of the 'non-scripted' tests at
-  * /interop-tests/src/test/scala/akka/grpc/interop/AkkaGrpcScalaClientTester.scala
-  */
+ * ClientTester implementation that uses the generated akka-grpc Scala client to exercise a server under test.
+ *
+ * Essentially porting the client code from [[io.grpc.testing.integration.AbstractInteropTest]] against our Java API's
+ *
+ * The same implementation is also be found as part of the 'non-scripted' tests at
+ * /interop-tests/src/test/scala/akka/grpc/interop/AkkaGrpcScalaClientTester.scala
+ */
 class AkkaGrpcClientTester(val settings: Settings)(implicit system: ActorSystem) extends ClientTester {
 
   private var client: TestServiceClient = null
@@ -217,12 +224,13 @@ class AkkaGrpcClientTester(val settings: Settings)(implicit system: ActorSystem)
 
   def customMetadata(): Unit = {
     // unary call
-    val binaryHeaderValue = akka.util.ByteString.fromInts(0xababab)
+    val binaryHeaderValue = akka.util.ByteString.fromInts(0xABABAB)
     val unaryResponseFuture = client.unaryCall()
       .addHeader("x-grpc-test-echo-initial", "test_initial_metadata_value")
       // this one is returned as trailer
       .addHeader("x-grpc-test-echo-trailing-bin", binaryHeaderValue)
-      .invokeWithMetadata(SimpleRequest(responseSize = 314159, payload = Some(Payload(body = ByteString.copyFrom(new Array[Byte](271828))))))
+      .invokeWithMetadata(SimpleRequest(responseSize = 314159,
+        payload = Some(Payload(body = ByteString.copyFrom(new Array[Byte](271828))))))
 
     val unaryResponse = Await.result(unaryResponseFuture, awaitTimeout)
     assertEquals(
@@ -238,7 +246,7 @@ class AkkaGrpcClientTester(val settings: Settings)(implicit system: ActorSystem)
       client.fullDuplexCall()
         .addHeader("x-grpc-test-echo-initial", "test_initial_metadata_value")
         // this one is returned as trailer
-        .addHeader("x-grpc-test-echo-trailing-bin", akka.util.ByteString.fromInts(0xababab))
+        .addHeader("x-grpc-test-echo-trailing-bin", akka.util.ByteString.fromInts(0xABABAB))
         .invokeWithMetadata(Source.single(
           StreamingOutputCallRequest(
             responseParameters = Seq(ResponseParameters(size = 314159)),
