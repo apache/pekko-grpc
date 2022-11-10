@@ -38,10 +38,10 @@ jobs:
         env:
           FOSSA_API_KEY: "${{secrets.FOSSA_API_KEY}}"
 
-      - name: Code style check and binary-compatibility check
+      - name: Binary-compatibility check
         run: |-
           cp .jvmopts-ghactions .jvmopts
-          sbt scalafmtCheckAll scalafmtSbtCheck headerCheckAll grpcVersionSyncCheck googleProtobufVersionSyncCheck +mimaReportBinaryIssues
+          sbt headerCheckAll grpcVersionSyncCheck googleProtobufVersionSyncCheck +mimaReportBinaryIssues
 
   compile-benchmarks:
     name: Compile Benchmarks

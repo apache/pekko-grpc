@@ -5,7 +5,6 @@ import sbt._
 import sbt.plugins.JvmPlugin
 import akka.grpc.Dependencies.Versions.{ scala212, scala213 }
 import com.lightbend.paradox.projectinfo.ParadoxProjectInfoPluginKeys.projectInfoVersion
-import org.scalafmt.sbt.ScalafmtPlugin.autoImport.scalafmtOnCompile
 import com.typesafe.tools.mima.plugin.MimaKeys._
 import sbtprotoc.ProtocPlugin.autoImport.PB
 import xerial.sbt.Sonatype
@@ -75,6 +74,5 @@ object Common extends AutoPlugin {
     apiURL := Some(url(s"https://doc.akka.io/api/akka-grpc/${projectInfoVersion.value}/akka/grpc/index.html")),
     (Test / testOptions) += Tests.Argument(TestFrameworks.ScalaTest, "-oDF"),
     crossScalaVersions := Seq(scala212, scala213),
-    mimaReportSignatureProblems := true,
-    scalafmtOnCompile := true)
+    mimaReportSignatureProblems := true)
 }
