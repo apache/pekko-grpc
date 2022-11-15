@@ -27,8 +27,7 @@ github:
     merge:   false
     rebase:  true
 
-  github:
-    protected_branches: ~
+  protected_branches: ~
     
 notifications:
   commits:              commits@pekko.apache.org
