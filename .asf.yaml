@@ -26,6 +26,9 @@ github:
     squash:  true
     merge:   false
     rebase:  true
+
+  github:
+    protected_branches: ~
     
 notifications:
   commits:              commits@pekko.apache.org
