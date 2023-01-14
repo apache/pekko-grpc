@@ -8,9 +8,9 @@ You're always welcome to submit your PR straight away and start the discussion (
 
 If you have questions about the contribution process or discuss specific issues, please interact with the community using the following resources.
 
-- [GitHub discussions](https://github.com/apache/incubator-pekko-http/discussions): for questions and general discussion.
+- [GitHub discussions](https://github.com/apache/incubator-pekko-grpc/discussions): for questions and general discussion.
 - [Pekko dev mailing list](https://lists.apache.org/list.html?dev@pekko.apache.org): for Pekko development discussions.
-- [GitHub issues](https://github.com/apache/incubator-pekko-http/issues): for bug reports and feature requests. Please search the existing issues before creating new ones. If you are unsure whether you have found a bug, consider asking in GitHub discussions or the mailing list first.
+- [GitHub issues](https://github.com/apache/incubator-pekko-grpc/issues): for bug reports and feature requests. Please search the existing issues before creating new ones. If you are unsure whether you have found a bug, consider asking in GitHub discussions or the mailing list first.
 
 # Navigating around the project & codebase
 
