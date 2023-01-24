@@ -10,16 +10,16 @@ jobs:
   sbt:
     name: sbt publish
     runs-on: ubuntu-latest
-    if: github.repository == 'akka/akka-grpc'
+    if: github.repository == 'apache/incubator-pekko-grpc'
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           # we don't know what commit the last tag was it's safer to get entire repo so previousStableVersion resolves
           fetch-depth: 0
 
       - name: Set up JDK 8
-        uses: olafurpg/setup-scala@v10
+        uses: olafurpg/setup-scala@v13
         with:
           java-version: adopt@1.8
 
@@ -37,16 +37,16 @@ jobs:
   gradle-plugin:
     name: Release gradle plugin
     runs-on: ubuntu-latest
-    if: github.repository == 'akka/akka-grpc'
+    if: github.repository == 'apache/incubator-pekko-grpc'
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           # we don't know what commit the last tag was it's safer to get entire repo so previousStableVersion resolves
           fetch-depth: 0
 
       - name: Set up JDK 8
-        uses: olafurpg/setup-scala@v10
+        uses: olafurpg/setup-scala@v13
         with:
           java-version: adopt@1.8
 
@@ -56,16 +56,16 @@ jobs:
   documentation:
     name: Documentation
     runs-on: ubuntu-latest
-    if: github.repository == 'akka/akka-grpc'
+    if: github.repository == 'apache/incubator-pekko-grpc'
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           # we don't know what commit the last tag was it's safer to get entire repo so previousStableVersion resolves
           fetch-depth: 0
 
       - name: Set up JDK 8
-        uses: olafurpg/setup-scala@v10
+        uses: olafurpg/setup-scala@v13
         with:
           java-version: adopt@1.8
 
