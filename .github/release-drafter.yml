@@ -17,7 +17,7 @@ categories:
   - title: 'Updates'
     label: 'update'
 
-change-template: '- $TITLE [#$NUMBER](https://github.com/akka/akka-grpc/issues/$NUMBER) by [@$AUTHOR](https://github.com/$AUTHOR)'
+change-template: '- $TITLE [#$NUMBER](https://github.com/apache/incubator-pekko-grpc/issues/$NUMBER) by [@$AUTHOR](https://github.com/$AUTHOR)'
 template: |
   ## Changes
 
