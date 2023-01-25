@@ -53,6 +53,7 @@ lazy val runtime = Project(id = akkaGrpcRuntimeName, base = file("runtime"))
     mimaFailOnNoPrevious := true,
     mimaPreviousArtifacts := Set.empty, // temporarily disable mima checks
     AutomaticModuleName.settings("akka.grpc.runtime"),
+    MetaInfLicenseNoticeCopy.settings,
     ReflectiveCodeGen.generatedLanguages := Seq("Scala"),
     ReflectiveCodeGen.extraGenerators := Seq("ScalaMarshallersCodeGenerator"),
     PB.protocVersion := Dependencies.Versions.googleProtobuf)
@@ -80,6 +81,7 @@ lazy val scalapbProtocPlugin = Project(id = akkaGrpcProtocPluginId, base = file(
   .settings(
     crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
     scalaVersion := Dependencies.Versions.CrossScalaForPlugin.head)
+  .settings(MetaInfLicenseNoticeCopy.settings)
   .settings(addArtifact(Compile / assembly / artifact, assembly))
   .settings(addArtifact(Artifact(akkaGrpcProtocPluginId, "bat", "bat", "bat"), mkBatAssemblyTask))
   .enablePlugins(ReproducibleBuildsPlugin)
@@ -94,6 +96,7 @@ lazy val mavenPlugin = Project(id = "akka-grpc-maven-plugin", base = file("maven
     crossPaths := false,
     crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
     scalaVersion := Dependencies.Versions.CrossScalaForPlugin.head)
+  .settings(MetaInfLicenseNoticeCopy.settings)
   .dependsOn(codegen)
 
 lazy val sbtPlugin = Project(id = "sbt-akka-grpc", base = file("sbt-plugin"))
@@ -115,6 +118,7 @@ lazy val sbtPlugin = Project(id = "sbt-akka-grpc", base = file("sbt-plugin"))
   .settings(
     crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
     scalaVersion := Dependencies.Versions.CrossScalaForPlugin.head)
+  .settings(MetaInfLicenseNoticeCopy.settings)
   .dependsOn(codegen)
 
 lazy val interopTests = Project(id = "akka-grpc-interop-tests", base = file("interop-tests"))
@@ -153,6 +157,7 @@ lazy val interopTests = Project(id = "akka-grpc-interop-tests", base = file("int
         .dependsOn(Compile / products)
         .evaluated
     })))
+  .settings(MetaInfLicenseNoticeCopy.settings)
 
 lazy val benchmarks = Project(id = "benchmarks", base = file("benchmarks"))
   .dependsOn(runtime)
@@ -162,6 +167,7 @@ lazy val benchmarks = Project(id = "benchmarks", base = file("benchmarks"))
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
     scalaVersion := Dependencies.Versions.CrossScalaForLib.head,
     (publish / skip) := true)
+  .settings(MetaInfLicenseNoticeCopy.settings)
 
 lazy val docs = Project(id = "akka-grpc-docs", base = file("docs"))
 // Make sure code generation is ran:
@@ -216,6 +222,7 @@ lazy val pluginTesterScala = Project(id = "akka-grpc-plugin-tester-scala", base 
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
     scalaVersion := scala212,
     ReflectiveCodeGen.codeGeneratorSettings ++= Seq("flat_package", "server_power_apis"))
+  .settings(MetaInfLicenseNoticeCopy.settings)
   .pluginTestingSettings
 
 lazy val pluginTesterJava = Project(id = "akka-grpc-plugin-tester-java", base = file("plugin-tester-java"))
@@ -228,6 +235,7 @@ lazy val pluginTesterJava = Project(id = "akka-grpc-plugin-tester-java", base = 
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
     scalaVersion := scala212,
     ReflectiveCodeGen.codeGeneratorSettings ++= Seq("server_power_apis"))
+  .settings(MetaInfLicenseNoticeCopy.settings)
   .pluginTestingSettings
 
 lazy val root = Project(id = "akka-grpc", base = file("."))
