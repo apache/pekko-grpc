@@ -238,7 +238,7 @@ lazy val pluginTesterJava = Project(id = "akka-grpc-plugin-tester-java", base = 
   .settings(MetaInfLicenseNoticeCopy.settings)
   .pluginTestingSettings
 
-lazy val root = Project(id = "akka-grpc", base = file("."))
+lazy val root = Project(id = "pekko-grpc", base = file("."))
   .enablePlugins(ScalaUnidocPlugin)
   .disablePlugins(SitePlugin, MimaPlugin)
   .aggregate(
