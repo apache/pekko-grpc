@@ -1,4 +1,4 @@
-# Apache Pekko gRPC
+# Apache Pekko gRPC2
 
 Support for building streaming gRPC servers and clients on top
 of Pekko Streams.
