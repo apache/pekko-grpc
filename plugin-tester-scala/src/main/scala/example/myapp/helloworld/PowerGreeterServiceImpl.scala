@@ -5,10 +5,10 @@
 //#full-service-impl
 package example.myapp.helloworld
 
-import akka.NotUsed
-import akka.actor.ActorSystem
-import akka.grpc.scaladsl.Metadata
-import akka.stream.scaladsl.{ Sink, Source }
+import org.apache.pekko.NotUsed
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.grpc.scaladsl.Metadata
+import org.apache.pekko.stream.scaladsl.{ Sink, Source }
 import example.myapp.helloworld.grpc._
 
 import scala.concurrent.Future

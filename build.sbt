@@ -1,19 +1,21 @@
-import akka.grpc.Dependencies
-import akka.grpc.Dependencies.Versions.{ scala212, scala213 }
-import akka.grpc.ProjectExtensions._
-import akka.grpc.build.ReflectiveCodeGen
+import org.apache.pekko.grpc.Dependencies
+import org.apache.pekko.grpc.Dependencies.Versions.{ scala212, scala213 }
+import org.apache.pekko.grpc.ProjectExtensions._
+import org.apache.pekko.grpc.build.ReflectiveCodeGen
 import com.typesafe.tools.mima.core._
 import sbt.Keys.scalaVersion
 
-val akkaGrpcRuntimeName = "akka-grpc-runtime"
+val pekkoGrpcRuntimeName = "pekko-grpc-runtime"
 
 lazy val mkBatAssemblyTask = taskKey[File]("Create a Windows bat assembly")
 
 // gradle plugin compatibility (avoid `+` in snapshot versions)
 (ThisBuild / dynverSeparator) := "-"
 
-val akkaGrpcCodegenId = "akka-grpc-codegen"
-lazy val codegen = Project(id = akkaGrpcCodegenId, base = file("codegen"))
+ThisBuild / resolvers += "Apache Snapshots".at("https://repository.apache.org/content/repositories/snapshots/")
+
+val pekkoGrpcCodegenId = "pekko-grpc-codegen"
+lazy val codegen = Project(id = pekkoGrpcCodegenId, base = file("codegen"))
   .enablePlugins(SbtTwirl, BuildInfoPlugin)
   .enablePlugins(ReproducibleBuildsPlugin)
   .disablePlugins(MimaPlugin)
@@ -25,25 +27,25 @@ lazy val codegen = Project(id = akkaGrpcCodegenId, base = file("codegen"))
       Assemblies.mkBatAssembly(file)
     },
     buildInfoKeys ++= Seq[BuildInfoKey](organization, name, version, scalaVersion, sbtVersion),
-    buildInfoKeys += "runtimeArtifactName" -> akkaGrpcRuntimeName,
-    buildInfoKeys += "akkaVersion" -> Dependencies.Versions.akka,
-    buildInfoKeys += "akkaHttpVersion" -> Dependencies.Versions.akkaHttp,
+    buildInfoKeys += "runtimeArtifactName" -> pekkoGrpcRuntimeName,
+    buildInfoKeys += "pekkoVersion" -> Dependencies.Versions.pekko,
+    buildInfoKeys += "pekkoHttpVersion" -> Dependencies.Versions.pekkoHttp,
     buildInfoKeys += "grpcVersion" -> Dependencies.Versions.grpc,
     buildInfoKeys += "googleProtobufVersion" -> Dependencies.Versions.googleProtobuf,
-    buildInfoPackage := "akka.grpc.gen",
+    buildInfoPackage := "org.apache.pekko.grpc.gen",
     (Compile / assembly / artifact) := {
       val art = (Compile / assembly / artifact).value
       art.withClassifier(Some("assembly"))
     },
-    (assembly / mainClass) := Some("akka.grpc.gen.Main"),
+    (assembly / mainClass) := Some("org.apache.pekko.grpc.gen.Main"),
     (assembly / assemblyOption) := (assembly / assemblyOption).value.withPrependShellScript(
       Some(sbtassembly.AssemblyPlugin.defaultUniversalScript(shebang = true))),
     crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
     scalaVersion := scala212)
   .settings(addArtifact(Compile / assembly / artifact, assembly))
-  .settings(addArtifact(Artifact(akkaGrpcCodegenId, "bat", "bat", "bat"), mkBatAssemblyTask))
+  .settings(addArtifact(Artifact(pekkoGrpcCodegenId, "bat", "bat", "bat"), mkBatAssemblyTask))
 
-lazy val runtime = Project(id = akkaGrpcRuntimeName, base = file("runtime"))
+lazy val runtime = Project(id = pekkoGrpcRuntimeName, base = file("runtime"))
   .settings(Dependencies.runtime)
   .settings(VersionGenerator.settings)
   .settings(
@@ -52,17 +54,17 @@ lazy val runtime = Project(id = akkaGrpcRuntimeName, base = file("runtime"))
   .settings(
     mimaFailOnNoPrevious := true,
     mimaPreviousArtifacts := Set.empty, // temporarily disable mima checks
-    AutomaticModuleName.settings("akka.grpc.runtime"),
+    AutomaticModuleName.settings("pekko.grpc.runtime"),
     MetaInfLicenseNoticeCopy.settings,
     ReflectiveCodeGen.generatedLanguages := Seq("Scala"),
     ReflectiveCodeGen.extraGenerators := Seq("ScalaMarshallersCodeGenerator"),
     PB.protocVersion := Dependencies.Versions.googleProtobuf)
-  .enablePlugins(akka.grpc.build.ReflectiveCodeGen)
+  .enablePlugins(org.apache.pekko.grpc.build.ReflectiveCodeGen)
   .enablePlugins(ReproducibleBuildsPlugin)
 
 /** This could be an independent project - or does upstream provide this already? didn't find it.. */
-val akkaGrpcProtocPluginId = "akka-grpc-scalapb-protoc-plugin"
-lazy val scalapbProtocPlugin = Project(id = akkaGrpcProtocPluginId, base = file("scalapb-protoc-plugin"))
+val pekkoGrpcProtocPluginId = "pekko-grpc-scalapb-protoc-plugin"
+lazy val scalapbProtocPlugin = Project(id = pekkoGrpcProtocPluginId, base = file("scalapb-protoc-plugin"))
   .disablePlugins(MimaPlugin)
   /** TODO we only really need to depend on scalapb */
   .dependsOn(codegen)
@@ -75,7 +77,7 @@ lazy val scalapbProtocPlugin = Project(id = akkaGrpcProtocPluginId, base = file(
       val art = (Compile / assembly / artifact).value
       art.withClassifier(Some("assembly"))
     },
-    (assembly / mainClass) := Some("akka.grpc.scalapb.Main"),
+    (assembly / mainClass) := Some("org.apache.pekko.grpc.scalapb.Main"),
     (assembly / assemblyOption) := (assembly / assemblyOption).value.withPrependShellScript(
       Some(sbtassembly.AssemblyPlugin.defaultUniversalScript(shebang = true))))
   .settings(
@@ -83,11 +85,11 @@ lazy val scalapbProtocPlugin = Project(id = akkaGrpcProtocPluginId, base = file(
     scalaVersion := Dependencies.Versions.CrossScalaForPlugin.head)
   .settings(MetaInfLicenseNoticeCopy.settings)
   .settings(addArtifact(Compile / assembly / artifact, assembly))
-  .settings(addArtifact(Artifact(akkaGrpcProtocPluginId, "bat", "bat", "bat"), mkBatAssemblyTask))
+  .settings(addArtifact(Artifact(pekkoGrpcProtocPluginId, "bat", "bat", "bat"), mkBatAssemblyTask))
   .enablePlugins(ReproducibleBuildsPlugin)
 
-lazy val mavenPlugin = Project(id = "akka-grpc-maven-plugin", base = file("maven-plugin"))
-  .enablePlugins(akka.grpc.SbtMavenPlugin)
+lazy val mavenPlugin = Project(id = "pekko-grpc-maven-plugin", base = file("maven-plugin"))
+  .enablePlugins(org.apache.pekko.grpc.SbtMavenPlugin)
   .enablePlugins(ReproducibleBuildsPlugin)
   .disablePlugins(MimaPlugin)
   .settings(Dependencies.mavenPlugin)
@@ -99,7 +101,7 @@ lazy val mavenPlugin = Project(id = "akka-grpc-maven-plugin", base = file("maven
   .settings(MetaInfLicenseNoticeCopy.settings)
   .dependsOn(codegen)
 
-lazy val sbtPlugin = Project(id = "sbt-akka-grpc", base = file("sbt-plugin"))
+lazy val sbtPlugin = Project(id = "sbt-pekko-grpc", base = file("sbt-plugin"))
   .enablePlugins(SbtPlugin)
   .enablePlugins(ReproducibleBuildsPlugin)
   .disablePlugins(MimaPlugin)
@@ -121,7 +123,7 @@ lazy val sbtPlugin = Project(id = "sbt-akka-grpc", base = file("sbt-plugin"))
   .settings(MetaInfLicenseNoticeCopy.settings)
   .dependsOn(codegen)
 
-lazy val interopTests = Project(id = "akka-grpc-interop-tests", base = file("interop-tests"))
+lazy val interopTests = Project(id = "pekko-grpc-interop-tests", base = file("interop-tests"))
   .disablePlugins(MimaPlugin)
   .settings(Dependencies.interopTests)
   .settings(
@@ -169,26 +171,26 @@ lazy val benchmarks = Project(id = "benchmarks", base = file("benchmarks"))
     (publish / skip) := true)
   .settings(MetaInfLicenseNoticeCopy.settings)
 
-lazy val docs = Project(id = "akka-grpc-docs", base = file("docs"))
-// Make sure code generation is ran:
+lazy val docs = Project(id = "pekko-grpc-docs", base = file("docs"))
+// Make sure code generation is run:
   .dependsOn(pluginTesterScala)
   .dependsOn(pluginTesterJava)
   .enablePlugins(AkkaParadoxPlugin, ParadoxSitePlugin, PreprocessPlugin, PublishRsyncPlugin)
   .disablePlugins(MimaPlugin)
   .settings(
-    name := "Akka gRPC",
+    name := "Apache Pekko gRPC",
     publish / skip := true,
     makeSite := makeSite.dependsOn(LocalRootProject / ScalaUnidoc / doc).value,
     previewPath := (Paradox / siteSubdirName).value,
     Preprocess / siteSubdirName := s"api/akka-grpc/${projectInfoVersion.value}",
     Preprocess / sourceDirectory := (LocalRootProject / ScalaUnidoc / unidoc / target).value,
     Paradox / siteSubdirName := s"docs/akka-grpc/${projectInfoVersion.value}",
-    // Make sure code generation is ran before paradox:
+    // Make sure code generation is run before paradox:
     (Compile / paradox) := (Compile / paradox).dependsOn(Compile / compile).value,
     paradoxGroups := Map("Language" -> Seq("Java", "Scala"), "Buildtool" -> Seq("sbt", "Gradle", "Maven")),
     Compile / paradoxProperties ++= Map(
-      "akka.version" -> Dependencies.Versions.akka,
-      "akka-http.version" -> Dependencies.Versions.akkaHttp,
+      "pekko.version" -> Dependencies.Versions.pekko,
+      "pekko-http.version" -> Dependencies.Versions.pekkoHttp,
       "grpc.version" -> Dependencies.Versions.grpc,
       "project.url" -> "https://doc.akka.io/docs/akka-grpc/current/",
       "canonical.base_url" -> "https://doc.akka.io/docs/akka-grpc/current",
@@ -201,7 +203,7 @@ lazy val docs = Project(id = "akka-grpc-docs", base = file("docs"))
       "extref.akka-http.base_url" -> s"https://doc.akka.io/docs/akka-http/${Dependencies.Versions.akkaHttpBinary}/%s",
       "scaladoc.akka.http.base_url" -> s"https://doc.akka.io/api/akka-http/${Dependencies.Versions.akkaHttpBinary}/",
       "javadoc.akka.http.base_url" -> s"https://doc.akka.io/japi/akka-http/${Dependencies.Versions.akkaHttpBinary}/",
-      // Akka gRPC
+      // Apache Pekko gRPC
       "scaladoc.akka.grpc.base_url" -> s"/${(Preprocess / siteSubdirName).value}/",
       "javadoc.akka.grpc.base_url" -> "" // @apidoc links to Scaladoc
     ),
@@ -213,7 +215,7 @@ lazy val docs = Project(id = "akka-grpc-docs", base = file("docs"))
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
     scalaVersion := Dependencies.Versions.CrossScalaForLib.head)
 
-lazy val pluginTesterScala = Project(id = "akka-grpc-plugin-tester-scala", base = file("plugin-tester-scala"))
+lazy val pluginTesterScala = Project(id = "pekko-grpc-plugin-tester-scala", base = file("plugin-tester-scala"))
   .disablePlugins(MimaPlugin)
   .settings(Dependencies.pluginTester)
   .settings(
@@ -225,7 +227,7 @@ lazy val pluginTesterScala = Project(id = "akka-grpc-plugin-tester-scala", base 
   .settings(MetaInfLicenseNoticeCopy.settings)
   .pluginTestingSettings
 
-lazy val pluginTesterJava = Project(id = "akka-grpc-plugin-tester-java", base = file("plugin-tester-java"))
+lazy val pluginTesterJava = Project(id = "pekko-grpc-plugin-tester-java", base = file("plugin-tester-java"))
   .disablePlugins(MimaPlugin)
   .settings(Dependencies.pluginTester)
   .settings(

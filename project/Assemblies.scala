@@ -10,7 +10,7 @@ object Assemblies {
    * sbt-assembly using `defaultUniversalScript(shebang = true)`
    */
   def mkBatAssembly(assembly: File): File = {
-    val file = Files.createTempFile("akka-grpc-", ".tmp").toFile
+    val file = Files.createTempFile("pekko-grpc-", ".tmp").toFile
 
     file.deleteOnExit()
     copySkippingUntil('@'.toByte, assembly, file)

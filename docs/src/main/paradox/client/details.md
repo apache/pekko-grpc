@@ -24,7 +24,7 @@ will complete with a failure when the maximum number of `connectionAttempts` (wh
 By default, each instance of a generated client creates a separate HTTP connection to the server. If the server
 supports multiple services, you may want to allow multiple generated clients to share a single connection.
 
-To do this, create a @apidoc[GrpcChannel] by passing @apidoc[GrpcClientSettings] to the apply method. You can then
+To do this, create a `GrpcChannel` by passing `GrpcClientSettings` to the apply method. You can then
 use the GrpcChannel instance to create multiple generated clients; each client will use the provided channel to 
 communicate with the server.
 
@@ -32,7 +32,7 @@ When using a shared channel, the client lifecycle changes slightly. Like the gen
 `close` and `closed` methods; these can be used to explicitly close the connection to the server and detect when the
 connection has been closed or shutdown due to errors, respectively. When you are done communicating with the server,
 you should call `close` on the channel, rather than the individual clients. Calling `close` on a generated client 
-that was created with a shared channel will throw a @apidoc[GrpcClientCloseException].
+that was created with a shared channel will throw a `GrpcClientCloseException`.
 
 ## Load balancing
 
@@ -59,10 +59,10 @@ Client-side load balancing for other discovery mechanisms is
 ## Request Metadata
 
 Default request metadata, for example for authentication, can be provided through the
-@apidoc[GrpcClientSettings] passed to the client when it is created, it will be the base metadata used for each request.
+`GrpcClientSettings` passed to the client when it is created, it will be the base metadata used for each request.
 
 In some cases you will want to provide specific metadata to a single request, this can be done through the "lifted"
-client API, each method of the service has an empty parameter list version (`.sayHello()`) on the client returning a @apidoc[SingleResponseRequestBuilder] or @apidoc[StreamResponseRequestBuilder].
+client API, each method of the service has an empty parameter list version (`.sayHello()`) on the client returning a `SingleResponseRequestBuilder` or `StreamResponseRequestBuilder`.
 
 After adding the required metadata the request is done by calling `invoke` with the request parameters.
 
@@ -81,7 +81,7 @@ Beyond status codes you can also use the [Rich error model](https://www.grpc.io/
 Extract the `StatusRuntimeException` and parse the Rich error model to access `code`, `message` and `details`. Then find the details you are looking for based on their `typeUrl` and unpack them:
 
 Scala
-:  @@snip [GreeterClient.scala](/interop-tests/src/test/scala/akka/grpc/scaladsl/RichErrorModelSpec.scala) { #client_request }
+:  @@snip [GreeterClient.scala](/interop-tests/src/test/scala/org/apache/pekko/grpc/scaladsl/RichErrorModelSpec.scala) { #client_request }
 
 Java
 :  @@snip[RichErrorModelSpec](/interop-tests/src/test/java/example/myapp/helloworld/grpc/RichErrorModelTest.java) { #client_request }

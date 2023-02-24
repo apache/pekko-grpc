@@ -1,13 +1,13 @@
-# Akka gRPC Interop tests
+# Apache Pekko gRPC Interop tests
 
 This project contains `grpc-interop-testing` tests and other tests that require code generation.
 
 The project layout is roughly as follows:
 
 * `src/main/*`: code shared between this subproject and the `00-interop-tests` scripted tests
-* `src/main/*/io/grpc/testing/integration2`: infrastructure taken from grpc-java, but generalized to also allow invoking the Akka gRPC implementation
+* `src/main/*/io/grpc/testing/integration2`: infrastructure taken from grpc-java, but generalized to also allow invoking the Apache Pekko gRPC implementation
 * `src/*/*/akka/grpc/interop`: `grpc-interop-testing` tests
-* `src/test/scala/akka/grpc/scaladsl` other tests that require code generation
+* `src/test/scala/org/apache/pekko/grpc/scaladsl` other tests that require code generation
 
 ## grpc-interop-testing tests
 
@@ -18,7 +18,7 @@ There are 3 ways to run these tests:
 ### Running as unit tests
 
 The GrpcInteropSpec test in this project will run the test suite using various
-combinations of Akka gRPC Java, Akka gRPC Scala and gRPC-Java.
+combinations of Apache Pekko gRPC Java, Apache Pekko gRPC Scala and gRPC-Java.
 
 ### Running as scripted tests
 

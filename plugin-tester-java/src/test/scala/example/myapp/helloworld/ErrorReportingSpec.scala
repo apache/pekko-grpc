@@ -6,15 +6,15 @@ package example.myapp.helloworld
 
 import java.util.concurrent.CompletionStage
 
-import akka.actor.ActorSystem
-import akka.grpc.internal.GrpcProtocolNative
-import akka.http.scaladsl.Http
-import akka.http.scaladsl.model._
-import akka.http.scaladsl.model.HttpEntity.{ Chunked, LastChunk }
-import akka.http.scaladsl.model.headers.RawHeader
-import akka.http.scaladsl.model.{ HttpMethods, HttpRequest, HttpResponse, StatusCodes }
-import akka.stream.Materializer
-import akka.stream.scaladsl.Sink
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.grpc.internal.GrpcProtocolNative
+import org.apache.pekko.http.scaladsl.Http
+import org.apache.pekko.http.scaladsl.model._
+import org.apache.pekko.http.scaladsl.model.HttpEntity.{ Chunked, LastChunk }
+import org.apache.pekko.http.scaladsl.model.headers.RawHeader
+import org.apache.pekko.http.scaladsl.model.{ HttpMethods, HttpRequest, HttpResponse, StatusCodes }
+import org.apache.pekko.stream.Materializer
+import org.apache.pekko.stream.scaladsl.Sink
 import example.myapp.helloworld.grpc.{ GreeterService, GreeterServiceHandlerFactory }
 import io.grpc.Status
 import org.scalatest.concurrent.ScalaFutures
@@ -35,12 +35,13 @@ class ErrorReportingSpec extends AnyWordSpec with Matchers with ScalaFutures wit
 
     val handler = GreeterServiceHandlerFactory.create(new GreeterServiceImpl(mat), sys)
     val binding = {
-      import akka.http.javadsl.Http
-      import akka.http.javadsl.model.{ HttpRequest, HttpResponse }
+      import org.apache.pekko.http.javadsl.Http
+      import org.apache.pekko.http.javadsl.model.{ HttpRequest, HttpResponse }
 
       Http(sys)
         .newServerAt("127.0.0.1", 0)
-        .bind((req => handler(req)): akka.japi.function.Function[HttpRequest, CompletionStage[HttpResponse]])
+        .bind((req => handler(req)): org.apache.pekko.japi.function.Function[HttpRequest, CompletionStage[
+            HttpResponse]])
         .toCompletableFuture
         .get
     }

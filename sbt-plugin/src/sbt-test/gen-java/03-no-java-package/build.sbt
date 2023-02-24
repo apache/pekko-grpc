@@ -2,8 +2,8 @@
 // https://github.com/akka/akka-grpc/pull/1279
 scalaVersion := "2.12.16"
 
-resolvers += Resolver.sonatypeRepo("staging")
+resolvers += "Apache Snapshots".at("https://repository.apache.org/content/repositories/snapshots/")
 
-enablePlugins(AkkaGrpcPlugin)
+enablePlugins(PekkoGrpcPlugin)
 
-akkaGrpcGeneratedLanguages := Seq(AkkaGrpc.Java)
+pekkoGrpcGeneratedLanguages := Seq(PekkoGrpc.Java)

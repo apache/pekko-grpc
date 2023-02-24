@@ -5,11 +5,11 @@
 //#full-service-impl
 package example.myapp.helloworld;
 
-import akka.NotUsed;
-import akka.grpc.javadsl.Metadata;
-import akka.stream.Materializer;
-import akka.stream.javadsl.Sink;
-import akka.stream.javadsl.Source;
+import org.apache.pekko.NotUsed;
+import org.apache.pekko.grpc.javadsl.Metadata;
+import org.apache.pekko.stream.Materializer;
+import org.apache.pekko.stream.javadsl.Sink;
+import org.apache.pekko.stream.javadsl.Source;
 import example.myapp.helloworld.grpc.GreeterServicePowerApi;
 import example.myapp.helloworld.grpc.HelloReply;
 import example.myapp.helloworld.grpc.HelloRequest;

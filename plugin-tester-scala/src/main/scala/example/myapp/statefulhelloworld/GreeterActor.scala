@@ -4,8 +4,8 @@
 
 package example.myapp.statefulhelloworld
 
-import akka.actor.Actor
-import akka.actor.Props
+import org.apache.pekko.actor.Actor
+import org.apache.pekko.actor.Props
 
 // #actor
 object GreeterActor {

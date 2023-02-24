@@ -1,6 +1,6 @@
 package unit
 
-import akka.grpc.gradle.AkkaGrpcPluginExtension
+import org.apache.pekko.grpc.gradle.PekkoGrpcPluginExtension
 import helper.BaseSpec
 import helper.ScalaWrapperPlugin
 import org.gradle.api.Project
@@ -12,7 +12,7 @@ import spock.lang.Unroll
 
 import static org.gradle.testkit.runner.TaskOutcome.SKIPPED
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
-import static akka.grpc.gradle.AkkaGrpcPluginExtension.PLUGIN_CODE
+import static org.apache.pekko.grpc.gradle.PekkoGrpcPluginExtension.PLUGIN_CODE
 
 class ApplySpec extends BaseSpec {
 
@@ -26,7 +26,7 @@ class ApplySpec extends BaseSpec {
     }
 
     def createLog() {
-        log = projectDir.newFile("build/akka-grpc-gradle-plugin.log")
+        log = projectDir.newFile("build/pekko-grpcgradle-plugin.log")
     }
 
     BuildResult executeGradleTask(String task) {
@@ -41,12 +41,12 @@ class ApplySpec extends BaseSpec {
     @Unroll
     def "should detect language for #plugin"() {
         given:
-        def akkaGrpcExt = sampleSetup(plugin, scala)
+        def pekkoGrpcExt = sampleSetup(plugin, scala)
         when:
         project.evaluate()
         then:
-        with(akkaGrpcExt) {
-            it.pluginVersion == System.getProperty("akkaGrpcTest.pluginVersion")
+        with(pekkoGrpcExt) {
+            it.pluginVersion == System.getProperty("pekkoGrpcTest.pluginVersion")
             it.scala == isScala
         }
         where:
@@ -89,7 +89,7 @@ class ApplySpec extends BaseSpec {
 
     def "should not fail scala autodetect if dependencies contain underscore"() {
         given:
-        def akkaGrpcExt = sampleSetup()
+        def pekkoGrpcExt = sampleSetup()
         and:
         project.dependencies {
             implementation "com.google.errorprone:error_prone_annotations:2.3.4"
@@ -97,7 +97,7 @@ class ApplySpec extends BaseSpec {
         when:
         project.evaluate()
         then: 'plugin is applied'
-        akkaGrpcExt.scala
+        pekkoGrpcExt.scala
     }
 
     def "should disable compileJava if no java source files found"() {
@@ -151,7 +151,7 @@ class ApplySpec extends BaseSpec {
         when:
         project.evaluate()
         then:
-        project.extensions.getByType(AkkaGrpcPluginExtension)
+        project.extensions.getByType(PekkoGrpcPluginExtension)
     }
 
     def "should fail if scala-version implicitly declared and mismatches with other scala-library version"() {

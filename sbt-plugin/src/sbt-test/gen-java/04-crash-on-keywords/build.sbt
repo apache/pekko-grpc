@@ -2,12 +2,12 @@
 // https://github.com/akka/akka-grpc/pull/1279
 scalaVersion := "2.12.16"
 
-resolvers += Resolver.sonatypeRepo("staging")
+resolvers += "Apache Snapshots".at("https://repository.apache.org/content/repositories/snapshots/")
 
-enablePlugins(AkkaGrpcPlugin)
+enablePlugins(PekkoGrpcPlugin)
 
 javacOptions += "-Xdoclint:all"
 
-akkaGrpcGeneratedLanguages := Seq(AkkaGrpc.Java)
+pekkoGrpcGeneratedLanguages := Seq(PekkoGrpc.Java)
 
-libraryDependencies += "com.google.protobuf" % "protobuf-java" % akka.grpc.gen.BuildInfo.googleProtobufVersion % "protobuf"
+libraryDependencies += "com.google.protobuf" % "protobuf-java" % org.apache.pekko.grpc.gen.BuildInfo.googleProtobufVersion % "protobuf"

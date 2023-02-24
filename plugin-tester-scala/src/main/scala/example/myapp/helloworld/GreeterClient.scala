@@ -5,10 +5,10 @@
 //#full-client
 package example.myapp.helloworld
 
-import akka.{ Done, NotUsed }
-import akka.actor.ActorSystem
-import akka.grpc.GrpcClientSettings
-import akka.stream.scaladsl.Source
+import org.apache.pekko.{ Done, NotUsed }
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.grpc.GrpcClientSettings
+import org.apache.pekko.stream.scaladsl.Source
 import example.myapp.helloworld.grpc._
 
 import scala.concurrent.Future

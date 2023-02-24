@@ -10,7 +10,8 @@ object VersionGenerator {
 
   val settings: Seq[Setting[_]] = inConfig(Compile)(
     Seq(
-      resourceGenerators += generateVersion(resourceManaged, _ / "akka-grpc-version.conf", """|akka.grpc.version = "%s"
+      resourceGenerators += generateVersion(resourceManaged, _ / "pekko-grpc-version.conf",
+        """|pekko.grpc.version = "%s"
          |""")))
 
   def generateVersion(dir: SettingKey[File], locate: File => File, template: String) =

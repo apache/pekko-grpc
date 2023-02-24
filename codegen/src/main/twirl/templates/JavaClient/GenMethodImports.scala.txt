@@ -2,15 +2,15 @@
  * Copyright (C) 2019-2021 Lightbend Inc. <https://www.lightbend.com>
  *@
 
-@(service: akka.grpc.gen.javadsl.Service)
+@(service: org.apache.pekko.grpc.gen.javadsl.Service)
 
 @{
-  val singleResponse = "import akka.grpc.javadsl.SingleResponseRequestBuilder;"
-  val streamResponse = "import akka.grpc.javadsl.StreamResponseRequestBuilder;"
+  val singleResponse = "import org.apache.pekko.grpc.javadsl.SingleResponseRequestBuilder;"
+  val streamResponse = "import org.apache.pekko.grpc.javadsl.StreamResponseRequestBuilder;"
   service.methods.map(_.methodType).map {
-      case akka.grpc.gen.Unary => singleResponse
-      case akka.grpc.gen.ClientStreaming => singleResponse
-      case akka.grpc.gen.ServerStreaming => streamResponse
-      case akka.grpc.gen.BidiStreaming => streamResponse
+      case org.apache.pekko.grpc.gen.Unary => singleResponse
+      case org.apache.pekko.grpc.gen.ClientStreaming => singleResponse
+      case org.apache.pekko.grpc.gen.ServerStreaming => streamResponse
+      case org.apache.pekko.grpc.gen.BidiStreaming => streamResponse
   }.distinct.mkString("\n")
 }

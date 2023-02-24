@@ -5,12 +5,12 @@
 //#full-server
 package example.myapp.helloworld;
 
-import akka.actor.ActorSystem;
-import akka.http.javadsl.ConnectHttp;
-import akka.http.javadsl.Http;
-import akka.http.javadsl.ServerBinding;
-import akka.stream.SystemMaterializer;
-import akka.stream.Materializer;
+import org.apache.pekko.actor.ActorSystem;
+import org.apache.pekko.http.javadsl.ConnectHttp;
+import org.apache.pekko.http.javadsl.Http;
+import org.apache.pekko.http.javadsl.ServerBinding;
+import org.apache.pekko.stream.SystemMaterializer;
+import org.apache.pekko.stream.Materializer;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import example.myapp.helloworld.grpc.GreeterService;
@@ -21,10 +21,10 @@ import java.util.concurrent.CompletionStage;
 class GreeterServer {
   public static void main(String[] args) throws Exception {
     // important to enable HTTP/2 in ActorSystem's config
-    Config conf = ConfigFactory.parseString("akka.http.server.preview.enable-http2 = on")
+    Config conf = ConfigFactory.parseString("pekko.http.server.preview.enable-http2 = on")
             .withFallback(ConfigFactory.defaultApplication());
 
-    // Akka ActorSystem Boot
+    // ActorSystem Boot
     ActorSystem sys = ActorSystem.create("HelloWorld", conf);
 
     run(sys).thenAccept(binding -> {

@@ -1,6 +1,6 @@
-# Akka gRPC Microbenchmarks
+# Apache Pekko gRPC Microbenchmarks
 
-This subproject contains some microbenchmarks parts of Akka gRPC.
+This subproject contains some microbenchmarks parts of Apache Pekko gRPC.
 
 You can run them on the `sbt` prompt like:
 

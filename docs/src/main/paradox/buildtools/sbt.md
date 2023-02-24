@@ -32,7 +32,7 @@ To additionally generate server "power APIs" that have access to request metadat
 @ref[here](../server/details.md#accessing-request-metadata), set the `server_power_apis` option:
 
 ```scala
-akkaGrpcCodeGeneratorSettings += "server_power_apis"
+pekkoGrpcCodeGeneratorSettings += "server_power_apis"
 ```
 
 ## Passing parameters to the generators
@@ -42,12 +42,12 @@ don't suit your needs.
 
 ### ScalaPB settings
 
-Passing generator parameters to the underlying ScalaPB generators can be done through `akkaGrpcCodeGeneratorSettings`
+Passing generator parameters to the underlying ScalaPB generators can be done through `pekkoGrpcCodeGeneratorSettings`
 setting, any specified options will be passed to all underlying generators that are enabled. By default this setting
 contains the `flat_package` parameter.
 
 ```scala
-akkaGrpcCodeGeneratorSettings += "single_line_to_proto_string"
+pekkoGrpcCodeGeneratorSettings += "single_line_to_proto_string"
 ```
 
 #### Using a local `protoc` command

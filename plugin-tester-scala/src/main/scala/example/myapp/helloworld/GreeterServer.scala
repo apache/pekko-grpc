@@ -5,9 +5,9 @@
 //#full-server
 package example.myapp.helloworld
 
-import akka.actor.ActorSystem
-import akka.http.scaladsl.model.{ HttpRequest, HttpResponse }
-import akka.http.scaladsl.Http
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.http.scaladsl.model.{ HttpRequest, HttpResponse }
+import org.apache.pekko.http.scaladsl.Http
 import com.typesafe.config.ConfigFactory
 import example.myapp.helloworld.grpc._
 
@@ -18,7 +18,7 @@ object GreeterServer {
     // Important: enable HTTP/2 in ActorSystem's config
     // We do it here programmatically, but you can also set it in the application.conf
     val conf = ConfigFactory
-      .parseString("akka.http.server.preview.enable-http2 = on")
+      .parseString("pekko.http.server.preview.enable-http2 = on")
       .withFallback(ConfigFactory.defaultApplication())
     val system = ActorSystem("HelloWorld", conf)
     new GreeterServer(system).run()

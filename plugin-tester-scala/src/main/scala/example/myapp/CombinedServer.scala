@@ -6,11 +6,11 @@ package example.myapp
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
-import akka.actor.ActorSystem
-import akka.http.scaladsl.Http
-import akka.http.scaladsl.model.HttpRequest
-import akka.http.scaladsl.model.HttpResponse
-import akka.grpc.scaladsl.ServerReflection
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.http.scaladsl.Http
+import org.apache.pekko.http.scaladsl.model.HttpRequest
+import org.apache.pekko.http.scaladsl.model.HttpResponse
+import org.apache.pekko.grpc.scaladsl.ServerReflection
 import com.typesafe.config.ConfigFactory
 import example.myapp.helloworld._
 import example.myapp.echo._
@@ -18,12 +18,12 @@ import example.myapp.echo.grpc._
 import example.myapp.helloworld.grpc.GreeterService
 
 //#concatOrNotFound
-import akka.grpc.scaladsl.ServiceHandler
+import org.apache.pekko.grpc.scaladsl.ServiceHandler
 
 //#concatOrNotFound
 
 //#grpc-web
-import akka.grpc.scaladsl.WebHandler
+import org.apache.pekko.grpc.scaladsl.WebHandler
 
 //#grpc-web
 
@@ -31,7 +31,7 @@ object CombinedServer {
   def main(args: Array[String]): Unit = {
     // important to enable HTTP/2 in ActorSystem's config
     val conf = ConfigFactory
-      .parseString("akka.http.server.preview.enable-http2 = on")
+      .parseString("pekko.http.server.preview.enable-http2 = on")
       .withFallback(ConfigFactory.defaultApplication())
     implicit val sys: ActorSystem = ActorSystem("HelloWorld", conf)
     implicit val ec: ExecutionContext = sys.dispatcher

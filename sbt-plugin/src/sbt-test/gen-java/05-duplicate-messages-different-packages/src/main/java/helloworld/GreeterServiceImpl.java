@@ -1,8 +1,8 @@
 package helloworld;
 
 import java.util.concurrent.CompletionStage;
-import akka.NotUsed;
-import akka.stream.javadsl.Source;
+import org.apache.pekko.NotUsed;
+import org.apache.pekko.stream.javadsl.Source;
 import helloworld.Helloworld.*;
 
 class GreeterServiceImpl implements GreeterService {

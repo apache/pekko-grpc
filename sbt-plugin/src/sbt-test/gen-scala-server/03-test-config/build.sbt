@@ -2,22 +2,22 @@
 // https://github.com/akka/akka-grpc/pull/1279
 scalaVersion := "2.12.16"
 
-resolvers += Resolver.sonatypeRepo("staging")
+resolvers += "Apache Snapshots".at("https://repository.apache.org/content/repositories/snapshots/")
 
-enablePlugins(AkkaGrpcPlugin)
+enablePlugins(PekkoGrpcPlugin)
 
-Compile / akkaGrpcGeneratedSources := Seq(AkkaGrpc.Server)
+Compile / pekkoGrpcGeneratedSources := Seq(PekkoGrpc.Server)
 
 //#test
-Test / akkaGrpcGeneratedSources := Seq(AkkaGrpc.Client)
+Test / pekkoGrpcGeneratedSources := Seq(PekkoGrpc.Client)
 Test / PB.protoSources ++= (Compile / PB.protoSources).value
 //#test
 
 //#it
 configs(IntegrationTest)
 Defaults.itSettings
-AkkaGrpcPlugin.configSettings(IntegrationTest)
+PekkoGrpcPlugin.configSettings(IntegrationTest)
 
-IntegrationTest / akkaGrpcGeneratedLanguages := Seq(AkkaGrpc.Java)
+IntegrationTest / pekkoGrpcGeneratedLanguages := Seq(PekkoGrpc.Java)
 IntegrationTest / PB.protoSources ++= (Compile / PB.protoSources).value
 //#it

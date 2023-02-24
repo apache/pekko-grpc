@@ -37,7 +37,7 @@ libraryDependencies ++= Seq(
 )
 
 Compile / PB.targets +=
-  Target(PB.gens.plugin("validate"), (Compile / akkaGrpcCodeGeneratorSettings / target).value, Seq("lang=java"))
+  Target(PB.gens.plugin("validate"), (Compile / pekkoGrpcCodeGeneratorSettings / target).value, Seq("lang=java"))
 
 // PGV Java validators use lambda expressions
 Compile / compile / javacOptions ++= Seq("-source", "8", "-target", "8"),

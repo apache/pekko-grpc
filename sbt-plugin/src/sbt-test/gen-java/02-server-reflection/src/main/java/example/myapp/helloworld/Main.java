@@ -1,22 +1,22 @@
 package example.myapp.helloworld;
 
 import java.util.concurrent.CompletionStage;
-import akka.japi.function.Function;
+import org.apache.pekko.japi.function.Function;
 
-import akka.actor.ActorSystem;
+import org.apache.pekko.actor.ActorSystem;
 
-import akka.stream.SystemMaterializer;
-import akka.stream.Materializer;
+import org.apache.pekko.stream.SystemMaterializer;
+import org.apache.pekko.stream.Materializer;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
 //#server-reflection
 import java.util.Arrays;
 
-import akka.grpc.javadsl.ServiceHandler;
-import akka.grpc.javadsl.ServerReflection;
-import akka.http.javadsl.*;
-import akka.http.javadsl.model.*;
+import org.apache.pekko.grpc.javadsl.ServiceHandler;
+import org.apache.pekko.grpc.javadsl.ServerReflection;
+import org.apache.pekko.http.javadsl.*;
+import org.apache.pekko.http.javadsl.model.*;
 
 import example.myapp.helloworld.grpc.*;
 
@@ -25,9 +25,9 @@ import example.myapp.helloworld.grpc.*;
 public class Main {
     public static void main(String[] args) throws Exception {
         // important to enable HTTP/2 in ActorSystem's config
-        Config conf = ConfigFactory.parseString("akka.http.server.preview.enable-http2 = on")
+        Config conf = ConfigFactory.parseString("pekko.http.server.preview.enable-http2 = on")
             .withFallback(ConfigFactory.defaultApplication());
-        // Akka ActorSystem Boot
+        // ActorSystem Boot
         ActorSystem sys = ActorSystem.create("HelloWorld", conf);
 
         run(sys).thenAccept(binding -> {

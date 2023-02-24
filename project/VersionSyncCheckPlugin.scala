@@ -1,4 +1,4 @@
-package akka.grpc
+package org.apache.pekko.grpc
 
 import java.nio.file.{ Files, Path, Paths }
 
@@ -28,14 +28,14 @@ object VersionSyncCheckPlugin extends AutoPlugin {
         Paths.get("plugin-tester-java/pom.xml"),
         Paths.get("plugin-tester-scala/pom.xml"),
         Paths.get("sbt-plugin/src/sbt-test/gen-scala-server/00-interop/build.sbt"),
-        Paths.get("gradle-plugin/src/main/groovy/akka/grpc/gradle/AkkaGrpcPluginExtension.groovy"))).value,
+        Paths.get("gradle-plugin/src/main/groovy/org/apache/pekko/grpc/gradle/PekkoGrpcPluginExtension.groovy"))).value,
     googleProtobufVersionSyncCheck := versionSyncCheckImpl(
       "Google Protobuf",
       Dependencies.Versions.googleProtobuf,
       raw"""(?i)protoc_?version.*= ?"-?v?(\d+\.\d+\.\d+)"""".r.unanchored,
       Seq(
         Paths.get("maven-plugin/src/main/maven/plugin.xml"),
-        Paths.get("gradle-plugin/src/main/groovy/akka/grpc/gradle/AkkaGrpcPluginExtension.groovy"))).value)
+        Paths.get("gradle-plugin/src/main/groovy/org/apache/pekko/grpc/gradle/PekkoGrpcPluginExtension.groovy"))).value)
 
   def versionSyncCheckImpl(
       name: String,

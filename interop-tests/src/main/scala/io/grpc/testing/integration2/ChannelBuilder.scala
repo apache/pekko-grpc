@@ -15,7 +15,7 @@ object ChannelBuilder {
    *  Reimplementation of the private io.grpc.testing.integration.TestServiceClient$Tester#createChannelBuilder
    */
   def create(settings: Settings): ManagedChannelBuilder[NettyChannelBuilder] =
-    if (settings.useAkkaHttp) {
+    if (settings.usePekkoHttp) {
       // TODO: here comes the akka-http based channel (when ready)
       throw new RuntimeException("Not implemented")
     } else {

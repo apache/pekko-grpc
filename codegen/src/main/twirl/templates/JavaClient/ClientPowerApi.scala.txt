@@ -2,30 +2,30 @@
  * Copyright (C) 2018-2021 Lightbend Inc. <https://www.lightbend.com>
  *@
 
-@(service: akka.grpc.gen.javadsl.Service)
+@(service: org.apache.pekko.grpc.gen.javadsl.Service)
 
-@akka.grpc.gen.Constants.DoNotEditComment
+@org.apache.pekko.grpc.gen.Constants.DoNotEditComment
 package @service.packageName;
 
-import akka.grpc.AkkaGrpcGenerated;
+import org.apache.pekko.grpc.PekkoGrpcGenerated;
 
 @GenMethodImports(service)
 
-@@AkkaGrpcGenerated
+@@PekkoGrpcGenerated
 public abstract class @{service.name}ClientPowerApi {
   @for(method <- service.methods) {
     /**
      * Lower level "lifted" version of the method, giving access to request metadata etc.
      * prefer @{method.name}(@method.inputTypeUnboxed) if possible.
      */
-    @if(method.methodType == akka.grpc.gen.Unary) {
+    @if(method.methodType == org.apache.pekko.grpc.gen.Unary) {
       public SingleResponseRequestBuilder<@method.inputTypeUnboxed, @method.outputTypeUnboxed> @{method.name}()
-    } else if(method.methodType == akka.grpc.gen.ClientStreaming){
-      public SingleResponseRequestBuilder<akka.stream.javadsl.Source<@method.inputTypeUnboxed, akka.NotUsed>, @method.outputTypeUnboxed> @{method.name}()
-    } else if(method.methodType == akka.grpc.gen.ServerStreaming){
+    } else if(method.methodType == org.apache.pekko.grpc.gen.ClientStreaming){
+      public SingleResponseRequestBuilder<org.apache.pekko.stream.javadsl.Source<@method.inputTypeUnboxed, org.apache.pekko.NotUsed>, @method.outputTypeUnboxed> @{method.name}()
+    } else if(method.methodType == org.apache.pekko.grpc.gen.ServerStreaming){
       public StreamResponseRequestBuilder<@method.inputTypeUnboxed, @method.outputTypeUnboxed> @{method.name}()
-    } else if(method.methodType == akka.grpc.gen.BidiStreaming){
-      public StreamResponseRequestBuilder<akka.stream.javadsl.Source<@method.inputTypeUnboxed, akka.NotUsed>, @method.outputTypeUnboxed> @{method.name}()
+    } else if(method.methodType == org.apache.pekko.grpc.gen.BidiStreaming){
+      public StreamResponseRequestBuilder<org.apache.pekko.stream.javadsl.Source<@method.inputTypeUnboxed, org.apache.pekko.NotUsed>, @method.outputTypeUnboxed> @{method.name}()
     }
     {
         throw new java.lang.UnsupportedOperationException();

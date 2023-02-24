@@ -2,35 +2,35 @@
  * Copyright (C) 2018-2021 Lightbend Inc. <https://www.lightbend.com>
  *@
 
-@(service: akka.grpc.gen.scaladsl.Service)
+@(service: org.apache.pekko.grpc.gen.scaladsl.Service)
 
-@akka.grpc.gen.Constants.DoNotEditComment
+@org.apache.pekko.grpc.gen.Constants.DoNotEditComment
 package @service.packageName
 
 import scala.concurrent.ExecutionContext
 
-import akka.actor.ClassicActorSystemProvider
+import org.apache.pekko.actor.ClassicActorSystemProvider
 
-import akka.grpc.GrpcChannel
-import akka.grpc.GrpcClientCloseException
-import akka.grpc.GrpcClientSettings
+import org.apache.pekko.grpc.GrpcChannel
+import org.apache.pekko.grpc.GrpcClientCloseException
+import org.apache.pekko.grpc.GrpcClientSettings
 
-import akka.grpc.scaladsl.AkkaGrpcClient
+import org.apache.pekko.grpc.scaladsl.PekkoGrpcClient
 
-import akka.grpc.internal.NettyClientUtils
+import org.apache.pekko.grpc.internal.NettyClientUtils
 
-import akka.grpc.AkkaGrpcGenerated
+import org.apache.pekko.grpc.PekkoGrpcGenerated
 
 @{
-  def withSingleResponse(stmt: String) = Set("import akka.grpc.scaladsl.SingleResponseRequestBuilder", stmt)
-  def withStreamResponse(stmt: String) = Set("import akka.grpc.scaladsl.StreamResponseRequestBuilder", stmt)
-  service.methods.flatMap { method: akka.grpc.gen.scaladsl.Method =>
+  def withSingleResponse(stmt: String) = Set("import org.apache.pekko.grpc.scaladsl.SingleResponseRequestBuilder", stmt)
+  def withStreamResponse(stmt: String) = Set("import org.apache.pekko.grpc.scaladsl.StreamResponseRequestBuilder", stmt)
+  service.methods.flatMap { method: org.apache.pekko.grpc.gen.scaladsl.Method =>
 
     val statements = method.methodType match {
-      case akka.grpc.gen.Unary => withSingleResponse("import akka.grpc.internal.ScalaUnaryRequestBuilder")
-      case akka.grpc.gen.ClientStreaming =>  withSingleResponse("import akka.grpc.internal.ScalaClientStreamingRequestBuilder")
-      case akka.grpc.gen.ServerStreaming => withStreamResponse("import akka.grpc.internal.ScalaServerStreamingRequestBuilder")
-      case akka.grpc.gen.BidiStreaming => withStreamResponse("import akka.grpc.internal.ScalaBidirectionalStreamingRequestBuilder")
+      case org.apache.pekko.grpc.gen.Unary => withSingleResponse("import org.apache.pekko.grpc.internal.ScalaUnaryRequestBuilder")
+      case org.apache.pekko.grpc.gen.ClientStreaming =>  withSingleResponse("import org.apache.pekko.grpc.internal.ScalaClientStreamingRequestBuilder")
+      case org.apache.pekko.grpc.gen.ServerStreaming => withStreamResponse("import org.apache.pekko.grpc.internal.ScalaServerStreamingRequestBuilder")
+      case org.apache.pekko.grpc.gen.BidiStreaming => withStreamResponse("import org.apache.pekko.grpc.internal.ScalaBidirectionalStreamingRequestBuilder")
     }
 
     statements
@@ -38,10 +38,10 @@ import akka.grpc.AkkaGrpcGenerated
 }
 
 // Not sealed so users can extend to write their stubs
-@@AkkaGrpcGenerated
-trait @{service.name}Client extends @{service.name} with @{service.name}ClientPowerApi with AkkaGrpcClient
+@@PekkoGrpcGenerated
+trait @{service.name}Client extends @{service.name} with @{service.name}ClientPowerApi with PekkoGrpcClient
 
-@@AkkaGrpcGenerated
+@@PekkoGrpcGenerated
 object @{service.name}Client {
   def apply(settings: GrpcClientSettings)(implicit sys: ClassicActorSystemProvider): @{service.name}Client =
     new Default@{service.name}Client(GrpcChannel(settings), isChannelOwned = true)
@@ -56,15 +56,15 @@ object @{service.name}Client {
     private val options = NettyClientUtils.callOptions(settings)
 
     @for(method <- service.methods) {
-    private def @{method.name}RequestBuilder(channel: akka.grpc.internal.InternalChannel) =
-    @if(method.methodType == akka.grpc.gen.Unary) {
+    private def @{method.name}RequestBuilder(channel: org.apache.pekko.grpc.internal.InternalChannel) =
+    @if(method.methodType == org.apache.pekko.grpc.gen.Unary) {
       new ScalaUnaryRequestBuilder(@{method.name}Descriptor, channel, options, settings)
     } else {
-      @if(method.methodType == akka.grpc.gen.ServerStreaming) {
+      @if(method.methodType == org.apache.pekko.grpc.gen.ServerStreaming) {
       new ScalaServerStreamingRequestBuilder(@{method.name}Descriptor, channel, options, settings)
-      } else if(method.methodType == akka.grpc.gen.ClientStreaming) {
+      } else if(method.methodType == org.apache.pekko.grpc.gen.ClientStreaming) {
       new ScalaClientStreamingRequestBuilder(@{method.name}Descriptor, channel, options, settings)
-      } else if (method.methodType == akka.grpc.gen.BidiStreaming) {
+      } else if (method.methodType == org.apache.pekko.grpc.gen.BidiStreaming) {
       new ScalaBidirectionalStreamingRequestBuilder(@{method.name}Descriptor, channel, options, settings)
       }
     }
@@ -75,7 +75,7 @@ object @{service.name}Client {
      * Lower level "lifted" version of the method, giving access to request metadata etc.
      * prefer @{method.nameSafe}(@method.parameterType) if possible.
      */
-    @if(method.methodType == akka.grpc.gen.Unary || method.methodType == akka.grpc.gen.ClientStreaming) {
+    @if(method.methodType == org.apache.pekko.grpc.gen.Unary || method.methodType == org.apache.pekko.grpc.gen.ClientStreaming) {
     override def @{method.nameSafe}(): SingleResponseRequestBuilder[@method.parameterType, @method.outputTypeUnboxed] =
       @{method.name}RequestBuilder(channel.internalChannel)
     } else {
@@ -90,22 +90,22 @@ object @{service.name}Client {
       @{method.nameSafe}().invoke(in)
     }
 
-    override def close(): scala.concurrent.Future[akka.Done] =
+    override def close(): scala.concurrent.Future[org.apache.pekko.Done] =
       if (isChannelOwned) channel.close()
       else throw new GrpcClientCloseException()
 
-    override def closed: scala.concurrent.Future[akka.Done] = channel.closed()
+    override def closed: scala.concurrent.Future[org.apache.pekko.Done] = channel.closed()
   }
 }
 
-@@AkkaGrpcGenerated
+@@PekkoGrpcGenerated
 trait @{service.name}ClientPowerApi {
   @for(method <- service.methods) {
   /**
    * Lower level "lifted" version of the method, giving access to request metadata etc.
    * prefer @{method.nameSafe}(@method.parameterType) if possible.
    */
-  @if(method.methodType == akka.grpc.gen.Unary || method.methodType == akka.grpc.gen.ClientStreaming) {
+  @if(method.methodType == org.apache.pekko.grpc.gen.Unary || method.methodType == org.apache.pekko.grpc.gen.ClientStreaming) {
   def @{method.nameSafe}(): SingleResponseRequestBuilder[@method.parameterType, @method.outputTypeUnboxed] = ???
   } else {
   def @{method.nameSafe}(): StreamResponseRequestBuilder[@method.parameterType, @method.outputTypeUnboxed] = ???

@@ -13,7 +13,7 @@ By default both client and server are generated and Java or Scala is autodetecte
 
 ### Installation
 
-Follow instructions at [Gradle plugin portal](https://plugins.gradle.org/plugin/com.lightbend.akka.grpc.gradle) to apply plugin.
+Follow instructions at [Gradle plugin portal](https://plugins.gradle.org/plugin/org.apache.pekko.grpc.gradle) to apply plugin.
 
 ### Available plugin options
 
@@ -23,7 +23,7 @@ Names and default values are provided.
 `build.gradle`
 :   @@@vars
     ```gradle
-    akkaGrpc {
+    pekkoGrpc {
         generateClient = true
         generateServer = true
         generatePlay = false
@@ -42,7 +42,7 @@ To additionally generate server "power APIs" that have access to request metadat
 `build.gradle`
 :   @@@vars
     ```gradle
-    akkaGrpc {
+    pekkoGrpc {
       ...
       serverPowerApis = true
     }

@@ -2,11 +2,11 @@
  * Copyright (C) 2018-2021 Lightbend Inc. <https://www.lightbend.com>
  */
 
-package docs.akka.grpc.client
+package docs.org.apache.pekko.grpc.client
 
-import akka.actor.ActorSystem
-import akka.discovery.{ Discovery, ServiceDiscovery }
-import akka.grpc.GrpcClientSettings
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.discovery.{ Discovery, ServiceDiscovery }
+import org.apache.pekko.grpc.GrpcClientSettings
 
 import scala.concurrent.duration._
 

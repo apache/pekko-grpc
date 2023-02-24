@@ -4,9 +4,9 @@
 
 package example.myapp.helloworld.grpc;
 
-import akka.NotUsed;
-import akka.grpc.GrpcServiceException;
-import akka.stream.javadsl.Source;
+import org.apache.pekko.NotUsed;
+import org.apache.pekko.grpc.GrpcServiceException;
+import org.apache.pekko.stream.javadsl.Source;
 import com.google.rpc.Code;
 import com.google.rpc.error_details.LocalizedMessage;
 import scala.collection.JavaConverters;

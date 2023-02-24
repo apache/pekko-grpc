@@ -39,10 +39,11 @@ jobs:
       #  env:
       #    FOSSA_API_KEY: "${{secrets.FOSSA_API_KEY}}"
 
+      # TODO add back headerCheckAll
       - name: Binary-compatibility check
         run: |-
           cp .jvmopts-ghactions .jvmopts
-          sbt headerCheckAll grpcVersionSyncCheck googleProtobufVersionSyncCheck +mimaReportBinaryIssues
+          sbt grpcVersionSyncCheck googleProtobufVersionSyncCheck +mimaReportBinaryIssues
 
   compile-benchmarks:
     name: Compile Benchmarks
@@ -123,7 +124,7 @@ jobs:
         uses: coursier/cache-action@v6
 
       - name: Scripted ${{ matrix.test-set }}
-        run: cp .jvmopts-ghactions .jvmopts && sbt ++${{ matrix.scala-version }}.* "sbt-akka-grpc/scripted ${{ matrix.test-set }}/*"
+        run: cp .jvmopts-ghactions .jvmopts && sbt ++${{ matrix.scala-version }}.* "sbt-pekko-grpc/scripted ${{ matrix.test-set }}/*"
 
   test-gradle:
     name: Gradle tests
@@ -161,7 +162,7 @@ jobs:
       - name: Publish artifacts locally
         run: |-
           cp .jvmopts-ghactions .jvmopts
-          sbt akka-grpc-codegen/publishM2 akka-grpc-scalapb-protoc-plugin/publishM2 +akka-grpc-runtime/publishM2
+          sbt pekko-grpc-codegen/publishM2 pekko-grpc-scalapb-protoc-plugin/publishM2 +pekko-grpc-runtime/publishM2
           cd gradle-plugin
           ./gradlew clean publishToMavenLocal --console=plain --info --stacktrace
           find ~/.m2 | grep gradle
@@ -169,12 +170,12 @@ jobs:
       - name: Test Gradle Java ${{ matrix.SCALA_VERSION }}
         run: |-
           cd plugin-tester-java
-          ./gradlew clean test --console=plain --info --stacktrace -Dakka.grpc.project.version=$(cat ~/.version | sed -e s/-SNAPSHOT//)
+          ./gradlew clean test --console=plain --info --stacktrace -Dpekko.grpc.project.version=$(cat ~/.version | sed -e s/-SNAPSHOT//)
 
       - name: Test Gradle Scala ${{ matrix.SCALA_VERSION }}
         run: |-
           cd plugin-tester-scala
-          ./gradlew clean test --console=plain --info --stacktrace -Dakka.grpc.project.version=$(cat ~/.version | sed -e s/-SNAPSHOT//)
+          ./gradlew clean test --console=plain --info --stacktrace -Dpekko.grpc.project.version=$(cat ~/.version | sed -e s/-SNAPSHOT//)
 
       - name: Stop Gradle Daemon
         # as suggested in https://github.com/actions/cache/blob/main/examples.md#java---gradle
@@ -215,17 +216,17 @@ jobs:
       - name: Publish artifacts locally
         run: |-
           cp .jvmopts-ghactions .jvmopts
-          sbt akka-grpc-codegen/publishM2 akka-grpc-scalapb-protoc-plugin/publishM2 +akka-grpc-runtime/publishM2 akka-grpc-maven-plugin/publishM2
+          sbt pekko-grpc-codegen/publishM2 pekko-grpc-scalapb-protoc-plugin/publishM2 +pekko-grpc-runtime/publishM2 pekko-grpc-maven-plugin/publishM2
 
       - name: Test Maven Java
         run: |-
           cd plugin-tester-java
-          mvn -Dakka.grpc.project.version=`cat ~/.version` akka-grpc:generate compile
+          mvn -Dpekko.grpc.project.version=`cat ~/.version` pekko-grpc:generate compile
 
       - name: Test Maven Scala
         run: |-
           cd plugin-tester-scala
-          mvn -Dakka.grpc.project.version=`cat ~/.version` akka-grpc:generate scala:compile
+          mvn -Dpekko.grpc.project.version=`cat ~/.version` pekko-grpc:generate scala:compile
 
   test-docs:
     name: Docs

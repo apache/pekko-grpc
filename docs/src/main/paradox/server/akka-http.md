@@ -85,7 +85,7 @@ We define a method that returns a @apidoc[Route$] implementing our logging and e
 The method takes three parameters.
 
 1. A function that takes a @apidoc[RequestContext] and returns a service implementation. This gives us the opportunity to use the context in the implementation. If we don't need it, we can just ignore the context and return a fixed implementation.
-2. A function that takes an @apidoc[ActorSystem] and returns a partial function from Throwable to gRPC @apidoc[Trailers].
+2. A function that takes an `ActorSystem` and returns a partial function from Throwable to gRPC `Trailers`.
 3. A function that takes the service implementation and an error handler and returns a request handler (a function from @apidoc[HttpRequest] to a @scala[`Future`]@java[`CompletionStage`] of @apidoc[HttpResponse]). 
 
 The method first uses an existing directive to log requests and results.

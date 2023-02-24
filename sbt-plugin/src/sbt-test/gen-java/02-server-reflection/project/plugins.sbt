@@ -1,1 +1,1 @@
-addSbtPlugin("com.lightbend.akka.grpc" % "sbt-akka-grpc" % sys.props("project.version"))
+addSbtPlugin("com.lightbend.akka.grpc" % "sbt-pekko-grpc" % sys.props("project.version"))

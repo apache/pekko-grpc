@@ -2,18 +2,18 @@
  * Copyright (C) 2018-2021 Lightbend Inc. <https://www.lightbend.com>
  *@
 
-@(service: akka.grpc.gen.scaladsl.Service)
+@(service: org.apache.pekko.grpc.gen.scaladsl.Service)
 
-@akka.grpc.gen.Constants.DoNotEditComment
+@org.apache.pekko.grpc.gen.Constants.DoNotEditComment
 package @service.packageName
 
-import akka.annotation.ApiMayChange
+import org.apache.pekko.annotation.ApiMayChange
 
-import akka.grpc.AkkaGrpcGenerated
+import org.apache.pekko.grpc.PekkoGrpcGenerated
 
 @for(comment <- service.comment) {/**
 @{java.util.regex.Pattern.compile("^\\s?(.*)$", java.util.regex.Pattern.MULTILINE).matcher(comment).replaceAll(" * $1")} */}
-@@AkkaGrpcGenerated
+@@PekkoGrpcGenerated
 trait @{service.name} {
   @for(method <- service.methods) {
   @for(comment <- method.comment) {/**
@@ -22,31 +22,31 @@ trait @{service.name} {
   }
 }
 
-@mapMethodType(methodType: akka.grpc.gen.MethodType) = {
-  @if(methodType == akka.grpc.gen.Unary) { MethodDescriptor.MethodType.UNARY }
-  @if(methodType == akka.grpc.gen.ClientStreaming) {MethodDescriptor.MethodType.CLIENT_STREAMING }
-  @if(methodType == akka.grpc.gen.ServerStreaming) { MethodDescriptor.MethodType.SERVER_STREAMING }
-  @if(methodType == akka.grpc.gen.BidiStreaming) {MethodDescriptor.MethodType.BIDI_STREAMING }
+@mapMethodType(methodType: org.apache.pekko.grpc.gen.MethodType) = {
+  @if(methodType == org.apache.pekko.grpc.gen.Unary) { MethodDescriptor.MethodType.UNARY }
+  @if(methodType == org.apache.pekko.grpc.gen.ClientStreaming) {MethodDescriptor.MethodType.CLIENT_STREAMING }
+  @if(methodType == org.apache.pekko.grpc.gen.ServerStreaming) { MethodDescriptor.MethodType.SERVER_STREAMING }
+  @if(methodType == org.apache.pekko.grpc.gen.BidiStreaming) {MethodDescriptor.MethodType.BIDI_STREAMING }
 }
 
-@@AkkaGrpcGenerated
-object @{service.name} extends akka.grpc.ServiceDescription {
+@@PekkoGrpcGenerated
+object @{service.name} extends org.apache.pekko.grpc.ServiceDescription {
   val name = "@service.grpcName"
 
   val descriptor: com.google.protobuf.Descriptors.FileDescriptor =
     @service.descriptor;
 
   object Serializers {
-    import akka.grpc.scaladsl.ScalapbProtobufSerializer
+    import org.apache.pekko.grpc.scaladsl.ScalapbProtobufSerializer
     @for(serializer <- service.serializers) {
     val @serializer.name = @serializer.init
     }
   }
 
   @@ApiMayChange
-  @@AkkaGrpcGenerated
+  @@PekkoGrpcGenerated
   object MethodDescriptors {
-    import akka.grpc.internal.Marshaller
+    import org.apache.pekko.grpc.internal.Marshaller
     import io.grpc.MethodDescriptor
     import Serializers._
 

@@ -6,9 +6,9 @@ package example.myapp.statefulhelloworld;
 
 import example.myapp.statefulhelloworld.grpc.*;
 
-import akka.actor.ActorSystem;
-import akka.actor.ActorRef;
-import static akka.pattern.Patterns.ask;
+import org.apache.pekko.actor.ActorSystem;
+import org.apache.pekko.actor.ActorRef;
+import static org.apache.pekko.pattern.Patterns.ask;
 
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;

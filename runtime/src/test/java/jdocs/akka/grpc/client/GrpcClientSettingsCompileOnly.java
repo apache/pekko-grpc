@@ -4,10 +4,10 @@
 
 package jdocs.akka.grpc.client;
 
-import akka.actor.ActorSystem;
-import akka.discovery.Discovery;
-import akka.discovery.ServiceDiscovery;
-import akka.grpc.GrpcClientSettings;
+import org.apache.pekko.actor.ActorSystem;
+import org.apache.pekko.discovery.Discovery;
+import org.apache.pekko.discovery.ServiceDiscovery;
+import org.apache.pekko.grpc.GrpcClientSettings;
 import scala.Some;
 
 import java.time.Duration;

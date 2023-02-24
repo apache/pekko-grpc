@@ -4,13 +4,13 @@
 
 package example.myapp.helloworld
 
-import akka.actor.{ ActorSystem, ClassicActorSystemProvider }
-import akka.grpc.internal.GrpcProtocolNative
-import akka.http.scaladsl.model.HttpEntity.{ Chunked, LastChunk }
-import akka.http.scaladsl.model._
-import akka.http.scaladsl.model.headers.RawHeader
-import akka.http.scaladsl.Http
-import akka.stream.scaladsl.Sink
+import org.apache.pekko.actor.{ ActorSystem, ClassicActorSystemProvider }
+import org.apache.pekko.grpc.internal.GrpcProtocolNative
+import org.apache.pekko.http.scaladsl.model.HttpEntity.{ Chunked, LastChunk }
+import org.apache.pekko.http.scaladsl.model._
+import org.apache.pekko.http.scaladsl.model.headers.RawHeader
+import org.apache.pekko.http.scaladsl.Http
+import org.apache.pekko.stream.scaladsl.Sink
 import example.myapp.helloworld.grpc.{ GreeterService, GreeterServiceHandler }
 import io.grpc.Status
 import org.junit.runner.RunWith

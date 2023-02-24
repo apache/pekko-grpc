@@ -1,11 +1,11 @@
 <!--
-  To test locally, first 'sbt akka-grpc-maven-plugin:publishM2' in the parent dir
-  and define the published version as akka.grpc.project.version in the properties block below
-  or pass it to mvn when running like so: mvn -Dakka.grpc.project.version=some-version compile exec:exec
+  To test locally, first 'sbt pekko-grpc-maven-plugin:publishM2' in the parent dir
+  and define the published version as pekko.grpc.project.version in the properties block below
+  or pass it to mvn when running like so: mvn -Dpekko.grpc.project.version=some-version compile exec:exec
 -->
 <project>
   <modelVersion>4.0.0</modelVersion>
-  <name>Akka gRPC Java example project</name>
+  <name>Pekko gRPC Java example project</name>
   <groupId>com.lightbend.akka.grpc</groupId>
   <artifactId>grpc-plugin-tester-java</artifactId>
   <version>0.1-SNAPSHOT</version>
@@ -20,17 +20,27 @@
     <project.encoding>UTF-8</project.encoding>
   </properties>
 
+  <repositories>
+    <repository>
+      <id>apache-snapshots</id>
+      <name>Apache Snapshots Repository</name>
+      <url>https://repository.apache.org/content/repositories/snapshots/</url>
+    </repository>
+  </repositories>
+
   <dependencies>
     <dependency>
       <groupId>com.lightbend.akka.grpc</groupId>
-      <artifactId>akka-grpc-runtime_2.12</artifactId>
-      <version>${akka.grpc.project.version}</version>
+      <artifactId>pekko-grpc-runtime_2.12</artifactId>
+      <version>${pekko.grpc.project.version}</version>
     </dependency>
+    <!--
     <dependency>
       <groupId>ch.megard</groupId>
       <artifactId>akka-http-cors_2.12</artifactId>
       <version>${akka.http.cors.version}</version>
     </dependency>
+    -->
 
     <!-- Needed for the generated client -->
     <dependency>
@@ -43,8 +53,8 @@
     <plugins>
       <plugin>
         <groupId>com.lightbend.akka.grpc</groupId>
-        <artifactId>akka-grpc-maven-plugin</artifactId>
-        <version>${akka.grpc.project.version}</version>
+        <artifactId>pekko-grpc-maven-plugin</artifactId>
+        <version>${pekko.grpc.project.version}</version>
         <executions>
           <execution>
             <goals>

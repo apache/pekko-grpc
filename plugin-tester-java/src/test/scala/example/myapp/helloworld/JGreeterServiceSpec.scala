@@ -9,8 +9,8 @@ import scala.concurrent.Await
 import org.scalatest.BeforeAndAfterAll
 import scala.concurrent.duration._
 
-import akka.actor.ActorSystem
-import akka.grpc.GrpcClientSettings
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.grpc.GrpcClientSettings
 import com.google.protobuf.Timestamp
 import com.typesafe.config.ConfigFactory
 import org.scalatest.concurrent.ScalaFutures
@@ -27,7 +27,7 @@ class JGreeterServiceSpec extends Matchers with AnyWordSpecLike with BeforeAndAf
   implicit val serverSystem: ActorSystem = {
     // important to enable HTTP/2 in server ActorSystem's config
     val conf = ConfigFactory
-      .parseString("akka.http.server.preview.enable-http2 = on")
+      .parseString("pekko.http.server.preview.enable-http2 = on")
       .withFallback(ConfigFactory.defaultApplication())
     val sys = ActorSystem("GreeterServer", conf)
     // make sure servers are bound before using client

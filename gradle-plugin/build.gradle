@@ -16,23 +16,23 @@ version = finalVersion
 
 gradlePlugin {
   plugins {
-    akkaGrpcPlugin {
-      id = 'com.lightbend.akka.grpc.gradle'
-      implementationClass = 'akka.grpc.gradle.AkkaGrpcPlugin'
+    pekkoGrpcPlugin {
+      id = 'org.apache.pekko.grpc.gradle'
+      implementationClass = 'org.apache.pekko.grpc.gradle.PekkoGrpcPlugin'
     }
   }
 }
 
 pluginBundle {
   website = 'https://doc.akka.io/docs/akka-grpc/current/'
-  vcsUrl = 'https://github.com/akka/akka-grpc'
-  description = 'Building streaming gRPC servers and clients on top of Akka Streams'
-  tags = ['akka', 'streams', 'reactive']
+  vcsUrl = 'https://github.com/apache/incubator-pekko-grpc'
+  description = 'Building streaming gRPC servers and clients on top of Apache Pekko Streams'
+  tags = ['pekko', 'streams', 'reactive']
 
   plugins {
-    akkaGrpcPlugin {
-      id = 'com.lightbend.akka.grpc.gradle'
-      displayName = 'Akka gRPC'
+    pekkoGrpcPlugin {
+      id = 'org.apache.pekko.grpc.gradle'
+      displayName = 'Apache Pekko gRPC'
     }
   }
 }
@@ -54,7 +54,7 @@ dependencies {
 }
 
 test {
-  systemProperty 'akkaGrpcTest.pluginVersion', project.version
+  systemProperty 'pekkoGrpcTest.pluginVersion', project.version
   testLogging {
     events "passed", "skipped", "failed"
     exceptionFormat "full"

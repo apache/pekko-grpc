@@ -5,9 +5,9 @@
 //#full-server
 package example.myapp.helloworld
 
-import akka.actor.ActorSystem
-import akka.http.scaladsl.model.{ HttpRequest, HttpResponse }
-import akka.http.scaladsl.Http
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.http.scaladsl.model.{ HttpRequest, HttpResponse }
+import org.apache.pekko.http.scaladsl.Http
 import example.myapp.helloworld.grpc._
 
 import scala.concurrent.{ ExecutionContext, Future }

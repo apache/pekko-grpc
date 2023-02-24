@@ -4,15 +4,15 @@ import com.typesafe.config._
 
 import scala.concurrent._
 
-import akka.actor._
-import akka.stream._
+import org.apache.pekko.actor._
+import org.apache.pekko.stream._
 
 //#server-reflection
-import akka.http.scaladsl._
-import akka.http.scaladsl.model._
+import org.apache.pekko.http.scaladsl._
+import org.apache.pekko.http.scaladsl.model._
 
-import akka.grpc.scaladsl.ServiceHandler
-import akka.grpc.scaladsl.ServerReflection
+import org.apache.pekko.grpc.scaladsl.ServiceHandler
+import org.apache.pekko.grpc.scaladsl.ServerReflection
 
 import example.myapp.helloworld.grpc._
 
@@ -20,7 +20,7 @@ import example.myapp.helloworld.grpc._
 
 object Main extends App {
   val conf = ConfigFactory
-    .parseString("akka.http.server.preview.enable-http2 = on")
+    .parseString("pekko.http.server.preview.enable-http2 = on")
     .withFallback(ConfigFactory.defaultApplication())
   implicit val sys = ActorSystem("HelloWorld", conf)
 

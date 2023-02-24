@@ -32,7 +32,7 @@ may disappear in version `x.(y+1).z`.
 
 ### Internal and ApiMayChange API's
 
-Internal API's (designated by the `akka.grpc.internal` package or with the `@InternalApi` annotation) and API's that are still marked `@ApiMayChange` are not guaranteed to remain binary compatible.
+Internal API's (designated by the `org.apache.pekko.grpc.internal` package or with the `@InternalApi` annotation) and API's that are still marked `@ApiMayChange` are not guaranteed to remain binary compatible.
 
 Libraries that use such methods may not work in applications that depend on a newer version of Akka gRPC.
 
