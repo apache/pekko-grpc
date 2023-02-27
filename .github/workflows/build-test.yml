@@ -22,13 +22,14 @@ jobs:
           # we don't know what commit the last tag was it's safer to get entire repo so previousStableVersion resolves
           fetch-depth: 0
 
-      - name: Set up JDK 11
-        uses: olafurpg/setup-scala@v13
+      - name: Setup Java 11
+        uses: actions/setup-java@v3
         with:
-          java-version: adopt@1.11
-
+          distribution: temurin
+          java-version: 11
+      
       - name: Cache Coursier cache
-        uses: coursier/cache-action@v6.2
+        uses: coursier/cache-action@v6
 
       #- name: FOSSA policy check
       #  if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == 'apache/incubator-pekko-grpc' }}
@@ -53,12 +54,13 @@ jobs:
           # we don't know what commit the last tag was it's safer to get entire repo so previousStableVersion resolves
           fetch-depth: 0
 
-      - name: Set up JDK 11
-        uses: olafurpg/setup-scala@v13
+      - name: Setup Java 8
+        uses: actions/setup-java@v3
         with:
-          java-version: adopt@1.11
+          distribution: temurin
+          java-version: 11
       - name: Cache Coursier cache
-        uses: coursier/cache-action@v6.2
+        uses: coursier/cache-action@v6
       - name: Compile benchmarks
         run: |-
           cd benchmark-java
@@ -72,23 +74,23 @@ jobs:
       fail-fast: false
       matrix:
         SCALA_VERSION: [2.12, 2.13]
-        # use 1.8 when https://github.com/apache/incubator-pekko-grpc/issues/1332 is fixed
-        JABBA_JDK: [1.8.0-275, 1.11]
+        JAVA_VERSION: [8, 11]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - name: Set up JDK ${{ matrix.JABBA_JDK }}
-        uses: olafurpg/setup-scala@v13
+      - name: Setup Java ${{ matrix.JAVA_VERSION }}
+        uses: actions/setup-java@v3
         with:
-          java-version: adopt@${{ matrix.JABBA_JDK }}
+          distribution: temurin
+          java-version: ${{ matrix.JAVA_VERSION }}
 
       - name: Cache Coursier cache
-        uses: coursier/cache-action@v6.2
+        uses: coursier/cache-action@v6
 
-      - name: Compile and test for JDK ${{ matrix.JABBA_JDK }}, Scala ${{ matrix.SCALA_VERSION }}
+      - name: Compile and test for JDK ${{ matrix.JAVA_VERSION }}, Scala ${{ matrix.SCALA_VERSION }}
         run: sbt ++${{ matrix.SCALA_VERSION }}.* test
 
 
@@ -111,13 +113,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up JDK 8
-        uses: olafurpg/setup-scala@v13
+      - name: Setup Java 8
+        uses: actions/setup-java@v3
         with:
-          java-version: adopt@1.8
+          distribution: temurin
+          java-version: 8
 
       - name: Cache Coursier cache
-        uses: coursier/cache-action@v6.2
+        uses: coursier/cache-action@v6
 
       - name: Scripted ${{ matrix.test-set }}
         run: cp .jvmopts-ghactions .jvmopts && sbt ++${{ matrix.scala-version }}.* "sbt-akka-grpc/scripted ${{ matrix.test-set }}/*"
@@ -131,13 +134,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up JDK 8
-        uses: olafurpg/setup-scala@v13
+      - name: Setup Java 8
+        uses: actions/setup-java@v3
         with:
-          java-version: adopt@1.8
+          distribution: temurin
+          java-version: 8
 
       - name: Cache Coursier cache
-        uses: coursier/cache-action@v6.2
+        uses: coursier/cache-action@v6
 
       - name: Gather version
         run: |-
@@ -186,13 +190,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up JDK 8
-        uses: olafurpg/setup-scala@v13
+      - name: Setup Java 8
+        uses: actions/setup-java@v3
         with:
-          java-version: adopt@1.8
+          distribution: temurin
+          java-version: 8
 
       - name: Cache Coursier cache
-        uses: coursier/cache-action@v6.2
+        uses: coursier/cache-action@v6
 
       - name: Gather version
         run: |-
@@ -231,12 +236,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up JDK 11
-        uses: olafurpg/setup-scala@v13
+      - name: Setup Java 11
+        uses: actions/setup-java@v3
         with:
-          java-version: adopt@1.11
+          distribution: temurin
+          java-version: 11
       - name: Cache Coursier cache
-        uses: coursier/cache-action@v6.2
+        uses: coursier/cache-action@v6
       - name: Test Maven Java
         run: |-
           cp .jvmopts-ghactions .jvmopts
