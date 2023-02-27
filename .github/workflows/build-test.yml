@@ -74,24 +74,24 @@ jobs:
       fail-fast: false
       matrix:
         SCALA_VERSION: [2.12, 2.13]
-        # use 1.8 when https://github.com/apache/incubator-pekko-grpc/issues/1332 is fixed
-        JABBA_JDK: [1.8.0-275, 1.11]
+        # use 1.8 when https://github.com/akka/akka-grpc/issues/1332 is fixed
+        JAVA_VERSION: [8, 11]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - name: Setup Java ${{ matrix.JABBA_JDK }}
+      - name: Setup Java ${{ matrix.JAVA_VERSION }}
         uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: ${{ matrix.JABBA_JDK }}
+          java-version: ${{ matrix.JAVA_VERSION }}
 
       - name: Cache Coursier cache
         uses: coursier/cache-action@v6
 
-      - name: Compile and test for JDK ${{ matrix.JABBA_JDK }}, Scala ${{ matrix.SCALA_VERSION }}
+      - name: Compile and test for JDK ${{ matrix.JAVA_VERSION }}, Scala ${{ matrix.SCALA_VERSION }}
         run: sbt ++${{ matrix.SCALA_VERSION }}.* test
 
 
