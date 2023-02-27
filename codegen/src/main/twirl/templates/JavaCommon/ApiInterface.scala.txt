@@ -2,15 +2,15 @@
  * Copyright (C) 2018-2021 Lightbend Inc. <https://www.lightbend.com>
  *@
 
-@(service: akka.grpc.gen.javadsl.Service)
+@(service: org.apache.pekko.grpc.gen.javadsl.Service)
 
-@akka.grpc.gen.Constants.DoNotEditComment
+@org.apache.pekko.grpc.gen.Constants.DoNotEditComment
 package @service.packageName;
 
-import akka.grpc.ProtobufSerializer;
-import akka.grpc.javadsl.GoogleProtobufSerializer;
+import org.apache.pekko.grpc.ProtobufSerializer;
+import org.apache.pekko.grpc.javadsl.GoogleProtobufSerializer;
 
-import akka.grpc.AkkaGrpcGenerated;
+import org.apache.pekko.grpc.PekkoGrpcGenerated;
 
 @for(comment <- service.comment) {/**
 @{java.util.regex.Pattern.compile("^\\s?(.*)$", java.util.regex.Pattern.MULTILINE).matcher(comment).replaceAll(" * $1")} */}
@@ -22,9 +22,9 @@ public interface @{service.name} {
   }
 
   static String name = "@service.grpcName";
-  static akka.grpc.ServiceDescription description = new akka.grpc.internal.ServiceDescriptionImpl(name, @service.descriptor);
+  static org.apache.pekko.grpc.ServiceDescription description = new org.apache.pekko.grpc.internal.ServiceDescriptionImpl(name, @service.descriptor);
 
-  @@AkkaGrpcGenerated
+  @@PekkoGrpcGenerated
   public static class Serializers {
     @for(serializer <- service.serializers) {
       public static ProtobufSerializer<@{serializer.messageType}> @serializer.name = @serializer.init;

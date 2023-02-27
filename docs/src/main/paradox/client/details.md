@@ -81,7 +81,7 @@ Beyond status codes you can also use the [Rich error model](https://www.grpc.io/
 Extract the `StatusRuntimeException` and parse the Rich error model to access `code`, `message` and `details`. Then find the details you are looking for based on their `typeUrl` and unpack them:
 
 Scala
-:  @@snip [GreeterClient.scala](/interop-tests/src/test/scala/akka/grpc/scaladsl/RichErrorModelSpec.scala) { #client_request }
+:  @@snip [GreeterClient.scala](/interop-tests/src/test/scala/org/apache/pekko/grpc/scaladsl/RichErrorModelSpec.scala) { #client_request }
 
 Java
 :  @@snip[RichErrorModelSpec](/interop-tests/src/test/java/example/myapp/helloworld/grpc/RichErrorModelTest.java) { #client_request }

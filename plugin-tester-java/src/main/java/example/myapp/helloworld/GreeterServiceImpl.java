@@ -10,10 +10,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.stream.Collectors;
 
-import akka.NotUsed;
-import akka.stream.Materializer;
-import akka.stream.javadsl.Sink;
-import akka.stream.javadsl.Source;
+import org.apache.pekko.NotUsed;
+import org.apache.pekko.stream.Materializer;
+import org.apache.pekko.stream.javadsl.Sink;
+import org.apache.pekko.stream.javadsl.Source;
 
 import com.google.protobuf.Timestamp;
 import example.myapp.helloworld.grpc.*;

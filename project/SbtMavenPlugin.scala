@@ -1,4 +1,4 @@
-package akka.grpc
+package org.apache.pekko.grpc
 
 import java.io.File
 

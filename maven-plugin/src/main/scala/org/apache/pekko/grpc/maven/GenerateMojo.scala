@@ -1,0 +1,14 @@
+/*
+ * Copyright (C) 2018-2021 Lightbend Inc. <https://www.lightbend.com>
+ */
+
+package org.apache.pekko.grpc.maven
+
+import javax.inject.Inject
+import org.sonatype.plexus.build.incremental.BuildContext
+
+class GenerateMojo @Inject() (buildContext: BuildContext) extends AbstractGenerateMojo(buildContext) {
+  override def addGeneratedSourceRoot(generatedSourcesDir: String): Unit = {
+    project.addCompileSourceRoot(generatedSourcesDir)
+  }
+}

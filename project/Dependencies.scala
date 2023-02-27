@@ -1,4 +1,4 @@
-package akka.grpc
+package org.apache.pekko.grpc
 
 import sbt._
 import sbt.Keys._
@@ -16,15 +16,15 @@ object Dependencies {
     // We don't force Akka updates because downstream projects can upgrade
     // themselves. For more information see
     // https://doc.akka.io//docs/akka/current/project/downstream-upgrade-strategy.html
-    val akka = "2.6.19"
+    val pekko = "0.0.0+26599-83545a33-SNAPSHOT"
     val akkaBinary = "2.6"
-    val akkaHttp = "10.2.9"
+    val pekkoHttp = "0.0.0+4298-26846a02-SNAPSHOT"
     val akkaHttpBinary = "10.2"
 
     val grpc = "1.48.1" // checked synced by VersionSyncCheckPlugin
     // Even referenced explicitly in the sbt-plugin's sbt-tests
     // If changing this, remember to update protoc plugin version to align in
-    // maven-plugin/src/main/maven/plugin.xml and akka.grpc.sbt.AkkaGrpcPlugin
+    // maven-plugin/src/main/maven/plugin.xml and org.apache.pekko.grpc.sbt.PekkoGrpcPlugin
     val googleProtobuf = "3.20.1" // checked synced by VersionSyncCheckPlugin
 
     val scalaTest = "3.1.4"
@@ -33,13 +33,11 @@ object Dependencies {
   }
 
   object Compile {
-    val akkaStream = "com.typesafe.akka" %% "akka-stream" % Versions.akka
-    val akkaHttp = "com.typesafe.akka" %% "akka-http" % Versions.akkaHttp
-    val akkaHttpCore = "com.typesafe.akka" %% "akka-http-core" % Versions.akkaHttp
-    val akkaDiscovery = "com.typesafe.akka" %% "akka-discovery" % Versions.akka
-    val akkaSlf4j = "com.typesafe.akka" %% "akka-slf4j" % Versions.akka
-
-    val akkaHttpCors = "ch.megard" %% "akka-http-cors" % "1.1.3" // Apache v2
+    val pekkoStream = "org.apache.pekko" %% "pekko-stream" % Versions.pekko
+    val pekkoHttp = "org.apache.pekko" %% "pekko-http" % Versions.pekkoHttp
+    val pekkoHttpCore = "org.apache.pekko" %% "pekko-http-core" % Versions.pekkoHttp
+    val pekkoDiscovery = "org.apache.pekko" %% "pekko-discovery" % Versions.pekko
+    val pekkoSlf4j = "org.apache.pekko" %% "pekko-slf4j" % Versions.pekko
 
     val scalapbCompilerPlugin = "com.thesamet.scalapb" %% "compilerplugin" % scalapb.compiler.Version.scalapbVersion
     val scalapbRuntime = ("com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion)
@@ -68,9 +66,9 @@ object Dependencies {
     final val Test = sbt.Test
     val scalaTest = "org.scalatest" %% "scalatest" % Versions.scalaTest % "test" // Apache V2
     val scalaTestPlusJunit = "org.scalatestplus" %% "junit-4-12" % (Versions.scalaTest + ".0") % "test" // Apache V2
-    val akkaDiscoveryConfig = "com.typesafe.akka" %% "akka-discovery" % Versions.akka % "test"
-    val akkaTestkit = "com.typesafe.akka" %% "akka-testkit" % Versions.akka % "test"
-    val akkaStreamTestkit = "com.typesafe.akka" %% "akka-stream-testkit" % Versions.akka % "test"
+    val pekkoDiscoveryConfig = "org.apache.pekko" %% "pekko-discovery" % Versions.pekko % "test"
+    val pekkoTestkit = "org.apache.pekko" %% "pekko-testkit" % Versions.pekko % "test"
+    val pekkoStreamTestkit = "org.apache.pekko" %% "pekko-stream-testkit" % Versions.pekko % "test"
   }
 
   object Runtime {
@@ -101,13 +99,13 @@ object Dependencies {
     Compile.grpcCore,
     Compile.grpcStub % "provided", // comes from the generators
     Compile.grpcNettyShaded,
-    Compile.akkaStream,
-    Compile.akkaHttpCore,
-    Compile.akkaHttp,
-    Compile.akkaDiscovery,
-    Compile.akkaHttpCors % "provided",
-    Test.akkaTestkit,
-    Test.akkaStreamTestkit,
+    Compile.pekkoStream,
+    Compile.pekkoHttpCore,
+    Compile.pekkoHttp,
+    Compile.pekkoDiscovery,
+    // Compile.akkaHttpCors % "provided",
+    Test.pekkoTestkit,
+    Test.pekkoStreamTestkit,
     Test.scalaTest,
     Test.scalaTestPlusJunit)
 
@@ -127,18 +125,18 @@ object Dependencies {
   val interopTests = l ++= Seq(
     Compile.grpcInteropTesting,
     Compile.grpcInteropTesting % "protobuf", // gets the proto files for interop tests
-    Compile.akkaHttp,
-    Compile.akkaSlf4j,
+    Compile.pekkoHttp,
+    Compile.pekkoSlf4j,
     Runtime.logback,
     Test.scalaTest.withConfigurations(Some("compile")),
     Test.scalaTestPlusJunit.withConfigurations(Some("compile")),
-    Test.akkaTestkit,
-    Test.akkaStreamTestkit)
+    Test.pekkoTestkit,
+    Test.pekkoStreamTestkit)
 
   val pluginTester = l ++= Seq(
     // usually automatically added by `suggestedDependencies`, which doesn't work with ReflectiveCodeGen
     Compile.grpcStub,
-    Compile.akkaHttpCors,
+    // Compile.akkaHttpCors,
     Test.scalaTest,
     Test.scalaTestPlusJunit,
     Protobuf.googleCommonProtos)

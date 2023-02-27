@@ -4,12 +4,12 @@
 
 package example.myapp.helloworld.grpc;
 
-import akka.actor.ActorSystem;
-import akka.grpc.GrpcClientSettings;
-import akka.http.javadsl.Http;
-import akka.http.javadsl.ServerBinding;
-import akka.http.javadsl.model.HttpRequest;
-import akka.http.javadsl.model.HttpResponse;
+import org.apache.pekko.actor.ActorSystem;
+import org.apache.pekko.grpc.GrpcClientSettings;
+import org.apache.pekko.http.javadsl.Http;
+import org.apache.pekko.http.javadsl.ServerBinding;
+import org.apache.pekko.http.javadsl.model.HttpRequest;
+import org.apache.pekko.http.javadsl.model.HttpResponse;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import io.grpc.Status;
@@ -34,7 +34,7 @@ public class RichErrorModelTest extends JUnitSuite {
 
         GreeterService impl = new RichErrorImpl();
 
-        akka.japi.function.Function<HttpRequest, CompletionStage<HttpResponse>> service = GreeterServiceHandlerFactory.create(impl, sys);
+        org.apache.pekko.japi.function.Function<HttpRequest, CompletionStage<HttpResponse>> service = GreeterServiceHandlerFactory.create(impl, sys);
 
         return Http
                 .get(sys)

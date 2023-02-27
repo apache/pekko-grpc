@@ -1,16 +1,16 @@
 <!-- Post-processed by SbtMavenPlugin -->
 <plugin xmlns="http://maven.apache.org/PLUGIN/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://maven.apache.org/PLUGIN/1.0.0 http://maven.apache.org/xsd/plugin-1.0.0.xsd">
-  <name>Akka gRPC</name>
+  <name>Apache Pekko gRPC</name>
   <description>Generate gRPC client and/or server code</description>
   <groupId>com.lightbend.akka.grpc</groupId>
-  <artifactId>akka-grpc-maven-plugin</artifactId>
-  <goalPrefix>akka-grpc</goalPrefix>
+  <artifactId>pekko-grpc-maven-plugin</artifactId>
+  <goalPrefix>pekko-grpc</goalPrefix>
   <mojos>
     <mojo>
       <goal>generate</goal>
-      <description>Generate Akka gRPC model and service code</description>
-      <implementation>akka.grpc.maven.GenerateMojo</implementation>
+      <description>Generate Apache Pekko gRPC model and service code</description>
+      <implementation>org.apache.pekko.grpc.maven.GenerateMojo</implementation>
       <instantiationStrategy>singleton</instantiationStrategy>
       <phase>generate-sources</phase>
 
@@ -87,21 +87,21 @@
       </parameters>
       <configuration>
         <project implementation="" default-value="${project}"/>
-        <language implementation="enum" default-value="JAVA">${akka-grpc.language}</language>
-        <generateClient implementation="boolean" default-value="true">${akka-grpc.generate-client}</generateClient>
-        <generateServer implementation="boolean" default-value="true">${akka-grpc.generate-server}</generateServer>
+        <language implementation="enum" default-value="JAVA">${pekko-grpc.language}</language>
+        <generateClient implementation="boolean" default-value="true">${pekko-grpc.generate-client}</generateClient>
+        <generateServer implementation="boolean" default-value="true">${pekko-grpc.generate-server}</generateServer>
         <generatorSettings implementation="java.util.List" default-value=""/>
         <extraGenerators implementation="java.util.List" default-value=""/>
-        <protoPaths default-value="${project.basedir}/src/main/proto,${project.basedir}/src/main/protobuf">${akka-grpc.protoPaths}</protoPaths>
-        <outputDirectory default-value="${project.build.directory}/generated-sources">${akka-grpc.outputDirectory}</outputDirectory>
-	<protocVersion implementation="java.lang.String" default-value="-v3.20.1">${akka-grpc.protoc-version}</protocVersion> <!-- checked synced by VersionSyncCheckPlugin -->
+        <protoPaths default-value="${project.basedir}/src/main/proto,${project.basedir}/src/main/protobuf">${pekko-grpc.protoPaths}</protoPaths>
+        <outputDirectory default-value="${project.build.directory}/generated-sources">${pekko-grpc.outputDirectory}</outputDirectory>
+	<protocVersion implementation="java.lang.String" default-value="-v3.20.1">${pekko-grpc.protoc-version}</protocVersion> <!-- checked synced by VersionSyncCheckPlugin -->
         <includeStdTypes implementation="boolean" default-value="false" />
       </configuration>
     </mojo>
     <mojo>
       <goal>test-generate</goal>
-      <description>Generate test Akka gRPC model and service code</description>
-      <implementation>akka.grpc.maven.TestGenerateMojo</implementation>
+      <description>Generate test Apache Pekko gRPC model and service code</description>
+      <implementation>org.apache.pekko.grpc.maven.TestGenerateMojo</implementation>
       <instantiationStrategy>singleton</instantiationStrategy>
       <phase>generate-test-sources</phase>
 
@@ -178,14 +178,14 @@
       </parameters>
       <configuration>
         <project implementation="" default-value="${project}"/>
-        <language implementation="enum" default-value="JAVA">${akka-grpc.language}</language>
-        <generateClient implementation="boolean" default-value="true">${akka-grpc.generate-client}</generateClient>
-        <generateServer implementation="boolean" default-value="true">${akka-grpc.generate-server}</generateServer>
+        <language implementation="enum" default-value="JAVA">${pekko-grpc.language}</language>
+        <generateClient implementation="boolean" default-value="true">${pekko-grpc.generate-client}</generateClient>
+        <generateServer implementation="boolean" default-value="true">${pekko-grpc.generate-server}</generateServer>
         <generatorSettings implementation="java.util.List" default-value=""/>
         <extraGenerators implementation="java.util.List" default-value=""/>
-        <protoPaths default-value="src/test/proto,src/test/protobuf">${akka-grpc.protoPaths}</protoPaths>
-        <outputDirectory default-value="target/generated-test-sources">${akka-grpc.outputDirectory}</outputDirectory>
-        <protocVersion implementation="java.lang.String" default-value="-v3.20.1">${akka-grpc.protoc-version}</protocVersion> <!-- checked synced by VersionSyncCheckPlugin -->
+        <protoPaths default-value="src/test/proto,src/test/protobuf">${pekko-grpc.protoPaths}</protoPaths>
+        <outputDirectory default-value="target/generated-test-sources">${pekko-grpc.outputDirectory}</outputDirectory>
+        <protocVersion implementation="java.lang.String" default-value="-v3.20.1">${pekko-grpc.protoc-version}</protocVersion> <!-- checked synced by VersionSyncCheckPlugin -->
         <includeStdTypes implementation="boolean" default-value="false" />
       </configuration>
     </mojo>

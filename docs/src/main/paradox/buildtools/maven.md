@@ -12,7 +12,7 @@ Java
     <plugin>
         <groupId>com.lightbend.akka.grpc</groupId>
         <artifactId>akka-grpc-maven-plugin</artifactId>
-        <version>${akka.grpc.version}</version>
+        <version>${pekko.grpc.version}</version>
         <configuration>
           <language>Java</language>
           <generateClient>false</generateClient>
@@ -26,7 +26,7 @@ Scala
     <plugin>
         <groupId>com.lightbend.akka.grpc</groupId>
         <artifactId>akka-grpc-maven-plugin</artifactId>
-        <version>${akka.grpc.version}</version>
+        <version>${pekko.grpc.version}</version>
         <configuration>
           <language>Scala</language>
           <generateClient>false</generateClient>
@@ -63,7 +63,7 @@ which is a relative path to the project basedir. The below configuration overrid
     <plugin>
         <groupId>com.lightbend.akka.grpc</groupId>
         <artifactId>akka-grpc-maven-plugin</artifactId>
-        <version>${akka.grpc.version}</version>
+        <version>${pekko.grpc.version}</version>
         <configuration>
           <protoPaths>
             <protoPath>src/main/protobuf</protoPath>

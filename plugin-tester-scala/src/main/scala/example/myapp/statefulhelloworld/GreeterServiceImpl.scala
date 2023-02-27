@@ -6,9 +6,9 @@ package example.myapp.statefulhelloworld
 
 import example.myapp.statefulhelloworld.grpc.GreeterService
 import example.myapp.statefulhelloworld.grpc.{ ChangeRequest, ChangeResponse, HelloReply, HelloRequest }
-import akka.actor.ActorSystem
-import akka.pattern.ask
-import akka.util.Timeout
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.pattern.ask
+import org.apache.pekko.util.Timeout
 import scala.concurrent.duration._
 
 import scala.concurrent.Future

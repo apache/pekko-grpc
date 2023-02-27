@@ -4,16 +4,16 @@
 
 package example.myapp.helloworld
 
-import akka.actor.ActorSystem
-import akka.event.Logging
-import akka.grpc.Trailers
-import akka.grpc.scaladsl.{ ServerReflection, ServiceHandler }
-import akka.http.scaladsl.Http
-import akka.http.scaladsl.model.{ HttpRequest, HttpResponse }
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server._
-import akka.http.scaladsl.server.directives.DebuggingDirectives
-import akka.stream.Materializer
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.event.Logging
+import org.apache.pekko.grpc.Trailers
+import org.apache.pekko.grpc.scaladsl.{ ServerReflection, ServiceHandler }
+import org.apache.pekko.http.scaladsl.Http
+import org.apache.pekko.http.scaladsl.model.{ HttpRequest, HttpResponse }
+import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko.http.scaladsl.server._
+import org.apache.pekko.http.scaladsl.server.directives.DebuggingDirectives
+import org.apache.pekko.stream.Materializer
 import com.typesafe.config.ConfigFactory
 import example.myapp.helloworld.grpc.{ GreeterService, GreeterServiceHandler, HelloReply, HelloRequest }
 import io.grpc.Status
@@ -24,7 +24,7 @@ import scala.util.control.NonFatal
 object LoggingErrorHandlingGreeterServer {
   def main(args: Array[String]): Unit = {
     val conf = ConfigFactory
-      .parseString("akka.http.server.preview.enable-http2 = on")
+      .parseString("pekko.http.server.preview.enable-http2 = on")
       .withFallback(ConfigFactory.defaultApplication())
     val system = ActorSystem("Server", conf)
     new LoggingErrorHandlingGreeterServer(system).run()

@@ -4,18 +4,18 @@
 
 package example.myapp.helloworld;
 
-import akka.actor.ActorSystem;
-import akka.event.Logging;
-import akka.grpc.Trailers;
-import akka.http.javadsl.Http;
-import akka.http.javadsl.ServerBinding;
-import akka.http.javadsl.model.HttpRequest;
-import akka.http.javadsl.model.HttpResponse;
-import akka.http.javadsl.server.RequestContext;
-import akka.http.javadsl.server.Route;
-import akka.japi.Function;
-import akka.stream.Materializer;
-import akka.stream.SystemMaterializer;
+import org.apache.pekko.actor.ActorSystem;
+import org.apache.pekko.event.Logging;
+import org.apache.pekko.grpc.Trailers;
+import org.apache.pekko.http.javadsl.Http;
+import org.apache.pekko.http.javadsl.ServerBinding;
+import org.apache.pekko.http.javadsl.model.HttpRequest;
+import org.apache.pekko.http.javadsl.model.HttpResponse;
+import org.apache.pekko.http.javadsl.server.RequestContext;
+import org.apache.pekko.http.javadsl.server.Route;
+import org.apache.pekko.japi.Function;
+import org.apache.pekko.stream.Materializer;
+import org.apache.pekko.stream.SystemMaterializer;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import example.myapp.helloworld.grpc.GreeterService;
@@ -28,15 +28,15 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.BiFunction;
 
-import static akka.http.javadsl.server.Directives.*;
+import static org.apache.pekko.http.javadsl.server.Directives.*;
 
 public class LoggingErrorHandlingGreeterServer {
   public static void main(String[] args) throws Exception {
     // important to enable HTTP/2 in ActorSystem's config
-    Config conf = ConfigFactory.parseString("akka.http.server.preview.enable-http2 = on")
+    Config conf = ConfigFactory.parseString("pekko.http.server.preview.enable-http2 = on")
       .withFallback(ConfigFactory.defaultApplication());
 
-    // Akka ActorSystem Boot
+    // ActorSystem Boot
     ActorSystem sys = ActorSystem.create("HelloWorld", conf);
 
     run(sys).thenAccept(binding -> {
@@ -71,7 +71,7 @@ public class LoggingErrorHandlingGreeterServer {
   private static <ServiceImpl> Route loggingErrorHandlingGrpcRoute(
     Function<RequestContext, ServiceImpl> buildImpl,
     Function<ActorSystem, Function<Throwable, Trailers>> errorHandler,
-    BiFunction<ServiceImpl, Function<ActorSystem, Function<Throwable, Trailers>>, akka.japi.function.Function<HttpRequest, CompletionStage<HttpResponse>>> buildHandler
+    BiFunction<ServiceImpl, Function<ActorSystem, Function<Throwable, Trailers>>, org.apache.pekko.japi.function.Function<HttpRequest, CompletionStage<HttpResponse>>> buildHandler
   ) {
     return logRequest("loggingErrorHandlingGrpcRoute", Logging.InfoLevel(), () -> extractRequestContext(ctx -> {
       Function<ActorSystem, Function<Throwable, Trailers>> loggingErrorHandler = (actorSystem) -> (throwable) -> {
@@ -88,7 +88,7 @@ public class LoggingErrorHandlingGreeterServer {
       };
       try {
         ServiceImpl impl = buildImpl.apply(ctx);
-        akka.japi.function.Function<HttpRequest, CompletionStage<HttpResponse>> handler = buildHandler.apply(impl, loggingErrorHandler);
+        org.apache.pekko.japi.function.Function<HttpRequest, CompletionStage<HttpResponse>> handler = buildHandler.apply(impl, loggingErrorHandler);
         return handle(handler);
       } catch (Exception e) {
         return failWith(e);

@@ -1,11 +1,11 @@
 package helper
 
-import akka.grpc.gradle.AkkaGrpcPluginExtension
+import org.apache.pekko.grpc.gradle.PekkoGrpcPluginExtension
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
-import static akka.grpc.gradle.AkkaGrpcPluginExtension.getPLUGIN_CODE
+import static org.apache.pekko.grpc.gradle.PekkoGrpcPluginExtension.getPLUGIN_CODE
 
 abstract class BaseSpec extends Specification {
 
@@ -35,20 +35,20 @@ project.dependencies {
 """
     }
 
-    def findAkkaGrpcRuntime() {
-        this.project.configurations.akkaGrpcRuntime.allDependencies.find { it.name.contains("akka-grpc-runtime") }
+    def findPekkoGrpcRuntime() {
+        this.project.configurations.pekkoGrpcRuntime.allDependencies.find { it.name.contains("pekko-grpc-runtime") }
     }
 
-    AkkaGrpcPluginExtension sampleSetup(def plugin = "scala", String scala = "2.12") {
+    PekkoGrpcPluginExtension sampleSetup(def plugin = "scala", String scala = "2.12") {
         if (plugin == "scala" || plugin == ScalaWrapperPlugin) {
             def scalaDir = projectDir.newFolder('src', 'main', 'scala')
-            new File(scalaDir, "test.scala").text = "object AkkaGrpc"
+            new File(scalaDir, "test.scala").text = "object PekkoGrpc"
         }
 
         project.pluginManager.apply PLUGIN_CODE
         project.dependencies {
             implementation "com.typesafe.scala-logging:scala-logging_$scala:3.9.2"
         }
-        project.extensions.getByType(AkkaGrpcPluginExtension)
+        project.extensions.getByType(PekkoGrpcPluginExtension)
     }
 }

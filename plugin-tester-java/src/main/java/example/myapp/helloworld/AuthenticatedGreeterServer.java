@@ -6,32 +6,32 @@ package example.myapp.helloworld;
 
 import java.util.concurrent.CompletionStage;
 
-import akka.http.javadsl.model.StatusCodes;
+import org.apache.pekko.http.javadsl.model.StatusCodes;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
-import akka.actor.ActorSystem;
-import akka.http.javadsl.Http;
-import akka.http.javadsl.ServerBinding;
-import akka.http.javadsl.model.HttpRequest;
-import akka.http.javadsl.model.HttpResponse;
-import akka.http.javadsl.server.Route;
-import akka.japi.function.Function;
-import akka.stream.SystemMaterializer;
-import akka.stream.Materializer;
+import org.apache.pekko.actor.ActorSystem;
+import org.apache.pekko.http.javadsl.Http;
+import org.apache.pekko.http.javadsl.ServerBinding;
+import org.apache.pekko.http.javadsl.model.HttpRequest;
+import org.apache.pekko.http.javadsl.model.HttpResponse;
+import org.apache.pekko.http.javadsl.server.Route;
+import org.apache.pekko.japi.function.Function;
+import org.apache.pekko.stream.SystemMaterializer;
+import org.apache.pekko.stream.Materializer;
 
 import example.myapp.helloworld.grpc.GreeterService;
 import example.myapp.helloworld.grpc.GreeterServiceHandlerFactory;
 
-import static akka.http.javadsl.server.Directives.*;
+import static org.apache.pekko.http.javadsl.server.Directives.*;
 
 class AuthenticatedGreeterServer {
   public static void main(String[] args) throws Exception {
     // important to enable HTTP/2 in ActorSystem's config
-    Config conf = ConfigFactory.parseString("akka.http.server.preview.enable-http2 = on")
+    Config conf = ConfigFactory.parseString("pekko.http.server.preview.enable-http2 = on")
             .withFallback(ConfigFactory.defaultApplication());
 
-    // Akka ActorSystem Boot
+    // ActorSystem Boot
     ActorSystem sys = ActorSystem.create("HelloWorld", conf);
 
     run(sys).thenAccept(binding -> {

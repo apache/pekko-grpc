@@ -175,7 +175,7 @@ Refer to its documentation to learn about the more advanced features it provides
 To generate documentation you can:
 
 ```
-> project akka-grpc-docs
+> project pekko-grpc-docs
 > paradox
 ```
 
@@ -189,7 +189,7 @@ Generating JavaDoc is not enabled by default, as it's not needed on day-to-day d
 If you'd like to check if you links and formatting looks good in JavaDoc (and not only in ScalaDoc), you can generate it by running:
 
 ```
-sbt -Dakka.genjavadoc.enabled=true javaunidoc:doc
+sbt -Dpekko.genjavadoc.enabled=true javaunidoc:doc
 ```
 
 Which will generate JavaDoc style docs in `./target/javaunidoc/index.html`

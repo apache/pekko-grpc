@@ -2,27 +2,27 @@
  * Copyright (C) 2018-2021 Lightbend Inc. <https://www.lightbend.com>
  *@
 
-@(service: akka.grpc.gen.scaladsl.Service)
+@(service: org.apache.pekko.grpc.gen.scaladsl.Service)
 
-@akka.grpc.gen.Constants.DoNotEditComment
+@org.apache.pekko.grpc.gen.Constants.DoNotEditComment
 package @service.packageName
 
 import scala.concurrent.ExecutionContext
 
-import akka.actor.ClassicActorSystemProvider
-import akka.stream.Materializer
-import akka.grpc.GrpcProtocol.GrpcProtocolWriter
-import akka.grpc.ProtobufSerializer
-import akka.grpc.scaladsl.GrpcMarshalling
-import akka.http.scaladsl.marshalling.Marshaller
-import akka.http.scaladsl.marshalling.ToResponseMarshaller
-import akka.http.scaladsl.model.HttpRequest
-import akka.http.scaladsl.unmarshalling.FromRequestUnmarshaller
-import akka.http.scaladsl.unmarshalling.Unmarshaller
+import org.apache.pekko.actor.ClassicActorSystemProvider
+import org.apache.pekko.stream.Materializer
+import org.apache.pekko.grpc.GrpcProtocol.GrpcProtocolWriter
+import org.apache.pekko.grpc.ProtobufSerializer
+import org.apache.pekko.grpc.scaladsl.GrpcMarshalling
+import org.apache.pekko.http.scaladsl.marshalling.Marshaller
+import org.apache.pekko.http.scaladsl.marshalling.ToResponseMarshaller
+import org.apache.pekko.http.scaladsl.model.HttpRequest
+import org.apache.pekko.http.scaladsl.unmarshalling.FromRequestUnmarshaller
+import org.apache.pekko.http.scaladsl.unmarshalling.Unmarshaller
 
-import akka.grpc.AkkaGrpcGenerated
+import org.apache.pekko.grpc.PekkoGrpcGenerated
 
-@@AkkaGrpcGenerated
+@@PekkoGrpcGenerated
 object @{service.name}Marshallers {
   @for(serializer <- service.serializers) {
   implicit val @serializer.name = @{service.packageName}.@{service.name}.Serializers.@{serializer.name}
@@ -31,12 +31,12 @@ object @{service.name}Marshallers {
   implicit def unmarshaller[T](implicit serializer: ProtobufSerializer[T], mat: Materializer): FromRequestUnmarshaller[T] =
     Unmarshaller((_: ExecutionContext) => (req: HttpRequest) => GrpcMarshalling.unmarshal(req)(serializer, mat))
 
-  implicit def toSourceUnmarshaller[T](implicit serializer: ProtobufSerializer[T], mat: Materializer): FromRequestUnmarshaller[akka.stream.scaladsl.Source[T, akka.NotUsed]] =
+  implicit def toSourceUnmarshaller[T](implicit serializer: ProtobufSerializer[T], mat: Materializer): FromRequestUnmarshaller[org.apache.pekko.stream.scaladsl.Source[T, org.apache.pekko.NotUsed]] =
     Unmarshaller((_: ExecutionContext) => (req: HttpRequest) => GrpcMarshalling.unmarshalStream(req)(serializer, mat))
 
   implicit def marshaller[T](implicit serializer: ProtobufSerializer[T], writer: GrpcProtocolWriter, system: ClassicActorSystemProvider): ToResponseMarshaller[T] =
     Marshaller.opaque((response: T) => GrpcMarshalling.marshal(response)(serializer, writer, system))
 
-  implicit def fromSourceMarshaller[T](implicit serializer: ProtobufSerializer[T], writer: GrpcProtocolWriter, system: ClassicActorSystemProvider): ToResponseMarshaller[akka.stream.scaladsl.Source[T, akka.NotUsed]] =
-    Marshaller.opaque((response: akka.stream.scaladsl.Source[T, akka.NotUsed]) => GrpcMarshalling.marshalStream(response)(serializer, writer, system))
+  implicit def fromSourceMarshaller[T](implicit serializer: ProtobufSerializer[T], writer: GrpcProtocolWriter, system: ClassicActorSystemProvider): ToResponseMarshaller[org.apache.pekko.stream.scaladsl.Source[T, org.apache.pekko.NotUsed]] =
+    Marshaller.opaque((response: org.apache.pekko.stream.scaladsl.Source[T, org.apache.pekko.NotUsed]) => GrpcMarshalling.marshalStream(response)(serializer, writer, system))
 }

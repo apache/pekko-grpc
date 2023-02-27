@@ -1,4 +1,4 @@
-package akka.grpc
+package org.apache.pekko.grpc
 
 import sbt._
 
@@ -8,6 +8,7 @@ object ProjectExtensions {
 
     /** Add settings to test the sbt-plugin in-process */
     def pluginTestingSettings: Project =
-      project.dependsOn(ProjectRef(file("."), "akka-grpc-runtime")).enablePlugins(akka.grpc.build.ReflectiveCodeGen)
+      project.dependsOn(ProjectRef(file("."), "pekko-grpc-runtime")).enablePlugins(
+        org.apache.pekko.grpc.build.ReflectiveCodeGen)
   }
 }

@@ -6,7 +6,7 @@ Exact version of plugin *must be provided* via java system property.
 The version must either be published to Gradle plugin portal or to local maven (`~/.m2`).
 
 ```shell script
-$ ./gradlew clean test -Dakka.grpc.project.version=1.0.0
+$ ./gradlew clean test -Dpekko.grpc.project.version=1.0.0
 ```
 
 ## Use different versions of Gradle plugin and akka grpc libraries.
@@ -17,7 +17,7 @@ Libraries must be published to akka grpc release or snapshot repo.
 
 [source,sh]
 ```shell script
-$ ./gradlew clean test -Dakka.grpc.project.version=1.0.0 -Dakka.grpc.baseline.version=0.0.1
+$ ./gradlew clean test -Dpekko.grpc.project.version=1.0.0 -Dpekko.grpc.baseline.version=0.0.1
 ```
 
 

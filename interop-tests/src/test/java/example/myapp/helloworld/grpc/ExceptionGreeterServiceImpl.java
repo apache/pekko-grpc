@@ -10,15 +10,15 @@ import java.util.concurrent.CompletionStage;
 //#unary
 
 //#streaming
-import akka.NotUsed;
-import akka.stream.javadsl.Source;
+import org.apache.pekko.NotUsed;
+import org.apache.pekko.stream.javadsl.Source;
 //#streaming
 
 //#unary
 //#streaming
 
 import io.grpc.Status;
-import akka.grpc.GrpcServiceException;
+import org.apache.pekko.grpc.GrpcServiceException;
 
 //#unary
 //#streaming

@@ -4,8 +4,8 @@
 
 package example.myapp.helloworld
 
-import akka.actor.ActorSystem
-import akka.grpc.GrpcClientSettings
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.grpc.GrpcClientSettings
 import example.myapp.helloworld.grpc.{ GreeterServiceClient, HelloRequest }
 
 import scala.concurrent.Await

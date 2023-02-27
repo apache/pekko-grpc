@@ -12,10 +12,10 @@ sbt
 :   @@@vars
     ```scala
     // in project/plugins.sbt:
-    addSbtPlugin("com.lightbend.akka.grpc" % "sbt-akka-grpc" % "$project.version$")
+    addSbtPlugin("com.lightbend.akka.grpc" % "sbt-pekko-grpc" % "$project.version$")
     //
     // in build.sbt:
-    enablePlugins(AkkaGrpcPlugin)
+    enablePlugins(PekkoGrpcPlugin)
     ```
     @@@
 
@@ -28,7 +28,7 @@ Gradle
         gradlePluginPortal()
       }
       dependencies {
-        // see https://plugins.gradle.org/plugin/com.lightbend.akka.grpc.gradle
+        // see https://plugins.gradle.org/plugin/org.apache.pekko.grpc.gradle
         // for the currently latest version.
         classpath 'gradle.plugin.com.lightbend.akka.grpc:akka-grpc-gradle-plugin:$project.version$'
       }
@@ -37,7 +37,7 @@ Gradle
       id 'java'
       id 'application'
     }
-    apply plugin: 'com.lightbend.akka.grpc.gradle'
+    apply plugin: 'org.apache.pekko.grpc.gradle'
     repositories {
       mavenLocal()
       mavenCentral()
@@ -57,15 +57,15 @@ Maven
       <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <akka.grpc.version>$project.version$</akka.grpc.version>
+        <pekko.grpc.version>$project.version$</pekko.grpc.version>
         <grpc.version>$grpc.version$</grpc.version>
         <project.encoding>UTF-8</project.encoding>
       </properties>
       <dependencies>
         <dependency>
           <groupId>com.lightbend.akka.grpc</groupId>
-          <artifactId>akka-grpc-runtime_2.12</artifactId>
-          <version>${akka.grpc.version}</version>
+          <artifactId>pekko-grpc-runtime_2.12</artifactId>
+          <version>${pekko.grpc.version}</version>
         </dependency>
       </dependencies>
       <build>
@@ -73,7 +73,7 @@ Maven
           <plugin>
             <groupId>com.lightbend.akka.grpc</groupId>
             <artifactId>akka-grpc-maven-plugin</artifactId>
-            <version>${akka.grpc.version}</version>
+            <version>${pekko.grpc.version}</version>
             <executions>
               <execution>
                 <goals>
@@ -92,11 +92,11 @@ For a complete overview of the configuration options see the chapter for your bu
 
 ### Dependencies
 
-The Akka gRPC plugin makes your code depend on the `akka-grpc-runtime` library.
+The Akka gRPC plugin makes your code depend on the `pekko-grpc-runtime` library.
 
 The table below shows direct dependencies of it and the second tab shows all libraries it depends on transitively. Be aware that the `io.grpc.grpc-api` library depends on Guava.
 
-@@dependencies { projectId="akka-grpc-runtime" }
+@@dependencies { projectId="pekko-grpc-runtime" }
 
 ## Writing a service definition
 
@@ -195,7 +195,7 @@ Java
 It's important to enable HTTP/2 in Akka HTTP in the configuration of the `ActorSystem` by setting
 
 ```
-akka.http.server.preview.enable-http2 = on
+pekko.http.server.preview.enable-http2 = on
 ```
 
 In the example this was done from the `main` method, but you could also do this from within your `application.conf`.
@@ -207,7 +207,7 @@ The above example does not use TLS. Find more about how to @ref[Serve gRPC over 
 ## Serving multiple services
 
 When a server handles several services the handlers must be combined with
-@scala[`akka.grpc.scaladsl.ServiceHandler.concatOrNotFound`]@java[`akka.grpc.javadsl.ServiceHandler.concatOrNotFound`]:
+@scala[`org.apache.pekko.grpc.scaladsl.ServiceHandler.concatOrNotFound`]@java[`org.apache.pekko.grpc.javadsl.ServiceHandler.concatOrNotFound`]:
 
 Scala
 :  @@snip [GreeterServiceImpl.scala](/plugin-tester-scala/src/main/scala/example/myapp/CombinedServer.scala) { #concatOrNotFound }

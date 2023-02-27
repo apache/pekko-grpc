@@ -14,13 +14,13 @@ import java.time.Duration;
 
 import io.grpc.StatusRuntimeException;
 
-import akka.Done;
-import akka.NotUsed;
-import akka.actor.ActorSystem;
-import akka.stream.SystemMaterializer;
-import akka.stream.Materializer;
-import akka.stream.javadsl.Source;
-import akka.grpc.GrpcClientSettings;
+import org.apache.pekko.Done;
+import org.apache.pekko.NotUsed;
+import org.apache.pekko.actor.ActorSystem;
+import org.apache.pekko.stream.SystemMaterializer;
+import org.apache.pekko.stream.Materializer;
+import org.apache.pekko.stream.javadsl.Source;
+import org.apache.pekko.grpc.GrpcClientSettings;
 
 import example.myapp.helloworld.grpc.*;
 

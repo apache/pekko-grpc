@@ -2,7 +2,7 @@
 // https://github.com/akka/akka-grpc/pull/1279
 scalaVersion := "2.12.16"
 
-resolvers += Resolver.sonatypeRepo("staging")
+resolvers += "Apache Snapshots".at("https://repository.apache.org/content/repositories/snapshots/")
 
 organization := "com.lightbend.akka.grpc"
 
@@ -10,13 +10,13 @@ val grpcVersion = "1.48.1" // checked synced by VersionSyncCheckPlugin
 
 libraryDependencies ++= Seq(
   "io.grpc" % "grpc-interop-testing" % grpcVersion % "protobuf-src",
-  "com.lightbend.akka.grpc" %% "akka-grpc-interop-tests" % sys.props("project.version") % "test",
+  "com.lightbend.akka.grpc" %% "pekko-grpc-interop-tests" % sys.props("project.version") % "test",
   "org.scalatest" %% "scalatest" % "3.0.4" % "test" // ApacheV2
 )
 
 scalacOptions ++= List("-unchecked", "-deprecation", "-language:_", "-encoding", "UTF-8")
 
-enablePlugins(AkkaGrpcPlugin)
+enablePlugins(PekkoGrpcPlugin)
 
 // proto files from "io.grpc" % "grpc-interop-testing" contain duplicate Empty definitions;
 // * google/protobuf/empty.proto
@@ -29,31 +29,31 @@ PB.generate / excludeFilter := new SimpleFileFilter((f: File) =>
 
 //#sources-both
 // This is the default - both client and server
-akkaGrpcGeneratedSources := Seq(AkkaGrpc.Client, AkkaGrpc.Server)
+pekkoGrpcGeneratedSources := Seq(PekkoGrpc.Client, PekkoGrpc.Server)
 
 //#sources-both
 
 /**
  * //#sources-client
  * // only client
- * akkaGrpcGeneratedSources := Seq(AkkaGrpc.Client)
+ * pekkoGrpcGeneratedSources := Seq(PekkoGrpc.Client)
  *
  * //#sources-client
  *
  * //#sources-server
  * // only server
- * akkaGrpcGeneratedSources := Seq(AkkaGrpc.Server)
+ * pekkoGrpcGeneratedSources := Seq(PekkoGrpc.Server)
  * //#sources-server
  *
  * //#languages-scala
  * // default is Scala only
- * akkaGrpcGeneratedLanguages := Seq(AkkaGrpc.Scala)
+ * pekkoGrpcGeneratedLanguages := Seq(PekkoGrpc.Scala)
  *
  * //#languages-scala
  *
  * //#languages-java
  * // Java only
- * akkaGrpcGeneratedLanguages := Seq(AkkaGrpc.Java)
+ * pekkoGrpcGeneratedLanguages := Seq(PekkoGrpc.Java)
  *
  * //#languages-java
  */
@@ -63,6 +63,6 @@ akkaGrpcGeneratedSources := Seq(AkkaGrpc.Client, AkkaGrpc.Server)
 // By default the 'flat_package' option is enabled so that generated
 // package names are consistent between Scala and Java.
 // With both languages enabled we disable that option to avoid name conflicts
-akkaGrpcGeneratedLanguages := Seq(AkkaGrpc.Scala, AkkaGrpc.Java)
-akkaGrpcCodeGeneratorSettings := akkaGrpcCodeGeneratorSettings.value.filterNot(_ == "flat_package")
+pekkoGrpcGeneratedLanguages := Seq(PekkoGrpc.Scala, PekkoGrpc.Java)
+pekkoGrpcCodeGeneratorSettings := pekkoGrpcCodeGeneratorSettings.value.filterNot(_ == "flat_package")
 //#languages-both

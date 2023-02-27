@@ -1,9 +1,9 @@
-package akka.grpc
+package org.apache.pekko.grpc
 
 import sbt.Keys._
 import sbt._
 import sbt.plugins.JvmPlugin
-import akka.grpc.Dependencies.Versions.{ scala212, scala213 }
+import org.apache.pekko.grpc.Dependencies.Versions.{ scala212, scala213 }
 import com.lightbend.paradox.projectinfo.ParadoxProjectInfoPluginKeys.projectInfoVersion
 import com.typesafe.tools.mima.plugin.MimaKeys._
 import sbtprotoc.ProtocPlugin.autoImport.PB

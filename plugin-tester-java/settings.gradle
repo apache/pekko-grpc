@@ -4,10 +4,10 @@ pluginManagement {
     gradlePluginPortal()
   }
   plugins {
-    id 'com.lightbend.akka.grpc.gradle' version "${System.getProperty('akka.grpc.project.version')}"
+    id 'org.apache.pekko.grpc.gradle' version "${System.getProperty('pekko.grpc.project.version')}"
   }
 }
 
-if (!System.getProperty('akka.grpc.project.version')) {
-  throw new GradleException("System property `akka.grpc.project.version` is not provided. Use -Dakka.grpc.project.version=\$VERSION.")
+if (!System.getProperty('pekko.grpc.project.version')) {
+  throw new GradleException("System property `pekko.grpc.project.version` is not provided. Use -Dpekko.grpc.project.version=\$VERSION.")
 }

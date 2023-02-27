@@ -2,20 +2,20 @@
  * Copyright (C) 2018-2021 Lightbend Inc. <https://www.lightbend.com>
  *@
 
-@(service: akka.grpc.gen.javadsl.Service)
+@(service: org.apache.pekko.grpc.gen.javadsl.Service)
 
-@akka.grpc.gen.Constants.DoNotEditComment
+@org.apache.pekko.grpc.gen.Constants.DoNotEditComment
 package @service.packageName;
 
-import akka.actor.ClassicActorSystemProvider;
-import akka.stream.Materializer;
-import akka.stream.SystemMaterializer;
+import org.apache.pekko.actor.ClassicActorSystemProvider;
+import org.apache.pekko.stream.Materializer;
+import org.apache.pekko.stream.SystemMaterializer;
 
-import akka.grpc.internal.*;
-import akka.grpc.GrpcChannel;
-import akka.grpc.GrpcClientCloseException;
-import akka.grpc.GrpcClientSettings;
-import akka.grpc.javadsl.AkkaGrpcClient;
+import org.apache.pekko.grpc.internal.*;
+import org.apache.pekko.grpc.GrpcChannel;
+import org.apache.pekko.grpc.GrpcClientCloseException;
+import org.apache.pekko.grpc.GrpcClientSettings;
+import org.apache.pekko.grpc.javadsl.PekkoGrpcClient;
 
 import io.grpc.MethodDescriptor;
 
@@ -23,21 +23,21 @@ import static @{service.packageName}.@{service.name}.Serializers.*;
 
 import scala.concurrent.ExecutionContext;
 
-import akka.grpc.AkkaGrpcGenerated;
+import org.apache.pekko.grpc.PekkoGrpcGenerated;
 
 @GenMethodImports(service)
 
-@@AkkaGrpcGenerated
-public abstract class @{service.name}Client extends @{service.name}ClientPowerApi implements @{service.name}, AkkaGrpcClient {
+@@PekkoGrpcGenerated
+public abstract class @{service.name}Client extends @{service.name}ClientPowerApi implements @{service.name}, PekkoGrpcClient {
   public static final @{service.name}Client create(GrpcClientSettings settings, ClassicActorSystemProvider sys) {
-    return new Default@{service.name}Client(akka.grpc.GrpcChannel$.MODULE$.apply(settings, sys), true, sys);
+    return new Default@{service.name}Client(org.apache.pekko.grpc.GrpcChannel$.MODULE$.apply(settings, sys), true, sys);
   }
 
   public static final @{service.name}Client create(GrpcChannel channel, ClassicActorSystemProvider sys) {
     return new Default@{service.name}Client(channel, false, sys);
   }
 
-  @@AkkaGrpcGenerated
+  @@PekkoGrpcGenerated
   protected final static class Default@{service.name}Client extends @{service.name}Client {
 
       private final GrpcChannel channel;
@@ -59,23 +59,23 @@ public abstract class @{service.name}Client extends @{service.name}ClientPowerAp
       }
 
   @for(method <- service.methods) {
-    @if(method.methodType == akka.grpc.gen.Unary) {
-      private final SingleResponseRequestBuilder<@method.inputTypeUnboxed, @method.outputTypeUnboxed> @{method.name}RequestBuilder(akka.grpc.internal.InternalChannel channel){
+    @if(method.methodType == org.apache.pekko.grpc.gen.Unary) {
+      private final SingleResponseRequestBuilder<@method.inputTypeUnboxed, @method.outputTypeUnboxed> @{method.name}RequestBuilder(org.apache.pekko.grpc.internal.InternalChannel channel){
         return new JavaUnaryRequestBuilder<>(@{method.name}Descriptor, channel, options, settings, ec);
       }
     } else {
-      @if(method.methodType == akka.grpc.gen.ClientStreaming){
-        private final SingleResponseRequestBuilder<akka.stream.javadsl.Source<@method.inputTypeUnboxed, akka.NotUsed>, @method.outputTypeUnboxed> @{method.name}RequestBuilder(akka.grpc.internal.InternalChannel channel){
+      @if(method.methodType == org.apache.pekko.grpc.gen.ClientStreaming){
+        private final SingleResponseRequestBuilder<org.apache.pekko.stream.javadsl.Source<@method.inputTypeUnboxed, org.apache.pekko.NotUsed>, @method.outputTypeUnboxed> @{method.name}RequestBuilder(org.apache.pekko.grpc.internal.InternalChannel channel){
           return new JavaClientStreamingRequestBuilder<>(
                                @{method.name}Descriptor, channel, options, settings, mat, ec);
         }
-      } else if(method.methodType == akka.grpc.gen.ServerStreaming){
-        private final StreamResponseRequestBuilder<@method.inputTypeUnboxed, @method.outputTypeUnboxed> @{method.name}RequestBuilder(akka.grpc.internal.InternalChannel channel){
+      } else if(method.methodType == org.apache.pekko.grpc.gen.ServerStreaming){
+        private final StreamResponseRequestBuilder<@method.inputTypeUnboxed, @method.outputTypeUnboxed> @{method.name}RequestBuilder(org.apache.pekko.grpc.internal.InternalChannel channel){
           return new JavaServerStreamingRequestBuilder<>(
                                @{method.name}Descriptor, channel, options, settings, ec);
         }
-      } else if(method.methodType == akka.grpc.gen.BidiStreaming){
-        private final StreamResponseRequestBuilder<akka.stream.javadsl.Source<@method.inputTypeUnboxed, akka.NotUsed>, @method.outputTypeUnboxed> @{method.name}RequestBuilder(akka.grpc.internal.InternalChannel channel){
+      } else if(method.methodType == org.apache.pekko.grpc.gen.BidiStreaming){
+        private final StreamResponseRequestBuilder<org.apache.pekko.stream.javadsl.Source<@method.inputTypeUnboxed, org.apache.pekko.NotUsed>, @method.outputTypeUnboxed> @{method.name}RequestBuilder(org.apache.pekko.grpc.internal.InternalChannel channel){
           return new JavaBidirectionalStreamingRequestBuilder<>(
                                @{method.name}Descriptor, channel, options, settings, ec);
         }
@@ -96,14 +96,14 @@ public abstract class @{service.name}Client extends @{service.name}ClientPowerAp
          * Lower level "lifted" version of the method, giving access to request metadata etc.
          * prefer @{method.name}(@method.inputTypeUnboxed) if possible.
          */
-        @if(method.methodType == akka.grpc.gen.Unary) {
+        @if(method.methodType == org.apache.pekko.grpc.gen.Unary) {
           public SingleResponseRequestBuilder<@method.inputTypeUnboxed, @method.outputTypeUnboxed> @{method.name}()
-        }else if(method.methodType == akka.grpc.gen.ClientStreaming){
-          public SingleResponseRequestBuilder<akka.stream.javadsl.Source<@method.inputTypeUnboxed, akka.NotUsed>, @method.outputTypeUnboxed> @{method.name}()
-        }else if(method.methodType == akka.grpc.gen.ServerStreaming){
+        }else if(method.methodType == org.apache.pekko.grpc.gen.ClientStreaming){
+          public SingleResponseRequestBuilder<org.apache.pekko.stream.javadsl.Source<@method.inputTypeUnboxed, org.apache.pekko.NotUsed>, @method.outputTypeUnboxed> @{method.name}()
+        }else if(method.methodType == org.apache.pekko.grpc.gen.ServerStreaming){
           public StreamResponseRequestBuilder<@method.inputTypeUnboxed, @method.outputTypeUnboxed> @{method.name}()
-        }else if(method.methodType == akka.grpc.gen.BidiStreaming){
-          public StreamResponseRequestBuilder<akka.stream.javadsl.Source<@method.inputTypeUnboxed, akka.NotUsed>, @method.outputTypeUnboxed> @{method.name}()
+        }else if(method.methodType == org.apache.pekko.grpc.gen.BidiStreaming){
+          public StreamResponseRequestBuilder<org.apache.pekko.stream.javadsl.Source<@method.inputTypeUnboxed, org.apache.pekko.NotUsed>, @method.outputTypeUnboxed> @{method.name}()
         }
         {
           return @{method.name}RequestBuilder(channel.internalChannel());
@@ -124,7 +124,7 @@ public abstract class @{service.name}Client extends @{service.name}ClientPowerAp
       /**
        * Initiates a shutdown in which preexisting and new calls are cancelled.
        */
-      public java.util.concurrent.CompletionStage<akka.Done> close() {
+      public java.util.concurrent.CompletionStage<org.apache.pekko.Done> close() {
         if (isChannelOwned) {
           return channel.closeCS();
         } else {
@@ -136,7 +136,7 @@ public abstract class @{service.name}Client extends @{service.name}ClientPowerAp
       * Returns a CompletionState that completes successfully when shutdown via close()
       * or exceptionally if a connection can not be established after maxConnectionAttempts.
       */
-      public java.util.concurrent.CompletionStage<akka.Done> closed() {
+      public java.util.concurrent.CompletionStage<org.apache.pekko.Done> closed() {
         return channel.closedCS();
       }
   }
@@ -144,9 +144,9 @@ public abstract class @{service.name}Client extends @{service.name}ClientPowerAp
 }
 
 
-@mapMethodType(methodType: akka.grpc.gen.MethodType) = {
-  @if(methodType == akka.grpc.gen.Unary) { MethodDescriptor.MethodType.UNARY }
-  @if(methodType == akka.grpc.gen.ClientStreaming) {MethodDescriptor.MethodType.CLIENT_STREAMING }
-  @if(methodType == akka.grpc.gen.ServerStreaming) { MethodDescriptor.MethodType.SERVER_STREAMING }
-  @if(methodType == akka.grpc.gen.BidiStreaming) {MethodDescriptor.MethodType.BIDI_STREAMING }
+@mapMethodType(methodType: org.apache.pekko.grpc.gen.MethodType) = {
+  @if(methodType == org.apache.pekko.grpc.gen.Unary) { MethodDescriptor.MethodType.UNARY }
+  @if(methodType == org.apache.pekko.grpc.gen.ClientStreaming) {MethodDescriptor.MethodType.CLIENT_STREAMING }
+  @if(methodType == org.apache.pekko.grpc.gen.ServerStreaming) { MethodDescriptor.MethodType.SERVER_STREAMING }
+  @if(methodType == org.apache.pekko.grpc.gen.BidiStreaming) {MethodDescriptor.MethodType.BIDI_STREAMING }
 }

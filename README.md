@@ -1,7 +1,7 @@
 # Apache Pekko gRPC
 
 Support for building streaming gRPC servers and clients on top
-of Pekko Streams.
+of Apache Pekko Streams.
 
 This library is meant to be used as a building block in projects using the Pekko
 toolkit.
@@ -34,7 +34,7 @@ Based on a protobuf service definition, pekko-grpc can generate:
 
 * Model classes (using plain protoc for Java or scalapb for Scala)
 * The API (as an interface for Java or a trait for Scala), expressed in Pekko Streams `Source`s
-* On the server side, code to create an Pekko HTTP route based on your implementation of the API
+* On the server side, code to create a Pekko HTTP route based on your implementation of the API
 * On the client side, a client for the API.
 
 ## Project structure

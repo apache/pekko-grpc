@@ -11,24 +11,24 @@ grpc-java and akka-grpc.
 Server:
 
 ```
-sbt  "runMain akka.grpc.benchmarks.qps.AsyncServer --tls --address=localhost:50051"
+sbt  "runMain org.apache.pekko.grpc.benchmarks.qps.AsyncServer --tls --address=localhost:50051"
 ```
 
 Client with unary calls:
 
 ```
-sbt "runMain akka.grpc.benchmarks.qps.AsyncClient --tls --address=localhost:50051 --warmup_duration=15 --duration=30 --channels=1 --outstanding_rpcs=16"
+sbt "runMain org.apache.pekko.grpc.benchmarks.qps.AsyncClient --tls --address=localhost:50051 --warmup_duration=15 --duration=30 --channels=1 --outstanding_rpcs=16"
 ```
 
 Client with streaming calls:
 
 ```
-sbt "runMain akka.grpc.benchmarks.qps.AsyncClient --tls --address=localhost:50051 --warmup_duration=15 --duration=30 --channels=1 --outstanding_rpcs=16 --streaming_rpcs"
+sbt "runMain org.apache.pekko.grpc.benchmarks.qps.AsyncClient --tls --address=localhost:50051 --warmup_duration=15 --duration=30 --channels=1 --outstanding_rpcs=16 --streaming_rpcs"
 ```
 
 Use `--help` to show description of all options.
 
-More scenarios can be tested with the `akka.grpc.benchmarks.driver.LoadWorker`. See `LoadWorkerTest`.
+More scenarios can be tested with the `org.apache.pekko.grpc.benchmarks.driver.LoadWorker`. See `LoadWorkerTest`.
 
 ## Visualizing the Latency Distribution
 

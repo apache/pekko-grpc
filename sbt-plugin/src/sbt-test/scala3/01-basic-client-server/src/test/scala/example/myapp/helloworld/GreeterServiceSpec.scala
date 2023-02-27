@@ -2,10 +2,10 @@ package example.myapp.helloworld;
 
 import scala.concurrent.duration._
 
-import akka.actor.ActorSystem
-import akka.http.scaladsl.Http
+import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.http.scaladsl.Http
 
-import akka.grpc.GrpcClientSettings
+import org.apache.pekko.grpc.GrpcClientSettings
 
 import example.myapp.helloworld.grpc._
 

@@ -4,8 +4,8 @@
 
 package example.myapp.helloworld.grpc;
 
-import akka.NotUsed;
-import akka.stream.javadsl.Source;
+import org.apache.pekko.NotUsed;
+import org.apache.pekko.stream.javadsl.Source;
 import com.google.protobuf.any.Any;
 import com.google.rpc.Code;
 import com.google.rpc.error_details.LocalizedMessage;

@@ -13,7 +13,7 @@ final case class Settings(
     testCase: String,
     useTls: Boolean,
     useTestCa: Boolean,
-    useAkkaHttp: Boolean,
+    usePekkoHttp: Boolean,
     defaultServiceAccount: String,
     serviceAccountKeyFile: String,
     oauthScope: String) {
@@ -33,7 +33,7 @@ object Settings {
       testCase = "empty_unary",
       useTls = true,
       useTestCa = false,
-      useAkkaHttp = false,
+      usePekkoHttp = false,
       defaultServiceAccount = null,
       serviceAccountKeyFile = null,
       oauthScope = null)
@@ -59,7 +59,7 @@ object Settings {
              |   --use_tls=true|false        Whether to use TLS. Default ${defaultSettings.useTls}
              |   --use_test_ca=true|false    Whether to trust our fake CA. Requires --use_tls=true
              |                               to have effect. Default ${defaultSettings.useTestCa}
-             |   --use_akkaHttp=true|false   Whether to use akka-http instead of Netty. Default ${defaultSettings.useAkkaHttp}
+             |   --use_pekkoHttp=true|false  Whether to use pekko-http instead of Netty. Default ${defaultSettings.usePekkoHttp}
              |   --default_service_account   Email of GCE default service account. Default ${defaultSettings.defaultServiceAccount}
              |   --service_account_key_file  Path to service account json key file. ${defaultSettings.serviceAccountKeyFile}
              |   --oauth_scope               Scope for OAuth tokens. Default ${defaultSettings.oauthScope}
@@ -97,7 +97,7 @@ object Settings {
         case "test_case"                => settings.copy(testCase = value)
         case "use_tls"                  => settings.copy(useTls = value.toBoolean)
         case "use_test_ca"              => settings.copy(useTestCa = value.toBoolean)
-        case "use_akkaHttp"             => settings.copy(useAkkaHttp = value.toBoolean)
+        case "use_akkaHttp"             => settings.copy(usePekkoHttp = value.toBoolean)
         case "default_service_account"  => settings.copy(defaultServiceAccount = value)
         case "service_account_key_file" => settings.copy(serviceAccountKeyFile = value)
         case "oauth_scope"              => settings.copy(oauthScope = value)

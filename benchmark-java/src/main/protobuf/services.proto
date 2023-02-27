@@ -23,7 +23,7 @@ import "stats.proto";
 
 package grpc.testing;
 
-option java_package = "akka.grpc.benchmarks.proto";
+option java_package = "org.apache.pekko.grpc.benchmarks.proto";
 option java_outer_classname = "Services";
 
 service BenchmarkService {
