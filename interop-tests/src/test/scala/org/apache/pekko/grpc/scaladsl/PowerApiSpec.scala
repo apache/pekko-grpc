@@ -39,7 +39,7 @@ import org.scalatest.time.Span
 import org.scalatest.wordspec.AnyWordSpecLike
 
 class PowerApiSpecNetty extends PowerApiSpec("netty")
-class PowerApiSpecAkkaHttp extends PowerApiSpec("pekko-http")
+class PowerApiSpecPekkoHttp extends PowerApiSpec("pekko-http")
 
 abstract class PowerApiSpec(backend: String)
     extends TestKit(ActorSystem(

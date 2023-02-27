@@ -11,7 +11,7 @@ The project layout is roughly as follows:
 
 ## grpc-interop-testing tests
 
-Test interoperability between the Akka implementation and the implementation from `io.gpc:grpc-interop-testing`, based on [gRPC's original testset](https://github.com/grpc/grpc/blob/master/doc/interop-test-descriptions.md).
+Test interoperability between the Apache Pekko implementation and the implementation from `io.gpc:grpc-interop-testing`, based on [gRPC's original testset](https://github.com/grpc/grpc/blob/master/doc/interop-test-descriptions.md).
 
 There are 3 ways to run these tests:
 
@@ -30,7 +30,7 @@ code generation from the actual sbt plugin.
 
 Running the tests manually is a WiP and might need some local tweaks to work.
 
-Run `AkkaHttpServerAppScala` to start a gRPC server with the server-side of the
+Run `PekkoHttpServerAppScala` to start a gRPC server with the server-side of the
 tests, which can then be tested against using other gRPC implementations
 implementing the client side.
 

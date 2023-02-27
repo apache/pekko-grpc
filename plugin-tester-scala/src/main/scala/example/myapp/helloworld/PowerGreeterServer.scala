@@ -14,7 +14,7 @@ import scala.concurrent.{ ExecutionContext, Future }
 
 class PowerGreeterServer(system: ActorSystem) {
   def run(): Future[Http.ServerBinding] = {
-    // Akka boot up code
+    // Pekko boot up code
     implicit val sys: ActorSystem = system
     implicit val ec: ExecutionContext = sys.dispatcher
 

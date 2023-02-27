@@ -7,28 +7,29 @@ package org.apache.pekko.grpc.interop
 import io.grpc.testing.integration.TestServiceHandlerFactory
 
 class GrpcInteropIoWithIoSpec extends GrpcInteropTests(Servers.IoGrpc, Clients.IoGrpc)
-class GrpcInteropIoWithAkkaNettyScalaSpec extends GrpcInteropTests(Servers.IoGrpc, Clients.AkkaNetty.Scala)
-class GrpcInteropIoWithAkkaNettyJavaSpec extends GrpcInteropTests(Servers.IoGrpc, Clients.AkkaNetty.Java)
-class GrpcInteropIoWithAkkaHttpScalaSpec extends GrpcInteropTests(Servers.IoGrpc, Clients.AkkaHttp.Scala)
-//class GrpcInteropIoWithAkkaHttpJavaSpec extends GrpcInteropTests(Servers.IoGrpc, Clients.AkkaHttp.Java)
+class GrpcInteropIoWithPekkoNettyScalaSpec extends GrpcInteropTests(Servers.IoGrpc, Clients.PekkoNetty.Scala)
+class GrpcInteropIoWithPekkoNettyJavaSpec extends GrpcInteropTests(Servers.IoGrpc, Clients.PekkoNetty.Java)
+class GrpcInteropIoWithPekkkoHttpScalaSpec extends GrpcInteropTests(Servers.IoGrpc, Clients.PekkoHttp.Scala)
+//class GrpcInteropIoWithpekkoHttpJavaSpec extends GrpcInteropTests(Servers.IoGrpc, Clients.PekkoHttp.Java)
 
-class GrpcInteropPekkoScalaWithIoSpec extends GrpcInteropTests(Servers.Akka.Scala, Clients.IoGrpc)
-class GrpcInteropPekkoScalaWithAkkaNettyScalaSpec extends GrpcInteropTests(Servers.Akka.Scala, Clients.AkkaNetty.Scala)
-class GrpcInteropPekkoScalaWithAkkaNettyJavaSpec extends GrpcInteropTests(Servers.Akka.Scala, Clients.AkkaNetty.Java)
-class GrpcInteropPekkoScalaWithAkkaHttpScalaSpec extends GrpcInteropTests(Servers.Akka.Scala, Clients.AkkaHttp.Scala)
-//class GrpcInteropPekkoScalaWithAkkaHttpJavaSpec extends GrpcInteropTests(Servers.Akka.Scala, Clients.AkkaHttp.Java)
+class GrpcInteropPekkoScalaWithIoSpec extends GrpcInteropTests(Servers.Pekko.Scala, Clients.IoGrpc)
+class GrpcInteropPekkoScalaWithPekkoNettyScalaSpec
+    extends GrpcInteropTests(Servers.Pekko.Scala, Clients.PekkoNetty.Scala)
+class GrpcInteropPekkoScalaWithPekkoNettyJavaSpec extends GrpcInteropTests(Servers.Pekko.Scala, Clients.PekkoNetty.Java)
+class GrpcInteropPekkoScalaWithPekkoHttpScalaSpec extends GrpcInteropTests(Servers.Pekko.Scala, Clients.PekkoHttp.Scala)
+//class GrpcInteropPekkoScalaWithPekkoHttpJavaSpec extends GrpcInteropTests(Servers.Pekko.Scala, Clients.PekkoHttp.Java)
 
-class GrpcInteropPekkoJavaWithIoSpec extends GrpcInteropTests(Servers.Akka.Java, Clients.IoGrpc)
-class GrpcInteropPekkoJavaWithAkkaNettyScalaSpec extends GrpcInteropTests(Servers.Akka.Java, Clients.AkkaNetty.Scala)
-class GrpcInteropPekkoJavaWithAkkaNettyJavaSpec extends GrpcInteropTests(Servers.Akka.Java, Clients.AkkaNetty.Java)
-class GrpcInteropPekkoJavaWithAkkaHttpScalaSpec extends GrpcInteropTests(Servers.Akka.Java, Clients.AkkaHttp.Scala)
-//class GrpcInteropPekkoJavaWithAkkaHttpJavaSpec extends GrpcInteropTests(Servers.Akka.Java, Clients.AkkaHttp.Java)
+class GrpcInteropPekkoJavaWithIoSpec extends GrpcInteropTests(Servers.Pekko.Java, Clients.IoGrpc)
+class GrpcInteropPekkoJavaWithPekkoNettyScalaSpec extends GrpcInteropTests(Servers.Pekko.Java, Clients.PekkoNetty.Scala)
+class GrpcInteropPekkoJavaWithPekkoNettyJavaSpec extends GrpcInteropTests(Servers.Pekko.Java, Clients.PekkoNetty.Java)
+class GrpcInteropPekkoJavaWithPekkoHttpScalaSpec extends GrpcInteropTests(Servers.Pekko.Java, Clients.PekkoHttp.Scala)
+//class GrpcInteropPekkoJavaWithPekkoHttpJavaSpec extends GrpcInteropTests(Servers.Pekko.Java, Clients.PekkoHttp.Java)
 
 //--- Aliases
 
 object Servers {
   val IoGrpc = IoGrpcJavaServerProvider
-  object Akka {
+  object Pekko {
     val Java = PekkoHttpServerProviderJava$
     val Scala = PekkoHttpServerProviderScala
   }
@@ -36,13 +37,13 @@ object Servers {
 
 object Clients {
   val IoGrpc = IoGrpcJavaClientProvider
-  object AkkaNetty {
+  object PekkoNetty {
     val Java = PekkoNettyClientProviderJava$
     val Scala = new PekkoClientProviderScala("netty")
   }
-  object AkkaHttp {
+  object PekkoHttp {
     // FIXME: let's have Scala stable and we'll do Java later.
-    // val Java = AkkaHttpClientProviderJava
+    // val Java = PekkoHttpClientProviderJava
     val Scala = new PekkoClientProviderScala("pekko-http")
   }
 }

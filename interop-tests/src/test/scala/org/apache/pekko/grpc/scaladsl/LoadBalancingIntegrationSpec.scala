@@ -28,10 +28,10 @@ import scala.concurrent.duration._
 
 class LoadBalancingIntegrationSpecNetty extends LoadBalancingIntegrationSpec()
 
-// TODO FIXME enable this test when we can use a pool interface in AkkaHttpClientUtils
+// TODO FIXME enable this test when we can use a pool interface in PekkoHttpClientUtils
 // https://github.com/akka/akka-grpc/issues/1196
 // https://github.com/akka/akka-grpc/issues/1197
-//class LoadBalancingIntegrationSpecAkkaHttp
+//class LoadBalancingIntegrationSpecPekkoHttp
 //    extends LoadBalancingIntegrationSpec(
 //      ConfigFactory.parseString("""pekko.grpc.client."*".backend = "pekko-http" """).withFallback(ConfigFactory.load()))
 
