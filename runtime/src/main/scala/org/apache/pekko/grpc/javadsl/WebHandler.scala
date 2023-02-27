@@ -22,8 +22,8 @@ import org.apache.pekko.japi.function.{ Function => JFunction }
 import org.apache.pekko.stream.Materializer
 import org.apache.pekko.stream.javadsl.{ Keep, Sink, Source }
 import org.apache.pekko.util.ConstantFun
-import ch.megard.akka.http.cors.javadsl.settings.CorsSettings
-import ch.megard.akka.http.cors.javadsl.CorsDirectives
+//import ch.megard.akka.http.cors.javadsl.settings.CorsSettings
+//import ch.megard.akka.http.cors.javadsl.CorsDirectives
 
 @ApiMayChange
 object WebHandler {

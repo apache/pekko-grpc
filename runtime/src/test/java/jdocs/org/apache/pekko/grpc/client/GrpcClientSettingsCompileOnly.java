@@ -2,7 +2,7 @@
  * Copyright (C) 2018-2021 Lightbend Inc. <https://www.lightbend.com>
  */
 
-package jdocs.akka.grpc.client;
+package jdocs.org.apache.pekko.grpc.client;
 
 import org.apache.pekko.actor.ActorSystem;
 import org.apache.pekko.discovery.Discovery;

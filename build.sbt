@@ -207,7 +207,7 @@ lazy val docs = Project(id = "pekko-grpc-docs", base = file("docs"))
       "scaladoc.akka.grpc.base_url" -> s"/${(Preprocess / siteSubdirName).value}/",
       "javadoc.akka.grpc.base_url" -> "" // @apidoc links to Scaladoc
     ),
-    apidocRootPackage := "akka",
+    apidocRootPackage := "org.apache.pekko",
     resolvers += Resolver.jcenterRepo,
     publishRsyncArtifacts += makeSite.value -> "www/",
     publishRsyncHost := "akkarepo@gustav.akka.io")
