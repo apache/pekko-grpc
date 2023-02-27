@@ -74,7 +74,6 @@ jobs:
       fail-fast: false
       matrix:
         SCALA_VERSION: [2.12, 2.13]
-        # use 1.8 when https://github.com/akka/akka-grpc/issues/1332 is fixed
         JAVA_VERSION: [8, 11]
     steps:
       - name: Checkout
