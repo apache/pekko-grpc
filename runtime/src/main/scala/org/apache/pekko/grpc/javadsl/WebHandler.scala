@@ -36,11 +36,11 @@ object WebHandler {
    *  - If the request s not a CORS pre-flight request, and has an invalid media type, then a _415: Unsupported Media Type_ response is produced.
    *  - Otherise if the request is not handled by one of the provided handlers, a _404: Not Found_ response is produced.
    */
-  def grpcWebHandler(
+  /*def grpcWebHandler(
       handlers: util.List[JFunction[HttpRequest, CompletionStage[HttpResponse]]],
       as: ClassicActorSystemProvider,
       mat: Materializer): JFunction[HttpRequest, CompletionStage[HttpResponse]] =
-    grpcWebHandler(handlers, as, mat, scaladsl.WebHandler.defaultCorsSettings)
+    grpcWebHandler(handlers, as, mat, scaladsl.WebHandler.defaultCorsSettings)*/
 
   // Adapt Marshaller.futureMarshaller(fromResponse) to javadsl
   private implicit val csResponseMarshaller: ToResponseMarshaller[CompletionStage[HttpResponse]] = {
@@ -63,15 +63,16 @@ object WebHandler {
   def grpcWebHandler(
       handlers: util.List[JFunction[HttpRequest, CompletionStage[HttpResponse]]],
       as: ClassicActorSystemProvider,
-      mat: Materializer,
-      corsSettings: CorsSettings): JFunction[HttpRequest, CompletionStage[HttpResponse]] = {
+      mat: Materializer /*,
+      corsSettings: CorsSettings*/ ): JFunction[HttpRequest, CompletionStage[HttpResponse]] = {
     import scala.collection.JavaConverters._
 
     val servicesHandler = concatOrNotFound(handlers.asScala.toList: _*)
     val servicesRoute = RouteAdapter(MarshallingDirectives.handleWith(servicesHandler.apply(_)))
-    val handler = asyncHandler(CorsDirectives.cors(corsSettings, () => servicesRoute), as, mat)
+    val handler = asyncHandler(/*CorsDirectives.cors(corsSettings, () => */ servicesRoute /*)*/, as, mat)
     (req: HttpRequest) =>
-      if (scaladsl.ServiceHandler.isGrpcWebRequest(req) || scaladsl.WebHandler.isCorsPreflightRequest(req)) handler(req)
+      if (scaladsl.ServiceHandler.isGrpcWebRequest(req) /*|| scaladsl.WebHandler.isCorsPreflightRequest(req)*/ )
+        handler(req)
       else unsupportedMediaType
   }
 

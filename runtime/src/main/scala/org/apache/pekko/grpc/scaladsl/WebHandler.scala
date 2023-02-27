@@ -4,24 +4,24 @@
 
 package org.apache.pekko.grpc.scaladsl
 
-import scala.collection.immutable
+//import scala.collection.immutable
 import scala.concurrent.Future
 import org.apache.pekko.actor.ClassicActorSystemProvider
 import org.apache.pekko.annotation.ApiMayChange
-import org.apache.pekko.http.javadsl.{ model => jmodel }
-import org.apache.pekko.http.scaladsl.model.{ HttpMethods, HttpRequest, HttpResponse }
-import org.apache.pekko.http.scaladsl.model.headers._
+//import org.apache.pekko.http.javadsl.{ model => jmodel }
+import org.apache.pekko.http.scaladsl.model.{ HttpRequest, HttpResponse }
+//import org.apache.pekko.http.scaladsl.model.headers._
 import org.apache.pekko.http.scaladsl.server.Route
 import org.apache.pekko.http.scaladsl.server.directives.MarshallingDirectives.handleWith
-import ch.megard.akka.http.cors.scaladsl.CorsDirectives.cors
-import ch.megard.akka.http.cors.scaladsl.model.HttpHeaderRange
-import ch.megard.akka.http.cors.scaladsl.settings.CorsSettings
+//import ch.megard.akka.http.cors.scaladsl.CorsDirectives.cors
+//import ch.megard.akka.http.cors.scaladsl.model.HttpHeaderRange
+//import ch.megard.akka.http.cors.scaladsl.settings.CorsSettings
 
 @ApiMayChange
 object WebHandler {
 
   /** Default CORS settings to use for grpc-web */
-  val defaultCorsSettings: CorsSettings = CorsSettings.defaultSettings
+  /*val defaultCorsSettings: CorsSettings = CorsSettings.defaultSettings
     .withAllowCredentials(true)
     .withAllowedMethods(immutable.Seq(HttpMethods.POST, HttpMethods.OPTIONS))
     .withExposedHeaders(immutable.Seq(headers.`Status`.name, headers.`Status-Message`.name, `Content-Encoding`.name))
@@ -37,7 +37,7 @@ object WebHandler {
   private[grpc] def isCorsPreflightRequest(r: jmodel.HttpRequest): Boolean =
     r.method == HttpMethods.OPTIONS && r.getHeader(classOf[Origin]).isPresent && r
       .getHeader(classOf[`Access-Control-Request-Method`])
-      .isPresent
+      .isPresent*/
 
   /**
    * Creates a `HttpRequest` to `HttpResponse` handler for gRPC services that can be used in
@@ -48,13 +48,13 @@ object WebHandler {
    *  - Otherise if the request is not handled by one of the provided handlers, a _404: Not Found_ response is produced.
    */
   def grpcWebHandler(handlers: PartialFunction[HttpRequest, Future[HttpResponse]]*)(
-      implicit as: ClassicActorSystemProvider,
-      corsSettings: CorsSettings = defaultCorsSettings): HttpRequest => Future[HttpResponse] = {
+      implicit as: ClassicActorSystemProvider /*,
+      corsSettings: CorsSettings = defaultCorsSettings*/ ): HttpRequest => Future[HttpResponse] = {
     implicit val system = as.classicSystem
     val servicesHandler = ServiceHandler.concat(handlers: _*)
-    Route.toFunction(cors(corsSettings) {
+    Route.toFunction /*cors(corsSettings)*/ {
       handleWith(servicesHandler)
-    })
+    }
   }
 
 }
