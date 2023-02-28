@@ -27,7 +27,7 @@ It features:
 
 ## Project Information
 
-@@project-info{ projectId="pekko-grpc-runtime" }
+@@project-info{ projectId="runtime" }
 
 ## Project Status
 

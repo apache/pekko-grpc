@@ -1,5 +1,5 @@
 <!--
-  To test locally, first 'sbt pekko-grpc-maven-plugin:publishM2' in the parent dir
+  To test locally, first 'sbt maven-plugin:publishM2' in the parent dir
   and define the published version as pekko.grpc.project.version in the properties block below
   or pass it to mvn when running like so: mvn -Dpekko.grpc.project.version=some-version compile exec:exec
 -->

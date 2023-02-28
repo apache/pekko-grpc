@@ -123,7 +123,7 @@ jobs:
         uses: coursier/cache-action@v6
 
       - name: Scripted ${{ matrix.test-set }}
-        run: cp .jvmopts-ghactions .jvmopts && sbt ++${{ matrix.scala-version }}.* "sbt-pekko-grpc/scripted ${{ matrix.test-set }}/*"
+        run: cp .jvmopts-ghactions .jvmopts && sbt ++${{ matrix.scala-version }}.* "sbt-plugin/scripted ${{ matrix.test-set }}/*"
 
   test-gradle:
     name: Gradle tests
@@ -161,7 +161,7 @@ jobs:
       - name: Publish artifacts locally
         run: |-
           cp .jvmopts-ghactions .jvmopts
-          sbt pekko-grpc-codegen/publishM2 pekko-grpc-scalapb-protoc-plugin/publishM2 +pekko-grpc-runtime/publishM2
+          sbt codegen/publishM2 scalapb-protoc-plugin/publishM2 +runtime/publishM2
           cd gradle-plugin
           ./gradlew clean publishToMavenLocal --console=plain --info --stacktrace
           find ~/.m2 | grep gradle
@@ -215,7 +215,7 @@ jobs:
       - name: Publish artifacts locally
         run: |-
           cp .jvmopts-ghactions .jvmopts
-          sbt pekko-grpc-codegen/publishM2 pekko-grpc-scalapb-protoc-plugin/publishM2 +pekko-grpc-runtime/publishM2 pekko-grpc-maven-plugin/publishM2
+          sbt codegen/publishM2 scalapb-protoc-plugin/publishM2 +runtime/publishM2 maven-plugin/publishM2
 
       - name: Test Maven Java
         run: |-

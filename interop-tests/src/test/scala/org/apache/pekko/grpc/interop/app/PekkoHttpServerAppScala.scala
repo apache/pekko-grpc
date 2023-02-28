@@ -12,7 +12,7 @@ import org.apache.pekko.grpc.interop.PekkoHttpServerProviderScala
  *
  * This can be useful for 'manually' interacting with this server.
  *
- * You can start this app from sbt with 'pekko-grpc-interop-tests/test:reStart'
+ * You can start this app from sbt with 'interop-tests/test:reStart'
  */
 object PekkoHttpServerAppScala extends App {
   val (sys, binding) = PekkoHttpServerProviderScala.server.start(Array())

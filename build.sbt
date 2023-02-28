@@ -5,7 +5,8 @@ import org.apache.pekko.grpc.build.ReflectiveCodeGen
 import com.typesafe.tools.mima.core._
 import sbt.Keys.scalaVersion
 
-val pekkoGrpcRuntimeName = "pekko-grpc-runtime"
+val pekkoPrefix = "pekko-grpc"
+val pekkoGrpcRuntimeName = s"$pekkoPrefix-runtime"
 
 lazy val mkBatAssemblyTask = taskKey[File]("Create a Windows bat assembly")
 
@@ -14,14 +15,15 @@ lazy val mkBatAssemblyTask = taskKey[File]("Create a Windows bat assembly")
 
 ThisBuild / resolvers += "Apache Snapshots".at("https://repository.apache.org/content/repositories/snapshots/")
 
-val pekkoGrpcCodegenId = "pekko-grpc-codegen"
-lazy val codegen = Project(id = pekkoGrpcCodegenId, base = file("codegen"))
+val pekkoGrpcCodegenId = s"$pekkoPrefix-codegen"
+lazy val codegen = Project(id = "codegen", base = file("codegen"))
   .enablePlugins(SbtTwirl, BuildInfoPlugin)
   .enablePlugins(ReproducibleBuildsPlugin)
   .disablePlugins(MimaPlugin)
   .settings(Dependencies.codegen)
   .settings(resolvers += Resolver.sbtPluginRepo("releases"))
   .settings(
+    name := s"$pekkoPrefix-codegen",
     mkBatAssemblyTask := {
       val file = assembly.value
       Assemblies.mkBatAssembly(file)
@@ -45,13 +47,14 @@ lazy val codegen = Project(id = pekkoGrpcCodegenId, base = file("codegen"))
   .settings(addArtifact(Compile / assembly / artifact, assembly))
   .settings(addArtifact(Artifact(pekkoGrpcCodegenId, "bat", "bat", "bat"), mkBatAssemblyTask))
 
-lazy val runtime = Project(id = pekkoGrpcRuntimeName, base = file("runtime"))
+lazy val runtime = Project(id = "runtime", base = file("runtime"))
   .settings(Dependencies.runtime)
   .settings(VersionGenerator.settings)
   .settings(
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
     scalaVersion := Dependencies.Versions.CrossScalaForLib.head)
   .settings(
+    name := pekkoGrpcRuntimeName,
     mimaFailOnNoPrevious := true,
     mimaPreviousArtifacts := Set.empty, // temporarily disable mima checks
     AutomaticModuleName.settings("pekko.grpc.runtime"),
@@ -63,12 +66,13 @@ lazy val runtime = Project(id = pekkoGrpcRuntimeName, base = file("runtime"))
   .enablePlugins(ReproducibleBuildsPlugin)
 
 /** This could be an independent project - or does upstream provide this already? didn't find it.. */
-val pekkoGrpcProtocPluginId = "pekko-grpc-scalapb-protoc-plugin"
-lazy val scalapbProtocPlugin = Project(id = pekkoGrpcProtocPluginId, base = file("scalapb-protoc-plugin"))
+val pekkoGrpcProtocPluginId = s"$pekkoPrefix-scalapb-protoc-plugin"
+lazy val scalapbProtocPlugin = Project(id = "scalapb-protoc-plugin", base = file("scalapb-protoc-plugin"))
   .disablePlugins(MimaPlugin)
   /** TODO we only really need to depend on scalapb */
   .dependsOn(codegen)
   .settings(
+    name := s"$pekkoPrefix-scalapb-protoc-plugin",
     mkBatAssemblyTask := {
       val file = assembly.value
       Assemblies.mkBatAssembly(file)
@@ -88,12 +92,13 @@ lazy val scalapbProtocPlugin = Project(id = pekkoGrpcProtocPluginId, base = file
   .settings(addArtifact(Artifact(pekkoGrpcProtocPluginId, "bat", "bat", "bat"), mkBatAssemblyTask))
   .enablePlugins(ReproducibleBuildsPlugin)
 
-lazy val mavenPlugin = Project(id = "pekko-grpc-maven-plugin", base = file("maven-plugin"))
+lazy val mavenPlugin = Project(id = "maven-plugin", base = file("maven-plugin"))
   .enablePlugins(org.apache.pekko.grpc.SbtMavenPlugin)
   .enablePlugins(ReproducibleBuildsPlugin)
   .disablePlugins(MimaPlugin)
   .settings(Dependencies.mavenPlugin)
   .settings(
+    name := s"$pekkoPrefix-maven-plugin",
     publishMavenStyle := true,
     crossPaths := false,
     crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
@@ -101,12 +106,13 @@ lazy val mavenPlugin = Project(id = "pekko-grpc-maven-plugin", base = file("mave
   .settings(MetaInfLicenseNoticeCopy.settings)
   .dependsOn(codegen)
 
-lazy val sbtPlugin = Project(id = "sbt-pekko-grpc", base = file("sbt-plugin"))
+lazy val sbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
   .enablePlugins(SbtPlugin)
   .enablePlugins(ReproducibleBuildsPlugin)
   .disablePlugins(MimaPlugin)
   .settings(Dependencies.sbtPlugin)
   .settings(
+    name := s"sbt-$pekkoPrefix",
     /** And for scripted tests: */
     scriptedLaunchOpts += ("-Dproject.version=" + version.value),
     scriptedLaunchOpts ++= sys.props.collect { case (k @ "sbt.ivy.home", v) => s"-D$k=$v" }.toSeq,
@@ -123,7 +129,7 @@ lazy val sbtPlugin = Project(id = "sbt-pekko-grpc", base = file("sbt-plugin"))
   .settings(MetaInfLicenseNoticeCopy.settings)
   .dependsOn(codegen)
 
-lazy val interopTests = Project(id = "pekko-grpc-interop-tests", base = file("interop-tests"))
+lazy val interopTests = Project(id = "interop-tests", base = file("interop-tests"))
   .disablePlugins(MimaPlugin)
   .settings(Dependencies.interopTests)
   .settings(
@@ -131,6 +137,7 @@ lazy val interopTests = Project(id = "pekko-grpc-interop-tests", base = file("in
     scalaVersion := Dependencies.Versions.CrossScalaForLib.head)
   .pluginTestingSettings
   .settings(
+    name := s"$pekkoPrefix-interop-tests",
     // All io.grpc servers want to bind to port :8080
     parallelExecution := false,
     ReflectiveCodeGen.generatedLanguages := Seq("Scala", "Java"),
@@ -166,19 +173,20 @@ lazy val benchmarks = Project(id = "benchmarks", base = file("benchmarks"))
   .enablePlugins(JmhPlugin)
   .disablePlugins(MimaPlugin)
   .settings(
+    name := s"$pekkoPrefix-benchmarks",
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
     scalaVersion := Dependencies.Versions.CrossScalaForLib.head,
     (publish / skip) := true)
   .settings(MetaInfLicenseNoticeCopy.settings)
 
-lazy val docs = Project(id = "pekko-grpc-docs", base = file("docs"))
+lazy val docs = Project(id = "docs", base = file("docs"))
 // Make sure code generation is run:
   .dependsOn(pluginTesterScala)
   .dependsOn(pluginTesterJava)
   .enablePlugins(AkkaParadoxPlugin, ParadoxSitePlugin, PreprocessPlugin, PublishRsyncPlugin)
   .disablePlugins(MimaPlugin)
   .settings(
-    name := "Apache Pekko gRPC",
+    name := s"$pekkoPrefix-docs",
     publish / skip := true,
     makeSite := makeSite.dependsOn(LocalRootProject / ScalaUnidoc / doc).value,
     previewPath := (Paradox / siteSubdirName).value,
@@ -215,10 +223,11 @@ lazy val docs = Project(id = "pekko-grpc-docs", base = file("docs"))
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
     scalaVersion := Dependencies.Versions.CrossScalaForLib.head)
 
-lazy val pluginTesterScala = Project(id = "pekko-grpc-plugin-tester-scala", base = file("plugin-tester-scala"))
+lazy val pluginTesterScala = Project(id = "plugin-tester-scala", base = file("plugin-tester-scala"))
   .disablePlugins(MimaPlugin)
   .settings(Dependencies.pluginTester)
   .settings(
+    name := s"$pekkoPrefix-plugin-tester-scala",
     (publish / skip) := true,
     fork := true,
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
@@ -227,10 +236,11 @@ lazy val pluginTesterScala = Project(id = "pekko-grpc-plugin-tester-scala", base
   .settings(MetaInfLicenseNoticeCopy.settings)
   .pluginTestingSettings
 
-lazy val pluginTesterJava = Project(id = "pekko-grpc-plugin-tester-java", base = file("plugin-tester-java"))
+lazy val pluginTesterJava = Project(id = "plugin-tester-java", base = file("plugin-tester-java"))
   .disablePlugins(MimaPlugin)
   .settings(Dependencies.pluginTester)
   .settings(
+    name := s"$pekkoPrefix-plugin-tester-java",
     (publish / skip) := true,
     fork := true,
     ReflectiveCodeGen.generatedLanguages := Seq("Java"),
@@ -255,6 +265,7 @@ lazy val root = Project(id = "pekko-grpc", base = file("."))
     benchmarks,
     docs)
   .settings(
+    name := s"$pekkoPrefix-root",
     (publish / skip) := true,
     (Compile / headerCreate / unmanagedSources) := (baseDirectory.value / "project").**("*.scala").get,
     // unidoc combines sources and jars from all subprojects and that
