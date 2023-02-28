@@ -4,15 +4,16 @@
 
 package org.apache.pekko.grpc.scaladsl
 
-import org.apache.pekko.NotUsed
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.grpc.internal.{ AbstractGrpcProtocol, GrpcProtocolNative, Gzip }
-import org.apache.pekko.grpc.scaladsl.headers.`Message-Encoding`
-import org.apache.pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
-import org.apache.pekko.http.scaladsl.model.{ HttpEntity, HttpRequest }
-import org.apache.pekko.stream.scaladsl.Sink
-import org.apache.pekko.stream.testkit.TestPublisher
-import org.apache.pekko.stream.testkit.scaladsl.TestSource
+import org.apache.pekko
+import pekko.NotUsed
+import pekko.actor.ActorSystem
+import pekko.grpc.internal.{ AbstractGrpcProtocol, GrpcProtocolNative, Gzip }
+import pekko.grpc.scaladsl.headers.`Message-Encoding`
+import pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
+import pekko.http.scaladsl.model.{ HttpEntity, HttpRequest }
+import pekko.stream.scaladsl.Sink
+import pekko.stream.testkit.TestPublisher
+import pekko.stream.testkit.scaladsl.TestSource
 import io.grpc.{ Status, StatusException }
 import io.grpc.testing.integration.messages.{ BoolValue, SimpleRequest }
 import io.grpc.testing.integration.test.TestService

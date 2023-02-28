@@ -4,12 +4,13 @@
 
 package org.apache.pekko.grpc.scaladsl
 
-import org.apache.pekko.util.ByteString
+import org.apache.pekko
+import pekko.util.ByteString
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 class MetadataBuilderSpec extends AnyWordSpec with Matchers {
-  import org.apache.pekko.grpc.internal.MetadataImplSpec._
+  import pekko.grpc.internal.MetadataImplSpec._
 
   "MetadataBuilder" should {
     "return empty metadata" in {

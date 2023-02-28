@@ -4,10 +4,11 @@ import java.io.InputStream
 import java.security.{ KeyStore, SecureRandom }
 import javax.net.ssl.{ KeyManagerFactory, SSLContext }
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.stream.ActorMaterializer
-import org.apache.pekko.grpc.scaladsl.ServiceHandler
-import org.apache.pekko.http.scaladsl.{ Http, HttpsConnectionContext }
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.stream.ActorMaterializer
+import pekko.grpc.scaladsl.ServiceHandler
+import pekko.http.scaladsl.{ Http, HttpsConnectionContext }
 
 import example.myapp.echo.EchoServiceImpl
 import example.myapp.echo.grpc.EchoServiceHandler

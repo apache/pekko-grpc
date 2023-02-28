@@ -8,8 +8,9 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import scala.concurrent.Future
 
-import org.apache.pekko.NotUsed
-import org.apache.pekko.stream.scaladsl.Source
+import org.apache.pekko
+import pekko.NotUsed
+import pekko.stream.scaladsl.Source
 
 import example.myapp.helloworld.grpc.helloworld._
 
@@ -24,11 +25,11 @@ class CountingGreeterServiceImpl extends GreeterService {
   def itKeepsReplying(in: HelloRequest): Source[HelloReply, NotUsed] =
     Source(List(HelloReply("First"), HelloReply("Second"))).mapMaterializedValue { m => println("XXX MAT YYY"); m }
   def itKeepsTalking(
-      in: org.apache.pekko.stream.scaladsl.Source[example.myapp.helloworld.grpc.helloworld.HelloRequest,
-        org.apache.pekko.NotUsed]): scala.concurrent.Future[example.myapp.helloworld.grpc.helloworld.HelloReply] = ???
+      in: pekko.stream.scaladsl.Source[example.myapp.helloworld.grpc.helloworld.HelloRequest,
+        pekko.NotUsed]): scala.concurrent.Future[example.myapp.helloworld.grpc.helloworld.HelloReply] = ???
   def streamHellos(
-      in: org.apache.pekko.stream.scaladsl.Source[example.myapp.helloworld.grpc.helloworld.HelloRequest,
-        org.apache.pekko.NotUsed]): org.apache.pekko.stream.scaladsl.Source[
-    example.myapp.helloworld.grpc.helloworld.HelloReply, org.apache.pekko.NotUsed] = ???
+      in: pekko.stream.scaladsl.Source[example.myapp.helloworld.grpc.helloworld.HelloRequest,
+        pekko.NotUsed]): pekko.stream.scaladsl.Source[
+    example.myapp.helloworld.grpc.helloworld.HelloReply, pekko.NotUsed] = ???
 
 }

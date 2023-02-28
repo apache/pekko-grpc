@@ -8,20 +8,21 @@ import scala.concurrent.Await
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
 
-import org.apache.pekko.NotUsed
-import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko
+import pekko.NotUsed
+import pekko.actor.ActorSystem
 
-import org.apache.pekko.grpc.internal.Identity
-import org.apache.pekko.grpc.internal.GrpcRequestHelpers
-import org.apache.pekko.grpc.internal.GrpcProtocolNative
+import pekko.grpc.internal.Identity
+import pekko.grpc.internal.GrpcRequestHelpers
+import pekko.grpc.internal.GrpcProtocolNative
 
-import org.apache.pekko.http.scaladsl.model.HttpRequest
-import org.apache.pekko.http.scaladsl.model.HttpResponse
-import org.apache.pekko.http.scaladsl.model.StatusCodes
-import org.apache.pekko.http.scaladsl.model.Uri
+import pekko.http.scaladsl.model.HttpRequest
+import pekko.http.scaladsl.model.HttpResponse
+import pekko.http.scaladsl.model.StatusCodes
+import pekko.http.scaladsl.model.Uri
 
-import org.apache.pekko.stream.scaladsl.Sink
-import org.apache.pekko.stream.scaladsl.Source
+import pekko.stream.scaladsl.Sink
+import pekko.stream.scaladsl.Source
 
 import org.openjdk.jmh.annotations._
 

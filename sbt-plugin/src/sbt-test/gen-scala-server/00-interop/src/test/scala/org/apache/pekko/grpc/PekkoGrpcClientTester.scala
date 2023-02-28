@@ -2,10 +2,11 @@ package org.apache.pekko.grpc.interop
 
 import java.io.InputStream
 
-import org.apache.pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, SSLContextUtils }
-import org.apache.pekko.stream.{ Materializer, SystemMaterializer }
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.stream.scaladsl.{ Keep, Sink, Source }
+import org.apache.pekko
+import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, SSLContextUtils }
+import pekko.stream.{ Materializer, SystemMaterializer }
+import pekko.actor.ActorSystem
+import pekko.stream.scaladsl.{ Keep, Sink, Source }
 import com.google.protobuf.ByteString
 import io.grpc.testing.integration.messages.{
   Payload,
@@ -224,7 +225,7 @@ class PekkoGrpcClientTester(val settings: Settings)(implicit system: ActorSystem
 
   def customMetadata(): Unit = {
     // unary call
-    val binaryHeaderValue = org.apache.pekko.util.ByteString.fromInts(0xABABAB)
+    val binaryHeaderValue = pekko.util.ByteString.fromInts(0xABABAB)
     val unaryResponseFuture = client.unaryCall()
       .addHeader("x-grpc-test-echo-initial", "test_initial_metadata_value")
       // this one is returned as trailer
@@ -246,7 +247,7 @@ class PekkoGrpcClientTester(val settings: Settings)(implicit system: ActorSystem
       client.fullDuplexCall()
         .addHeader("x-grpc-test-echo-initial", "test_initial_metadata_value")
         // this one is returned as trailer
-        .addHeader("x-grpc-test-echo-trailing-bin", org.apache.pekko.util.ByteString.fromInts(0xABABAB))
+        .addHeader("x-grpc-test-echo-trailing-bin", pekko.util.ByteString.fromInts(0xABABAB))
         .invokeWithMetadata(Source.single(
           StreamingOutputCallRequest(
             responseParameters = Seq(ResponseParameters(size = 314159)),

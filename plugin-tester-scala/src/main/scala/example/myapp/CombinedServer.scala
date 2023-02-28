@@ -6,11 +6,12 @@ package example.myapp
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.http.scaladsl.Http
-import org.apache.pekko.http.scaladsl.model.HttpRequest
-import org.apache.pekko.http.scaladsl.model.HttpResponse
-import org.apache.pekko.grpc.scaladsl.ServerReflection
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.http.scaladsl.Http
+import pekko.http.scaladsl.model.HttpRequest
+import pekko.http.scaladsl.model.HttpResponse
+import pekko.grpc.scaladsl.ServerReflection
 import com.typesafe.config.ConfigFactory
 import example.myapp.helloworld._
 import example.myapp.echo._

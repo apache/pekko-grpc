@@ -4,12 +4,13 @@
 
 package org.apache.pekko.grpc.internal
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.grpc.GrpcProtocol.{ DataFrame, Frame }
-import org.apache.pekko.stream.scaladsl.Source
-import org.apache.pekko.stream.testkit.scaladsl.TestSink
-import org.apache.pekko.testkit.TestKit
-import org.apache.pekko.util.ByteString
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.grpc.GrpcProtocol.{ DataFrame, Frame }
+import pekko.stream.scaladsl.Source
+import pekko.stream.testkit.scaladsl.TestSink
+import pekko.testkit.TestKit
+import pekko.util.ByteString
 import org.scalatest.wordspec.AnyWordSpecLike
 
 class GrpcProtocolWebTextSpec extends TestKit(ActorSystem()) with AnyWordSpecLike {

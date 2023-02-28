@@ -9,11 +9,12 @@ import java.util.concurrent.CompletionStage
 import scala.compat.java8.FutureConverters._
 import scala.concurrent.Future
 
-import org.apache.pekko.Done
-import org.apache.pekko.actor.ClassicActorSystemProvider
-import org.apache.pekko.annotation.InternalStableApi
-import org.apache.pekko.grpc.internal.{ ChannelUtils, InternalChannel }
-import org.apache.pekko.grpc.scaladsl.Grpc
+import org.apache.pekko
+import pekko.Done
+import pekko.actor.ClassicActorSystemProvider
+import pekko.annotation.InternalStableApi
+import pekko.grpc.internal.{ ChannelUtils, InternalChannel }
+import pekko.grpc.scaladsl.Grpc
 
 final class GrpcChannel private (
     @InternalStableApi val settings: GrpcClientSettings,
@@ -37,7 +38,7 @@ final class GrpcChannel private (
   /**
    * Scala API: Initiates a shutdown in which preexisting and new calls are cancelled.
    */
-  def close(): Future[org.apache.pekko.Done] = {
+  def close(): Future[pekko.Done] = {
     Grpc(sys).deregisterChannel(this)
     ChannelUtils.close(internalChannel)
   }
@@ -46,7 +47,7 @@ final class GrpcChannel private (
    * Scala API: Returns a Future that completes successfully when channel is shut down via close()
    * or exceptionally if a connection cannot be established or reestablished after maxConnectionAttempts.
    */
-  def closed(): Future[org.apache.pekko.Done] =
+  def closed(): Future[pekko.Done] =
     internalChannel.done
 }
 
@@ -54,6 +55,6 @@ object GrpcChannel {
   def apply(settings: GrpcClientSettings)(implicit sys: ClassicActorSystemProvider): GrpcChannel = {
     new GrpcChannel(
       settings,
-      ChannelUtils.create(settings, org.apache.pekko.event.Logging(sys.classicSystem, classOf[GrpcChannel])))
+      ChannelUtils.create(settings, pekko.event.Logging(sys.classicSystem, classOf[GrpcChannel])))
   }
 }

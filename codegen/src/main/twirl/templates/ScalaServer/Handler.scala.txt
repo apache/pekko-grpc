@@ -9,20 +9,21 @@ package @service.packageName
 
 import scala.concurrent.ExecutionContext
 
-import org.apache.pekko.grpc.scaladsl.{ GrpcExceptionHandler, GrpcMarshalling }
-import org.apache.pekko.grpc.Trailers
+import org.apache.pekko
+import pekko.grpc.scaladsl.{ GrpcExceptionHandler, GrpcMarshalling }
+import pekko.grpc.Trailers
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.actor.ClassicActorSystemProvider
-import org.apache.pekko.annotation.ApiMayChange
-import org.apache.pekko.http.scaladsl.model
-import org.apache.pekko.stream.SystemMaterializer
+import pekko.actor.ActorSystem
+import pekko.actor.ClassicActorSystemProvider
+import pekko.annotation.ApiMayChange
+import pekko.http.scaladsl.model
+import pekko.stream.SystemMaterializer
 
-import org.apache.pekko.grpc.internal.TelemetryExtension
+import pekko.grpc.internal.TelemetryExtension
 
-import org.apache.pekko.grpc.PekkoGrpcGenerated
+import pekko.grpc.PekkoGrpcGenerated
 
-@{if (powerApis) "import org.apache.pekko.grpc.scaladsl.MetadataBuilder" else ""}
+@{if (powerApis) "import pekko.grpc.scaladsl.MetadataBuilder" else ""}
 
 @defining(if (powerApis) service.name + "PowerApi" else service.name) { serviceName =>
 /*
@@ -92,9 +93,9 @@ object @{serviceName}Handler {
      * several services.
      */
     def withServerReflection(implementation: @serviceName)(implicit system: ClassicActorSystemProvider): model.HttpRequest => scala.concurrent.Future[model.HttpResponse] =
-        org.apache.pekko.grpc.scaladsl.ServiceHandler.concatOrNotFound(
+        pekko.grpc.scaladsl.ServiceHandler.concatOrNotFound(
           @{serviceName}Handler.partial(implementation),
-          org.apache.pekko.grpc.scaladsl.ServerReflection.partial(List(@{service.name})))
+          pekko.grpc.scaladsl.ServerReflection.partial(List(@{service.name})))
 }
 
     /**

@@ -4,7 +4,8 @@
 
 package org.apache.pekko.grpc.internal
 
-import org.apache.pekko.actor.{
+import org.apache.pekko
+import pekko.actor.{
   ActorSystem,
   ClassicActorSystemProvider,
   ExtendedActorSystem,
@@ -12,8 +13,8 @@ import org.apache.pekko.actor.{
   ExtensionId,
   ExtensionIdProvider
 }
-import org.apache.pekko.annotation.{ InternalApi, InternalStableApi }
-import org.apache.pekko.http.javadsl.model.HttpRequest
+import pekko.annotation.{ InternalApi, InternalStableApi }
+import pekko.http.javadsl.model.HttpRequest
 
 import scala.annotation.nowarn
 

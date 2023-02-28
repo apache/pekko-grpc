@@ -4,8 +4,9 @@
 
 package org.apache.pekko.grpc.internal
 
-import org.apache.pekko.discovery.{ Lookup, ServiceDiscovery }
-import org.apache.pekko.discovery.ServiceDiscovery.Resolved
+import org.apache.pekko
+import pekko.discovery.{ Lookup, ServiceDiscovery }
+import pekko.discovery.ServiceDiscovery.Resolved
 
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration

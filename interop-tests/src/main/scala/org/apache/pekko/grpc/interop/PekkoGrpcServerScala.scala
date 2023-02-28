@@ -11,11 +11,12 @@ import java.security.spec.PKCS8EncodedKeySpec
 import java.security.{ KeyFactory, KeyStore, SecureRandom }
 
 import scala.concurrent.duration._
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.util.ByteString
-import org.apache.pekko.http.scaladsl.Http.ServerBinding
-import org.apache.pekko.http.scaladsl.model.{ HttpRequest, HttpResponse }
-import org.apache.pekko.http.scaladsl.{ ConnectionContext, Http }
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.util.ByteString
+import pekko.http.scaladsl.Http.ServerBinding
+import pekko.http.scaladsl.model.{ HttpRequest, HttpResponse }
+import pekko.http.scaladsl.{ ConnectionContext, Http }
 import io.grpc.internal.testing.TestUtils
 import javax.net.ssl.{ KeyManagerFactory, SSLContext }
 

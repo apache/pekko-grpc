@@ -4,13 +4,14 @@
 
 package org.apache.pekko.grpc
 
-import org.apache.pekko.actor.ClassicActorSystemProvider
-import org.apache.pekko.annotation.{ ApiMayChange, InternalApi }
-import org.apache.pekko.discovery.{ Discovery, ServiceDiscovery }
-import org.apache.pekko.discovery.ServiceDiscovery.{ Resolved, ResolvedTarget }
-import org.apache.pekko.grpc.internal.HardcodedServiceDiscovery
-import org.apache.pekko.util.Helpers
-import org.apache.pekko.util.JavaDurationConverters._
+import org.apache.pekko
+import pekko.actor.ClassicActorSystemProvider
+import pekko.annotation.{ ApiMayChange, InternalApi }
+import pekko.discovery.{ Discovery, ServiceDiscovery }
+import pekko.discovery.ServiceDiscovery.{ Resolved, ResolvedTarget }
+import pekko.grpc.internal.HardcodedServiceDiscovery
+import pekko.util.Helpers
+import pekko.util.JavaDurationConverters._
 import com.typesafe.config.{ Config, ConfigValueFactory }
 import io.grpc.CallCredentials
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder

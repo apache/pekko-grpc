@@ -5,12 +5,13 @@
 package org.apache.pekko.grpc.scaladsl
 
 import java.net.InetSocketAddress
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.grpc.GrpcClientSettings
-import org.apache.pekko.grpc.internal.ClientConnectionException
-import org.apache.pekko.grpc.scaladsl.tools.MutableServiceDiscovery
-import org.apache.pekko.http.scaladsl.Http
-import org.apache.pekko.stream.SystemMaterializer
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.grpc.GrpcClientSettings
+import pekko.grpc.internal.ClientConnectionException
+import pekko.grpc.scaladsl.tools.MutableServiceDiscovery
+import pekko.http.scaladsl.Http
+import pekko.stream.SystemMaterializer
 import com.typesafe.config.ConfigFactory
 import example.myapp.helloworld.grpc.helloworld._
 import io.grpc.Status.Code

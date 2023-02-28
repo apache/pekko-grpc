@@ -5,10 +5,11 @@
 package org.apache.pekko.grpc.scaladsl
 
 import scala.collection.immutable
-import org.apache.pekko.annotation.{ ApiMayChange, DoNotInherit }
-import org.apache.pekko.http.scaladsl.model.HttpHeader
-import org.apache.pekko.util.ByteString
-import org.apache.pekko.grpc.internal.{ EntryMetadataImpl, HeaderMetadataImpl, MetadataImpl }
+import org.apache.pekko
+import pekko.annotation.{ ApiMayChange, DoNotInherit }
+import pekko.http.scaladsl.model.HttpHeader
+import pekko.util.ByteString
+import pekko.grpc.internal.{ EntryMetadataImpl, HeaderMetadataImpl, MetadataImpl }
 
 /**
  * This class provides an interface for constructing immutable Metadata instances.

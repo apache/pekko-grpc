@@ -5,10 +5,11 @@
 //#full-client
 package example.myapp.helloworld
 
-import org.apache.pekko.{ Done, NotUsed }
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.grpc.GrpcClientSettings
-import org.apache.pekko.stream.scaladsl.Source
+import org.apache.pekko
+import pekko.{ Done, NotUsed }
+import pekko.actor.ActorSystem
+import pekko.grpc.GrpcClientSettings
+import pekko.stream.scaladsl.Source
 import example.myapp.helloworld.grpc._
 
 import scala.concurrent.Future

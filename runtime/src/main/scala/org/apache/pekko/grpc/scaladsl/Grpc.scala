@@ -7,13 +7,14 @@ package org.apache.pekko.grpc.scaladsl
 import scala.concurrent.Future
 import scala.jdk.CollectionConverters._
 
-import org.apache.pekko.Done
-import org.apache.pekko.actor.{ CoordinatedShutdown, ExtendedActorSystem, Extension, ExtensionId, ExtensionIdProvider }
-import org.apache.pekko.annotation.InternalApi
+import org.apache.pekko
+import pekko.Done
+import pekko.actor.{ CoordinatedShutdown, ExtendedActorSystem, Extension, ExtensionId, ExtensionIdProvider }
+import pekko.annotation.InternalApi
 import java.util.concurrent.ConcurrentHashMap
 
-import org.apache.pekko.event.Logging
-import org.apache.pekko.grpc.GrpcChannel
+import pekko.event.Logging
+import pekko.grpc.GrpcChannel
 
 /** INTERNAL API */
 @InternalApi

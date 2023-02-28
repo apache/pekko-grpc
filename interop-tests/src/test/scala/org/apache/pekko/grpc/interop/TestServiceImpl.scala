@@ -4,11 +4,12 @@
 
 package org.apache.pekko.grpc.interop
 
-import org.apache.pekko.NotUsed
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.grpc.GrpcServiceException
-import org.apache.pekko.stream.{ Materializer, SystemMaterializer }
-import org.apache.pekko.stream.scaladsl.{ Flow, Source }
+import org.apache.pekko
+import pekko.NotUsed
+import pekko.actor.ActorSystem
+import pekko.grpc.GrpcServiceException
+import pekko.stream.{ Materializer, SystemMaterializer }
+import pekko.stream.scaladsl.{ Flow, Source }
 
 import com.google.protobuf.ByteString
 

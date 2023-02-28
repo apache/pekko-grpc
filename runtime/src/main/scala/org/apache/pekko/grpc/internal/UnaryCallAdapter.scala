@@ -6,10 +6,11 @@ package org.apache.pekko.grpc.internal
 
 import java.util.concurrent.CompletionStage
 
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.dispatch.ExecutionContexts
-import org.apache.pekko.grpc.GrpcSingleResponse
-import org.apache.pekko.util.OptionVal
+import org.apache.pekko
+import pekko.annotation.InternalApi
+import pekko.dispatch.ExecutionContexts
+import pekko.grpc.GrpcSingleResponse
+import pekko.util.OptionVal
 import io.grpc._
 
 import scala.compat.java8.FutureConverters._
@@ -72,9 +73,9 @@ private[pekko] final class UnaryCallWithMetadataAdapter[Res] extends ClientCall.
       override def value: Res = message
       override def getValue(): Res = message
 
-      private lazy val sMetadata: org.apache.pekko.grpc.scaladsl.Metadata =
+      private lazy val sMetadata: pekko.grpc.scaladsl.Metadata =
         MetadataImpl.scalaMetadataFromGoogleGrpcMetadata(headersOnMessage)
-      private lazy val jMetadata: org.apache.pekko.grpc.javadsl.Metadata =
+      private lazy val jMetadata: pekko.grpc.javadsl.Metadata =
         MetadataImpl.javaMetadataFromGoogleGrpcMetadata(headersOnMessage)
       override def headers = sMetadata
       override def getHeaders() = jMetadata

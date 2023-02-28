@@ -4,9 +4,10 @@
 
 package docs.org.apache.pekko.grpc.client
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.discovery.{ Discovery, ServiceDiscovery }
-import org.apache.pekko.grpc.GrpcClientSettings
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.discovery.{ Discovery, ServiceDiscovery }
+import pekko.grpc.GrpcClientSettings
 
 import scala.concurrent.duration._
 

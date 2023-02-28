@@ -6,19 +6,20 @@ package org.apache.pekko.grpc.internal
 
 import java.util.concurrent.CompletionStage
 
-import org.apache.pekko.NotUsed
-import org.apache.pekko.annotation.{ InternalApi, InternalStableApi }
-import org.apache.pekko.dispatch.ExecutionContexts
-import org.apache.pekko.grpc.{ GrpcResponseMetadata, GrpcSingleResponse }
-import org.apache.pekko.stream.Materializer
-import org.apache.pekko.stream.javadsl.{ Source => JavaSource }
-import org.apache.pekko.stream.scaladsl.{ Keep, Sink, Source }
-import org.apache.pekko.util.ByteString
+import org.apache.pekko
+import pekko.NotUsed
+import pekko.annotation.{ InternalApi, InternalStableApi }
+import pekko.dispatch.ExecutionContexts
+import pekko.grpc.{ GrpcResponseMetadata, GrpcSingleResponse }
+import pekko.stream.Materializer
+import pekko.stream.javadsl.{ Source => JavaSource }
+import pekko.stream.scaladsl.{ Keep, Sink, Source }
+import pekko.util.ByteString
 import io.grpc._
 
 import scala.compat.java8.FutureConverters._
 import scala.concurrent.{ ExecutionContext, Future }
-import org.apache.pekko.grpc.GrpcClientSettings
+import pekko.grpc.GrpcClientSettings
 
 /**
  * INTERNAL API
@@ -30,7 +31,7 @@ final class ScalaUnaryRequestBuilder[I, O](
     defaultOptions: CallOptions,
     settings: GrpcClientSettings,
     val headers: MetadataImpl)(implicit ec: ExecutionContext)
-    extends org.apache.pekko.grpc.scaladsl.SingleResponseRequestBuilder[I, O]
+    extends pekko.grpc.scaladsl.SingleResponseRequestBuilder[I, O]
     with MetadataOperations[ScalaUnaryRequestBuilder[I, O]] {
   @InternalStableApi
   def this(
@@ -63,7 +64,7 @@ final class JavaUnaryRequestBuilder[I, O](
     defaultOptions: CallOptions,
     settings: GrpcClientSettings,
     val headers: MetadataImpl)(implicit ex: ExecutionContext)
-    extends org.apache.pekko.grpc.javadsl.SingleResponseRequestBuilder[I, O]
+    extends pekko.grpc.javadsl.SingleResponseRequestBuilder[I, O]
     with MetadataOperations[JavaUnaryRequestBuilder[I, O]] {
   private val delegate = new ScalaUnaryRequestBuilder[I, O](descriptor, channel, defaultOptions, settings, headers)
 
@@ -95,7 +96,7 @@ final class ScalaClientStreamingRequestBuilder[I, O](
     defaultOptions: CallOptions,
     settings: GrpcClientSettings,
     val headers: MetadataImpl)(implicit mat: Materializer, ec: ExecutionContext)
-    extends org.apache.pekko.grpc.scaladsl.SingleResponseRequestBuilder[Source[I, NotUsed], O]
+    extends pekko.grpc.scaladsl.SingleResponseRequestBuilder[Source[I, NotUsed], O]
     with MetadataOperations[ScalaClientStreamingRequestBuilder[I, O]] {
 
   @InternalStableApi
@@ -162,7 +163,7 @@ final class JavaClientStreamingRequestBuilder[I, O](
     defaultOptions: CallOptions,
     settings: GrpcClientSettings,
     val headers: MetadataImpl)(implicit mat: Materializer, ec: ExecutionContext)
-    extends org.apache.pekko.grpc.javadsl.SingleResponseRequestBuilder[JavaSource[I, NotUsed], O]
+    extends pekko.grpc.javadsl.SingleResponseRequestBuilder[JavaSource[I, NotUsed], O]
     with MetadataOperations[JavaClientStreamingRequestBuilder[I, O]] {
   @InternalStableApi
   def this(
@@ -205,7 +206,7 @@ final class ScalaServerStreamingRequestBuilder[I, O](
     defaultOptions: CallOptions,
     settings: GrpcClientSettings,
     val headers: MetadataImpl)(implicit ec: ExecutionContext)
-    extends org.apache.pekko.grpc.scaladsl.StreamResponseRequestBuilder[I, O]
+    extends pekko.grpc.scaladsl.StreamResponseRequestBuilder[I, O]
     with MetadataOperations[ScalaServerStreamingRequestBuilder[I, O]] {
   @InternalStableApi
   def this(
@@ -248,7 +249,7 @@ final class JavaServerStreamingRequestBuilder[I, O](
     defaultOptions: CallOptions,
     settings: GrpcClientSettings,
     val headers: MetadataImpl)(implicit ec: ExecutionContext)
-    extends org.apache.pekko.grpc.javadsl.StreamResponseRequestBuilder[I, O]
+    extends pekko.grpc.javadsl.StreamResponseRequestBuilder[I, O]
     with MetadataOperations[JavaServerStreamingRequestBuilder[I, O]] {
   @InternalStableApi
   def this(
@@ -291,7 +292,7 @@ final class ScalaBidirectionalStreamingRequestBuilder[I, O](
     defaultOptions: CallOptions,
     settings: GrpcClientSettings,
     val headers: MetadataImpl)(implicit ec: ExecutionContext)
-    extends org.apache.pekko.grpc.scaladsl.StreamResponseRequestBuilder[Source[I, NotUsed], O]
+    extends pekko.grpc.scaladsl.StreamResponseRequestBuilder[Source[I, NotUsed], O]
     with MetadataOperations[ScalaBidirectionalStreamingRequestBuilder[I, O]] {
 
   @InternalStableApi
@@ -335,7 +336,7 @@ final class JavaBidirectionalStreamingRequestBuilder[I, O](
     defaultOptions: CallOptions,
     settings: GrpcClientSettings,
     val headers: MetadataImpl)(implicit ec: ExecutionContext)
-    extends org.apache.pekko.grpc.javadsl.StreamResponseRequestBuilder[JavaSource[I, NotUsed], O]
+    extends pekko.grpc.javadsl.StreamResponseRequestBuilder[JavaSource[I, NotUsed], O]
     with MetadataOperations[JavaBidirectionalStreamingRequestBuilder[I, O]] {
   @InternalStableApi
   def this(

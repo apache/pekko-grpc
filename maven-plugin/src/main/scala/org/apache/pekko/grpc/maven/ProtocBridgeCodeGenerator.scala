@@ -4,15 +4,16 @@
 
 package org.apache.pekko.grpc.maven
 
-import org.apache.pekko.grpc.gen.Logger
+import org.apache.pekko
+import pekko.grpc.gen.Logger
 import protocbridge.Artifact
 
 /**
  * Adapts existing `org.apache.pekko.grpc.gen.CodeGenerator` into the protocbridge required type
  */
 class ProtocBridgeCodeGenerator(
-    impl: org.apache.pekko.grpc.gen.CodeGenerator,
-    scalaBinaryVersion: org.apache.pekko.grpc.gen.CodeGenerator.ScalaBinaryVersion,
+    impl: pekko.grpc.gen.CodeGenerator,
+    scalaBinaryVersion: pekko.grpc.gen.CodeGenerator.ScalaBinaryVersion,
     logger: Logger)
     extends protocbridge.ProtocCodeGenerator {
   override def run(request: Array[Byte]): Array[Byte] = impl.run(request, logger)

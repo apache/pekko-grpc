@@ -4,8 +4,9 @@
 
 package example.myapp.helloworld
 
-import org.apache.pekko.actor.{ ActorSystem, ClassicActorSystemProvider }
-import org.apache.pekko.grpc.GrpcClientSettings
+import org.apache.pekko
+import pekko.actor.{ ActorSystem, ClassicActorSystemProvider }
+import pekko.grpc.GrpcClientSettings
 import com.google.protobuf.timestamp.Timestamp
 import com.typesafe.config.ConfigFactory
 import example.myapp.helloworld.grpc._

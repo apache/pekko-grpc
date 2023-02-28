@@ -7,9 +7,10 @@
 @org.apache.pekko.grpc.gen.Constants.DoNotEditComment
 package @service.packageName
 
-import org.apache.pekko.annotation.ApiMayChange
+import org.apache.pekko
+import pekko.annotation.ApiMayChange
 
-import org.apache.pekko.grpc.PekkoGrpcGenerated
+import pekko.grpc.PekkoGrpcGenerated
 
 @for(comment <- service.comment) {/**
 @{java.util.regex.Pattern.compile("^\\s?(.*)$", java.util.regex.Pattern.MULTILINE).matcher(comment).replaceAll(" * $1")} */}
@@ -30,14 +31,14 @@ trait @{service.name} {
 }
 
 @@PekkoGrpcGenerated
-object @{service.name} extends org.apache.pekko.grpc.ServiceDescription {
+object @{service.name} extends pekko.grpc.ServiceDescription {
   val name = "@service.grpcName"
 
   val descriptor: com.google.protobuf.Descriptors.FileDescriptor =
     @service.descriptor;
 
   object Serializers {
-    import org.apache.pekko.grpc.scaladsl.ScalapbProtobufSerializer
+    import pekko.grpc.scaladsl.ScalapbProtobufSerializer
     @for(serializer <- service.serializers) {
     val @serializer.name = @serializer.init
     }
@@ -46,7 +47,7 @@ object @{service.name} extends org.apache.pekko.grpc.ServiceDescription {
   @@ApiMayChange
   @@PekkoGrpcGenerated
   object MethodDescriptors {
-    import org.apache.pekko.grpc.internal.Marshaller
+    import pekko.grpc.internal.Marshaller
     import io.grpc.MethodDescriptor
     import Serializers._
 

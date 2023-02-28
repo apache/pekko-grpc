@@ -6,7 +6,8 @@ package org.apache.pekko.grpc
 
 import java.util.concurrent.CompletionStage
 
-import org.apache.pekko.annotation.{ ApiMayChange, DoNotInherit }
+import org.apache.pekko
+import pekko.annotation.{ ApiMayChange, DoNotInherit }
 
 import scala.concurrent.Future
 
@@ -22,22 +23,22 @@ trait GrpcResponseMetadata {
   /**
    * Scala API: The response metadata, the metadata is only for reading and must not be mutated.
    */
-  def headers: org.apache.pekko.grpc.scaladsl.Metadata
+  def headers: pekko.grpc.scaladsl.Metadata
 
   /**
    * Java API: The response metadata, the metadata is only for reading and must not be mutated.
    */
-  def getHeaders(): org.apache.pekko.grpc.javadsl.Metadata
+  def getHeaders(): pekko.grpc.javadsl.Metadata
 
   /**
    * Scala API: Trailers from the server, is completed after the response stream completes
    */
-  def trailers: Future[org.apache.pekko.grpc.scaladsl.Metadata]
+  def trailers: Future[pekko.grpc.scaladsl.Metadata]
 
   /**
    * Java API: Trailers from the server, is completed after the response stream completes
    */
-  def getTrailers(): CompletionStage[org.apache.pekko.grpc.javadsl.Metadata]
+  def getTrailers(): CompletionStage[pekko.grpc.javadsl.Metadata]
 }
 
 /**

@@ -4,12 +4,13 @@
 
 package org.apache.pekko.grpc.scaladsl
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.grpc.GrpcServiceException
-import org.apache.pekko.grpc.internal.{ GrpcProtocolNative, GrpcResponseHelpers, Identity }
-import org.apache.pekko.grpc.scaladsl.GrpcExceptionHandler.defaultMapper
-import org.apache.pekko.http.scaladsl.model.HttpEntity._
-import org.apache.pekko.http.scaladsl.model.HttpResponse
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.grpc.GrpcServiceException
+import pekko.grpc.internal.{ GrpcProtocolNative, GrpcResponseHelpers, Identity }
+import pekko.grpc.scaladsl.GrpcExceptionHandler.defaultMapper
+import pekko.http.scaladsl.model.HttpEntity._
+import pekko.http.scaladsl.model.HttpResponse
 import io.grpc.{ Status, StatusRuntimeException }
 import org.scalatest._
 import org.scalatest.concurrent.ScalaFutures

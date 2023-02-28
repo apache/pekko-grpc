@@ -4,16 +4,17 @@
 
 package org.apache.pekko.grpc.internal
 
-import org.apache.pekko.NotUsed
-import org.apache.pekko.actor.{ ActorSystem, ClassicActorSystemProvider }
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.grpc.{ GrpcServiceException, ProtobufSerializer, Trailers }
-import org.apache.pekko.grpc.GrpcProtocol.{ DataFrame, Frame, GrpcProtocolWriter, TrailerFrame }
-import org.apache.pekko.grpc.scaladsl.{ headers, BytesEntry, Metadata, MetadataEntry, StringEntry }
-import org.apache.pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
-import org.apache.pekko.http.scaladsl.model.HttpHeader
-import org.apache.pekko.http.scaladsl.model.headers.RawHeader
-import org.apache.pekko.stream.scaladsl.Source
+import org.apache.pekko
+import pekko.NotUsed
+import pekko.actor.{ ActorSystem, ClassicActorSystemProvider }
+import pekko.annotation.InternalApi
+import pekko.grpc.{ GrpcServiceException, ProtobufSerializer, Trailers }
+import pekko.grpc.GrpcProtocol.{ DataFrame, Frame, GrpcProtocolWriter, TrailerFrame }
+import pekko.grpc.scaladsl.{ headers, BytesEntry, Metadata, MetadataEntry, StringEntry }
+import pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
+import pekko.http.scaladsl.model.HttpHeader
+import pekko.http.scaladsl.model.headers.RawHeader
+import pekko.stream.scaladsl.Source
 import io.grpc.Status
 
 /** INTERNAL API */
@@ -43,8 +44,8 @@ object GrpcEntityHelpers {
   def apply[T](e: T)(implicit m: ProtobufSerializer[T], writer: GrpcProtocolWriter): Source[ChunkStreamPart, NotUsed] =
     chunks(Source.single(e), Source.empty)
 
-  import org.apache.pekko.stream._
-  import org.apache.pekko.stream.scaladsl._
+  import pekko.stream._
+  import pekko.stream.scaladsl._
   import scala.annotation.unchecked.uncheckedVariance
   // A faster implementation of concat that does not allocate so much
   private def concatCheap[U, Mat2](that: Graph[SourceShape[U], Mat2]): Graph[FlowShape[U @uncheckedVariance, U], Mat2] =

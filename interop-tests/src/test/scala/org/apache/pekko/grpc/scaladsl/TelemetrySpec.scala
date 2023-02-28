@@ -6,17 +6,12 @@ package org.apache.pekko.grpc.scaladsl
 
 import com.typesafe.config.ConfigFactory
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.grpc.internal.{
-  GrpcProtocolNative,
-  GrpcRequestHelpers,
-  Identity,
-  TelemetryExtension,
-  TelemetrySpi
-}
-import org.apache.pekko.http.javadsl.model.HttpRequest
-import org.apache.pekko.stream.scaladsl.Source
-import org.apache.pekko.testkit.TestKit
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.grpc.internal.{ GrpcProtocolNative, GrpcRequestHelpers, Identity, TelemetryExtension, TelemetrySpi }
+import pekko.http.javadsl.model.HttpRequest
+import pekko.stream.scaladsl.Source
+import pekko.testkit.TestKit
 
 import example.myapp.helloworld.grpc.helloworld.{ GreeterService, GreeterServiceHandler, HelloRequest }
 

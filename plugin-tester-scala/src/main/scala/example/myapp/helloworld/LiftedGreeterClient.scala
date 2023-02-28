@@ -9,11 +9,12 @@ import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.util.Try
 
-import org.apache.pekko.Done
-import org.apache.pekko.NotUsed
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.grpc.GrpcClientSettings
-import org.apache.pekko.stream.scaladsl.Source
+import org.apache.pekko
+import pekko.Done
+import pekko.NotUsed
+import pekko.actor.ActorSystem
+import pekko.grpc.GrpcClientSettings
+import pekko.stream.scaladsl.Source
 
 import example.myapp.helloworld.grpc._
 

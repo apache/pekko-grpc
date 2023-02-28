@@ -9,12 +9,13 @@ import java.util.{ List => jList, Locale, Map => jMap, Optional }
 import scala.collection.JavaConverters._
 import scala.collection.immutable
 import scala.compat.java8.OptionConverters._
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.http.scaladsl.model.HttpHeader
-import org.apache.pekko.japi.Pair
-import org.apache.pekko.util.ByteString
-import org.apache.pekko.grpc.scaladsl.{ BytesEntry, Metadata, MetadataEntry, StringEntry }
-import org.apache.pekko.grpc.javadsl
+import org.apache.pekko
+import pekko.annotation.InternalApi
+import pekko.http.scaladsl.model.HttpHeader
+import pekko.japi.Pair
+import pekko.util.ByteString
+import pekko.grpc.scaladsl.{ BytesEntry, Metadata, MetadataEntry, StringEntry }
+import pekko.grpc.javadsl
 
 @InternalApi private[pekko] object MetadataImpl {
   val BINARY_SUFFIX: String = io.grpc.Metadata.BINARY_HEADER_SUFFIX

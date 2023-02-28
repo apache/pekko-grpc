@@ -4,11 +4,12 @@
 
 package org.apache.pekko.grpc.scaladsl
 
-import org.apache.pekko.annotation.ApiMayChange
-import org.apache.pekko.grpc.GrpcProtocol
-import org.apache.pekko.grpc.internal.{ GrpcProtocolWeb, GrpcProtocolWebText }
-import org.apache.pekko.http.javadsl.{ model => jmodel }
-import org.apache.pekko.http.scaladsl.model.{ HttpRequest, HttpResponse, StatusCodes }
+import org.apache.pekko
+import pekko.annotation.ApiMayChange
+import pekko.grpc.GrpcProtocol
+import pekko.grpc.internal.{ GrpcProtocolWeb, GrpcProtocolWebText }
+import pekko.http.javadsl.{ model => jmodel }
+import pekko.http.scaladsl.model.{ HttpRequest, HttpResponse, StatusCodes }
 
 import scala.concurrent.Future
 

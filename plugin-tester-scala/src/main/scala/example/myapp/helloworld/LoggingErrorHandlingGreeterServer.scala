@@ -4,16 +4,17 @@
 
 package example.myapp.helloworld
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.event.Logging
-import org.apache.pekko.grpc.Trailers
-import org.apache.pekko.grpc.scaladsl.{ ServerReflection, ServiceHandler }
-import org.apache.pekko.http.scaladsl.Http
-import org.apache.pekko.http.scaladsl.model.{ HttpRequest, HttpResponse }
-import org.apache.pekko.http.scaladsl.server.Directives._
-import org.apache.pekko.http.scaladsl.server._
-import org.apache.pekko.http.scaladsl.server.directives.DebuggingDirectives
-import org.apache.pekko.stream.Materializer
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.event.Logging
+import pekko.grpc.Trailers
+import pekko.grpc.scaladsl.{ ServerReflection, ServiceHandler }
+import pekko.http.scaladsl.Http
+import pekko.http.scaladsl.model.{ HttpRequest, HttpResponse }
+import pekko.http.scaladsl.server.Directives._
+import pekko.http.scaladsl.server._
+import pekko.http.scaladsl.server.directives.DebuggingDirectives
+import pekko.stream.Materializer
 import com.typesafe.config.ConfigFactory
 import example.myapp.helloworld.grpc.{ GreeterService, GreeterServiceHandler, HelloReply, HelloRequest }
 import io.grpc.Status

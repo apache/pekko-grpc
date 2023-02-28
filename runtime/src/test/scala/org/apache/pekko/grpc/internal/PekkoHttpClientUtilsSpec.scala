@@ -7,13 +7,14 @@ package org.apache.pekko.grpc.internal
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.http.scaladsl.model.HttpEntity.Strict
-import org.apache.pekko.http.scaladsl.model.HttpResponse
-import org.apache.pekko.http.scaladsl.model.StatusCodes._
-import org.apache.pekko.http.scaladsl.model.headers.RawHeader
-import org.apache.pekko.testkit.TestKit
-import org.apache.pekko.util.ByteString
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.http.scaladsl.model.HttpEntity.Strict
+import pekko.http.scaladsl.model.HttpResponse
+import pekko.http.scaladsl.model.StatusCodes._
+import pekko.http.scaladsl.model.headers.RawHeader
+import pekko.testkit.TestKit
+import pekko.util.ByteString
 import io.grpc.{ Status, StatusRuntimeException }
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers

@@ -6,9 +6,10 @@ package org.apache.pekko.grpc.internal
 
 import com.google.protobuf.Descriptors.FileDescriptor;
 
-import org.apache.pekko.annotation.InternalApi
+import org.apache.pekko
+import pekko.annotation.InternalApi
 
-import org.apache.pekko.grpc.ServiceDescription
+import pekko.grpc.ServiceDescription
 
 /**
  * INTERNAL API

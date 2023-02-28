@@ -8,11 +8,12 @@ import java.util.concurrent.CompletionStage
 
 import scala.concurrent.Future
 
-import org.apache.pekko.Done
-import org.apache.pekko.actor.ClassicActorSystemProvider
-import org.apache.pekko.annotation.{ InternalApi, InternalStableApi }
-import org.apache.pekko.event.LoggingAdapter
-import org.apache.pekko.grpc.{ GrpcChannel, GrpcClientSettings }
+import org.apache.pekko
+import pekko.Done
+import pekko.actor.ClassicActorSystemProvider
+import pekko.annotation.{ InternalApi, InternalStableApi }
+import pekko.event.LoggingAdapter
+import pekko.grpc.{ GrpcChannel, GrpcClientSettings }
 
 /**
  * INTERNAL API

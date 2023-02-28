@@ -6,10 +6,11 @@ package org.apache.pekko.grpc.internal
 
 import java.util.concurrent.CompletionStage
 
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.stream.scaladsl.Sink
-import org.apache.pekko.stream.{ javadsl, AbruptStageTerminationException, Attributes, Inlet, SinkShape }
-import org.apache.pekko.stream.stage.{ GraphStageLogic, GraphStageWithMaterializedValue, InHandler }
+import org.apache.pekko
+import pekko.annotation.InternalApi
+import pekko.stream.scaladsl.Sink
+import pekko.stream.{ javadsl, AbruptStageTerminationException, Attributes, Inlet, SinkShape }
+import pekko.stream.stage.{ GraphStageLogic, GraphStageWithMaterializedValue, InHandler }
 
 import scala.concurrent.{ Future, Promise }
 

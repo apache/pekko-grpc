@@ -5,9 +5,10 @@
 package org.apache.pekko.grpc
 
 import io.grpc.{ Status, StatusRuntimeException }
-import org.apache.pekko.annotation.ApiMayChange
-import org.apache.pekko.grpc.scaladsl.{ Metadata, MetadataBuilder }
-import org.apache.pekko.grpc.internal.{ GrpcMetadataImpl, JavaMetadataImpl }
+import org.apache.pekko
+import pekko.annotation.ApiMayChange
+import pekko.grpc.scaladsl.{ Metadata, MetadataBuilder }
+import pekko.grpc.internal.{ GrpcMetadataImpl, JavaMetadataImpl }
 import com.google.protobuf.any.Any
 import io.grpc.protobuf.StatusProto
 

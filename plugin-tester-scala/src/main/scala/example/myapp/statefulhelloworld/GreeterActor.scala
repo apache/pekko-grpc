@@ -4,8 +4,9 @@
 
 package example.myapp.statefulhelloworld
 
-import org.apache.pekko.actor.Actor
-import org.apache.pekko.actor.Props
+import org.apache.pekko
+import pekko.actor.Actor
+import pekko.actor.Props
 
 // #actor
 object GreeterActor {

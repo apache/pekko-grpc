@@ -5,17 +5,10 @@
 package org.apache.pekko.grpc.maven
 
 import java.io.{ ByteArrayOutputStream, File, PrintStream }
-import org.apache.pekko.grpc.gen.{ CodeGenerator, Logger, ProtocSettings }
-import org.apache.pekko.grpc.gen.javadsl.{
-  JavaClientCodeGenerator,
-  JavaInterfaceCodeGenerator,
-  JavaServerCodeGenerator
-}
-import org.apache.pekko.grpc.gen.scaladsl.{
-  ScalaClientCodeGenerator,
-  ScalaServerCodeGenerator,
-  ScalaTraitCodeGenerator
-}
+import org.apache.pekko
+import pekko.grpc.gen.{ CodeGenerator, Logger, ProtocSettings }
+import pekko.grpc.gen.javadsl.{ JavaClientCodeGenerator, JavaInterfaceCodeGenerator, JavaServerCodeGenerator }
+import pekko.grpc.gen.scaladsl.{ ScalaClientCodeGenerator, ScalaServerCodeGenerator, ScalaTraitCodeGenerator }
 
 import javax.inject.Inject
 import org.apache.maven.plugin.AbstractMojo

@@ -7,13 +7,14 @@ package org.apache.pekko.grpc.scaladsl
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.grpc.scaladsl.tools.MutableServiceDiscovery
-import org.apache.pekko.grpc.{ GrpcChannel, GrpcClientCloseException, GrpcClientSettings }
-import org.apache.pekko.http.scaladsl.Http
-import org.apache.pekko.http.scaladsl.model.RemoteAddress
-import org.apache.pekko.http.scaladsl.server.Directives
-import org.apache.pekko.stream.SystemMaterializer
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.grpc.scaladsl.tools.MutableServiceDiscovery
+import pekko.grpc.{ GrpcChannel, GrpcClientCloseException, GrpcClientSettings }
+import pekko.http.scaladsl.Http
+import pekko.http.scaladsl.model.RemoteAddress
+import pekko.http.scaladsl.server.Directives
+import pekko.stream.SystemMaterializer
 import com.typesafe.config.{ Config, ConfigFactory }
 import example.myapp.helloworld.grpc.helloworld._
 import org.scalatest.BeforeAndAfterAll

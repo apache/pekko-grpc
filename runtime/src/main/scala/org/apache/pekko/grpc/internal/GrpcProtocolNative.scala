@@ -4,9 +4,10 @@
 
 package org.apache.pekko.grpc.internal
 
-import org.apache.pekko.grpc.GrpcProtocol._
-import org.apache.pekko.http.scaladsl.model.HttpEntity.{ Chunk, ChunkStreamPart, LastChunk }
-import org.apache.pekko.http.scaladsl.model.{
+import org.apache.pekko
+import pekko.grpc.GrpcProtocol._
+import pekko.http.scaladsl.model.HttpEntity.{ Chunk, ChunkStreamPart, LastChunk }
+import pekko.http.scaladsl.model.{
   AttributeKey,
   AttributeKeys,
   HttpEntity,
@@ -16,7 +17,7 @@ import org.apache.pekko.http.scaladsl.model.{
   StatusCodes,
   Trailer
 }
-import org.apache.pekko.util.ByteString
+import pekko.util.ByteString
 
 import scala.annotation.nowarn
 import scala.collection.immutable

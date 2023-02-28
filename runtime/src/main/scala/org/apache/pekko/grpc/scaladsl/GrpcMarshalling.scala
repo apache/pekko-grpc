@@ -10,17 +10,18 @@ import scala.annotation.nowarn
 import scala.concurrent.Future
 import scala.util.{ Failure, Success, Try }
 
-import org.apache.pekko.NotUsed
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.actor.ClassicActorSystemProvider
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.grpc._
-import org.apache.pekko.grpc.GrpcProtocol.{ GrpcProtocolReader, GrpcProtocolWriter }
-import org.apache.pekko.grpc.internal._
-import org.apache.pekko.http.scaladsl.model.{ HttpEntity, HttpRequest, HttpResponse, Uri }
-import org.apache.pekko.stream.Materializer
-import org.apache.pekko.stream.scaladsl.Source
-import org.apache.pekko.util.ByteString
+import org.apache.pekko
+import pekko.NotUsed
+import pekko.actor.ActorSystem
+import pekko.actor.ClassicActorSystemProvider
+import pekko.annotation.InternalApi
+import pekko.grpc._
+import pekko.grpc.GrpcProtocol.{ GrpcProtocolReader, GrpcProtocolWriter }
+import pekko.grpc.internal._
+import pekko.http.scaladsl.model.{ HttpEntity, HttpRequest, HttpResponse, Uri }
+import pekko.stream.Materializer
+import pekko.stream.scaladsl.Source
+import pekko.util.ByteString
 
 object GrpcMarshalling {
   def unmarshal[T](req: HttpRequest)(implicit u: ProtobufSerializer[T], mat: Materializer): Future[T] = {

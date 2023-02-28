@@ -4,9 +4,10 @@
 
 package org.apache.pekko.grpc.scaladsl
 
-import org.apache.pekko.annotation.ApiMayChange
-import org.apache.pekko.grpc.ProtobufSerializer
-import org.apache.pekko.util.ByteString
+import org.apache.pekko
+import pekko.annotation.ApiMayChange
+import pekko.grpc.ProtobufSerializer
+import pekko.util.ByteString
 import com.google.protobuf.CodedInputStream
 import scalapb.{ GeneratedMessage, GeneratedMessageCompanion }
 

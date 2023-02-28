@@ -4,17 +4,18 @@
 
 package org.apache.pekko.grpc.scaladsl
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.actor.ClassicActorSystemProvider
-import org.apache.pekko.annotation.{ ApiMayChange, InternalStableApi }
-import org.apache.pekko.grpc.{ GrpcServiceException, Trailers }
-import org.apache.pekko.grpc.GrpcProtocol.GrpcProtocolWriter
-import org.apache.pekko.grpc.internal.{ GrpcMetadataImpl, GrpcResponseHelpers, MissingParameterException }
-import org.apache.pekko.http.scaladsl.model.HttpResponse
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.actor.ClassicActorSystemProvider
+import pekko.annotation.{ ApiMayChange, InternalStableApi }
+import pekko.grpc.{ GrpcServiceException, Trailers }
+import pekko.grpc.GrpcProtocol.GrpcProtocolWriter
+import pekko.grpc.internal.{ GrpcMetadataImpl, GrpcResponseHelpers, MissingParameterException }
+import pekko.http.scaladsl.model.HttpResponse
 import io.grpc.{ Status, StatusRuntimeException }
 
 import scala.concurrent.{ ExecutionException, Future }
-import org.apache.pekko.event.Logging
+import pekko.event.Logging
 
 @ApiMayChange
 object GrpcExceptionHandler {

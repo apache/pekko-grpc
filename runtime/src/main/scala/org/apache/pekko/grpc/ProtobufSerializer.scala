@@ -4,8 +4,9 @@
 
 package org.apache.pekko.grpc
 
-import org.apache.pekko.grpc.internal.ByteStringUtils
-import org.apache.pekko.util.ByteString
+import org.apache.pekko
+import pekko.grpc.internal.ByteStringUtils
+import pekko.util.ByteString
 
 import java.io.InputStream
 

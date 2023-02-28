@@ -4,10 +4,11 @@
 
 package org.apache.pekko.grpc.internal
 
-import org.apache.pekko.http.javadsl.{ model => jm }
-import org.apache.pekko.http.scaladsl.{ model => sm }
-import org.apache.pekko.grpc.GrpcServiceException
-import org.apache.pekko.grpc.scaladsl.headers.{ `Message-Accept-Encoding`, `Message-Encoding` }
+import org.apache.pekko
+import pekko.http.javadsl.{ model => jm }
+import pekko.http.scaladsl.{ model => sm }
+import pekko.grpc.GrpcServiceException
+import pekko.grpc.scaladsl.headers.{ `Message-Accept-Encoding`, `Message-Encoding` }
 import io.grpc.Status
 import scala.collection.immutable
 import scala.util.{ Failure, Success, Try }

@@ -4,9 +4,10 @@
 
 package org.apache.pekko.grpc.internal
 
-import org.apache.pekko.grpc.scaladsl.{ BytesEntry, Metadata, StringEntry }
-import org.apache.pekko.http.scaladsl.model.headers.RawHeader
-import org.apache.pekko.util.ByteString
+import org.apache.pekko
+import pekko.grpc.scaladsl.{ BytesEntry, Metadata, StringEntry }
+import pekko.http.scaladsl.model.headers.RawHeader
+import pekko.util.ByteString
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
