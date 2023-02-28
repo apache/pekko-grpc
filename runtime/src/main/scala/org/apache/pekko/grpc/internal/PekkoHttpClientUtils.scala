@@ -8,15 +8,16 @@ import java.net.InetSocketAddress
 import java.security.SecureRandom
 import java.util.concurrent.CompletionStage
 import scala.concurrent.duration._
-import org.apache.pekko.{ Done, NotUsed }
-import org.apache.pekko.actor.ClassicActorSystemProvider
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.event.LoggingAdapter
-import org.apache.pekko.grpc.GrpcProtocol.GrpcProtocolReader
-import org.apache.pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, GrpcSingleResponse, ProtobufSerializer }
-import org.apache.pekko.http.scaladsl.model.HttpEntity.{ Chunk, Chunked, LastChunk, Strict }
-import org.apache.pekko.http.scaladsl.{ ClientTransport, ConnectionContext, Http }
-import org.apache.pekko.http.scaladsl.model.{
+import org.apache.pekko
+import pekko.{ Done, NotUsed }
+import pekko.actor.ClassicActorSystemProvider
+import pekko.annotation.InternalApi
+import pekko.event.LoggingAdapter
+import pekko.grpc.GrpcProtocol.GrpcProtocolReader
+import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, GrpcSingleResponse, ProtobufSerializer }
+import pekko.http.scaladsl.model.HttpEntity.{ Chunk, Chunked, LastChunk, Strict }
+import pekko.http.scaladsl.{ ClientTransport, ConnectionContext, Http }
+import pekko.http.scaladsl.model.{
   AttributeKey,
   HttpHeader,
   HttpRequest,
@@ -24,10 +25,10 @@ import org.apache.pekko.http.scaladsl.model.{
   RequestResponseAssociation,
   Uri
 }
-import org.apache.pekko.http.scaladsl.settings.ClientConnectionSettings
-import org.apache.pekko.stream.{ Materializer, OverflowStrategy }
-import org.apache.pekko.stream.scaladsl.{ Keep, Sink, Source }
-import org.apache.pekko.util.ByteString
+import pekko.http.scaladsl.settings.ClientConnectionSettings
+import pekko.stream.{ Materializer, OverflowStrategy }
+import pekko.stream.scaladsl.{ Keep, Sink, Source }
+import pekko.util.ByteString
 import io.grpc.{ CallOptions, MethodDescriptor, Status, StatusRuntimeException }
 
 import javax.net.ssl.{ KeyManager, SSLContext, TrustManager }
@@ -35,7 +36,7 @@ import scala.collection.immutable
 import scala.compat.java8.FutureConverters.FutureOps
 import scala.concurrent.{ ExecutionContext, Future, Promise }
 import scala.util.{ Failure, Success }
-import org.apache.pekko.http.scaladsl.model.StatusCodes
+import pekko.http.scaladsl.model.StatusCodes
 
 /**
  * INTERNAL API
@@ -240,18 +241,18 @@ object PekkoHttpClientUtils {
                   .map(deserializer.deserialize)
                   .mapMaterializedValue(_ =>
                     Future.successful(new GrpcResponseMetadata() {
-                      override def headers: org.apache.pekko.grpc.scaladsl.Metadata =
+                      override def headers: pekko.grpc.scaladsl.Metadata =
                         new HeaderMetadataImpl(response.headers)
 
-                      override def getHeaders(): org.apache.pekko.grpc.javadsl.Metadata =
+                      override def getHeaders(): pekko.grpc.javadsl.Metadata =
                         new JavaMetadataImpl(new HeaderMetadataImpl(response.headers))
 
-                      override def trailers: Future[org.apache.pekko.grpc.scaladsl.Metadata] =
+                      override def trailers: Future[pekko.grpc.scaladsl.Metadata] =
                         trailerPromise.future.map(new HeaderMetadataImpl(_))
 
-                      override def getTrailers(): CompletionStage[org.apache.pekko.grpc.javadsl.Metadata] =
+                      override def getTrailers(): CompletionStage[pekko.grpc.javadsl.Metadata] =
                         trailerPromise.future
-                          .map[org.apache.pekko.grpc.javadsl.Metadata](h =>
+                          .map[pekko.grpc.javadsl.Metadata](h =>
                             new JavaMetadataImpl(new HeaderMetadataImpl(h)))
                           .toJava
                     }))

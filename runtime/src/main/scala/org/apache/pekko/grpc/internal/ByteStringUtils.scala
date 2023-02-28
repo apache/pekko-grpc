@@ -4,8 +4,9 @@
 
 package org.apache.pekko.grpc.internal
 
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.util.ByteString
+import org.apache.pekko
+import pekko.annotation.InternalApi
+import pekko.util.ByteString
 import io.grpc.KnownLength
 
 import java.io.{ ByteArrayOutputStream, InputStream }
@@ -25,11 +26,11 @@ private[grpc] object ByteStringUtils {
     val nextByte = if (initialBytes < 0) -1 else stream.read() // Test for EOF
 
     if (nextByte == -1) {
-      if (initialBytes < 1) org.apache.pekko.util.ByteString.empty // EOF immediately
+      if (initialBytes < 1) pekko.util.ByteString.empty // EOF immediately
       else {
         // WARNING: buffer is retained in full below,
         // which could be problematic if ProtobufSerializer.deserialize keeps a reference to the ByteString
-        org.apache.pekko.util.ByteString.fromArrayUnsafe(buffer, 0, initialBytes)
+        pekko.util.ByteString.fromArrayUnsafe(buffer, 0, initialBytes)
       }
     } else {
       val baos = new ByteArrayOutputStream(buffer.length * 2) // To avoid immediate resize
@@ -42,7 +43,7 @@ private[grpc] object ByteStringUtils {
         bytesRead = stream.read(buffer)
       }
 
-      org.apache.pekko.util.ByteString.fromArrayUnsafe(baos.toByteArray)
+      pekko.util.ByteString.fromArrayUnsafe(baos.toByteArray)
     }
   }
 }

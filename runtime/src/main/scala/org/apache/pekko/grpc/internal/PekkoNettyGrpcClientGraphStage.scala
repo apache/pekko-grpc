@@ -4,12 +4,13 @@
 
 package org.apache.pekko.grpc.internal
 
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.dispatch.ExecutionContexts
-import org.apache.pekko.grpc.GrpcResponseMetadata
-import org.apache.pekko.stream
-import org.apache.pekko.stream.{ Attributes => _, _ }
-import org.apache.pekko.stream.stage._
+import org.apache.pekko
+import pekko.annotation.InternalApi
+import pekko.dispatch.ExecutionContexts
+import pekko.grpc.GrpcResponseMetadata
+import pekko.stream
+import pekko.stream.{ Attributes => _, _ }
+import pekko.stream.stage._
 import io.grpc._
 
 import scala.concurrent.{ Future, Promise }

@@ -5,19 +5,20 @@
 package org.apache.pekko.grpc.javadsl
 
 import java.util.concurrent.CompletionException
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.actor.ClassicActorSystemProvider
-import org.apache.pekko.annotation.ApiMayChange
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.grpc.{ GrpcServiceException, Trailers }
-import org.apache.pekko.grpc.GrpcProtocol.GrpcProtocolWriter
-import org.apache.pekko.grpc.internal.{ GrpcMetadataImpl, GrpcResponseHelpers, MissingParameterException }
-import org.apache.pekko.http.javadsl.model.HttpResponse
-import org.apache.pekko.japi.{ Function => jFunction }
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.actor.ClassicActorSystemProvider
+import pekko.annotation.ApiMayChange
+import pekko.annotation.InternalApi
+import pekko.grpc.{ GrpcServiceException, Trailers }
+import pekko.grpc.GrpcProtocol.GrpcProtocolWriter
+import pekko.grpc.internal.{ GrpcMetadataImpl, GrpcResponseHelpers, MissingParameterException }
+import pekko.http.javadsl.model.HttpResponse
+import pekko.japi.{ Function => jFunction }
 import io.grpc.{ Status, StatusRuntimeException }
 
 import scala.concurrent.ExecutionException
-import org.apache.pekko.event.Logging
+import pekko.event.Logging
 
 @ApiMayChange
 object GrpcExceptionHandler {

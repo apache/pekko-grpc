@@ -4,14 +4,15 @@
 
 package org.apache.pekko.grpc.scaladsl
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.grpc.internal.{ GrpcProtocolNative, GrpcRequestHelpers, Identity }
-import org.apache.pekko.grpc.scaladsl.headers.`Status`
-import org.apache.pekko.http.scaladsl.model.{ AttributeKeys, HttpEntity, HttpRequest, HttpResponse }
-import org.apache.pekko.http.scaladsl.model.HttpEntity.{ Chunked, LastChunk, Strict }
-import org.apache.pekko.stream.scaladsl.{ Sink, Source }
-import org.apache.pekko.testkit.TestKit
-import org.apache.pekko.util.ByteString
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.grpc.internal.{ GrpcProtocolNative, GrpcRequestHelpers, Identity }
+import pekko.grpc.scaladsl.headers.`Status`
+import pekko.http.scaladsl.model.{ AttributeKeys, HttpEntity, HttpRequest, HttpResponse }
+import pekko.http.scaladsl.model.HttpEntity.{ Chunked, LastChunk, Strict }
+import pekko.stream.scaladsl.{ Sink, Source }
+import pekko.testkit.TestKit
+import pekko.util.ByteString
 import io.grpc.testing.integration.test.TestService
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
@@ -55,14 +56,15 @@ class GrpcExceptionHandlerSpec
     object ExampleImpl extends GreeterService {
 
       // #streaming
-      import org.apache.pekko.NotUsed
-      import org.apache.pekko.stream.scaladsl.Source
+      import org.apache.pekko
+      import pekko.NotUsed
+      import pekko.stream.scaladsl.Source
 
       // #streaming
 
       // #unary
       // #streaming
-      import org.apache.pekko.grpc.GrpcServiceException
+      import pekko.grpc.GrpcServiceException
       import io.grpc.Status
 
       val exceptionMetadata = new MetadataBuilder()
@@ -98,13 +100,13 @@ class GrpcExceptionHandlerSpec
       // #streaming
 
       def itKeepsTalking(
-          in: org.apache.pekko.stream.scaladsl.Source[example.myapp.helloworld.grpc.helloworld.HelloRequest,
-            org.apache.pekko.NotUsed]): scala.concurrent.Future[example.myapp.helloworld.grpc.helloworld.HelloReply] =
+          in: pekko.stream.scaladsl.Source[example.myapp.helloworld.grpc.helloworld.HelloRequest,
+            pekko.NotUsed]): scala.concurrent.Future[example.myapp.helloworld.grpc.helloworld.HelloReply] =
         ???
       def streamHellos(
-          in: org.apache.pekko.stream.scaladsl.Source[example.myapp.helloworld.grpc.helloworld.HelloRequest,
-            org.apache.pekko.NotUsed]): org.apache.pekko.stream.scaladsl.Source[
-        example.myapp.helloworld.grpc.helloworld.HelloReply, org.apache.pekko.NotUsed] = ???
+          in: pekko.stream.scaladsl.Source[example.myapp.helloworld.grpc.helloworld.HelloRequest,
+            pekko.NotUsed]): pekko.stream.scaladsl.Source[
+        example.myapp.helloworld.grpc.helloworld.HelloReply, pekko.NotUsed] = ???
 
     }
 

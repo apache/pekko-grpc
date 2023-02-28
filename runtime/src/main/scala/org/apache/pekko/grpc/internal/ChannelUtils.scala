@@ -4,12 +4,13 @@
 
 package org.apache.pekko.grpc.internal
 
-import org.apache.pekko.Done
+import org.apache.pekko
+import pekko.Done
 
-import org.apache.pekko.actor.ClassicActorSystemProvider
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.event.LoggingAdapter
-import org.apache.pekko.grpc.GrpcClientSettings
+import pekko.actor.ClassicActorSystemProvider
+import pekko.annotation.InternalApi
+import pekko.event.LoggingAdapter
+import pekko.grpc.GrpcClientSettings
 
 import io.grpc.{ ConnectivityState, ManagedChannel }
 

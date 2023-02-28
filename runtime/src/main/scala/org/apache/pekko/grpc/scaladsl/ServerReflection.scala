@@ -4,11 +4,12 @@
 
 package org.apache.pekko.grpc.scaladsl
 
-import org.apache.pekko.actor.ClassicActorSystemProvider
-import org.apache.pekko.annotation.ApiMayChange
-import org.apache.pekko.grpc.ServiceDescription
-import org.apache.pekko.grpc.internal.ServerReflectionImpl
-import org.apache.pekko.http.scaladsl.model.{ HttpRequest, HttpResponse }
+import org.apache.pekko
+import pekko.actor.ClassicActorSystemProvider
+import pekko.annotation.ApiMayChange
+import pekko.grpc.ServiceDescription
+import pekko.grpc.internal.ServerReflectionImpl
+import pekko.http.scaladsl.model.{ HttpRequest, HttpResponse }
 
 import grpc.reflection.v1alpha.reflection.ServerReflectionHandler
 

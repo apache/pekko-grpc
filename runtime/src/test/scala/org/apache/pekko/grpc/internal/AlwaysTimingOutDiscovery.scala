@@ -7,10 +7,11 @@ package org.apache.pekko.grpc.internal
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
 
-import org.apache.pekko.discovery.Lookup
-import org.apache.pekko.discovery.ServiceDiscovery
-import org.apache.pekko.discovery.ServiceDiscovery.Resolved
-import org.apache.pekko.pattern.AskTimeoutException
+import org.apache.pekko
+import pekko.discovery.Lookup
+import pekko.discovery.ServiceDiscovery
+import pekko.discovery.ServiceDiscovery.Resolved
+import pekko.pattern.AskTimeoutException
 
 class AlwaysTimingOutDiscovery extends ServiceDiscovery {
   def lookup(lookup: Lookup, resolveTimeout: FiniteDuration): Future[Resolved] =

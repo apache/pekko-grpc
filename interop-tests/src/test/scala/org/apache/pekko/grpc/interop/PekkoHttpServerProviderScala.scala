@@ -4,14 +4,15 @@
 
 package org.apache.pekko.grpc.interop
 
-import org.apache.pekko.NotUsed
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.grpc.internal.{ GrpcEntityHelpers, GrpcProtocolNative, GrpcResponseHelpers, Identity }
-import org.apache.pekko.http.scaladsl.model.headers.RawHeader
-import org.apache.pekko.http.scaladsl.model.{ AttributeKeys, HttpEntity, HttpHeader, Trailer }
-import org.apache.pekko.http.scaladsl.server.{ Directive0, Directives, Route }
-import org.apache.pekko.stream.Materializer
-import org.apache.pekko.stream.scaladsl.Source
+import org.apache.pekko
+import pekko.NotUsed
+import pekko.actor.ActorSystem
+import pekko.grpc.internal.{ GrpcEntityHelpers, GrpcProtocolNative, GrpcResponseHelpers, Identity }
+import pekko.http.scaladsl.model.headers.RawHeader
+import pekko.http.scaladsl.model.{ AttributeKeys, HttpEntity, HttpHeader, Trailer }
+import pekko.http.scaladsl.server.{ Directive0, Directives, Route }
+import pekko.stream.Materializer
+import pekko.stream.scaladsl.Source
 import io.grpc.Status
 import io.grpc.testing.integration.messages.{ SimpleRequest, StreamingOutputCallRequest }
 import io.grpc.testing.integration.test.{ TestService, TestServiceHandler, TestServiceMarshallers }

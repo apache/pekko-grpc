@@ -4,15 +4,17 @@ import com.typesafe.config._
 
 import scala.concurrent._
 
-import org.apache.pekko.actor._
-import org.apache.pekko.stream._
+import org.apache.pekko
+import pekko.actor._
+import pekko.stream._
 
 //#server-reflection
-import org.apache.pekko.http.scaladsl._
-import org.apache.pekko.http.scaladsl.model._
+import org.apache.pekko
+import pekko.http.scaladsl._
+import pekko.http.scaladsl.model._
 
-import org.apache.pekko.grpc.scaladsl.ServiceHandler
-import org.apache.pekko.grpc.scaladsl.ServerReflection
+import pekko.grpc.scaladsl.ServiceHandler
+import pekko.grpc.scaladsl.ServerReflection
 
 import example.myapp.helloworld.grpc._
 

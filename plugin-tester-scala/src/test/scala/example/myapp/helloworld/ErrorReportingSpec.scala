@@ -4,13 +4,14 @@
 
 package example.myapp.helloworld
 
-import org.apache.pekko.actor.{ ActorSystem, ClassicActorSystemProvider }
-import org.apache.pekko.grpc.internal.GrpcProtocolNative
-import org.apache.pekko.http.scaladsl.model.HttpEntity.{ Chunked, LastChunk }
-import org.apache.pekko.http.scaladsl.model._
-import org.apache.pekko.http.scaladsl.model.headers.RawHeader
-import org.apache.pekko.http.scaladsl.Http
-import org.apache.pekko.stream.scaladsl.Sink
+import org.apache.pekko
+import pekko.actor.{ ActorSystem, ClassicActorSystemProvider }
+import pekko.grpc.internal.GrpcProtocolNative
+import pekko.http.scaladsl.model.HttpEntity.{ Chunked, LastChunk }
+import pekko.http.scaladsl.model._
+import pekko.http.scaladsl.model.headers.RawHeader
+import pekko.http.scaladsl.Http
+import pekko.stream.scaladsl.Sink
 import example.myapp.helloworld.grpc.{ GreeterService, GreeterServiceHandler }
 import io.grpc.Status
 import org.junit.runner.RunWith

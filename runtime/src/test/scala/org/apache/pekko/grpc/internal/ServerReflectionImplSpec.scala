@@ -4,9 +4,10 @@
 
 package org.apache.pekko.grpc.internal
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.stream.scaladsl.{ Sink, Source }
-import org.apache.pekko.testkit.TestKit
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.stream.scaladsl.{ Sink, Source }
+import pekko.testkit.TestKit
 import grpc.reflection.v1alpha.reflection.ServerReflectionRequest.MessageRequest
 import grpc.reflection.v1alpha.reflection.{ ServerReflection, ServerReflectionRequest }
 import org.scalatest.OptionValues

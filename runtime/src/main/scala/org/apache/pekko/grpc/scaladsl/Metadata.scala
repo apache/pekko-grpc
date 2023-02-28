@@ -4,8 +4,9 @@
 
 package org.apache.pekko.grpc.scaladsl
 
-import org.apache.pekko.annotation.{ ApiMayChange, DoNotInherit, InternalApi }
-import org.apache.pekko.util.ByteString
+import org.apache.pekko
+import pekko.annotation.{ ApiMayChange, DoNotInherit, InternalApi }
+import pekko.util.ByteString
 
 /**
  * Immutable representation of the metadata in a call

@@ -6,9 +6,10 @@ package org.apache.pekko.grpc.internal
 
 import java.net.InetSocketAddress
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.grpc.{ GrpcClientSettings, GrpcServiceException }
-import org.apache.pekko.testkit.TestKit
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.grpc.{ GrpcClientSettings, GrpcServiceException }
+import pekko.testkit.TestKit
 import io.grpc.Status
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers

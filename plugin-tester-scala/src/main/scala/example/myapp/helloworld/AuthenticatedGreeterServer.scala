@@ -4,11 +4,12 @@
 
 package example.myapp.helloworld
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.http.scaladsl.Http
-import org.apache.pekko.http.scaladsl.model.{ HttpRequest, HttpResponse }
-import org.apache.pekko.http.scaladsl.server.{ Directive0, Route }
-import org.apache.pekko.http.scaladsl.server.Directives._
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.http.scaladsl.Http
+import pekko.http.scaladsl.model.{ HttpRequest, HttpResponse }
+import pekko.http.scaladsl.server.{ Directive0, Route }
+import pekko.http.scaladsl.server.Directives._
 import com.typesafe.config.ConfigFactory
 import example.myapp.helloworld.grpc._
 

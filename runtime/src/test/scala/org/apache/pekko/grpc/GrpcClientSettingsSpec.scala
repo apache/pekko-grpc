@@ -10,10 +10,11 @@ import scala.concurrent.duration._
 import scala.collection.{ immutable => im }
 import scala.concurrent.Future
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.discovery.{ Lookup, ServiceDiscovery }
-import org.apache.pekko.discovery.ServiceDiscovery.{ Resolved, ResolvedTarget }
-import org.apache.pekko.discovery.config.ConfigServiceDiscovery
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.discovery.{ Lookup, ServiceDiscovery }
+import pekko.discovery.ServiceDiscovery.{ Resolved, ResolvedTarget }
+import pekko.discovery.config.ConfigServiceDiscovery
 
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest._

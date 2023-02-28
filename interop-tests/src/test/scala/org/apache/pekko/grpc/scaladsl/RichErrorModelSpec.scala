@@ -4,13 +4,14 @@
 
 package org.apache.pekko.grpc.scaladsl
 
-import org.apache.pekko.NotUsed
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.grpc.{ GrpcClientSettings, GrpcServiceException }
-import org.apache.pekko.http.scaladsl.Http
-import org.apache.pekko.http.scaladsl.model.{ HttpRequest, HttpResponse }
-import org.apache.pekko.stream.scaladsl.{ Sink, Source }
-import org.apache.pekko.testkit.TestKit
+import org.apache.pekko
+import pekko.NotUsed
+import pekko.actor.ActorSystem
+import pekko.grpc.{ GrpcClientSettings, GrpcServiceException }
+import pekko.http.scaladsl.Http
+import pekko.http.scaladsl.model.{ HttpRequest, HttpResponse }
+import pekko.stream.scaladsl.{ Sink, Source }
+import pekko.testkit.TestKit
 import com.google.protobuf.any.Any
 import com.google.rpc.error_details.LocalizedMessage
 import com.google.rpc.{ Code, Status }

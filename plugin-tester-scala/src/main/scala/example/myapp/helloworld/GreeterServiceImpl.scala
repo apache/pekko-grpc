@@ -6,10 +6,11 @@
 package example.myapp.helloworld
 
 import scala.concurrent.Future
-import org.apache.pekko.NotUsed
-import org.apache.pekko.stream.Materializer
-import org.apache.pekko.stream.scaladsl.Sink
-import org.apache.pekko.stream.scaladsl.Source
+import org.apache.pekko
+import pekko.NotUsed
+import pekko.stream.Materializer
+import pekko.stream.scaladsl.Sink
+import pekko.stream.scaladsl.Source
 import com.google.protobuf.timestamp.Timestamp
 import example.myapp.helloworld.grpc._
 

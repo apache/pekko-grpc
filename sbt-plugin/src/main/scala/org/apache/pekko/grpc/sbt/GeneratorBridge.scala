@@ -4,14 +4,15 @@
 
 package org.apache.pekko.grpc.sbt
 
-import org.apache.pekko.grpc.gen.Logger
-import org.apache.pekko.grpc.gen.BuildInfo
-import org.apache.pekko.grpc.gen.CodeGenerator.ScalaBinaryVersion
+import org.apache.pekko
+import pekko.grpc.gen.Logger
+import pekko.grpc.gen.BuildInfo
+import pekko.grpc.gen.CodeGenerator.ScalaBinaryVersion
 import sbt.CrossVersion
 
 object GeneratorBridge {
   def sandboxedGenerator(
-      codeGenerator: org.apache.pekko.grpc.gen.CodeGenerator,
+      codeGenerator: pekko.grpc.gen.CodeGenerator,
       scalaBinaryVersion: ScalaBinaryVersion,
       logger: Logger): protocbridge.Generator = {
     // This matches the sbt binary version (2.12)
@@ -23,20 +24,20 @@ object GeneratorBridge {
       new SandboxedProtocBridgeSbtPluginCodeGenerator(_, codeGenerator.getClass.getName, logger))
   }
   def plainGenerator(
-      codeGenerator: org.apache.pekko.grpc.gen.CodeGenerator,
+      codeGenerator: pekko.grpc.gen.CodeGenerator,
       scalaBinaryVersion: ScalaBinaryVersion,
-      logger: org.apache.pekko.grpc.gen.Logger): protocbridge.Generator = {
+      logger: pekko.grpc.gen.Logger): protocbridge.Generator = {
     val adapter = new PlainProtocBridgeSbtPluginCodeGenerator(codeGenerator, scalaBinaryVersion, logger)
     protocbridge.JvmGenerator(codeGenerator.name, adapter)
   }
 
   /**
-   * Convert a [[org.apache.pekko.grpc.gen.CodeGenerator]] into the protocbridge-required type (without sandboxing).
+   * Convert a [[pekko.grpc.gen.CodeGenerator]] into the protocbridge-required type (without sandboxing).
    */
   private class PlainProtocBridgeSbtPluginCodeGenerator(
-      impl: org.apache.pekko.grpc.gen.CodeGenerator,
+      impl: pekko.grpc.gen.CodeGenerator,
       scalaBinaryVersion: ScalaBinaryVersion,
-      logger: org.apache.pekko.grpc.gen.Logger)
+      logger: pekko.grpc.gen.Logger)
       extends protocbridge.ProtocCodeGenerator {
     override def run(request: Array[Byte]): Array[Byte] = impl.run(request, logger)
     override def suggestedDependencies: Seq[protocbridge.Artifact] = impl.suggestedDependencies(scalaBinaryVersion)
@@ -44,7 +45,7 @@ object GeneratorBridge {
   }
 
   /**
-   * Convert a [[org.apache.pekko.grpc.gen.CodeGenerator]] into the protocbridge-required type, with sandboxing.
+   * Convert a [[pekko.grpc.gen.CodeGenerator]] into the protocbridge-required type, with sandboxing.
    */
   private class SandboxedProtocBridgeSbtPluginCodeGenerator(classLoader: ClassLoader, className: String, logger: Logger)
       extends protocbridge.ProtocCodeGenerator {

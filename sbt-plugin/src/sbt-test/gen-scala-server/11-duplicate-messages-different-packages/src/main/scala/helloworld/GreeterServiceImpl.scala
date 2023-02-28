@@ -2,8 +2,9 @@ package helloworld
 
 import scala.concurrent.Future
 
-import org.apache.pekko.NotUsed
-import org.apache.pekko.stream.scaladsl.Source
+import org.apache.pekko
+import pekko.NotUsed
+import pekko.stream.scaladsl.Source
 
 class GreeterServiceImpl extends GreeterService {
   override def sayHello(in: HelloRequest): Future[HelloReply] = ???

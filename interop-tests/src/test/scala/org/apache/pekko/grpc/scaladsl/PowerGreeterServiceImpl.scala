@@ -6,10 +6,11 @@ package org.apache.pekko.grpc.scaladsl
 
 import scala.concurrent.Future
 
-import org.apache.pekko.NotUsed
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.stream.scaladsl.Sink
-import org.apache.pekko.stream.scaladsl.Source
+import org.apache.pekko
+import pekko.NotUsed
+import pekko.actor.ActorSystem
+import pekko.stream.scaladsl.Sink
+import pekko.stream.scaladsl.Source
 import example.myapp.helloworld.grpc.helloworld._
 
 class PowerGreeterServiceImpl()(implicit system: ActorSystem) extends GreeterServicePowerApi {

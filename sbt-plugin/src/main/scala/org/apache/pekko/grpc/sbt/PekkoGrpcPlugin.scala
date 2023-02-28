@@ -4,18 +4,11 @@
 
 package org.apache.pekko.grpc.sbt
 
-import org.apache.pekko.grpc.gen.CodeGenerator.ScalaBinaryVersion
-import org.apache.pekko.grpc.gen.scaladsl.{
-  ScalaClientCodeGenerator,
-  ScalaServerCodeGenerator,
-  ScalaTraitCodeGenerator
-}
-import org.apache.pekko.grpc.gen.javadsl.{
-  JavaClientCodeGenerator,
-  JavaInterfaceCodeGenerator,
-  JavaServerCodeGenerator
-}
-import org.apache.pekko.grpc.gen.{ BuildInfo, Logger => GenLogger, ProtocSettings }
+import org.apache.pekko
+import pekko.grpc.gen.CodeGenerator.ScalaBinaryVersion
+import pekko.grpc.gen.scaladsl.{ ScalaClientCodeGenerator, ScalaServerCodeGenerator, ScalaTraitCodeGenerator }
+import pekko.grpc.gen.javadsl.{ JavaClientCodeGenerator, JavaInterfaceCodeGenerator, JavaServerCodeGenerator }
+import pekko.grpc.gen.{ BuildInfo, Logger => GenLogger, ProtocSettings }
 import protocbridge.Generator
 import sbt.Keys._
 import sbt._
@@ -71,7 +64,7 @@ object PekkoGrpcPlugin extends AutoPlugin {
     val pekkoGrpcGeneratedSources = settingKey[Seq[PekkoGrpc.GeneratedSource]](
       "Which of the sources to generate in addition to the gRPC protobuf messages (PekkoGrpc.Server, PekkoGrpc.Client)")
     val pekkoGrpcExtraGenerators =
-      settingKey[Seq[org.apache.pekko.grpc.gen.CodeGenerator]]("Extra generators to evaluate. Empty by default")
+      settingKey[Seq[pekko.grpc.gen.CodeGenerator]]("Extra generators to evaluate. Empty by default")
     val pekkoGrpcGenerators = settingKey[Seq[protocbridge.Generator]](
       "Generators to evaluate. Populated based on pekkoGrpcGeneratedLanguages, pekkoGrpcGeneratedSources and pekkoGrpcExtraGenerators, but can be extended if needed")
     val pekkoGrpcCodeGeneratorSettings = settingKey[Seq[String]](
@@ -177,7 +170,7 @@ object PekkoGrpcPlugin extends AutoPlugin {
       scalaBinaryVersion: ScalaBinaryVersion,
       logger: GenLogger): Seq[protocbridge.Generator] = {
     import PekkoGrpc._
-    def toGen(codeGenerator: org.apache.pekko.grpc.gen.CodeGenerator) =
+    def toGen(codeGenerator: pekko.grpc.gen.CodeGenerator) =
       GeneratorBridge.sandboxedGenerator(codeGenerator, scalaBinaryVersion, logger)
     // these two are the model/message (protoc) generators
     def ScalaGenerator: protocbridge.Generator = scalapb.gen.SandboxedGenerator
@@ -218,13 +211,13 @@ object PekkoGrpcPlugin extends AutoPlugin {
 
   /** Sandbox a CodeGenerator, to prepare it to be added to pekkoGrpcGenerators */
   def sandboxedGenerator(
-      codeGenerator: org.apache.pekko.grpc.gen.CodeGenerator): Def.Initialize[protocbridge.Generator] =
+      codeGenerator: pekko.grpc.gen.CodeGenerator): Def.Initialize[protocbridge.Generator] =
     Def.setting {
       GeneratorBridge.sandboxedGenerator(codeGenerator, generatorScalaBinaryVersion.value, generatorLogger)
     }
 
   /** Convert a CodeGenerator, to prepare it to be added to pekkoGrpcGenerators without sandboxing */
-  def plainGenerator(codeGenerator: org.apache.pekko.grpc.gen.CodeGenerator): Def.Initialize[protocbridge.Generator] =
+  def plainGenerator(codeGenerator: pekko.grpc.gen.CodeGenerator): Def.Initialize[protocbridge.Generator] =
     Def.setting {
       GeneratorBridge.plainGenerator(codeGenerator, generatorScalaBinaryVersion.value, generatorLogger)
     }

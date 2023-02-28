@@ -4,16 +4,17 @@
 
 package org.apache.pekko.grpc
 
-import org.apache.pekko.NotUsed
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.annotation.InternalStableApi
-import org.apache.pekko.grpc.GrpcProtocol.{ GrpcProtocolReader, GrpcProtocolWriter }
-import org.apache.pekko.grpc.internal.{ Codec, Codecs, GrpcProtocolNative, GrpcProtocolWeb, GrpcProtocolWebText }
-import org.apache.pekko.http.javadsl.{ model => jmodel }
-import org.apache.pekko.http.scaladsl.model.{ ContentType, HttpHeader, HttpResponse, Trailer }
-import org.apache.pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
-import org.apache.pekko.stream.scaladsl.Flow
-import org.apache.pekko.util.ByteString
+import org.apache.pekko
+import pekko.NotUsed
+import pekko.annotation.InternalApi
+import pekko.annotation.InternalStableApi
+import pekko.grpc.GrpcProtocol.{ GrpcProtocolReader, GrpcProtocolWriter }
+import pekko.grpc.internal.{ Codec, Codecs, GrpcProtocolNative, GrpcProtocolWeb, GrpcProtocolWebText }
+import pekko.http.javadsl.{ model => jmodel }
+import pekko.http.scaladsl.model.{ ContentType, HttpHeader, HttpResponse, Trailer }
+import pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
+import pekko.stream.scaladsl.Flow
+import pekko.util.ByteString
 
 import scala.collection.immutable
 import scala.util.Try

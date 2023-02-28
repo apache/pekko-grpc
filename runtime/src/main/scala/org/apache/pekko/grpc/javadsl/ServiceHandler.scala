@@ -6,10 +6,11 @@ package org.apache.pekko.grpc.javadsl
 
 import java.util.concurrent.{ CompletableFuture, CompletionStage }
 
-import org.apache.pekko.annotation.ApiMayChange
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.http.javadsl.model.{ HttpRequest, HttpResponse, StatusCodes }
-import org.apache.pekko.japi.function.{ Function => JFunction }
+import org.apache.pekko
+import pekko.annotation.ApiMayChange
+import pekko.annotation.InternalApi
+import pekko.http.javadsl.model.{ HttpRequest, HttpResponse, StatusCodes }
+import pekko.japi.function.{ Function => JFunction }
 
 import scala.annotation.varargs
 

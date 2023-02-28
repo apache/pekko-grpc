@@ -9,28 +9,29 @@ package @service.packageName
 
 import scala.concurrent.ExecutionContext
 
-import org.apache.pekko.actor.ClassicActorSystemProvider
+import org.apache.pekko
+import pekko.actor.ClassicActorSystemProvider
 
-import org.apache.pekko.grpc.GrpcChannel
-import org.apache.pekko.grpc.GrpcClientCloseException
-import org.apache.pekko.grpc.GrpcClientSettings
+import pekko.grpc.GrpcChannel
+import pekko.grpc.GrpcClientCloseException
+import pekko.grpc.GrpcClientSettings
 
-import org.apache.pekko.grpc.scaladsl.PekkoGrpcClient
+import pekko.grpc.scaladsl.PekkoGrpcClient
 
-import org.apache.pekko.grpc.internal.NettyClientUtils
+import pekko.grpc.internal.NettyClientUtils
 
-import org.apache.pekko.grpc.PekkoGrpcGenerated
+import pekko.grpc.PekkoGrpcGenerated
 
 @{
-  def withSingleResponse(stmt: String) = Set("import org.apache.pekko.grpc.scaladsl.SingleResponseRequestBuilder", stmt)
-  def withStreamResponse(stmt: String) = Set("import org.apache.pekko.grpc.scaladsl.StreamResponseRequestBuilder", stmt)
+  def withSingleResponse(stmt: String) = Set("import pekko.grpc.scaladsl.SingleResponseRequestBuilder", stmt)
+  def withStreamResponse(stmt: String) = Set("import pekko.grpc.scaladsl.StreamResponseRequestBuilder", stmt)
   service.methods.flatMap { method: org.apache.pekko.grpc.gen.scaladsl.Method =>
 
     val statements = method.methodType match {
-      case org.apache.pekko.grpc.gen.Unary => withSingleResponse("import org.apache.pekko.grpc.internal.ScalaUnaryRequestBuilder")
-      case org.apache.pekko.grpc.gen.ClientStreaming =>  withSingleResponse("import org.apache.pekko.grpc.internal.ScalaClientStreamingRequestBuilder")
-      case org.apache.pekko.grpc.gen.ServerStreaming => withStreamResponse("import org.apache.pekko.grpc.internal.ScalaServerStreamingRequestBuilder")
-      case org.apache.pekko.grpc.gen.BidiStreaming => withStreamResponse("import org.apache.pekko.grpc.internal.ScalaBidirectionalStreamingRequestBuilder")
+      case org.apache.pekko.grpc.gen.Unary => withSingleResponse("import pekko.grpc.internal.ScalaUnaryRequestBuilder")
+      case org.apache.pekko.grpc.gen.ClientStreaming =>  withSingleResponse("import pekko.grpc.internal.ScalaClientStreamingRequestBuilder")
+      case org.apache.pekko.grpc.gen.ServerStreaming => withStreamResponse("import pekko.grpc.internal.ScalaServerStreamingRequestBuilder")
+      case org.apache.pekko.grpc.gen.BidiStreaming => withStreamResponse("import pekko.grpc.internal.ScalaBidirectionalStreamingRequestBuilder")
     }
 
     statements
@@ -56,7 +57,7 @@ object @{service.name}Client {
     private val options = NettyClientUtils.callOptions(settings)
 
     @for(method <- service.methods) {
-    private def @{method.name}RequestBuilder(channel: org.apache.pekko.grpc.internal.InternalChannel) =
+    private def @{method.name}RequestBuilder(channel: pekko.grpc.internal.InternalChannel) =
     @if(method.methodType == org.apache.pekko.grpc.gen.Unary) {
       new ScalaUnaryRequestBuilder(@{method.name}Descriptor, channel, options, settings)
     } else {
@@ -90,11 +91,11 @@ object @{service.name}Client {
       @{method.nameSafe}().invoke(in)
     }
 
-    override def close(): scala.concurrent.Future[org.apache.pekko.Done] =
+    override def close(): scala.concurrent.Future[pekko.Done] =
       if (isChannelOwned) channel.close()
       else throw new GrpcClientCloseException()
 
-    override def closed: scala.concurrent.Future[org.apache.pekko.Done] = channel.closed()
+    override def closed: scala.concurrent.Future[pekko.Done] = channel.closed()
   }
 }
 

@@ -4,18 +4,19 @@
 
 package org.apache.pekko.grpc.internal
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.actor.ClassicActorSystemProvider
-import org.apache.pekko.grpc.{ ProtobufSerializer, Trailers }
-import org.apache.pekko.grpc.GrpcProtocol.GrpcProtocolWriter
-import org.apache.pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
-import org.apache.pekko.stream.scaladsl.Source
-import org.apache.pekko.NotUsed
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.grpc.scaladsl.GrpcExceptionHandler
-import org.apache.pekko.grpc.scaladsl.headers._
-import org.apache.pekko.http.scaladsl.model
-import org.apache.pekko.http.scaladsl.model.{ HttpEntity, HttpHeader, HttpMethods, HttpRequest, TransferEncodings, Uri }
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.actor.ClassicActorSystemProvider
+import pekko.grpc.{ ProtobufSerializer, Trailers }
+import pekko.grpc.GrpcProtocol.GrpcProtocolWriter
+import pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
+import pekko.stream.scaladsl.Source
+import pekko.NotUsed
+import pekko.annotation.InternalApi
+import pekko.grpc.scaladsl.GrpcExceptionHandler
+import pekko.grpc.scaladsl.headers._
+import pekko.http.scaladsl.model
+import pekko.http.scaladsl.model.{ HttpEntity, HttpHeader, HttpMethods, HttpRequest, TransferEncodings, Uri }
 
 import scala.collection.immutable
 

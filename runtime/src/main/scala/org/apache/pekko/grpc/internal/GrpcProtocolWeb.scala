@@ -4,12 +4,13 @@
 
 package org.apache.pekko.grpc.internal
 
-import org.apache.pekko.NotUsed
-import org.apache.pekko.grpc.GrpcProtocol._
-import org.apache.pekko.http.scaladsl.model._
-import org.apache.pekko.http.scaladsl.model.HttpEntity.{ Chunk, ChunkStreamPart }
-import org.apache.pekko.stream.scaladsl.Flow
-import org.apache.pekko.util.{ ByteString, ByteStringBuilder }
+import org.apache.pekko
+import pekko.NotUsed
+import pekko.grpc.GrpcProtocol._
+import pekko.http.scaladsl.model._
+import pekko.http.scaladsl.model.HttpEntity.{ Chunk, ChunkStreamPart }
+import pekko.stream.scaladsl.Flow
+import pekko.util.{ ByteString, ByteStringBuilder }
 import io.grpc.{ Status, StatusException }
 import scala.collection.immutable
 

@@ -6,10 +6,11 @@ package org.apache.pekko.grpc.javadsl
 
 import java.util.{ List, Map, Optional }
 
-import org.apache.pekko.annotation.{ ApiMayChange, DoNotInherit }
-import org.apache.pekko.util.ByteString
-import org.apache.pekko.japi.Pair
-import org.apache.pekko.grpc.scaladsl
+import org.apache.pekko
+import pekko.annotation.{ ApiMayChange, DoNotInherit }
+import pekko.util.ByteString
+import pekko.japi.Pair
+import pekko.grpc.scaladsl
 
 /**
  * Immutable representation of the metadata in a call

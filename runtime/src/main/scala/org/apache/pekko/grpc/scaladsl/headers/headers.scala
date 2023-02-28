@@ -4,10 +4,11 @@
 
 package org.apache.pekko.grpc.scaladsl.headers
 
-import org.apache.pekko.annotation.ApiMayChange
-import org.apache.pekko.http.scaladsl.model.HttpHeader
-import org.apache.pekko.http.scaladsl.model.headers.{ ModeledCustomHeader, ModeledCustomHeaderCompanion }
-import org.apache.pekko.http.javadsl.{ model => jm }
+import org.apache.pekko
+import pekko.annotation.ApiMayChange
+import pekko.http.scaladsl.model.HttpHeader
+import pekko.http.scaladsl.model.headers.{ ModeledCustomHeader, ModeledCustomHeaderCompanion }
+import pekko.http.javadsl.{ model => jm }
 
 import scala.collection.immutable
 import scala.util.Try

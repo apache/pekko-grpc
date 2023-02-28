@@ -2,8 +2,9 @@ package example.myapp.helloworld
 
 import scala.concurrent.Future
 
-import org.apache.pekko.NotUsed
-import org.apache.pekko.stream.scaladsl.Source
+import org.apache.pekko
+import pekko.NotUsed
+import pekko.stream.scaladsl.Source
 
 import example.myapp.helloworld.grpc._
 

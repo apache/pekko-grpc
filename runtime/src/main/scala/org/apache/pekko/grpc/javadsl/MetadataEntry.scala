@@ -4,8 +4,9 @@
 
 package org.apache.pekko.grpc.javadsl
 
-import org.apache.pekko.annotation.{ ApiMayChange, DoNotInherit }
-import org.apache.pekko.util.ByteString
+import org.apache.pekko
+import pekko.annotation.{ ApiMayChange, DoNotInherit }
+import pekko.util.ByteString
 
 /**
  * Represents metadata entry.

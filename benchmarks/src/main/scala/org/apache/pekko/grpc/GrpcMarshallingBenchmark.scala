@@ -4,11 +4,12 @@
 
 package org.apache.pekko.grpc
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.grpc.internal.{ GrpcProtocolNative, Identity }
-import org.apache.pekko.grpc.scaladsl.GrpcMarshalling
-import org.apache.pekko.http.scaladsl.model.HttpResponse
-import org.apache.pekko.stream.scaladsl.Source
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.grpc.internal.{ GrpcProtocolNative, Identity }
+import pekko.grpc.scaladsl.GrpcMarshalling
+import pekko.http.scaladsl.model.HttpResponse
+import pekko.stream.scaladsl.Source
 import grpc.reflection.v1alpha.reflection._
 import org.openjdk.jmh.annotations._
 

@@ -4,17 +4,18 @@
 
 package org.apache.pekko.grpc.internal
 
-import org.apache.pekko.NotUsed
-import org.apache.pekko.actor.{ ActorSystem, ClassicActorSystemProvider }
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.grpc.GrpcProtocol.{ GrpcProtocolWriter, TrailerFrame }
-import org.apache.pekko.grpc.scaladsl.{ headers, GrpcExceptionHandler }
-import org.apache.pekko.grpc.{ ProtobufSerializer, Trailers }
-import org.apache.pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
-import org.apache.pekko.http.scaladsl.model.{ HttpEntity, HttpResponse, Trailer }
-import org.apache.pekko.stream.Materializer
-import org.apache.pekko.stream.scaladsl.Source
-import org.apache.pekko.util.ByteString
+import org.apache.pekko
+import pekko.NotUsed
+import pekko.actor.{ ActorSystem, ClassicActorSystemProvider }
+import pekko.annotation.InternalApi
+import pekko.grpc.GrpcProtocol.{ GrpcProtocolWriter, TrailerFrame }
+import pekko.grpc.scaladsl.{ headers, GrpcExceptionHandler }
+import pekko.grpc.{ ProtobufSerializer, Trailers }
+import pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
+import pekko.http.scaladsl.model.{ HttpEntity, HttpResponse, Trailer }
+import pekko.stream.Materializer
+import pekko.stream.scaladsl.Source
+import pekko.util.ByteString
 import io.grpc.Status
 
 import scala.collection.immutable

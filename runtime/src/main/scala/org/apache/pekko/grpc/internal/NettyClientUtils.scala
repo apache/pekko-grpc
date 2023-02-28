@@ -7,11 +7,12 @@ package org.apache.pekko.grpc.internal
 import java.util.concurrent.TimeUnit
 
 import javax.net.ssl.SSLContext
-import org.apache.pekko.{ Done, NotUsed }
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.event.LoggingAdapter
-import org.apache.pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, GrpcSingleResponse }
-import org.apache.pekko.stream.scaladsl.{ Flow, Keep, Source }
+import org.apache.pekko
+import pekko.{ Done, NotUsed }
+import pekko.annotation.InternalApi
+import pekko.event.LoggingAdapter
+import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, GrpcSingleResponse }
+import pekko.stream.scaladsl.{ Flow, Keep, Source }
 import io.grpc.{ CallOptions, MethodDescriptor }
 import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts
 import io.grpc.netty.shaded.io.grpc.netty.NegotiationType

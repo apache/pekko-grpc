@@ -18,12 +18,13 @@ import io.grpc.Attributes
 import io.grpc.NameResolver.Listener
 import io.grpc.EquivalentAddressGroup
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.discovery.Lookup
-import org.apache.pekko.discovery.ServiceDiscovery
-import org.apache.pekko.discovery.ServiceDiscovery.Resolved
-import org.apache.pekko.discovery.ServiceDiscovery.ResolvedTarget
-import org.apache.pekko.testkit.TestKit
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.discovery.Lookup
+import pekko.discovery.ServiceDiscovery
+import pekko.discovery.ServiceDiscovery.Resolved
+import pekko.discovery.ServiceDiscovery.ResolvedTarget
+import pekko.testkit.TestKit
 
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers

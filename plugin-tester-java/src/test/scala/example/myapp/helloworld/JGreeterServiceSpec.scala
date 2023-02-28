@@ -9,8 +9,9 @@ import scala.concurrent.Await
 import org.scalatest.BeforeAndAfterAll
 import scala.concurrent.duration._
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.grpc.GrpcClientSettings
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.grpc.GrpcClientSettings
 import com.google.protobuf.Timestamp
 import com.typesafe.config.ConfigFactory
 import org.scalatest.concurrent.ScalaFutures

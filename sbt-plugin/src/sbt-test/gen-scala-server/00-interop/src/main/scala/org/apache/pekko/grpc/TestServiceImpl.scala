@@ -5,13 +5,14 @@ import scala.concurrent.Future
 import scala.reflect.ClassTag
 import scala.collection.immutable
 
-import org.apache.pekko.grpc.scaladsl.GrpcMarshalling
+import org.apache.pekko
+import pekko.grpc.scaladsl.GrpcMarshalling
 
-import org.apache.pekko.NotUsed
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.grpc._
-import org.apache.pekko.stream.scaladsl.{ Flow, Source }
-import org.apache.pekko.stream.{ Materializer, SystemMaterializer }
+import pekko.NotUsed
+import pekko.actor.ActorSystem
+import pekko.grpc._
+import pekko.stream.scaladsl.{ Flow, Source }
+import pekko.stream.{ Materializer, SystemMaterializer }
 
 import com.google.protobuf.ByteString
 import io.grpc.{ Status, StatusRuntimeException }

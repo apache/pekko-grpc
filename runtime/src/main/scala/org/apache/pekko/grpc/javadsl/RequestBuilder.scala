@@ -6,11 +6,12 @@ package org.apache.pekko.grpc.javadsl
 
 import java.util.concurrent.CompletionStage
 
-import org.apache.pekko.NotUsed
-import org.apache.pekko.annotation.{ ApiMayChange, DoNotInherit }
-import org.apache.pekko.grpc.{ GrpcResponseMetadata, GrpcSingleResponse }
-import org.apache.pekko.stream.javadsl.Source
-import org.apache.pekko.util.ByteString
+import org.apache.pekko
+import pekko.NotUsed
+import pekko.annotation.{ ApiMayChange, DoNotInherit }
+import pekko.grpc.{ GrpcResponseMetadata, GrpcSingleResponse }
+import pekko.stream.javadsl.Source
+import pekko.util.ByteString
 
 /**
  * Request builder for requests providing per call specific metadata capabilities in

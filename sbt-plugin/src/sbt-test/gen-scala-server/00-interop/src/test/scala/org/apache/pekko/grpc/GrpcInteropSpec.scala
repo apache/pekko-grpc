@@ -1,10 +1,11 @@
 package org.apache.pekko.grpc.interop
 
-import org.apache.pekko.stream.{ Materializer, SystemMaterializer }
-import org.apache.pekko.http.scaladsl.model._
-import org.apache.pekko.http.scaladsl.model.headers.RawHeader
-import org.apache.pekko.http.scaladsl.server.RouteResult.Complete
-import org.apache.pekko.http.scaladsl.server.{ Directive0, Directives, Route }
+import org.apache.pekko
+import pekko.stream.{ Materializer, SystemMaterializer }
+import pekko.http.scaladsl.model._
+import pekko.http.scaladsl.model.headers.RawHeader
+import pekko.http.scaladsl.server.RouteResult.Complete
+import pekko.http.scaladsl.server.{ Directive0, Directives, Route }
 
 import io.grpc.testing.integration.TestServiceHandlerFactory
 import io.grpc.testing.integration.test.TestService

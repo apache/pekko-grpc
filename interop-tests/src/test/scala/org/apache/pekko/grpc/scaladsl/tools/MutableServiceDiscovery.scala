@@ -6,11 +6,12 @@ package org.apache.pekko.grpc.scaladsl.tools
 
 import java.net.InetSocketAddress
 
-import org.apache.pekko.discovery.Lookup
-import org.apache.pekko.discovery.ServiceDiscovery
-import org.apache.pekko.discovery.ServiceDiscovery.Resolved
-import org.apache.pekko.discovery.ServiceDiscovery.ResolvedTarget
-import org.apache.pekko.http.scaladsl.Http
+import org.apache.pekko
+import pekko.discovery.Lookup
+import pekko.discovery.ServiceDiscovery
+import pekko.discovery.ServiceDiscovery.Resolved
+import pekko.discovery.ServiceDiscovery.ResolvedTarget
+import pekko.http.scaladsl.Http
 
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration

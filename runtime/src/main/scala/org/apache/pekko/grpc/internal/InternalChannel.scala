@@ -5,10 +5,11 @@
 package org.apache.pekko.grpc.internal
 
 import scala.concurrent.Future
-import org.apache.pekko.{ Done, NotUsed }
-import org.apache.pekko.annotation.InternalApi
-import org.apache.pekko.grpc.{ GrpcResponseMetadata, GrpcSingleResponse }
-import org.apache.pekko.stream.scaladsl.Source
+import org.apache.pekko
+import pekko.{ Done, NotUsed }
+import pekko.annotation.InternalApi
+import pekko.grpc.{ GrpcResponseMetadata, GrpcSingleResponse }
+import pekko.stream.scaladsl.Source
 import io.grpc.{ CallOptions, MethodDescriptor }
 
 /**

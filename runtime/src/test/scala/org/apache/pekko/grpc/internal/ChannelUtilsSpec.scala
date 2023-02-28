@@ -6,9 +6,10 @@ package org.apache.pekko.grpc.internal
 
 import java.util.concurrent.TimeUnit
 
-import org.apache.pekko.Done
-import org.apache.pekko.event.{ LoggingAdapter, NoLogging }
-import org.apache.pekko.grpc.internal.ChannelUtilsSpec.FakeChannel
+import org.apache.pekko
+import pekko.Done
+import pekko.event.{ LoggingAdapter, NoLogging }
+import pekko.grpc.internal.ChannelUtilsSpec.FakeChannel
 import io.grpc.ConnectivityState._
 import io.grpc._
 import org.scalatest.concurrent.ScalaFutures

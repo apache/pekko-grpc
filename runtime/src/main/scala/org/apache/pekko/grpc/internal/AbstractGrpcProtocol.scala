@@ -3,18 +3,19 @@
  */
 
 package org.apache.pekko.grpc.internal
-import org.apache.pekko.NotUsed
-import org.apache.pekko.grpc.GrpcProtocol
-import org.apache.pekko.grpc.GrpcProtocol.{ Frame, GrpcProtocolReader, GrpcProtocolWriter }
-import org.apache.pekko.http.javadsl.{ model => jmodel }
-import org.apache.pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
-import org.apache.pekko.http.scaladsl.model.{ ContentType, HttpHeader, HttpResponse, MediaType, Trailer }
-import org.apache.pekko.stream.Attributes
-import org.apache.pekko.stream.impl.io.ByteStringParser
-import org.apache.pekko.stream.impl.io.ByteStringParser.{ ByteReader, ParseResult, ParseStep }
-import org.apache.pekko.stream.scaladsl.Flow
-import org.apache.pekko.stream.stage.GraphStageLogic
-import org.apache.pekko.util.{ ByteString, ByteStringBuilder }
+import org.apache.pekko
+import pekko.NotUsed
+import pekko.grpc.GrpcProtocol
+import pekko.grpc.GrpcProtocol.{ Frame, GrpcProtocolReader, GrpcProtocolWriter }
+import pekko.http.javadsl.{ model => jmodel }
+import pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
+import pekko.http.scaladsl.model.{ ContentType, HttpHeader, HttpResponse, MediaType, Trailer }
+import pekko.stream.Attributes
+import pekko.stream.impl.io.ByteStringParser
+import pekko.stream.impl.io.ByteStringParser.{ ByteReader, ParseResult, ParseStep }
+import pekko.stream.scaladsl.Flow
+import pekko.stream.stage.GraphStageLogic
+import pekko.util.{ ByteString, ByteStringBuilder }
 import io.grpc.StatusException
 
 import java.nio.ByteOrder

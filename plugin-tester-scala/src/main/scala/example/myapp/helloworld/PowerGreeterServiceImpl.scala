@@ -5,10 +5,11 @@
 //#full-service-impl
 package example.myapp.helloworld
 
-import org.apache.pekko.NotUsed
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.grpc.scaladsl.Metadata
-import org.apache.pekko.stream.scaladsl.{ Sink, Source }
+import org.apache.pekko
+import pekko.NotUsed
+import pekko.actor.ActorSystem
+import pekko.grpc.scaladsl.Metadata
+import pekko.stream.scaladsl.{ Sink, Source }
 import example.myapp.helloworld.grpc._
 
 import scala.concurrent.Future

@@ -6,15 +6,16 @@ package org.apache.pekko.grpc.javadsl
 
 import java.lang.{ Iterable => jIterable }
 
-import org.apache.pekko.annotation.ApiMayChange
+import org.apache.pekko
+import pekko.annotation.ApiMayChange
 
 import scala.collection.JavaConverters._
-import org.apache.pekko.http.javadsl.model.HttpHeader
-import org.apache.pekko.http.scaladsl.model.{ HttpHeader => sHttpHeader }
-import org.apache.pekko.http.scaladsl.model.headers.RawHeader
-import org.apache.pekko.util.ByteString
-import org.apache.pekko.grpc.scaladsl
-import org.apache.pekko.grpc.internal.JavaMetadataImpl
+import pekko.http.javadsl.model.HttpHeader
+import pekko.http.scaladsl.model.{ HttpHeader => sHttpHeader }
+import pekko.http.scaladsl.model.headers.RawHeader
+import pekko.util.ByteString
+import pekko.grpc.scaladsl
+import pekko.grpc.internal.JavaMetadataImpl
 
 /**
  * This class provides an interface for constructing immutable Metadata instances.

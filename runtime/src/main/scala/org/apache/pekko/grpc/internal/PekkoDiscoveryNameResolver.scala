@@ -6,9 +6,10 @@ package org.apache.pekko.grpc.internal
 
 import java.net.{ InetAddress, InetSocketAddress, UnknownHostException }
 
-import org.apache.pekko.discovery.ServiceDiscovery.ResolvedTarget
-import org.apache.pekko.discovery.{ Lookup, ServiceDiscovery }
-import org.apache.pekko.grpc.GrpcClientSettings
+import org.apache.pekko
+import pekko.discovery.ServiceDiscovery.ResolvedTarget
+import pekko.discovery.{ Lookup, ServiceDiscovery }
+import pekko.grpc.GrpcClientSettings
 import io.grpc.{ Attributes, EquivalentAddressGroup, NameResolver, Status }
 import io.grpc.NameResolver.Listener
 

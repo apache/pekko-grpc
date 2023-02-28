@@ -2,10 +2,11 @@ package example.myapp.helloworld;
 
 import scala.concurrent.duration._
 
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.http.scaladsl.Http
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.http.scaladsl.Http
 
-import org.apache.pekko.grpc.GrpcClientSettings
+import pekko.grpc.GrpcClientSettings
 
 import example.myapp.helloworld.grpc._
 

@@ -4,11 +4,12 @@
 
 package org.apache.pekko.grpc.scaladsl
 
-import org.apache.pekko.NotUsed
-import org.apache.pekko.annotation.{ ApiMayChange, DoNotInherit }
-import org.apache.pekko.grpc.{ GrpcResponseMetadata, GrpcSingleResponse }
-import org.apache.pekko.stream.scaladsl.Source
-import org.apache.pekko.util.ByteString
+import org.apache.pekko
+import pekko.NotUsed
+import pekko.annotation.{ ApiMayChange, DoNotInherit }
+import pekko.grpc.{ GrpcResponseMetadata, GrpcSingleResponse }
+import pekko.stream.scaladsl.Source
+import pekko.util.ByteString
 
 import scala.concurrent.Future
 
