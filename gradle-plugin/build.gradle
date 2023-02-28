@@ -6,7 +6,7 @@ plugins {
   id 'com.gradle.plugin-publish' version '0.11.0'
 }
 
-group = "com.lightbend.akka.grpc"
+group = "org.apache.pekko"
 // https://github.com/palantir/gradle-git-version/issues/97
 
 def tag = "git describe --tags".execute().text.substring(1).split("-g")[0].replace("\n", "")

@@ -6,8 +6,6 @@ resolvers += "Apache Snapshots".at("https://repository.apache.org/content/reposi
 
 enablePlugins(PekkoGrpcPlugin)
 
-dependencyOverrides += "com.typesafe.akka" %% "akka-stream" % "2.6.5"
-
 assembly / assemblyMergeStrategy := {
   // https://github.com/akka/akka/issues/29456
   case PathList("google", "protobuf", _)    => MergeStrategy.discard

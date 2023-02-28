@@ -56,7 +56,7 @@ object ReflectiveCodeGen extends AutoPlugin {
           val oldResolver = PB.artifactResolver.value
           Def.task { (artifact: BridgeArtifact) =>
             artifact.groupId match {
-              case "com.lightbend.akka.grpc" =>
+              case "org.apache.pekko" =>
                 cp
               case _ =>
                 oldResolver(artifact)

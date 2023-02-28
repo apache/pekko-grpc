@@ -14,7 +14,7 @@ sbt
 :   @@@vars
 ```scala
 // in project/plugins.sbt:
-addSbtPlugin("com.lightbend.akka.grpc" % "sbt-pekko-grpc" % "$project.version$")
+addSbtPlugin("org.apache.pekko" % "sbt-pekko-grpc" % "$project.version$")
 // in build.sbt:
 enablePlugins(PekkoGrpcPlugin)
 ```
@@ -28,7 +28,7 @@ buildscript {
     // version here is a placeholder,
     // it is replaced with a project dependency during integration tests
     // by adding --include-build <path> to gradlew
-    classpath 'com.lightbend.akka.grpc:akka-grpc-gradle-plugin:$project.version$'
+    classpath 'org.apache.pekko:pekko-grpc-gradle-plugin:$project.version$'
   }
 }
 plugins {
@@ -57,7 +57,7 @@ Maven
     </properties>
   <dependencies>
     <dependency>
-      <groupId>com.lightbend.akka.grpc</groupId>
+      <groupId>org.apache.pekko</groupId>
       <artifactId>pekko-grpc-runtime_2.12</artifactId>
       <version>${pekko.grpc.version}</version>
     </dependency>
@@ -71,8 +71,8 @@ Maven
   <build>
     <plugins>
       <plugin>
-        <groupId>com.lightbend.akka.grpc</groupId>
-        <artifactId>akka-grpc-maven-plugin</artifactId>
+        <groupId>org.apache.pekko</groupId>
+        <artifactId>pekko-grpc-maven-plugin</artifactId>
         <version>${pekko.grpc.version}</version>
         <!-- Hook the generate goal into the lifecycle,
              automatically tied to generate-sources -->

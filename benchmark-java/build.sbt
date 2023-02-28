@@ -17,7 +17,7 @@ val root = project
   // Use this instead of above when importing to IDEA, after publishLocal and replacing the version here
   /*
   .settings(libraryDependencies ++= Seq(
-    "com.lightbend.akka.grpc" %% "pekko-grpc-runtime" % "0.1+32-fd597fcb+20180618-1248"
+    "org.apache.pekko" %% "pekko-grpc-runtime" % "0.1+32-fd597fcb+20180618-1248"
   ))
    */
   .settings(

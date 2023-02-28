@@ -106,11 +106,11 @@ class PekkoGrpcPlugin implements Plugin<Project> {
             }
             plugins {
                 pekkoGrpc {
-                    artifact = "com.lightbend.akka.grpc:pekko-grpc-codegen_${PROTOC_PLUGIN_SCALA_VERSION}:${baselineVersion}:${assemblyClassifier}@${assemblySuffix}"
+                    artifact = "org.apache.pekko:pekko-grpc-codegen_${PROTOC_PLUGIN_SCALA_VERSION}:${baselineVersion}:${assemblyClassifier}@${assemblySuffix}"
                 }
                 if (pekkoGrpcExt.scala) {
                     scalapb {
-                        artifact = "com.lightbend.akka.grpc:pekko-grpc-scalapb-protoc-plugin_${PROTOC_PLUGIN_SCALA_VERSION}:${baselineVersion}:${assemblyClassifier}@${assemblySuffix}"
+                        artifact = "org.apache.pekko:pekko-grpc-scalapb-protoc-plugin_${PROTOC_PLUGIN_SCALA_VERSION}:${baselineVersion}:${assemblyClassifier}@${assemblySuffix}"
                     }
                 }
             }
@@ -159,7 +159,7 @@ class PekkoGrpcPlugin implements Plugin<Project> {
 
             def scalaVersion = autodetectScala()
             p.dependencies {
-                implementation "com.lightbend.akka.grpc:pekko-grpc-runtime_${scalaVersion}:${baselineVersion}"
+                implementation "org.apache.pekko:pekko-grpc-runtime_${scalaVersion}:${baselineVersion}"
                 implementation "io.grpc:grpc-stub:${GRPC_VERSION}"
             }
         }

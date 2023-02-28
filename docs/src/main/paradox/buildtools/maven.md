@@ -10,8 +10,8 @@ By default both client and server in Java are generated.
 Java
 :   ```xml
     <plugin>
-        <groupId>com.lightbend.akka.grpc</groupId>
-        <artifactId>akka-grpc-maven-plugin</artifactId>
+        <groupId>org.apache.pekko</groupId>
+        <artifactId>pekko-grpc-maven-plugin</artifactId>
         <version>${pekko.grpc.version}</version>
         <configuration>
           <language>Java</language>
@@ -24,8 +24,8 @@ Java
 Scala
 :   ```xml
     <plugin>
-        <groupId>com.lightbend.akka.grpc</groupId>
-        <artifactId>akka-grpc-maven-plugin</artifactId>
+        <groupId>org.apache.pekko</groupId>
+        <artifactId>pekko-grpc-maven-plugin</artifactId>
         <version>${pekko.grpc.version}</version>
         <configuration>
           <language>Scala</language>
@@ -61,8 +61,8 @@ which is a relative path to the project basedir. The below configuration overrid
 `pom.xml`
 :   ```xml
     <plugin>
-        <groupId>com.lightbend.akka.grpc</groupId>
-        <artifactId>akka-grpc-maven-plugin</artifactId>
+        <groupId>org.apache.pekko</groupId>
+        <artifactId>pekko-grpc-maven-plugin</artifactId>
         <version>${pekko.grpc.version}</version>
         <configuration>
           <protoPaths>
