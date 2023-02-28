@@ -39,11 +39,10 @@ jobs:
       #  env:
       #    FOSSA_API_KEY: "${{secrets.FOSSA_API_KEY}}"
 
-      # TODO add back headerCheckAll
       - name: Binary-compatibility check
         run: |-
           cp .jvmopts-ghactions .jvmopts
-          sbt grpcVersionSyncCheck googleProtobufVersionSyncCheck +mimaReportBinaryIssues
+          sbt headerCheckAll grpcVersionSyncCheck googleProtobufVersionSyncCheck +mimaReportBinaryIssues
 
   compile-benchmarks:
     name: Compile Benchmarks
