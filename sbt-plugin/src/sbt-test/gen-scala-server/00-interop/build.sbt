@@ -4,13 +4,13 @@ scalaVersion := "2.12.16"
 
 resolvers += "Apache Snapshots".at("https://repository.apache.org/content/repositories/snapshots/")
 
-organization := "com.lightbend.akka.grpc"
+organization := "org.apache.pekko"
 
 val grpcVersion = "1.48.1" // checked synced by VersionSyncCheckPlugin
 
 libraryDependencies ++= Seq(
   "io.grpc" % "grpc-interop-testing" % grpcVersion % "protobuf-src",
-  "com.lightbend.akka.grpc" %% "pekko-grpc-interop-tests" % sys.props("project.version") % "test",
+  "org.apache.pekko" %% "pekko-grpc-interop-tests" % sys.props("project.version") % "test",
   "org.scalatest" %% "scalatest" % "3.0.4" % "test" // ApacheV2
 )
 

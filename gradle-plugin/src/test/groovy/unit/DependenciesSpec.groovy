@@ -15,7 +15,7 @@ class DependenciesSpec extends BaseSpec {
     static final String PROTOC_PLUGIN_CODEGEN = "pekkoGrpc"
 
     def checkCodegen(Dependency d, PekkoGrpcPluginExtension ext) {
-        assert d.group == "com.lightbend.akka.grpc"
+        assert d.group == "org.apache.pekko"
         assert d.name == "pekko-grpc-codegen_${PROTOC_PLUGIN_SCALA_VERSION}"
         assert d.version == ext.pluginVersion
         true
@@ -24,7 +24,7 @@ class DependenciesSpec extends BaseSpec {
     static final String PROTOC_PLUGIN_SCALAPB = "scalapb"
 
     def checkScalapb(Dependency d, PekkoGrpcPluginExtension ext) {
-        assert d.group == "com.lightbend.akka.grpc"
+        assert d.group == "org.apache.pekko"
         assert d.name == "pekko-grpc-scalapb-protoc-plugin_${PROTOC_PLUGIN_SCALA_VERSION}"
         assert d.version == ext.pluginVersion
         true

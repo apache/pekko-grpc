@@ -12,7 +12,7 @@ sbt
 :   @@@vars
     ```scala
     // in project/plugins.sbt:
-    addSbtPlugin("com.lightbend.akka.grpc" % "sbt-pekko-grpc" % "$project.version$")
+    addSbtPlugin("org.apache.pekko" % "sbt-pekko-grpc" % "$project.version$")
     //
     // in build.sbt:
     enablePlugins(PekkoGrpcPlugin)
@@ -30,7 +30,7 @@ Gradle
       dependencies {
         // see https://plugins.gradle.org/plugin/org.apache.pekko.grpc.gradle
         // for the currently latest version.
-        classpath 'gradle.plugin.com.lightbend.akka.grpc:akka-grpc-gradle-plugin:$project.version$'
+        classpath 'gradle.plugin.org.apache.pekko:pekko-grpc-gradle-plugin:$project.version$'
       }
     }
     plugins {
@@ -63,7 +63,7 @@ Maven
       </properties>
       <dependencies>
         <dependency>
-          <groupId>com.lightbend.akka.grpc</groupId>
+          <groupId>org.apache.pekko</groupId>
           <artifactId>pekko-grpc-runtime_2.12</artifactId>
           <version>${pekko.grpc.version}</version>
         </dependency>
@@ -71,8 +71,8 @@ Maven
       <build>
         <plugins>
           <plugin>
-            <groupId>com.lightbend.akka.grpc</groupId>
-            <artifactId>akka-grpc-maven-plugin</artifactId>
+            <groupId>org.apache.pekko</groupId>
+            <artifactId>pekko-grpc-maven-plugin</artifactId>
             <version>${pekko.grpc.version}</version>
             <executions>
               <execution>

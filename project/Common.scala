@@ -19,7 +19,7 @@ object Common extends AutoPlugin {
 
   override def globalSettings =
     Seq(
-      organization := "com.lightbend.akka.grpc",
+      organization := "org.apache.pekko",
       organizationName := "Apache Pekko",
       organizationHomepage := Some(url("https://www.apache.org/")),
       resolvers ++= Resolver.sonatypeOssRepos("staging"),
@@ -51,7 +51,7 @@ object Common extends AutoPlugin {
       // deprecated in 2.13, but used as long as we support 2.12
       "-Wconf:msg=Use `scala.jdk.CollectionConverters` instead:silent",
       "-Wconf:msg=Use LazyList instead of Stream:silent",
-      // ignore imports in templates (FIXME why is that trailig .* needed?)
+      // ignore imports in templates (FIXME why is that trailing .* needed?)
       "-Wconf:src=.*.txt.*:silent"),
     Compile / console / scalacOptions ~= (_.filterNot(consoleDisabledOptions.contains)),
     javacOptions ++= List("-Xlint:unchecked", "-Xlint:deprecation"),

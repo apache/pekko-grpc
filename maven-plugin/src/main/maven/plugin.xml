@@ -3,7 +3,7 @@
         xsi:schemaLocation="http://maven.apache.org/PLUGIN/1.0.0 http://maven.apache.org/xsd/plugin-1.0.0.xsd">
   <name>Apache Pekko gRPC</name>
   <description>Generate gRPC client and/or server code</description>
-  <groupId>com.lightbend.akka.grpc</groupId>
+  <groupId>org.apache.pekko</groupId>
   <artifactId>pekko-grpc-maven-plugin</artifactId>
   <goalPrefix>pekko-grpc</goalPrefix>
   <mojos>
