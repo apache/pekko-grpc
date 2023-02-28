@@ -5,6 +5,8 @@ import org.apache.pekko.grpc.build.ReflectiveCodeGen
 import com.typesafe.tools.mima.core._
 import sbt.Keys.scalaVersion
 
+ThisBuild / apacheSonatypeProjectProfile := "pekko"
+
 val pekkoPrefix = "pekko-grpc"
 val pekkoGrpcRuntimeName = s"$pekkoPrefix-runtime"
 
@@ -99,7 +101,6 @@ lazy val mavenPlugin = Project(id = "maven-plugin", base = file("maven-plugin"))
   .settings(Dependencies.mavenPlugin)
   .settings(
     name := s"$pekkoPrefix-maven-plugin",
-    publishMavenStyle := true,
     crossPaths := false,
     crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
     scalaVersion := Dependencies.Versions.CrossScalaForPlugin.head)
