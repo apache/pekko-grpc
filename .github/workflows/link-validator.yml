@@ -27,7 +27,7 @@ jobs:
         uses: coursier/cache-action@v6
 
       - name: sbt site
-        run: sbt pekko-grpc-docs/makeSite
+        run: sbt docs/makeSite
 
       - name: Install Coursier command line tool
         run: curl -fLo cs https://git.io/coursier-cli-linux && chmod +x cs && ./cs

@@ -52,7 +52,7 @@ object ReflectiveCodeGen extends AutoPlugin {
         PB.targets := scala.collection.mutable.ListBuffer.empty,
         // Put an artifact resolver that returns the project's classpath for our generators
         PB.artifactResolver := Def.taskDyn {
-          val cp = (ProjectRef(file("."), "pekko-grpc-codegen") / Compile / fullClasspath).value.map(_.data)
+          val cp = (ProjectRef(file("."), "codegen") / Compile / fullClasspath).value.map(_.data)
           val oldResolver = PB.artifactResolver.value
           Def.task { (artifact: BridgeArtifact) =>
             artifact.groupId match {
@@ -65,7 +65,7 @@ object ReflectiveCodeGen extends AutoPlugin {
         }.value,
         setCodeGenerator := loadAndSetGenerator(
           // the magic sauce: use the output classpath from the the sbt-plugin project and instantiate generators from there
-          (ProjectRef(file("."), "sbt-pekko-grpc") / Compile / fullClasspath).value,
+          (ProjectRef(file("."), "sbt-plugin") / Compile / fullClasspath).value,
           generatedLanguages.value,
           generatedSources.value,
           extraGenerators.value,
@@ -81,8 +81,8 @@ object ReflectiveCodeGen extends AutoPlugin {
       (Global / generatedSources) := Seq("Client", "Server"),
       (Global / extraGenerators) := Seq.empty,
       (Global / protocOptions) := Seq.empty,
-      watchSources ++= (ProjectRef(file("."), "pekko-grpc-codegen") / watchSources).value,
-      watchSources ++= (ProjectRef(file("."), "sbt-pekko-grpc") / watchSources).value)
+      watchSources ++= (ProjectRef(file("."), "codegen") / watchSources).value,
+      watchSources ++= (ProjectRef(file("."), "sbt-plugin") / watchSources).value)
 
   val setCodeGenerator = taskKey[Unit]("grpc-set-code-generator")
 

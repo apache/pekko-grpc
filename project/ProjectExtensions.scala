@@ -8,7 +8,7 @@ object ProjectExtensions {
 
     /** Add settings to test the sbt-plugin in-process */
     def pluginTestingSettings: Project =
-      project.dependsOn(ProjectRef(file("."), "pekko-grpc-runtime")).enablePlugins(
+      project.dependsOn(ProjectRef(file("."), "runtime")).enablePlugins(
         org.apache.pekko.grpc.build.ReflectiveCodeGen)
   }
 }

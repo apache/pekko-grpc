@@ -7,9 +7,9 @@ pekkoGrpcGeneratedLanguages := Seq(PekkoGrpc.Java)
 
 val grpcVersion = "1.48.1" // checked synced by VersionSyncCheckPlugin
 
-val runtimeProject = ProjectRef(file("../"), "pekko-grpc-runtime")
+val runtimeProject = ProjectRef(file("../"), "runtime")
 
-val codeGenProject = ProjectRef(file("../"), "pekko-grpc-codegen")
+val codeGenProject = ProjectRef(file("../"), "codegen")
 
 val root = project
   .in(file("."))

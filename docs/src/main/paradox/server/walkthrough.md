@@ -96,7 +96,7 @@ The Akka gRPC plugin makes your code depend on the `pekko-grpc-runtime` library.
 
 The table below shows direct dependencies of it and the second tab shows all libraries it depends on transitively. Be aware that the `io.grpc.grpc-api` library depends on Guava.
 
-@@dependencies { projectId="pekko-grpc-runtime" }
+@@dependencies { projectId="runtime" }
 
 ## Writing a service definition
 
