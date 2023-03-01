@@ -8,7 +8,6 @@ import com.lightbend.paradox.projectinfo.ParadoxProjectInfoPluginKeys.projectInf
 import com.typesafe.tools.mima.plugin.MimaKeys._
 import sbtprotoc.ProtocPlugin.autoImport.PB
 import org.mdedetrich.apache.sonatype.SonatypeApachePlugin
-import SonatypeApachePlugin.autoImport.apacheSonatypeDisclaimerFile
 
 object Common extends AutoPlugin {
   override def trigger = allRequirements
@@ -29,8 +28,7 @@ object Common extends AutoPlugin {
         "Contributors",
         "dev@pekko.apache.org",
         url("https://github.com/apache/incubator-pekko-grpc/graphs/contributors")),
-      description := "Apache Pekko gRPC - Support for building streaming gRPC servers and clients on top of Pekko Streams.",
-      apacheSonatypeDisclaimerFile := Some((LocalRootProject / baseDirectory).value / "DISCLAIMER"))
+      description := "Apache Pekko gRPC - Support for building streaming gRPC servers and clients on top of Pekko Streams.")
 
   override lazy val projectSettings = Seq(
     projectInfoVersion := (if (isSnapshot.value) "snapshot" else version.value),
