@@ -7,22 +7,20 @@ import org.apache.pekko.grpc.Dependencies.Versions.{ scala212, scala213 }
 import com.lightbend.paradox.projectinfo.ParadoxProjectInfoPluginKeys.projectInfoVersion
 import com.typesafe.tools.mima.plugin.MimaKeys._
 import sbtprotoc.ProtocPlugin.autoImport.PB
-import xerial.sbt.Sonatype
-import xerial.sbt.Sonatype.autoImport.sonatypeProfileName
+import org.mdedetrich.apache.sonatype.SonatypeApachePlugin
+import SonatypeApachePlugin.autoImport.apacheSonatypeDisclaimerFile
 
 object Common extends AutoPlugin {
   override def trigger = allRequirements
 
-  override def requires = JvmPlugin && Sonatype
+  override def requires = JvmPlugin && SonatypeApachePlugin
 
   private val consoleDisabledOptions = Seq("-Xfatal-warnings", "-Ywarn-unused", "-Ywarn-unused-import")
 
   override def globalSettings =
     Seq(
-      organization := "org.apache.pekko",
-      organizationName := "Apache Pekko",
-      organizationHomepage := Some(url("https://www.apache.org/")),
       resolvers ++= Resolver.sonatypeOssRepos("staging"),
+      resolvers += "Apache Nexus Snapshots".at("https://repository.apache.org/content/repositories/snapshots/"),
       homepage := Some(url("https://pekko.apache.org//")),
       scmInfo := Some(ScmInfo(url("https://github.com/apache/incubator-pekko-grpc"),
         "git@github.com:apache/incubator-pekko-grpc")),
@@ -31,12 +29,11 @@ object Common extends AutoPlugin {
         "Contributors",
         "dev@pekko.apache.org",
         url("https://github.com/apache/incubator-pekko-grpc/graphs/contributors")),
-      licenses := Seq("Apache-2.0" -> url("https://www.apache.org/licenses/LICENSE-2.0")),
-      description := "Apache Pekko gRPC - Support for building streaming gRPC servers and clients on top of Pekko Streams.")
+      description := "Apache Pekko gRPC - Support for building streaming gRPC servers and clients on top of Pekko Streams.",
+      apacheSonatypeDisclaimerFile := Some((LocalRootProject / baseDirectory).value / "DISCLAIMER"))
 
   override lazy val projectSettings = Seq(
     projectInfoVersion := (if (isSnapshot.value) "snapshot" else version.value),
-    sonatypeProfileName := "org.apache.pekko",
     scalacOptions ++= List(
       "-unchecked",
       "-deprecation",
