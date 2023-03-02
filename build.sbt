@@ -118,7 +118,9 @@ lazy val sbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
       val p1 = publishLocal.value
       val p2 = (codegen / publishLocal).value
       val p3 = (runtime / publishLocal).value
-      val p4 = (interopTests / publishLocal).value
+      // like publishLocal but disregarding `publish / skip`
+      import sbt.internal.librarymanagement.IvyActions
+      val p4 = IvyActions.publish(ivyModule.value, (interopTests / publishLocalConfiguration).value, streams.value.log)
     },
     scriptedBufferLog := false)
   .settings(
@@ -141,10 +143,10 @@ lazy val interopTests = Project(id = "interop-tests", base = file("interop-tests
     ReflectiveCodeGen.extraGenerators := Seq("ScalaMarshallersCodeGenerator"),
     ReflectiveCodeGen.codeGeneratorSettings ++= Seq("server_power_apis"),
     PB.protocVersion := Dependencies.Versions.googleProtobuf,
-    // This project should use 'publish/skip := true', but we need
-    // to be able to `publishLocal` to run the interop tests as an
-    // sbt scripted test. At least skip scaladoc generation though.
-    Compile / doc := (Compile / doc / target).value)
+    publish / skip := true,
+    // disable publishing docs because we still use publishLocal in the scripted tests
+    // of sbt-plugin but we do not need the docs (and they are slow)
+    Compile / packageDoc / publishArtifact := false)
   .settings(inConfig(Test)(Seq(
     reStart / mainClass := (Test / run / mainClass).value, {
       import spray.revolver.Actions._
