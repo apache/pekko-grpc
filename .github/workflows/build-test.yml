@@ -41,7 +41,7 @@ jobs:
 
       - name: Binary-compatibility check
         run: |-
-          cp .jvmopts-ghactions .jvmopts
+          cp .jvmopts-ci .jvmopts
           sbt headerCheckAll grpcVersionSyncCheck googleProtobufVersionSyncCheck +mimaReportBinaryIssues
 
   compile-benchmarks:
@@ -123,7 +123,7 @@ jobs:
         uses: coursier/cache-action@v6
 
       - name: Scripted ${{ matrix.test-set }}
-        run: cp .jvmopts-ghactions .jvmopts && sbt ++${{ matrix.scala-version }}.* "sbt-plugin/scripted ${{ matrix.test-set }}/*"
+        run: cp .jvmopts-ci .jvmopts && sbt ++${{ matrix.scala-version }}.* "sbt-plugin/scripted ${{ matrix.test-set }}/*"
 
   test-gradle:
     name: Gradle tests
@@ -160,7 +160,7 @@ jobs:
 
       - name: Publish artifacts locally
         run: |-
-          cp .jvmopts-ghactions .jvmopts
+          cp .jvmopts-ci .jvmopts
           sbt codegen/publishM2 scalapb-protoc-plugin/publishM2 +runtime/publishM2
           cd gradle-plugin
           ./gradlew clean publishToMavenLocal --console=plain --info --stacktrace
@@ -214,7 +214,7 @@ jobs:
 
       - name: Publish artifacts locally
         run: |-
-          cp .jvmopts-ghactions .jvmopts
+          cp .jvmopts-ci .jvmopts
           sbt codegen/publishM2 scalapb-protoc-plugin/publishM2 +runtime/publishM2 maven-plugin/publishM2
 
       - name: Test Maven Java
@@ -245,5 +245,5 @@ jobs:
         uses: coursier/cache-action@v6
       - name: Test Maven Java
         run: |-
-          cp .jvmopts-ghactions .jvmopts
+          cp .jvmopts-ci .jvmopts
           sbt paradox
