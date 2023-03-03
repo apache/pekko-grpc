@@ -120,7 +120,8 @@ lazy val sbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
       val p3 = (runtime / publishLocal).value
       // like publishLocal but disregarding `publish / skip`
       import sbt.internal.librarymanagement.IvyActions
-      val p4 = IvyActions.publish(ivyModule.value, (interopTests / publishLocalConfiguration).value, streams.value.log)
+      val p4 = IvyActions.publish((interopTests / ivyModule).value, (interopTests / publishLocalConfiguration).value,
+        streams.value.log)
     },
     scriptedBufferLog := false)
   .settings(
