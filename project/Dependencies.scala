@@ -39,6 +39,8 @@ object Dependencies {
     val pekkoDiscovery = "org.apache.pekko" %% "pekko-discovery" % Versions.pekko
     val pekkoSlf4j = "org.apache.pekko" %% "pekko-slf4j" % Versions.pekko
 
+    val pekkoHttpCors = "ch.megard" %% "pekko-http-cors" % "0.0.0-SNAPSHOT" // Apache v2
+
     val scalapbCompilerPlugin = "com.thesamet.scalapb" %% "compilerplugin" % scalapb.compiler.Version.scalapbVersion
     val scalapbRuntime = ("com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion)
       .exclude("io.grpc", "grpc-netty")
@@ -103,7 +105,7 @@ object Dependencies {
     Compile.pekkoHttpCore,
     Compile.pekkoHttp,
     Compile.pekkoDiscovery,
-    // Compile.akkaHttpCors % "provided",
+    Compile.pekkoHttpCors % "provided",
     Test.pekkoTestkit,
     Test.pekkoStreamTestkit,
     Test.scalaTest,
@@ -136,7 +138,7 @@ object Dependencies {
   val pluginTester = l ++= Seq(
     // usually automatically added by `suggestedDependencies`, which doesn't work with ReflectiveCodeGen
     Compile.grpcStub,
-    // Compile.akkaHttpCors,
+    Compile.pekkoHttpCors,
     Test.scalaTest,
     Test.scalaTestPlusJunit,
     Protobuf.googleCommonProtos)
