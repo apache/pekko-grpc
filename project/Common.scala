@@ -15,13 +15,14 @@ import sbt.plugins.JvmPlugin
 import org.apache.pekko.grpc.Dependencies.Versions.{ scala212, scala213 }
 import com.lightbend.paradox.projectinfo.ParadoxProjectInfoPluginKeys.projectInfoVersion
 import com.typesafe.tools.mima.plugin.MimaKeys._
-import sbtprotoc.ProtocPlugin.autoImport.PB
 import org.mdedetrich.apache.sonatype.SonatypeApachePlugin
+import sbtdynver.DynVerPlugin
+import sbtdynver.DynVerPlugin.autoImport.dynverSonatypeSnapshots
 
 object Common extends AutoPlugin {
   override def trigger = allRequirements
 
-  override def requires = JvmPlugin && SonatypeApachePlugin
+  override def requires = JvmPlugin && SonatypeApachePlugin && DynVerPlugin
 
   private val consoleDisabledOptions = Seq("-Xfatal-warnings", "-Ywarn-unused", "-Ywarn-unused-import")
 
@@ -80,4 +81,7 @@ object Common extends AutoPlugin {
     (Test / testOptions) += Tests.Argument(TestFrameworks.ScalaTest, "-oDF"),
     crossScalaVersions := Seq(scala212, scala213),
     mimaReportSignatureProblems := true)
+
+  override lazy val buildSettings = Seq(
+    dynverSonatypeSnapshots := true)
 }
