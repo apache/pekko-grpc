@@ -11,7 +11,7 @@ repositories {
   maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' } // Remove when proper release of pekko-http-cors is made
 }
 
-def scalaFullVersion = "2.12.16"
+def scalaFullVersion = "2.12.17"
 def scalaVersion = org.gradle.util.VersionNumber.parse(scalaFullVersion)
 def scalaBinaryVersion = "${scalaVersion.major}.${scalaVersion.minor}"
 
