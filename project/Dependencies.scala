@@ -25,9 +25,9 @@ object Dependencies {
     // We don't force Akka updates because downstream projects can upgrade
     // themselves. For more information see
     // https://doc.akka.io//docs/akka/current/project/downstream-upgrade-strategy.html
-    val pekko = "0.0.0+26621-44d03df6-SNAPSHOT"
+    val pekko = "0.0.0+26623-85c2a469-SNAPSHOT"
     val akkaBinary = "2.6"
-    val pekkoHttp = "0.0.0+4298-26846a02-SNAPSHOT"
+    val pekkoHttp = "0.0.0+4334-7826b8b0-SNAPSHOT"
     val akkaHttpBinary = "10.2"
 
     val grpc = "1.48.1" // checked synced by VersionSyncCheckPlugin
