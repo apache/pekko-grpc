@@ -23,7 +23,7 @@ def scalaBinaryVersion = "${scalaVersion.major}.${scalaVersion.minor}"
 dependencies {
   implementation group: 'ch.megard', name: "pekko-http-cors_${scalaBinaryVersion}", version: '0.0.0-SNAPSHOT'
   implementation "org.scala-lang:scala-library:${scalaFullVersion}"
-  testImplementation "org.apache.pekko:pekko-stream-testkit_${scalaBinaryVersion}:0.0.0+26621-44d03df6-SNAPSHOT"
+  testImplementation "org.apache.pekko:pekko-stream-testkit_${scalaBinaryVersion}:0.0.0+26623-85c2a469-SNAPSHOT"
   testImplementation "org.scalatest:scalatest_${scalaBinaryVersion}:3.2.15"
   testImplementation "org.scalatestplus:junit-4-12_${scalaBinaryVersion}:3.2.2.0"
 }

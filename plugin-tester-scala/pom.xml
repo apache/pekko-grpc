@@ -13,7 +13,7 @@
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
-    <pekko.version>0.0.0+26621-44d03df6-SNAPSHOT</pekko.version>
+    <pekko.version>0.0.0+26623-85c2a469-SNAPSHOT</pekko.version>
     <pekko.http.cors.version>0.0.0-SNAPSHOT</pekko.http.cors.version>
     <grpc.version>1.48.1</grpc.version> <!-- checked synced by VersionSyncCheckPlugin -->
     <project.encoding>UTF-8</project.encoding>
