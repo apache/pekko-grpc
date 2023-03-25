@@ -21,6 +21,9 @@ addSbtPlugin("org.mdedetrich" % "sbt-apache-sonatype" % "0.1.6")
 // allow access to snapshots for pekko-sbt-paradox
 resolvers += "Apache Nexus Snapshots".at("https://repository.apache.org/content/repositories/snapshots/")
 
+// See https://github.com/akka/akka-http/pull/3995 and https://github.com/akka/akka-http/pull/3995#issuecomment-1026978593
+libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % "always"
+
 // We have to deliberately use older versions of sbt-paradox because current Pekko sbt build
 // only loads on JDK 1.8 so we need to bring in older versions of parboiled which support JDK 1.8
 addSbtPlugin(("org.apache.pekko" % "pekko-sbt-paradox" % "0.0.0+28-a1dda63b-SNAPSHOT").excludeAll(
