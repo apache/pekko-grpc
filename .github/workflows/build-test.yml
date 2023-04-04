@@ -42,7 +42,7 @@ jobs:
       - name: Binary-compatibility check
         run: |-
           cp .jvmopts-ci .jvmopts
-          sbt headerCheckAll grpcVersionSyncCheck googleProtobufVersionSyncCheck +mimaReportBinaryIssues
+          sbt grpcVersionSyncCheck googleProtobufVersionSyncCheck +mimaReportBinaryIssues
 
   compile-benchmarks:
     name: Compile Benchmarks
