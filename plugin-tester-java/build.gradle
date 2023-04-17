@@ -13,7 +13,7 @@ pekkoGrpc {
 
 repositories {
   mavenLocal()
-  maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' } // Remove when proper release of pekko-http-cors is made
+  maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' } // TODO Remove when proper release of pekko-http-cors is made
 }
 
 def scalaFullVersion = "2.12.17"

@@ -16,7 +16,7 @@ lazy val mkBatAssemblyTask = taskKey[File]("Create a Windows bat assembly")
 (ThisBuild / dynverSeparator) := "-"
 
 ThisBuild / resolvers += "Apache Snapshots".at("https://repository.apache.org/content/repositories/snapshots/")
-ThisBuild / resolvers ++= Resolver.sonatypeOssRepos("snapshot") // Remove when proper release of pekko-http-cors is made
+ThisBuild / resolvers ++= Resolver.sonatypeOssRepos("snapshot") // TODO Remove when proper release of pekko-http-cors is made
 
 val pekkoGrpcCodegenId = s"$pekkoPrefix-codegen"
 lazy val codegen = Project(id = "codegen", base = file("codegen"))

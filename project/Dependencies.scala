@@ -114,7 +114,7 @@ object Dependencies {
     Compile.pekkoHttpCore,
     Compile.pekkoHttp,
     Compile.pekkoDiscovery,
-    // Remove exclusion rule when proper release of pekko-http-cors is made
+    // TODO Remove exclusion rule when proper release of pekko-http-cors is made
     (Compile.pekkoHttpCors % "provided").excludeAll(
       "org.apache.pekko" %% "pekko-http"),
     Compile.pekkoHttp % "provided",
@@ -150,7 +150,7 @@ object Dependencies {
   val pluginTester = l ++= Seq(
     // usually automatically added by `suggestedDependencies`, which doesn't work with ReflectiveCodeGen
     Compile.grpcStub,
-    // Remove exclusion rule when proper release of pekko-http-cors is made
+    // TODO Remove exclusion rule when proper release of pekko-http-cors is made
     Compile.pekkoHttpCors.excludeAll(
       "org.apache.pekko" %% "pekko-http"),
     Compile.pekkoHttp,
