@@ -36,7 +36,7 @@ class PekkoDiscoveryNameResolverSpec
   implicit override val patienceConfig =
     PatienceConfig(timeout = scaled(Span(2, Seconds)), interval = scaled(Span(5, Millis)))
 
-  "The AkkaDiscovery-backed NameResolver" should {
+  "The PekkoDiscovery-backed NameResolver" should {
     "correctly report an error for an unknown hostname" in {
       val host = "example.invalid"
       val resolver = PekkoDiscoveryNameResolver(GrpcClientSettings.connectToServiceAt(host, 80))

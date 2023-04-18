@@ -2,7 +2,7 @@
 
 ## Apache Pekko gRPC Quickstart
 
-To try out Pakko gRPC and understand how the development process might work out, try the [Akka gRPC Quickstart with Scala](https://developer.lightbend.com/guides/akka-grpc-quickstart-scala/) or the [Akka gRPC Quickstart with Java](https://developer.lightbend.com/guides/akka-grpc-quickstart-java/).
+To try out Pekko gRPC and understand how the development process might work out, try the [Akka gRPC Quickstart with Scala](https://developer.lightbend.com/guides/akka-grpc-quickstart-scala/) or the [Akka gRPC Quickstart with Java](https://developer.lightbend.com/guides/akka-grpc-quickstart-java/).
 
 ## Video Introduction
 

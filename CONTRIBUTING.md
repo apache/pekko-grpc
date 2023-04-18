@@ -97,20 +97,13 @@ Our binary compatibility guarantees are described in depth in the
 [Binary Compatibility](https://pekko.apache.org/docs/pekko-grpc/current/binary-compatibility.html)
 section of the documentation.
 
-Pekko gRPC uses [Lightbend MiMa](https://github.com/lightbend/mima) to
-validate binary compatibility of incoming Pull Requests. If your PR fails due to binary compatibility issues, you may see 
-an error like this:
+Pekko gRPC will use [Lightbend MiMa](https://github.com/lightbend/mima) to
+validate binary compatibility of incoming Pull Requests after we get v1.0.0 released.
 
-```
-[info] akka-stream: found 1 potential binary incompatibilities while checking against com.typesafe.akka:akka-stream_2.11:2.4.2  (filtered 222)
-[error]  * method foldAsync(java.lang.Object,scala.Function2)akka.stream.scaladsl.FlowOps in trait akka.stream.scaladsl.FlowOps is present only in current version
-[error]    filter with: ProblemFilters.exclude[ReversedMissingMethodProblem]("akka.stream.scaladsl.FlowOps.foldAsync")
-```
-
-In such situations it's good to consult with a core team member if the violation can be safely ignored, or if it would
+If you get a MiMa failure, it's good to consult with a core team member if the violation can be safely ignored, or if it would
 indeed break binary compatibility in a problematic way.  Situations when it may be fine to ignore a MiMa issued warning include:
 
-- if it is touching any class marked as `private[akka]`, `/** INTERNAL API*/`, `@InternalApi`, `@ApiMayChange` or similar markers
+- if it is touching any class marked as `private[pekko]`, `/** INTERNAL API*/`, `@InternalApi`, `@ApiMayChange` or similar markers
 - if it is concerning internal classes (often recognisable by package names like `dungeon`, `impl`, `internal` etc.)
 - if it is adding API to classes / traits which are only meant for extension within the library itself, i.e. should not be extended by end-users
 - other tricky situations

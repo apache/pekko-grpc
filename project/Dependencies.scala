@@ -22,7 +22,7 @@ object Dependencies {
     val CrossScalaForLib = Seq(scala212, scala213)
     val CrossScalaForPlugin = Seq(scala212)
 
-    // We don't force Akka updates because downstream projects can upgrade
+    // We don't force Pekko updates because downstream projects can upgrade
     // themselves. For more information see
     // https://doc.akka.io//docs/akka/current/project/downstream-upgrade-strategy.html
     val pekko = "0.0.0+26623-85c2a469-SNAPSHOT"

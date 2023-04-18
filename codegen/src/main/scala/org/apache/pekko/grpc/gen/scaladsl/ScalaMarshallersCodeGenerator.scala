@@ -22,7 +22,7 @@ import templates.ScalaCommon.txt._
 
 /**
  * Has to be a separate generator rather than a parameter to the existing ones, because
- * it introduces a suggestedDependency on akka-http.
+ * it introduces a suggestedDependency on pekko-http.
  */
 trait ScalaMarshallersCodeGenerator extends ScalaCodeGenerator {
   def name = "pekko-grpc-scaladsl-server-marshallers"
@@ -31,7 +31,7 @@ trait ScalaMarshallersCodeGenerator extends ScalaCodeGenerator {
 
   override def suggestedDependencies =
     (scalaBinaryVersion: CodeGenerator.ScalaBinaryVersion) =>
-      Artifact("com.typesafe.akka", s"akka-http_${scalaBinaryVersion.prefix}", BuildInfo.pekkoHttpVersion) +: super
+      Artifact("org.apache.pekko", s"pekko-http_${scalaBinaryVersion.prefix}", BuildInfo.pekkoHttpVersion) +: super
         .suggestedDependencies(scalaBinaryVersion)
 
   def generateMarshalling(

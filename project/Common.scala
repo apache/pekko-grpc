@@ -77,7 +77,8 @@ object Common extends AutoPlugin {
       "-doc-canonical-base-url",
       "https://pekko.aoache.org/api/pekko-grpc/current/"),
     Compile / doc / scalacOptions -= "-Xfatal-warnings",
-    apiURL := Some(url(s"https://doc.akka.io/api/akka-grpc/${projectInfoVersion.value}/akka/grpc/index.html")),
+    apiURL := Some(
+      url(s"https://pekko.apache.org/api/pekko-grpc/${projectInfoVersion.value}/org/apache/pekko/grpc/index.html")),
     (Test / testOptions) += Tests.Argument(TestFrameworks.ScalaTest, "-oDF"),
     crossScalaVersions := Seq(scala212, scala213),
     mimaReportSignatureProblems := true)
