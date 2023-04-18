@@ -197,17 +197,17 @@ lazy val docs = Project(id = "docs", base = file("docs"))
       "pekko.version" -> Dependencies.Versions.pekko,
       "pekko-http.version" -> Dependencies.Versions.pekkoHttp,
       "grpc.version" -> Dependencies.Versions.grpc,
-      "project.url" -> "https://doc.akka.io/docs/akka-grpc/current/",
-      "canonical.base_url" -> "https://doc.akka.io/docs/akka-grpc/current",
+      "project.url" -> "https://pekko.apache.org/docs/pekko-grpc/current/",
+      "canonical.base_url" -> "https://pekko.apache.org/docs/pekko-grpc/current",
       "scaladoc.scala.base_url" -> s"https://www.scala-lang.org/api/current/",
-      // Akka
-      "extref.akka.base_url" -> s"https://doc.akka.io/docs/akka/${Dependencies.Versions.akkaBinary}/%s",
-      "scaladoc.akka.base_url" -> s"https://doc.akka.io/api/akka/${Dependencies.Versions.akkaBinary}",
-      "javadoc.akka.base_url" -> s"https://doc.akka.io/japi/akka/${Dependencies.Versions.akkaBinary}/",
-      // Akka HTTP
-      "extref.akka-http.base_url" -> s"https://doc.akka.io/docs/akka-http/${Dependencies.Versions.akkaHttpBinary}/%s",
-      "scaladoc.akka.http.base_url" -> s"https://doc.akka.io/api/akka-http/${Dependencies.Versions.akkaHttpBinary}/",
-      "javadoc.akka.http.base_url" -> s"https://doc.akka.io/japi/akka-http/${Dependencies.Versions.akkaHttpBinary}/",
+      // Apache Pekko
+      "extref.pekko.base_url" -> s"https://pekko.apache.org/docs/pekko-grpc/current/%s",
+      "scaladoc.pekko.base_url" -> "https://pekko.apache.org/docs/pekko-grpc/current/",
+      "javadoc.pekko.base_url" -> "https://pekko.apache.org/docs/pekko-grpc/current/",
+      // Apache Pekko HTTP
+      "extref.pekko.http.base_url" -> s"https://doc.akka.io/docs/akka-http/${Dependencies.Versions.akkaHttpBinary}/%s",
+      "scaladoc.pekko.http.base_url" -> s"https://doc.akka.io/api/akka-http/${Dependencies.Versions.akkaHttpBinary}/",
+      "javadoc.pekko.http.base_url" -> s"https://doc.akka.io/japi/akka-http/${Dependencies.Versions.akkaHttpBinary}/",
       // Apache Pekko gRPC
       "scaladoc.akka.grpc.base_url" -> s"/${(Preprocess / siteSubdirName).value}/",
       "javadoc.akka.grpc.base_url" -> "" // @apidoc links to Scaladoc

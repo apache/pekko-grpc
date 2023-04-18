@@ -5,12 +5,12 @@
 This feature is **experimental**.
 
 The Java/Scala API's to enable this feature may still change in further
-versions of Akka gRPC, and future versions of this feature may not work with
-services generated with older versions of Akka gRPC.
+versions of Pekko gRPC, and future versions of this feature may not work with
+services generated with older versions of Pekko gRPC.
 
 There may be missing features and bugs in the current implementation. If you
 encounter any, you are welcome to share a reproducer in our
-[issue tracker](https://github.com/akka/akka-grpc/issues).
+[issue tracker](https://github.com/apache/incubator-pekko-grpc/issues).
 
 @@@
 
@@ -24,12 +24,12 @@ into native gRPC calls.
 The most common deployment model of gRPC-Web is to use a proxy such
 as [Envoy](https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_filters/grpc_web_filter)
 to translate between the gRPC-Web frontend and a native gRPC back-end.
-This is a great choice with Akka gRPC services.
+This is a great choice with Pekko gRPC services.
 
 However, in some situations it may be operationally simpler if your service
-supports gRPC-Web directly. This is now possible with Akka gRPC as well.
+supports gRPC-Web directly. This is now possible with Pekko gRPC as well.
 
-To serve a gRPC service with Akka gRPC, it is recommended to serve the
+To serve a gRPC service with Pekko gRPC, it is recommended to serve the
 native gRPC protocol on a different port than gRPC-Web, as the two protocols
 will likely require a different security story. You can use
 @apidoc[WebHandler.grpcWebHandler](WebHandler$) to serve your

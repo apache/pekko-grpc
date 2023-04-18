@@ -1,4 +1,4 @@
-# Akka gRPC
+# Pekko gRPC
 
 @@toc
 

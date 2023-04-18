@@ -7,20 +7,20 @@
 
 gRPC APIs are useful instead of (or as a complement to) JSON/REST-based API.
 
-## Akka gRPC
+## Pekko gRPC
 
-Akka gRPC provides support for building streaming gRPC servers and clients on top
-of @extref[Akka Streams](akka:stream/) and @extref[Akka HTTP](akka-http:).
+Pekko gRPC provides support for building streaming gRPC servers and clients on top
+of @extref[Pekko Streams](pekko:stream/) and @extref[Pekko HTTP](pekko-http:).
 
 It features:
 
  * A generator, that starts from a protobuf service definitions, for:
     - Model classes
-    - The service API as a @scala[Scala trait]@java[Java interface] using Akka Stream `Source`s
-    - On the @ref[server side](server/index.md), code to create an Akka HTTP route based on your implementation of the service
+    - The service API as a @scala[Scala trait]@java[Java interface] using Pekko Stream `Source`s
+    - On the @ref[server side](server/index.md), code to create a Pekko HTTP route based on your implementation of the service
     - On the @ref[client side](client/index.md) side, a client for the service
  * gRPC Runtime implementation that uses 
-    - @extref[Akka HTTP/2 support](akka-http:server-side/http2.html) for the server side and 
+    - @extref[Pekko HTTP/2 support](pekko-http:server-side/http2.html) for the server side and 
     - `grpc-netty-shaded` for the client side.
  * Support for @ref[sbt](buildtools/sbt.md), @ref[gradle](buildtools/gradle.md), @ref[Maven](buildtools/maven.md),
    and the [Play Framework](https://developer.lightbend.com/docs/play-grpc/current/).
@@ -31,11 +31,10 @@ It features:
 
 ## Project Status
 
-Akka gRPC is [Supported](https://developer.lightbend.com/docs/introduction/getting-help/support-terminology.html)
-as part of a [Lightbend Subscription](https://www.lightbend.com/lightbend-subscription).
+Pekko gRPC is still under development.
 
-Both client- and server-side APIs are based on Akka Streams.
+Both client- and server-side APIs are based on Pekko Streams.
 
 The client side is currently implemented on top of [io.grpc:grpc-netty-shaded](https://mvnrepository.com/artifact/io.grpc/grpc-netty-shaded).
 
-Later versions may replace this by [io.grpc:grpc-core](https://mvnrepository.com/artifact/io.grpc/grpc-core) and Akka HTTP, when Akka HTTP offers HTTP/2 client support.
+Later versions may replace this by [io.grpc:grpc-core](https://mvnrepository.com/artifact/io.grpc/grpc-core) and Pekko HTTP, when Pekko HTTP offers HTTP/2 client support.

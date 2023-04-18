@@ -26,7 +26,7 @@ Validators for Java stubs are provided by [the project itself](https://github.co
 
 Follow the instructions there for Maven and Gradle. If your are using sbt, you can get
 `validate.proto` into the include path and run the protoc plugin generating the validators
-through `sbt-protoc` (@ref[used by Akka gRPC](buildtools/sbt.md#sbt-protoc-settings)) by adding
+through `sbt-protoc` (@ref[used by Pekko gRPC](buildtools/sbt.md#sbt-protoc-settings)) by adding
 to your `build.sbt`:
 ```scala
 val pgvVersion = "0.4.1" // latest at the time of writing
@@ -48,9 +48,9 @@ Compile / compile / javacOptions ++= Seq("-source", "8", "-target", "8"),
 Validators for ScalaPB stubs are provided by [scalapb-validate](https://github.com/scalapb/scalapb-validate).
 
 Follow the [documentation](https://scalapb.github.io/docs/validation) to update `project/build.sbt`
-in order to generate the validators using `sbt-protoc` (@ref[used by Akka gRPC](buildtools/sbt.md#sbt-protoc-settings)).
+in order to generate the validators using `sbt-protoc` (@ref[used by Pekko gRPC](buildtools/sbt.md#sbt-protoc-settings)).
 
-With the default parameters and target set by Akka gRPC, additions to your `build.sbt` should be:
+With the default parameters and target set by Pekko gRPC, additions to your `build.sbt` should be:
 
 @@snip[build.sbt](/sbt-plugin/src/sbt-test/gen-scala-server/10-scalapb-validate/build.sbt) { #setup }
 

@@ -94,7 +94,7 @@ However, once we declare the project stable, we will adhere to the following
 rules:
 
 Our binary compatibility guarantees are described in depth in the
-[Binary Compatibility](https://doc.akka.io/docs/akka-grpc/current/binary-compatibility.html)
+[Binary Compatibility](https://pekko.apache.org/docs/pekko-grpc/current/binary-compatibility.html)
 section of the documentation.
 
 Pekko gRPC uses [Lightbend MiMa](https://github.com/lightbend/mima) to

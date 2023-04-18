@@ -1,6 +1,6 @@
 # Maven
 
-To get started with Akka gRPC read the @ref[client](../client/index.md) or @ref[server](../server/index.md) introductions.
+To get started with Pekko gRPC read the @ref[client](../client/index.md) or @ref[server](../server/index.md) introductions.
 
 ## Configuring what to generate
 
@@ -84,9 +84,9 @@ it is tracked in issue [#152](https://github.com/akka/akka-grpc/issues/152).
 
 ## JDK 8 support
 
-If you want to use TLS-based negotiation on JDK 8, Akka gRPC requires JDK 8 update 252 or later. JVM support for ALPN has been backported to JDK 8u252 which is now widely available. Support for using the Jetty ALPN agent has been [dropped in Akka HTTP 10.2.0](https://doc.akka.io/docs/akka-http/current/migration-guide/migration-guide-10.2.x.html#http-2-support-requires-jdk-8-update-252-or-later), and therefore is not supported by Akka gRPC.
+If you want to use TLS-based negotiation on JDK 8, Pekko gRPC requires JDK 8 update 252 or later. JVM support for ALPN has been backported to JDK 8u252 which is now widely available. Support for using the Jetty ALPN agent has been dropped in Pekko HTTP and therefore is not supported by Pekko gRPC.
 
-## Starting your Akka gRPC server from Maven
+## Starting your Pekko gRPC server from Maven
 
 You can start your gRPC application as usual with:
 

@@ -94,7 +94,7 @@ For a complete overview of the configuration options see the chapter for your bu
 
 ### Dependencies
 
-The Akka gRPC plugin makes your code depend on the `pekko-grpc-runtime` library.
+The Pekko gRPC plugin makes your code depend on the `pekko-grpc-runtime` library.
 
 The table below shows direct dependencies of it and the second tab shows all libraries it depends on transitively. Be aware that the `io.grpc.grpc-api` library depends on Guava.
 
@@ -110,7 +110,7 @@ For example, this is the definition of a Hello World service:
 
 @@snip [helloworld.proto](/plugin-tester-scala/src/main/protobuf/helloworld.proto) { #walkthrough filterLabels=true }
 
-From this definition, Akka gRPC generates interfaces that look like this:
+From this definition, Pekko gRPC generates interfaces that look like this:
 
 Scala
 :  @@snip [helloworld.proto](/plugin-tester-scala/target/scala-2.12/src_managed/main/example/myapp/helloworld/grpc/GreeterService.scala)
@@ -121,7 +121,7 @@ Java
 and model @scala[case ]classes for `HelloRequest` and `HelloResponse`.
 
 The service interface is the same for the client and the server side. On the server side, the service implements the interface,
-on the client side the Akka gRPC infrastructure implements a stub that will connect to the remote service when called.
+on the client side the Pekko gRPC infrastructure implements a stub that will connect to the remote service when called.
 
 There are 4 different types of calls:
 

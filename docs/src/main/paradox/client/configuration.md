@@ -36,14 +36,14 @@ Clients defined in configuration pick up defaults from `reference.conf`:
 `reference.conf`
 :  @@snip [reference](/runtime/src/main/resources/reference.conf) { #defaults }
 
-## Using Akka Discovery for Endpoint Discovery
+## Using Pekko Discovery for Endpoint Discovery
 
 The examples above all use a hard coded host and port for the location of the gRPC service which is the default if you do not configure a `service-discovery-mechanism`.
-Alternatively @extref[Akka Discovery](akka:discovery/index.html) can be used.
+Alternatively @extref[Pekko Discovery](pekko:discovery/index.html) can be used.
 This allows a gRPC client to switch between discovering services via DNS, config, Kubernetes and Consul and others by just changing
-the configuration (see [Discovery methods in Akka Management](https://doc.akka.io/docs/akka-management/current/discovery/index.html)).
+the configuration (see [Discovery methods in Pekko Management](https://pekko.apache.org/docs/pekko-management/current/discovery/index.html)).
 
-To see how to config a particular service discovery mechanism see the @extref[Akka Discovery docs](akka:discovery/index.html).
+To see how to config a particular service discovery mechanism see the @extref[Pekko Discovery docs](pekko:discovery/index.html).
 Once it is configured a service discovery mechanism name can either be passed into settings or put in the client's configuration.
 
 Scala

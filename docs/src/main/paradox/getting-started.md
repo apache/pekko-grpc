@@ -1,11 +1,10 @@
 # Getting started
 
-## Akka gRPC Quickstart
+## Apache Pekko gRPC Quickstart
 
-To try out Akka gRPC and understand how the development process might work out, try the [Akka gRPC Quickstart with Scala](https://developer.lightbend.com/guides/akka-grpc-quickstart-scala/) or the [Akka gRPC Quickstart with Java](https://developer.lightbend.com/guides/akka-grpc-quickstart-java/).
+To try out Pakko gRPC and understand how the development process might work out, try the [Akka gRPC Quickstart with Scala](https://developer.lightbend.com/guides/akka-grpc-quickstart-scala/) or the [Akka gRPC Quickstart with Java](https://developer.lightbend.com/guides/akka-grpc-quickstart-java/).
 
 ## Video Introduction
 
-This short video on YouTube shows how easy it is to create a gRPC server with Akka gRPC.
-
-[![Introduction: Akka gRPC](assets/intro-video.png)](https://www.youtube.com/watch?v=kXN30ttsf-I "Watch video on YouTube")
+The Akka team have a [video](https://doc.akka.io/docs/akka-grpc/current/getting-started.html#video-introduction).
+Much of what is discussed is relevant to Pekko gRPC.

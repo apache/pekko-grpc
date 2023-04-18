@@ -8,7 +8,7 @@ toolkit.
 
 ## Documentation
 
-- [Akka gRPC reference](https://doc.akka.io/docs/akka-grpc/current/) documentation 
+- [Pekko gRPC reference](https://pekko.apache.org/docs/pekko-grpc/current/) documentation 
 
 ## Project Status
 

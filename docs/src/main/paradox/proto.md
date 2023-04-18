@@ -29,7 +29,7 @@ There are a number of options that can be set in the `.proto` definition that in
 The (optional) [`package`](https://developers.google.com/protocol-buffers/docs/proto3#packages)
 in the `.proto` is used to resolve references from one `.proto` file to another.
 It can also be used for the package name in the generated code, but it is
-common to use the separate `java_package` option to override it. In the Akka gRPC
+common to use the separate `java_package` option to override it. In the Pekko gRPC
 examples the convention is to choose a `java_package` ending in `.grpc` to
 easily distinguish between generated and regular code.
 

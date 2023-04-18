@@ -7,12 +7,12 @@ This feature is **experimental** (@github[Issue #850](#850)).
 It implements version v1alpha of the [upstream standard](https://github.com/grpc/grpc/blob/master/src/proto/grpc/reflection/v1alpha/reflection.proto),
 so we might expect subsequent versions of the service to emerge. Also,
 the Java/Scala API's to enable this feature may still change in further
-versions of Akka gRPC, and future versions of this feature may not work with
-services generated with older versions of Akka gRPC.
+versions of Pekko gRPC, and future versions of this feature may not work with
+services generated with older versions of Pekko gRPC.
 
 There may be missing features and bugs in the current implementation. If you
 encounter any, you are welcome to share a reproducer in our
-[issue tracker](https://github.com/akka/akka-grpc/issues).
+[issue tracker](https://github.com/apache/incubator-pekko-grpc/issues).
 
 @@@
 
@@ -27,7 +27,7 @@ can be used to query this information.
 
 ## Providing
 
-The generated service handler includes a convenience method to create an Akka HTTP 
+The generated service handler includes a convenience method to create a Pekko HTTP 
 handler with your service together with Server Reflection: 
 
 Scala
@@ -60,7 +60,7 @@ $ ./bins/opt/grpc_cli call localhost:8080 helloworld.GreeterService.SayHello "na
 connecting to localhost:8080
 Received initial metadata from server:
 date : Wed, 08 Jan 2020 16:57:56 GMT
-server : akka-http/10.1.10
+server : pekko-http/10.1.10
 message: "Hello, foo"
 
 Received trailing metadata from server:
