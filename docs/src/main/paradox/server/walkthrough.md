@@ -224,8 +224,8 @@ methods to create partial functions that are combined by `concatOrNotFound`.]
 To run the server with HTTP/2 using HTTPS on a JVM prior to version 1.8.0_251, you will likely have to configure the Jetty ALPN
 agent as described @extref[in the Pekko HTTP documentation](pekko-http:server-side/http2.html#application-layer-protocol-negotiation-alpn-). Later JVM versions have this support built-in.
 
-See the detailed chapters on @ref[sbt](../buildtools/sbt.md#starting-your-akka-grpc-server-from-sbt), @ref[Gradle](../buildtools/gradle.md#starting-your-akka-grpc-server-from-gradle)
-and @ref[Maven](../buildtools/maven.md#starting-your-akka-grpc-server-from-maven) for details on adding the agent.
+See the detailed chapters on @ref[sbt](../buildtools/sbt.md#starting-your-pekko-grpc-server-from-sbt), @ref[Gradle](../buildtools/gradle.md#starting-your-pekko-grpc-server-from-gradle)
+and @ref[Maven](../buildtools/maven.md#starting-your-pekko-grpc-server-from-maven) for details on adding the agent.
 
 ## Stateful services
 

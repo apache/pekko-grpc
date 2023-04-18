@@ -152,7 +152,7 @@ Gradle
 
 Maven
 :   ```
-mvn akka-grpc:generate
+mvn pekko-grpc:generate
 ```
 
 A main program that calls the server with the `GreeterService` looks like this:

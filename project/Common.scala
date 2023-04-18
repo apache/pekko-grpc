@@ -75,7 +75,7 @@ object Common extends AutoPlugin {
         s"https://github.com/apache/incubator-pekko-grpc/tree/${branch}€{FILE_PATH_EXT}#L€{FILE_LINE}"
       },
       "-doc-canonical-base-url",
-      "https://doc.akka.io/api/akka-grpc/current/"),
+      "https://pekko.aoache.org/api/pekko-grpc/current/"),
     Compile / doc / scalacOptions -= "-Xfatal-warnings",
     apiURL := Some(url(s"https://doc.akka.io/api/akka-grpc/${projectInfoVersion.value}/akka/grpc/index.html")),
     (Test / testOptions) += Tests.Argument(TestFrameworks.ScalaTest, "-oDF"),

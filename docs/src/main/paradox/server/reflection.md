@@ -59,8 +59,8 @@ the service with [grpc_cli](https://github.com/grpc/grpc/blob/master/doc/command
 $ ./bins/opt/grpc_cli call localhost:8080 helloworld.GreeterService.SayHello "name:\"foo\""
 connecting to localhost:8080
 Received initial metadata from server:
-date : Wed, 08 Jan 2020 16:57:56 GMT
-server : pekko-http/10.1.10
+date : Wed, 08 Jan 2022 16:57:56 GMT
+server : pekko-http/1.0.0
 message: "Hello, foo"
 
 Received trailing metadata from server:
