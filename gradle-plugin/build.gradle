@@ -24,7 +24,7 @@ gradlePlugin {
 }
 
 pluginBundle {
-  website = 'https://doc.akka.io/docs/akka-grpc/current/'
+  website = 'https://pekko.apache.org/docs/pekko-grpc/current/'
   vcsUrl = 'https://github.com/apache/incubator-pekko-grpc'
   description = 'Building streaming gRPC servers and clients on top of Apache Pekko Streams'
   tags = ['pekko', 'streams', 'reactive']

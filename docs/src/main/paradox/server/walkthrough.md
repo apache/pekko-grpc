@@ -6,7 +6,7 @@ To get started, you must obtain or write the @ref[`.proto`](../proto.md) file(s)
 to your project. Add `.proto` files to your project's @sbt[`src/main/protobuf`]@gradle[`src/main/proto`]@maven[`src/main/proto`] directory.
 (See the detailed chapters on @ref[sbt](../buildtools/sbt.md), @ref[Gradle](../buildtools/gradle.md) and @ref[Maven](../buildtools/maven.md) for information on taking .proto definitions from dependencies)
 
-Then add the Akka gRPC plugin to your build:
+Then add the Pekko gRPC plugin to your build:
 
 sbt
 :   @@@vars
@@ -92,7 +92,7 @@ For a complete overview of the configuration options see the chapter for your bu
 
 ### Dependencies
 
-The Akka gRPC plugin makes your code depend on the `pekko-grpc-runtime` library.
+The Pekko gRPC plugin makes your code depend on the `pekko-grpc-runtime` library.
 
 The table below shows direct dependencies of it and the second tab shows all libraries it depends on transitively. Be aware that the `io.grpc.grpc-api` library depends on Guava.
 
@@ -126,7 +126,7 @@ Maven
 mvn akka-grpc:generate
     ```
 
-From the above definition, Akka gRPC generates interfaces that look like this:
+From the above definition, Pekko gRPC generates interfaces that look like this:
 
 Scala
 :  @@snip [helloworld.proto](/plugin-tester-scala/target/scala-2.12/src_managed/main/example/myapp/helloworld/grpc/GreeterService.scala)
@@ -137,7 +137,7 @@ Java
 and model @scala[case ]classes for `HelloRequest` and `HelloResponse`.
 
 The service interface is the same for the client and the server side. On the server side, the service implements the interface,
-on the client side the Akka gRPC infrastructure implements a stub that will connect to the remote service when called.
+on the client side the Pekko gRPC infrastructure implements a stub that will connect to the remote service when called.
 
 There are 4 different types of calls:
 
@@ -162,14 +162,14 @@ Scala
 Java
 :  @@snip [GreeterServiceImpl.java](/plugin-tester-java/src/main/java/example/myapp/helloworld/GreeterServiceImpl.java) { #full-service-impl }
 
-## Serving the service with Akka HTTP
+## Serving the service with Pekko HTTP
 
 Note, how the implementation we just wrote is free from any gRPC related boilerplate. It only uses the generated model and interfaces
-from your domain and basic Akka streams classes. We now need to connect this implementation class to the web server to
+from your domain and basic Pekko streams classes. We now need to connect this implementation class to the web server to
 offer it to clients.
 
-Akka gRPC servers are implemented with Akka HTTP. In addition to the above `GreeterService`, a @scala[`GreeterServiceHandler`]@java[`GreeterServiceHandlerFactory`]
-was generated that wraps the implementation with the gRPC functionality to be plugged into an existing Akka HTTP server
+Pekko gRPC servers are implemented with Pekko HTTP. In addition to the above `GreeterService`, a @scala[`GreeterServiceHandler`]@java[`GreeterServiceHandlerFactory`]
+was generated that wraps the implementation with the gRPC functionality to be plugged into an existing Pekko HTTP server
 app.
 
 You create the request handler by calling @scala[`GreeterServiceHandler(yourImpl)`]@java[`GreeterServiceHandlerFactory.create(yourImpl, ...)`].
@@ -182,7 +182,7 @@ about safely implementing servers with state see the advice about [stateful](#st
 
 @@@
 
-A complete main program that starts an Akka HTTP server with the `GreeterService` looks like this:
+A complete main program that starts a Pekko HTTP server with the `GreeterService` looks like this:
 
 Scala
 :  @@snip [GreeterServiceImpl.scala](/plugin-tester-scala/src/main/scala/example/myapp/helloworld/GreeterServer.scala) { #full-server }
@@ -192,7 +192,7 @@ Java
 
 @@@ note
 
-It's important to enable HTTP/2 in Akka HTTP in the configuration of the `ActorSystem` by setting
+It's important to enable HTTP/2 in Pekko HTTP in the configuration of the `ActorSystem` by setting
 
 ```
 pekko.http.server.preview.enable-http2 = on
@@ -222,10 +222,10 @@ methods to create partial functions that are combined by `concatOrNotFound`.]
 ## Running the server
 
 To run the server with HTTP/2 using HTTPS on a JVM prior to version 1.8.0_251, you will likely have to configure the Jetty ALPN
-agent as described [in the Akka HTTP documentation](https://doc.akka.io/docs/akka-http/10.1/server-side/http2.html#application-layer-protocol-negotiation-alpn-). Later JVM versions have this support built-in.
+agent as described @extref[in the Pekko HTTP documentation](pekko-http:server-side/http2.html#application-layer-protocol-negotiation-alpn-). Later JVM versions have this support built-in.
 
-See the detailed chapters on @ref[sbt](../buildtools/sbt.md#starting-your-akka-grpc-server-from-sbt), @ref[Gradle](../buildtools/gradle.md#starting-your-akka-grpc-server-from-gradle)
-and @ref[Maven](../buildtools/maven.md#starting-your-akka-grpc-server-from-maven) for details on adding the agent.
+See the detailed chapters on @ref[sbt](../buildtools/sbt.md#starting-your-pekko-grpc-server-from-sbt), @ref[Gradle](../buildtools/gradle.md#starting-your-pekko-grpc-server-from-gradle)
+and @ref[Maven](../buildtools/maven.md#starting-your-pekko-grpc-server-from-maven) for details on adding the agent.
 
 ## Stateful services
 

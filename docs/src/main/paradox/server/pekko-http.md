@@ -1,7 +1,7 @@
-# Akka HTTP interop
+# Pekko HTTP interop
 
-Akka gRPC is built on top of [Akka HTTP](https://doc.akka.io/docs/akka-http).
-This means it is possible to leverage the Akka HTTP API's to create more
+Pekko gRPC is built on top of [Pekko HTTP](https://pekko.apache.org/docs/pekko-http).
+This means it is possible to leverage the Pekko HTTP API's to create more
 complicated services, for example serving non-gRPC endpoints next to
 gRPC endpoints or adding additional behavior around your gRPC routes.
 
@@ -14,9 +14,9 @@ HTTP API that users can use to obtain a token, and want to
 secure your gRPC routes to only accept calls that include this
 token.
 
-### Akka HTTP authentication route
+### Pekko HTTP authentication route
 
-This route could be any arbitrary Akka HTTP route. For this example
+This route could be any arbitrary Pekko HTTP route. For this example
 we just provide a hint in the response body:
 
 Scala
@@ -25,9 +25,9 @@ Scala
 Java
 :  @@snip [AuthenticatedGreeterServer.java](/plugin-tester-java/src/main/java/example/myapp/helloworld/AuthenticatedGreeterServer.java) { #http-route }
 
-### Akka gRPC route
+### Pekko gRPC route
 
-We create the Akka gRPC service implementation, and convert it to a @apidoc[Route$] as well:
+We create the Pekko gRPC service implementation, and convert it to a @apidoc[Route$] as well:
 
 Scala
 :  @@snip [AuthenticatedGreeterServer.scala](/plugin-tester-scala/src/main/scala/example/myapp/helloworld/AuthenticatedGreeterServer.scala) { #grpc-route }
@@ -35,7 +35,7 @@ Scala
 Java
 :  @@snip [AuthenticatedGreeterServer.java](/plugin-tester-java/src/main/java/example/myapp/helloworld/AuthenticatedGreeterServer.java) { #grpc-route }
 
-### Securing the Akka gRPC route
+### Securing the Pekko gRPC route
 
 We can wrap the gRPC route just like any @apidoc[Route$], applying the authorization:
 
@@ -198,9 +198,9 @@ java.util.NoSuchElementException: next on empty iterator
 
 ## Future work
 
-For in-depth akka-grpc/akka-http integration we currently need to pass information from the Akka HTTP route
+For in-depth pekko-grpc/pekko-http integration we currently need to pass information from the Pekko HTTP route
 into the service implementation constructor, and construct a new Handler for each request.
 This pattern is shown in an example above.
 
 In the future we plan to provide a nicer API for this, for example we could pass the
-Akka HTTP attributes (introduced in 10.2.0) as Metadata when using the PowerApi.
+Pekko HTTP attributes (introduced in 10.2.0) as Metadata when using the PowerApi.

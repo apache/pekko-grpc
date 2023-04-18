@@ -1,6 +1,6 @@
 # sbt
 
-To get started with Akka gRPC read the @ref[client](../client/index.md) or @ref[server](../server/index.md) introductions.
+To get started with Pekko gRPC read the @ref[client](../client/index.md) or @ref[server](../server/index.md) introductions.
 
 ## Configuring what to generate
 
@@ -37,7 +37,7 @@ pekkoGrpcCodeGeneratorSettings += "server_power_apis"
 
 ## Passing parameters to the generators
 
-The sbt plugin for Akka-gRPC uses [ScalaPB](https://scalapb.github.io) and `sbt-protoc`. It is possible to tune these libraries if the provided defaults
+The sbt plugin for Pekko-gRPC uses [ScalaPB](https://scalapb.github.io) and `sbt-protoc`. It is possible to tune these libraries if the provided defaults
 don't suit your needs.
 
 ### ScalaPB settings
@@ -52,7 +52,7 @@ pekkoGrpcCodeGeneratorSettings += "single_line_to_proto_string"
 
 #### Using a local `protoc` command
 
-Akka gRPC uses the `protoc` tool to pass `.proto` definitions
+Pekko gRPC uses the `protoc` tool to pass `.proto` definitions
 to various code generation components,
 via [ScalaPB](https://scalapb.github.io)'s
 [sbt-protoc](https://github.com/thesamet/sbt-protoc) and
@@ -121,9 +121,9 @@ libraryDependencies += "com.example" %% "my-grpc-service" % "1.0.0" % "protobuf"
 
 ## JDK 8 support
 
-If you want to use TLS-based negotiation on JDK 8, Akka gRPC requires JDK 8 update 252 or later. JVM support for ALPN has been backported to JDK 8u252 which is now widely available. Support for using the Jetty ALPN agent has been [dropped in Akka HTTP 10.2.0](https://doc.akka.io/docs/akka-http/current/migration-guide/migration-guide-10.2.x.html#http-2-support-requires-jdk-8-update-252-or-later), and therefore is not supported by Akka gRPC.
+If you want to use TLS-based negotiation on JDK 8, Pekko gRPC requires JDK 8 update 252 or later. JVM support for ALPN has been backported to JDK 8u252 which is now widely available. Support for using the Jetty ALPN agent has been dropped in Pekko HTTP, and therefore is not supported by Pekko gRPC.
 
-## Starting your Akka gRPC server from sbt
+## Starting your Pekko gRPC server from sbt
 
 You can start your gRPC application as usual with:
 

@@ -4,7 +4,7 @@
 
 By default the generated service interfaces don't provide access to the request metadata, only to the request
 body (via the RPC method input parameter). If your methods require access to the request  @apidoc[Metadata], you can configure
-Akka gRPC to generate server "power APIs" that extend the base service interfaces to provide an additional
+Pekko gRPC to generate server "power APIs" that extend the base service interfaces to provide an additional
 request metadata parameter to each service method. See the detailed chapters on @ref[sbt](../buildtools/sbt.md), @ref[Gradle](../buildtools/gradle.md)
 and @ref[Maven](../buildtools/maven.md) for how to set this build option. Note that this option doesn't effect the
 generated client stubs.
