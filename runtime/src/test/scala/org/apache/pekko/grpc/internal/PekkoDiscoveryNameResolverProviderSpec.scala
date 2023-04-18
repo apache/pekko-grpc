@@ -49,7 +49,7 @@ class PekkoDiscoveryNameResolverProviderSpec
   implicit override val patienceConfig =
     PatienceConfig(timeout = scaled(Span(2, Seconds)), interval = scaled(Span(5, Millis)))
 
-  "AkkaDiscoveryNameResolverProviderSpec" should {
+  "PekkoDiscoveryNameResolverProviderSpec" should {
     "provide a NameResolver that uses the supplied serviceName" in {
       val serviceName = "testServiceName"
       val discovery = new ServiceDiscovery() {

@@ -25,7 +25,7 @@ object ChannelBuilder {
    */
   def create(settings: Settings): ManagedChannelBuilder[NettyChannelBuilder] =
     if (settings.usePekkoHttp) {
-      // TODO: here comes the akka-http based channel (when ready)
+      // TODO: here comes the pekko-http based channel (when ready)
       throw new RuntimeException("Not implemented")
     } else {
       val sslContext: SslContext = {

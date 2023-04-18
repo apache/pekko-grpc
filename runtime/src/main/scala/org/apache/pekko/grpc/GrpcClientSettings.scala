@@ -284,7 +284,7 @@ final class GrpcClientSettings private (
 
   /**
    * To override any default channel configurations used by netty. Only for power users.
-   * API may change when io.grpc:grpc-netty-shaded is replaced by io.grpc:grpc-core and Akka HTTP.
+   * API may change when io.grpc:grpc-netty-shaded is replaced by io.grpc:grpc-core and Pekko HTTP.
    */
   @ApiMayChange
   def withChannelBuilderOverrides(builderOverrides: NettyChannelBuilder => NettyChannelBuilder): GrpcClientSettings =

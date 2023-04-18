@@ -51,7 +51,7 @@ object PekkoHttpServerProviderScala extends PekkoHttpServerProvider {
     mapResponseHeaders(h => h ++ initialHeaderToEcho) & mapTrailingResponseHeaders(h => h ++ trailingHeaderToEcho)
   })
 
-  // TODO to be moved to the runtime lib (or even akka-http itself?)
+  // TODO to be moved to the runtime lib (or even pekko-http itself?)
   def mapTrailingResponseHeaders(f: immutable.Seq[HttpHeader] => immutable.Seq[HttpHeader]): Directive0 =
     mapResponse(response =>
       response.entity match {

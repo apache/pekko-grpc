@@ -91,7 +91,7 @@ class GrpcClientSettingsSpec extends AnyWordSpec with Matchers with ScalaFutures
             port = 42
             override-authority = "google.fr"
             deadline = 10m
-            user-agent = "Akka-gRPC"
+            user-agent = "Pekko-gRPC"
           }
         }
         //#client-config
@@ -113,7 +113,7 @@ class GrpcClientSettingsSpec extends AnyWordSpec with Matchers with ScalaFutures
             override-authority = "google.fr"
             trusted = certs/$certFileName
             deadline = 10m
-            user-agent = "Akka-gRPC"
+            user-agent = "Pekko-gRPC"
           }
         }
       """)
@@ -136,7 +136,7 @@ class GrpcClientSettingsSpec extends AnyWordSpec with Matchers with ScalaFutures
       discovered.port should be(Some(42))
       parsed.overrideAuthority should be(Some("google.fr"))
       parsed.deadline should be(10.minutes)
-      parsed.userAgent should be(Some("Akka-gRPC"))
+      parsed.userAgent should be(Some("Pekko-gRPC"))
       parsed.useTls should be(true)
     }
 
