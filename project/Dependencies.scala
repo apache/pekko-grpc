@@ -36,7 +36,7 @@ object Dependencies {
     // maven-plugin/src/main/maven/plugin.xml and org.apache.pekko.grpc.sbt.PekkoGrpcPlugin
     val googleProtobuf = "3.20.1" // checked synced by VersionSyncCheckPlugin
 
-    val scalaTest = "3.1.4"
+    val scalaTest = "3.2.15"
 
     val maven = "3.8.6"
   }
@@ -76,7 +76,7 @@ object Dependencies {
   object Test {
     final val Test = sbt.Test
     val scalaTest = "org.scalatest" %% "scalatest" % Versions.scalaTest % "test" // Apache V2
-    val scalaTestPlusJunit = "org.scalatestplus" %% "junit-4-12" % (Versions.scalaTest + ".0") % "test" // Apache V2
+    val scalaTestPlusJunit = "org.scalatestplus" %% "junit-4-13" % (Versions.scalaTest + ".0") % "test" // Apache V2
     val pekkoDiscoveryConfig = "org.apache.pekko" %% "pekko-discovery" % Versions.pekko % "test"
     val pekkoTestkit = "org.apache.pekko" %% "pekko-testkit" % Versions.pekko % "test"
     val pekkoStreamTestkit = "org.apache.pekko" %% "pekko-stream-testkit" % Versions.pekko % "test"
