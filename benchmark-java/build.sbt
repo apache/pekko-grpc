@@ -25,8 +25,8 @@ val root = project
       "io.grpc" % "grpc-testing" % grpcVersion,
       "org.hdrhistogram" % "HdrHistogram" % "2.1.12",
       "org.apache.commons" % "commons-math3" % "3.6.1",
-      "org.scalatest" %% "scalatest" % "3.2.12" % "test",
-      "org.scalatestplus" %% "junit-4-12" % "3.2.2.0" % "test"),
+      "org.scalatest" %% "scalatest" % "3.2.15" % "test",
+      "org.scalatestplus" %% "junit-4-13" % "3.2.15.0" % "test"),
     PB.artifactResolver := PB.artifactResolver.dependsOn(codeGenProject / Compile / publishLocal).value)
 
 compile / javacOptions += "-Xlint:deprecation"
