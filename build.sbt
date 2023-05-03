@@ -6,6 +6,7 @@ import com.typesafe.tools.mima.core._
 import sbt.Keys.scalaVersion
 
 ThisBuild / apacheSonatypeProjectProfile := "pekko"
+sourceDistName := "incubating-pekko-grpc"
 
 val pekkoPrefix = "pekko-grpc"
 val pekkoGrpcRuntimeName = s"$pekkoPrefix-runtime"
