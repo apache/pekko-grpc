@@ -59,7 +59,7 @@ object GrpcMarshalling {
   def unmarshalStream[T](
       data: Source[ByteString, AnyRef],
       u: ProtobufSerializer[T],
-      @nowarn("cat=unused-params") mat: Materializer,
+      @nowarn("msg=is never used") mat: Materializer,
       reader: GrpcProtocolReader): CompletionStage[Source[T, NotUsed]] = {
     CompletableFuture.completedFuture[Source[T, NotUsed]](
       data

@@ -26,7 +26,7 @@ final case class PekkoGrpcClientScala(clientTesterFactory: Settings => ActorSyst
     TestUtils.installConscryptIfAvailable()
     val settings = Settings.parseArgs(args)
 
-    implicit val sys = ActorSystem()
+    implicit val sys: ActorSystem = ActorSystem()
 
     val client = new TestServiceClient(clientTesterFactory(settings)(sys))
     client.setUp()

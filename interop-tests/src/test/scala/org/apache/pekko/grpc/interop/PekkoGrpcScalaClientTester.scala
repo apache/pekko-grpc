@@ -18,7 +18,7 @@ import java.io.InputStream
 import org.apache.pekko
 import pekko.actor.ActorSystem
 import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, SSLContextUtils }
-import pekko.stream.SystemMaterializer
+import pekko.stream.{ Materializer, SystemMaterializer }
 import pekko.stream.scaladsl.{ Keep, Sink, Source }
 import com.google.protobuf.ByteString
 import io.grpc.testing.integration.empty.Empty
@@ -27,7 +27,7 @@ import io.grpc.testing.integration.test.{ TestServiceClient, UnimplementedServic
 import io.grpc.testing.integration2.{ ClientTester, Settings }
 import io.grpc.{ Status, StatusRuntimeException }
 import org.junit.Assert._
-import org.scalatest.matchers.should.Matchers.{ a, convertToAnyShouldWrapper }
+import org.scalatest.matchers.should.Matchers._
 
 import scala.concurrent.duration._
 import scala.concurrent.{ Await, Future }
@@ -45,7 +45,7 @@ class PekkoGrpcScalaClientTester(val settings: Settings, backend: String)(implic
     extends ClientTester {
   private var client: TestServiceClient = null
   private var clientUnimplementedService: UnimplementedServiceClient = null
-  private implicit val mat = SystemMaterializer(system).materializer
+  private implicit val mat: Materializer = SystemMaterializer(system).materializer
 
   private val awaitTimeout = 15.seconds
 

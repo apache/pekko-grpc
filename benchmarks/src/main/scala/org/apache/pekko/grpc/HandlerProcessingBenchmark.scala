@@ -24,6 +24,7 @@ import pekko.actor.ActorSystem
 import pekko.grpc.internal.Identity
 import pekko.grpc.internal.GrpcRequestHelpers
 import pekko.grpc.internal.GrpcProtocolNative
+import pekko.grpc.scaladsl.ScalapbProtobufSerializer
 
 import pekko.http.scaladsl.model.HttpRequest
 import pekko.http.scaladsl.model.HttpResponse
@@ -38,12 +39,13 @@ import org.openjdk.jmh.annotations._
 import grpc.reflection.v1alpha.reflection._
 
 class HandlerProcessingBenchmark extends CommonBenchmark {
-  implicit val system = ActorSystem("bench")
-  implicit val writer = GrpcProtocolNative.newWriter(Identity)
+  implicit val system: ActorSystem = ActorSystem("bench")
+  implicit val writer: GrpcProtocol.GrpcProtocolWriter = GrpcProtocolNative.newWriter(Identity)
 
   val in = Source.repeat(ServerReflectionRequest()).take(10000)
   val request: HttpRequest = {
-    implicit val serializer = ServerReflection.Serializers.ServerReflectionRequestSerializer
+    implicit val serializer: ScalapbProtobufSerializer[ServerReflectionRequest] =
+      ServerReflection.Serializers.ServerReflectionRequestSerializer
     GrpcRequestHelpers(Uri("https://unused.example/" + ServerReflection.name + "/ServerReflectionInfo"), Nil, in)
   }
 

@@ -35,7 +35,7 @@ trait ScalaMarshallersCodeGenerator extends ScalaCodeGenerator {
         .suggestedDependencies(scalaBinaryVersion)
 
   def generateMarshalling(
-      @nowarn("cat=unused-params") logger: Logger,
+      @nowarn("msg=is never used") logger: Logger,
       service: Service): immutable.Seq[CodeGeneratorResponse.File] = {
     val b = CodeGeneratorResponse.File.newBuilder()
     b.setContent(Marshallers(service).body)

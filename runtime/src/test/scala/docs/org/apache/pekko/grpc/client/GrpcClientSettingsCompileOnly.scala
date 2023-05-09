@@ -21,7 +21,7 @@ import pekko.grpc.GrpcClientSettings
 import scala.concurrent.duration._
 
 object GrpcClientSettingsCompileOnly {
-  implicit val actorSystem = ActorSystem()
+  implicit val actorSystem: ActorSystem = ActorSystem()
   // #simple
   GrpcClientSettings.connectToServiceAt("localhost", 443)
   // #simple

@@ -13,7 +13,7 @@
 
 package org.apache.pekko.grpc.internal
 
-import scala.concurrent.Future
+import scala.concurrent.{ ExecutionContext, Future }
 import scala.concurrent.duration._
 
 import org.apache.pekko
@@ -31,7 +31,7 @@ import org.scalatest.time.Span
 import org.scalatest.wordspec.AnyWordSpecLike
 
 class PekkoHttpClientUtilsSpec extends TestKit(ActorSystem()) with AnyWordSpecLike with Matchers with ScalaFutures {
-  implicit val ec = system.dispatcher
+  implicit val ec: ExecutionContext = system.dispatcher
   implicit val patience: PatienceConfig =
     PatienceConfig(5.seconds, Span(100, org.scalatest.time.Millis))
 

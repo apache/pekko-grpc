@@ -1,4 +1,4 @@
-scalaVersion := "3.1.0"
+scalaVersion := "3.3.0"
 
 resolvers += "Apache Snapshots".at("https://repository.apache.org/content/repositories/snapshots/")
 

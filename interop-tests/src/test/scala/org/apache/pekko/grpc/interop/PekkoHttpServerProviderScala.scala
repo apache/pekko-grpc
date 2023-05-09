@@ -16,6 +16,7 @@ package org.apache.pekko.grpc.interop
 import org.apache.pekko
 import pekko.NotUsed
 import pekko.actor.ActorSystem
+import pekko.grpc.GrpcProtocol
 import pekko.grpc.internal.{ GrpcEntityHelpers, GrpcProtocolNative, GrpcResponseHelpers, Identity }
 import pekko.http.scaladsl.model.headers.RawHeader
 import pekko.http.scaladsl.model.{ AttributeKeys, HttpEntity, HttpHeader, Trailer }
@@ -27,14 +28,14 @@ import io.grpc.testing.integration.messages.{ SimpleRequest, StreamingOutputCall
 import io.grpc.testing.integration.test.{ TestService, TestServiceHandler, TestServiceMarshallers }
 
 import scala.collection.immutable
-import scala.concurrent.Promise
+import scala.concurrent.{ ExecutionContext, Promise }
 
 object PekkoHttpServerProviderScala extends PekkoHttpServerProvider with Directives {
   val label: String = "pekko-grpc server scala"
   val pendingCases =
     Set()
 
-  val server = PekkoGrpcServerScala(implicit sys => {
+  val server: PekkoGrpcServerScala = PekkoGrpcServerScala(implicit sys => {
     val testServiceImpl = new TestServiceImpl()
     val testServiceHandler = TestServiceHandler(testServiceImpl)
 
@@ -59,8 +60,8 @@ object PekkoHttpServerProviderScala extends PekkoHttpServerProvider with Directi
 
   // Route to pass the 'status_code_and_message' test
   def customStatusRoute(testServiceImpl: TestServiceImpl)(implicit mat: Materializer, system: ActorSystem): Route = {
-    implicit val ec = mat.executionContext
-    implicit val writer = GrpcProtocolNative.newWriter(Identity)
+    implicit val ec: ExecutionContext = mat.executionContext
+    implicit val writer: GrpcProtocol.GrpcProtocolWriter = GrpcProtocolNative.newWriter(Identity)
 
     import TestServiceMarshallers._
 

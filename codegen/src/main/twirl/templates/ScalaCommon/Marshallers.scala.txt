@@ -24,6 +24,7 @@ import pekko.stream.Materializer
 import pekko.grpc.GrpcProtocol.GrpcProtocolWriter
 import pekko.grpc.ProtobufSerializer
 import pekko.grpc.scaladsl.GrpcMarshalling
+import pekko.grpc.scaladsl.ScalapbProtobufSerializer
 import pekko.http.scaladsl.marshalling.Marshaller
 import pekko.http.scaladsl.marshalling.ToResponseMarshaller
 import pekko.http.scaladsl.model.HttpRequest
@@ -35,7 +36,7 @@ import pekko.grpc.PekkoGrpcGenerated
 @@PekkoGrpcGenerated
 object @{service.name}Marshallers {
   @for(serializer <- service.serializers) {
-  implicit val @serializer.name = @{service.packageName}.@{service.name}.Serializers.@{serializer.name}
+  implicit val @serializer.name: ScalapbProtobufSerializer[@{serializer.scalaType}] = @{service.packageName}.@{service.name}.Serializers.@{serializer.name}
   }
 
   implicit def unmarshaller[T](implicit serializer: ProtobufSerializer[T], mat: Materializer): FromRequestUnmarshaller[T] =

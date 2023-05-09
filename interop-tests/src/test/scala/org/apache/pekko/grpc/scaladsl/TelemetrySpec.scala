@@ -18,6 +18,7 @@ import com.typesafe.config.ConfigFactory
 import org.apache.pekko
 import pekko.actor.ActorSystem
 import pekko.grpc.internal.{ GrpcProtocolNative, GrpcRequestHelpers, Identity, TelemetryExtension, TelemetrySpi }
+import pekko.grpc.GrpcProtocol
 import pekko.http.javadsl.model.HttpRequest
 import pekko.stream.scaladsl.Source
 import pekko.testkit.TestKit
@@ -41,8 +42,8 @@ class TelemetrySpec
   "The client-side telemetry hook" should {
     "pick up matched requests" in {
       val handler = GreeterServiceHandler(new CountingGreeterServiceImpl)
-      implicit val ser = GreeterService.Serializers.HelloRequestSerializer
-      implicit val writer = GrpcProtocolNative.newWriter(Identity)
+      implicit val ser: ScalapbProtobufSerializer[HelloRequest] = GreeterService.Serializers.HelloRequestSerializer
+      implicit val writer: GrpcProtocol.GrpcProtocolWriter = GrpcProtocolNative.newWriter(Identity)
       handler(
         GrpcRequestHelpers(
           s"https://localhost/${GreeterService.name}/SayHello",

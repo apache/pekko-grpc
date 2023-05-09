@@ -15,7 +15,7 @@ package org.apache.pekko.grpc.scaladsl
 
 import org.apache.pekko
 import pekko.actor.ActorSystem
-import pekko.grpc.GrpcServiceException
+import pekko.grpc.{ GrpcProtocol, GrpcServiceException }
 import pekko.grpc.internal.{ GrpcProtocolNative, GrpcResponseHelpers, Identity }
 import pekko.grpc.scaladsl.GrpcExceptionHandler.defaultMapper
 import pekko.http.scaladsl.model.HttpEntity._
@@ -30,10 +30,10 @@ import org.scalatest.wordspec.AnyWordSpec
 import scala.concurrent.{ ExecutionException, Future }
 
 class GrpcExceptionHandlerSpec extends AnyWordSpec with Matchers with ScalaFutures with BeforeAndAfterAll {
-  implicit val system = ActorSystem("Test")
-  implicit override val patienceConfig =
+  implicit val system: ActorSystem = ActorSystem("Test")
+  implicit override val patienceConfig: PatienceConfig =
     PatienceConfig(timeout = scaled(Span(2, Seconds)), interval = scaled(Span(5, Millis)))
-  implicit val writer = GrpcProtocolNative.newWriter(Identity)
+  implicit val writer: GrpcProtocol.GrpcProtocolWriter = GrpcProtocolNative.newWriter(Identity)
 
   val expected: Function[Throwable, Status] = {
     case e: ExecutionException =>

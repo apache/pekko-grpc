@@ -97,7 +97,8 @@ object PekkoGrpcPlugin extends AutoPlugin {
       libraryDependencies ++= {
         if (pekkoGrpcGeneratedLanguages.value.contains(PekkoGrpc.Scala))
           // Make scalapb.proto available for import in user-defined protos for file and package-level options
-          Seq("com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion % "protobuf")
+          Seq(
+            "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion % "protobuf")
         else Seq()
       },
       Compile / PB.recompile := {
@@ -126,9 +127,9 @@ object PekkoGrpcPlugin extends AutoPlugin {
           generatorsFor(
             pekkoGrpcGeneratedSources.value,
             pekkoGrpcGeneratedLanguages.value,
-            generatorScalaBinaryVersion.value,
+            ScalaBinaryVersion(scalaBinaryVersion.value),
             generatorLogger) ++ pekkoGrpcExtraGenerators.value.map(g =>
-            GeneratorBridge.plainGenerator(g, generatorScalaBinaryVersion.value, generatorLogger))
+            GeneratorBridge.plainGenerator(g, ScalaBinaryVersion(scalaBinaryVersion.value), generatorLogger))
         },
         // configure the proto gen automatically by adding our codegen:
         PB.targets ++=
@@ -208,26 +209,16 @@ object PekkoGrpcPlugin extends AutoPlugin {
     else generators
   }
 
-  // workaround to allow using Scala 2.13 artifacts in Scala 3 projects
-  def generatorScalaBinaryVersion: Def.Initialize[ScalaBinaryVersion] = Def.setting {
-    ScalaBinaryVersion {
-      CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((3, _)) => "2.13"
-        case _            => scalaBinaryVersion.value
-      }
-    }
-  }
-
   /** Sandbox a CodeGenerator, to prepare it to be added to pekkoGrpcGenerators */
   def sandboxedGenerator(
       codeGenerator: pekko.grpc.gen.CodeGenerator): Def.Initialize[protocbridge.Generator] =
     Def.setting {
-      GeneratorBridge.sandboxedGenerator(codeGenerator, generatorScalaBinaryVersion.value, generatorLogger)
+      GeneratorBridge.sandboxedGenerator(codeGenerator, ScalaBinaryVersion(scalaBinaryVersion.value), generatorLogger)
     }
 
   /** Convert a CodeGenerator, to prepare it to be added to pekkoGrpcGenerators without sandboxing */
   def plainGenerator(codeGenerator: pekko.grpc.gen.CodeGenerator): Def.Initialize[protocbridge.Generator] =
     Def.setting {
-      GeneratorBridge.plainGenerator(codeGenerator, generatorScalaBinaryVersion.value, generatorLogger)
+      GeneratorBridge.plainGenerator(codeGenerator, ScalaBinaryVersion(scalaBinaryVersion.value), generatorLogger)
     }
 }

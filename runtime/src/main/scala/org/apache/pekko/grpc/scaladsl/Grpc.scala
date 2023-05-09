@@ -13,7 +13,7 @@
 
 package org.apache.pekko.grpc.scaladsl
 
-import scala.concurrent.Future
+import scala.concurrent.{ ExecutionContext, Future }
 import scala.jdk.CollectionConverters._
 
 import org.apache.pekko
@@ -22,7 +22,7 @@ import pekko.actor.{ CoordinatedShutdown, ExtendedActorSystem, Extension, Extens
 import pekko.annotation.InternalApi
 import java.util.concurrent.ConcurrentHashMap
 
-import pekko.event.Logging
+import pekko.event.{ LogSource, Logging }
 import pekko.grpc.GrpcChannel
 
 /** INTERNAL API */
@@ -31,7 +31,7 @@ private[grpc] final class GrpcImpl(system: ExtendedActorSystem) extends Extensio
   private val channels = new ConcurrentHashMap[GrpcChannel, Unit]
 
   CoordinatedShutdown(system).addTask("before-actor-system-terminate", "close-grpc-channels") { () =>
-    implicit val ec = system.dispatcher
+    implicit val ec: ExecutionContext = system.dispatcher
     Future
       .sequence(
         channels
@@ -40,7 +40,7 @@ private[grpc] final class GrpcImpl(system: ExtendedActorSystem) extends Extensio
           .map(channel =>
             channel.close().recover {
               case e =>
-                val log = Logging(system, getClass)
+                val log = Logging(system, getClass)(LogSource.fromClass)
                 log.warning("Failed to gracefully close {}, proceeding with shutdown anyway. {}", channel, e)
                 Done
             }))

@@ -30,10 +30,10 @@ abstract class ScalaCodeGenerator extends CodeGenerator {
   def perServiceContent: Set[(Logger, Service) => immutable.Seq[CodeGeneratorResponse.File]] = Set.empty
 
   // Override these to add service-independent generated files
-  def staticContent(@nowarn("cat=unused-params") logger: Logger): Set[CodeGeneratorResponse.File] = Set.empty
+  def staticContent(@nowarn("msg=is never used") logger: Logger): Set[CodeGeneratorResponse.File] = Set.empty
   def staticContent(
-      @nowarn("cat=unused-params") logger: Logger,
-      @nowarn("cat=unused-params") allServices: Seq[Service]): Set[CodeGeneratorResponse.File] = Set.empty
+      @nowarn("msg=is never used") logger: Logger,
+      @nowarn("msg=is never used") allServices: Seq[Service]): Set[CodeGeneratorResponse.File] = Set.empty
 
   override def suggestedDependencies =
     (scalaBinaryVersion: CodeGenerator.ScalaBinaryVersion) =>

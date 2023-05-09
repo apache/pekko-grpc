@@ -41,7 +41,7 @@ object Service {
       serviceDescriptor: ServiceDescriptor,
       serverPowerApi: Boolean,
       usePlayActions: Boolean): Service = {
-    implicit val ops =
+    implicit val ops: DescriptorImplicits =
       DescriptorImplicits.fromCodeGenRequest(generatorParams, request)
     import ops._
 
