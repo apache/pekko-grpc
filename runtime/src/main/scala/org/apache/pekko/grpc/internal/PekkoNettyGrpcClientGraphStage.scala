@@ -20,10 +20,10 @@ import pekko.grpc.GrpcResponseMetadata
 import pekko.stream
 import pekko.stream.{ Attributes => _, _ }
 import pekko.stream.stage._
+import pekko.util.FutureConverters._
 import io.grpc._
 
 import scala.concurrent.{ Future, Promise }
-import scala.compat.java8.FutureConverters._
 
 @InternalApi
 private object PekkoNettyGrpcClientGraphStage {
@@ -105,7 +105,7 @@ private final class PekkoNettyGrpcClientGraphStage[I, O](
               trailerPromise.future.map(MetadataImpl.scalaMetadataFromGoogleGrpcMetadata)(ExecutionContexts.parasitic)
             private lazy val jTrailers = trailerPromise.future
               .map(MetadataImpl.javaMetadataFromGoogleGrpcMetadata)(ExecutionContexts.parasitic)
-              .toJava
+              .asJava
             def trailers = sTrailers
             def getTrailers = jTrailers
           })

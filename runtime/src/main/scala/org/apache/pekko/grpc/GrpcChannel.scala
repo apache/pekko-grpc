@@ -15,7 +15,6 @@ package org.apache.pekko.grpc
 
 import java.util.concurrent.CompletionStage
 
-import scala.compat.java8.FutureConverters._
 import scala.concurrent.Future
 
 import org.apache.pekko
@@ -24,6 +23,7 @@ import pekko.actor.ClassicActorSystemProvider
 import pekko.annotation.InternalStableApi
 import pekko.grpc.internal.{ ChannelUtils, InternalChannel }
 import pekko.grpc.scaladsl.Grpc
+import pekko.util.FutureConverters._
 
 final class GrpcChannel private (
     @InternalStableApi val settings: GrpcClientSettings,
@@ -35,14 +35,14 @@ final class GrpcChannel private (
    * Java API: Initiates a shutdown in which preexisting and new calls are cancelled.
    */
   def closeCS(): CompletionStage[Done] =
-    close().toJava
+    close().asJava
 
   /**
    * Java API: Returns a CompletionStage that completes successfully when channel is shut down via close(),
    * or exceptionally if connection cannot be established or reestablished after maxConnectionAttempts.
    */
   def closedCS(): CompletionStage[Done] =
-    closed().toJava
+    closed().asJava
 
   /**
    * Scala API: Initiates a shutdown in which preexisting and new calls are cancelled.
