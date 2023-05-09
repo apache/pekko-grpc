@@ -24,9 +24,9 @@ import pekko.stream.Materializer
 import pekko.stream.javadsl.{ Source => JavaSource }
 import pekko.stream.scaladsl.{ Keep, Sink, Source }
 import pekko.util.ByteString
+import pekko.util.FutureConverters._
 import io.grpc._
 
-import scala.compat.java8.FutureConverters._
 import scala.concurrent.{ ExecutionContext, Future }
 import pekko.grpc.GrpcClientSettings
 
@@ -86,10 +86,10 @@ final class JavaUnaryRequestBuilder[I, O](
     this(descriptor, channel, defaultOptions, settings, MetadataImpl.empty)
 
   override def invoke(request: I): CompletionStage[O] =
-    delegate.invoke(request).toJava
+    delegate.invoke(request).asJava
 
   override def invokeWithMetadata(request: I): CompletionStage[GrpcSingleResponse[O]] =
-    delegate.invokeWithMetadata(request).toJava
+    delegate.invokeWithMetadata(request).asJava
 
   override def withHeaders(headers: MetadataImpl): JavaUnaryRequestBuilder[I, O] =
     new JavaUnaryRequestBuilder[I, O](descriptor, channel, defaultOptions, settings, headers)
@@ -196,10 +196,10 @@ final class JavaClientStreamingRequestBuilder[I, O](
     new ScalaClientStreamingRequestBuilder[I, O](descriptor, channel, defaultOptions, settings, headers)
 
   override def invoke(request: JavaSource[I, NotUsed]): CompletionStage[O] =
-    delegate.invoke(request.asScala).toJava
+    delegate.invoke(request.asScala).asJava
 
   override def invokeWithMetadata(request: JavaSource[I, NotUsed]): CompletionStage[GrpcSingleResponse[O]] =
-    delegate.invokeWithMetadata(request.asScala).toJava
+    delegate.invokeWithMetadata(request.asScala).asJava
 
   override def withHeaders(headers: MetadataImpl): JavaClientStreamingRequestBuilder[I, O] =
     new JavaClientStreamingRequestBuilder[I, O](descriptor, channel, defaultOptions, settings, headers)
@@ -285,7 +285,7 @@ final class JavaServerStreamingRequestBuilder[I, O](
     delegate.invoke(request).asJava
 
   override def invokeWithMetadata(source: I): JavaSource[O, CompletionStage[GrpcResponseMetadata]] =
-    delegate.invokeWithMetadata(source).mapMaterializedValue(_.toJava).asJava
+    delegate.invokeWithMetadata(source).mapMaterializedValue(_.asJava).asJava
 
   override def withHeaders(headers: MetadataImpl): JavaServerStreamingRequestBuilder[I, O] =
     new JavaServerStreamingRequestBuilder[I, O](descriptor, channel, defaultOptions, settings, headers)
@@ -373,7 +373,7 @@ final class JavaBidirectionalStreamingRequestBuilder[I, O](
 
   override def invokeWithMetadata(
       source: JavaSource[I, NotUsed]): JavaSource[O, CompletionStage[GrpcResponseMetadata]] =
-    delegate.invokeWithMetadata(source.asScala).mapMaterializedValue(_.toJava).asJava
+    delegate.invokeWithMetadata(source.asScala).mapMaterializedValue(_.asJava).asJava
 
   override def withHeaders(headers: MetadataImpl): JavaBidirectionalStreamingRequestBuilder[I, O] =
     new JavaBidirectionalStreamingRequestBuilder[I, O](descriptor, channel, defaultOptions, settings, headers)

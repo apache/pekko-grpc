@@ -17,7 +17,6 @@ import java.util.{ List => jList, Locale, Map => jMap, Optional }
 
 import scala.collection.JavaConverters._
 import scala.collection.immutable
-import scala.compat.java8.OptionConverters._
 import org.apache.pekko
 import pekko.annotation.InternalApi
 import pekko.http.scaladsl.model.HttpHeader
@@ -25,6 +24,7 @@ import pekko.japi.Pair
 import pekko.util.ByteString
 import pekko.grpc.scaladsl.{ BytesEntry, Metadata, MetadataEntry, StringEntry }
 import pekko.grpc.javadsl
+import pekko.util.OptionConverters._
 
 @InternalApi private[pekko] object MetadataImpl {
   val BINARY_SUFFIX: String = io.grpc.Metadata.BINARY_HEADER_SUFFIX
@@ -210,10 +210,10 @@ class HeaderMetadataImpl(headers: immutable.Seq[HttpHeader] = immutable.Seq.empt
 @InternalApi
 class JavaMetadataImpl(delegate: Metadata) extends javadsl.Metadata {
   override def getText(key: String): Optional[String] =
-    delegate.getText(key).asJava
+    delegate.getText(key).toJava
 
   override def getBinary(key: String): Optional[ByteString] =
-    delegate.getBinary(key).asJava
+    delegate.getBinary(key).toJava
 
   override def asMap(): jMap[String, jList[javadsl.MetadataEntry]] = {
     // This method is also affected by incompatible changes between scala 2.12 and 2.13. (See comment in

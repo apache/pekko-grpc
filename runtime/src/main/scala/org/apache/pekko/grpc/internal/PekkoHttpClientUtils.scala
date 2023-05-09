@@ -38,11 +38,11 @@ import pekko.http.scaladsl.settings.ClientConnectionSettings
 import pekko.stream.{ Materializer, OverflowStrategy }
 import pekko.stream.scaladsl.{ Keep, Sink, Source }
 import pekko.util.ByteString
+import pekko.util.FutureConverters._
 import io.grpc.{ CallOptions, MethodDescriptor, Status, StatusRuntimeException }
 
 import javax.net.ssl.{ KeyManager, SSLContext, TrustManager }
 import scala.collection.immutable
-import scala.compat.java8.FutureConverters.FutureOps
 import scala.concurrent.{ ExecutionContext, Future, Promise }
 import scala.util.{ Failure, Success }
 import pekko.http.scaladsl.model.StatusCodes
@@ -263,7 +263,7 @@ object PekkoHttpClientUtils {
                         trailerPromise.future
                           .map[pekko.grpc.javadsl.Metadata](h =>
                             new JavaMetadataImpl(new HeaderMetadataImpl(h)))
-                          .toJava
+                          .asJava
                     }))
               case Failure(e) =>
                 Source.failed[O](e).mapMaterializedValue(_ => Future.failed(e))

@@ -19,10 +19,10 @@ import org.apache.pekko
 import pekko.annotation.InternalApi
 import pekko.dispatch.ExecutionContexts
 import pekko.grpc.GrpcSingleResponse
+import pekko.util.FutureConverters._
 import pekko.util.OptionVal
 import io.grpc._
 
-import scala.compat.java8.FutureConverters._
 import scala.concurrent.{ Future, Promise }
 
 /**
@@ -51,7 +51,7 @@ private[pekko] final class UnaryCallAdapter[Res] extends ClientCall.Listener[Res
     }
 
   def future: Future[Res] = responsePromise.future
-  def cs: CompletionStage[Res] = future.toJava
+  def cs: CompletionStage[Res] = future.asJava
 }
 
 /**
@@ -92,7 +92,7 @@ private[pekko] final class UnaryCallWithMetadataAdapter[Res] extends ClientCall.
       private lazy val sTrailer =
         trailerPromise.future.map(MetadataImpl.scalaMetadataFromGoogleGrpcMetadata)(ExecutionContexts.parasitic)
       private lazy val jTrailer =
-        trailerPromise.future.map(MetadataImpl.javaMetadataFromGoogleGrpcMetadata)(ExecutionContexts.parasitic).toJava
+        trailerPromise.future.map(MetadataImpl.javaMetadataFromGoogleGrpcMetadata)(ExecutionContexts.parasitic).asJava
 
       def trailers = sTrailer
       def getTrailers() = jTrailer
@@ -115,5 +115,5 @@ private[pekko] final class UnaryCallWithMetadataAdapter[Res] extends ClientCall.
     }
 
   def future: Future[GrpcSingleResponse[Res]] = responsePromise.future
-  def cs: CompletionStage[GrpcSingleResponse[Res]] = future.toJava
+  def cs: CompletionStage[GrpcSingleResponse[Res]] = future.asJava
 }
