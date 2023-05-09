@@ -16,7 +16,7 @@ package org.apache.pekko.grpc.gen.scaladsl
 import com.google.protobuf.Descriptors.{ Descriptor, MethodDescriptor }
 import scalapb.compiler.DescriptorImplicits
 
-case class Serializer(name: String, init: String)
+case class Serializer(name: String, scalaType: String, init: String)
 
 object Serializer {
   def apply(method: MethodDescriptor, messageType: Descriptor)(implicit ops: DescriptorImplicits): Serializer = {
@@ -25,6 +25,7 @@ object Serializer {
     } else {
       messageType.getFile.getPackage.replace('.', '_') + "_" + messageType.getName + "Serializer"
     }
-    Serializer(name, s"new ScalapbProtobufSerializer(${Method.messageType(messageType)}.messageCompanion)")
+    Serializer(name, Method.messageType(messageType),
+      s"new ScalapbProtobufSerializer(${Method.messageType(messageType)}.messageCompanion)")
   }
 }

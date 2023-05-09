@@ -23,7 +23,7 @@ import scala.concurrent.duration._
 object AuthenticatedGreeterClient {
   def main(args: Array[String]): Unit = {
     // Boot akka
-    implicit val sys = ActorSystem("HelloWorldClient")
+    implicit val sys: ActorSystem = ActorSystem("HelloWorldClient")
 
     // Take details how to connect to the service from the config.
     val clientSettings = GrpcClientSettings.connectToServiceAt("127.0.0.1", 8082).withTls(false)

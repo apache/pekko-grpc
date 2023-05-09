@@ -36,8 +36,8 @@ import scala.concurrent.duration._
 class GrpcMarshallingSpec extends AnyWordSpec with Matchers {
   "The scaladsl GrpcMarshalling" should {
     val message = SimpleRequest(responseCompressed = Some(BoolValue(true)))
-    implicit val serializer = TestService.Serializers.SimpleRequestSerializer
-    implicit val system = ActorSystem()
+    implicit val serializer: ScalapbProtobufSerializer[SimpleRequest] = TestService.Serializers.SimpleRequestSerializer
+    implicit val system: ActorSystem = ActorSystem()
     val awaitTimeout = 10.seconds
     val zippedBytes =
       AbstractGrpcProtocol.encodeFrameData(

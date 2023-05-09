@@ -19,27 +19,30 @@ import pekko.grpc.internal.{ GrpcProtocolNative, GrpcRequestHelpers, Identity }
 import pekko.grpc.scaladsl.headers.`Status`
 import pekko.http.scaladsl.model.{ AttributeKeys, HttpEntity, HttpRequest, HttpResponse }
 import pekko.http.scaladsl.model.HttpEntity.{ Chunked, LastChunk, Strict }
+import pekko.grpc.GrpcProtocol
 import pekko.stream.scaladsl.{ Sink, Source }
 import pekko.testkit.TestKit
 import pekko.util.ByteString
 import io.grpc.testing.integration.test.TestService
+import io.grpc.testing.integration.messages.SimpleRequest
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 
-import scala.concurrent.Future
+import scala.concurrent.{ ExecutionContext, Future }
 
 class GrpcExceptionHandlerSpec
     extends TestKit(ActorSystem("GrpcExceptionHandlerSpec"))
     with AnyWordSpecLike
     with Matchers
     with ScalaFutures {
-  implicit val ec = system.dispatcher
+  implicit val ec: ExecutionContext = system.dispatcher
 
   "The default ExceptionHandler" should {
     "produce an INVALID_ARGUMENT error when the expected parameter is not found" in {
-      implicit val serializer = TestService.Serializers.SimpleRequestSerializer
-      implicit val marshaller = GrpcProtocolNative.newWriter(Identity)
+      implicit val serializer: ScalapbProtobufSerializer[SimpleRequest] =
+        TestService.Serializers.SimpleRequestSerializer
+      implicit val marshaller: GrpcProtocol.GrpcProtocolWriter = GrpcProtocolNative.newWriter(Identity)
       // request that is missing the actual data
       val unmarshallableRequest = HttpRequest(entity = HttpEntity.empty(GrpcProtocolNative.contentType))
 
@@ -120,9 +123,9 @@ class GrpcExceptionHandlerSpec
     }
 
     "return the correct user-supplied status for a unary call" in {
-      implicit val serializer =
+      implicit val serializer: ScalapbProtobufSerializer[HelloRequest] =
         example.myapp.helloworld.grpc.helloworld.GreeterService.Serializers.HelloRequestSerializer
-      implicit val writer = GrpcProtocolNative.newWriter(Identity)
+      implicit val writer: GrpcProtocol.GrpcProtocolWriter = GrpcProtocolNative.newWriter(Identity)
 
       val request = GrpcRequestHelpers(s"/${GreeterService.name}/SayHello", List.empty, Source.single(HelloRequest("")))
 
@@ -141,9 +144,9 @@ class GrpcExceptionHandlerSpec
     }
 
     "return the correct user-supplied status for a streaming call" in {
-      implicit val serializer =
+      implicit val serializer: ScalapbProtobufSerializer[HelloRequest] =
         example.myapp.helloworld.grpc.helloworld.GreeterService.Serializers.HelloRequestSerializer
-      implicit val writer = GrpcProtocolNative.newWriter(Identity)
+      implicit val writer: GrpcProtocol.GrpcProtocolWriter = GrpcProtocolNative.newWriter(Identity)
 
       val request =
         GrpcRequestHelpers(s"/${GreeterService.name}/ItKeepsReplying", List.empty, Source.single(HelloRequest("")))

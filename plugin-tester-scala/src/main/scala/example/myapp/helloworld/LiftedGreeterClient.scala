@@ -14,6 +14,7 @@
 package example.myapp.helloworld
 
 import scala.concurrent.Await
+import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.util.Try
@@ -29,8 +30,8 @@ import example.myapp.helloworld.grpc._
 
 object LiftedGreeterClient {
   def main(args: Array[String]): Unit = {
-    implicit val sys = ActorSystem("HelloWorldClient")
-    implicit val ec = sys.dispatcher
+    implicit val sys: ActorSystem = ActorSystem("HelloWorldClient")
+    implicit val ec: ExecutionContext = sys.dispatcher
 
     val clientSettings = GrpcClientSettings.fromConfig(GreeterService.name)
     val client = GreeterServiceClient(clientSettings)

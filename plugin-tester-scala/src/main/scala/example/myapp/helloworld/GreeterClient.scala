@@ -21,15 +21,15 @@ import pekko.grpc.GrpcClientSettings
 import pekko.stream.scaladsl.Source
 import example.myapp.helloworld.grpc._
 
-import scala.concurrent.Future
+import scala.concurrent.{ ExecutionContext, Future }
 import scala.concurrent.duration._
 import scala.util.{ Failure, Success }
 
 object GreeterClient {
   def main(args: Array[String]): Unit = {
     // Boot akka
-    implicit val sys = ActorSystem("HelloWorldClient")
-    implicit val ec = sys.dispatcher
+    implicit val sys: ActorSystem = ActorSystem("HelloWorldClient")
+    implicit val ec: ExecutionContext = sys.dispatcher
 
     // Configure the client by code:
     val clientSettings = GrpcClientSettings.connectToServiceAt("127.0.0.1", 8080).withTls(false)

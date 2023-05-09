@@ -107,7 +107,7 @@ private final class PekkoNettyGrpcClientGraphStage[I, O](
               .map(MetadataImpl.javaMetadataFromGoogleGrpcMetadata)(ExecutionContexts.parasitic)
               .asJava
             def trailers = sTrailers
-            def getTrailers = jTrailers
+            def getTrailers() = jTrailers
           })
         override def onMessage(message: O): Unit =
           callback.invoke(message)

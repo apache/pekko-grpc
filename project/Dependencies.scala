@@ -17,17 +17,18 @@ object Dependencies {
   object Versions {
     val scala212 = "2.12.17"
     val scala213 = "2.13.10"
+    val scala3 = "3.3.0"
 
     // the order in the list is important because the head will be considered the default.
-    val CrossScalaForLib = Seq(scala212, scala213)
+    val CrossScalaForLib = Seq(scala212, scala213, scala3)
     val CrossScalaForPlugin = Seq(scala212)
 
     // We don't force Pekko updates because downstream projects can upgrade
     // themselves. For more information see
     // https://pekko.apache.org//docs/pekko/current/project/downstream-upgrade-strategy.html
-    val pekko = "0.0.0+26656-898c6970-SNAPSHOT"
+    val pekko = "0.0.0+26669-ec5b6764-SNAPSHOT"
     val pekkoBinary = "current"
-    val pekkoHttp = "0.0.0+4345-fa1cb9cb-SNAPSHOT"
+    val pekkoHttp = "0.0.0+4411-6fe04045-SNAPSHOT"
     val pekkoHttpBinary = "current"
 
     val grpc = "1.48.1" // checked synced by VersionSyncCheckPlugin

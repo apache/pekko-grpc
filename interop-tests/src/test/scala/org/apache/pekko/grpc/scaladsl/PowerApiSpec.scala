@@ -20,7 +20,7 @@ import scala.concurrent.duration._
 import org.apache.pekko
 import pekko.NotUsed
 import pekko.actor.ActorSystem
-import pekko.grpc.GrpcClientSettings
+import pekko.grpc.{ GrpcClientSettings, GrpcProtocol }
 import pekko.grpc.GrpcProtocol.TrailerFrame
 import pekko.grpc.GrpcResponseMetadata
 import pekko.grpc.internal.GrpcEntityHelpers
@@ -62,9 +62,9 @@ abstract class PowerApiSpec(backend: String)
     with BeforeAndAfter
     with BeforeAndAfterAll {
 
-  override implicit val patienceConfig = PatienceConfig(5.seconds, Span(10, org.scalatest.time.Millis))
+  override implicit val patienceConfig: PatienceConfig = PatienceConfig(5.seconds, Span(10, org.scalatest.time.Millis))
 
-  val server =
+  val server: Http.ServerBinding =
     Http().newServerAt("localhost", 0).bind(GreeterServicePowerApiHandler(new PowerGreeterServiceImpl())).futureValue
 
   var client: GreeterServiceClient = _
@@ -96,12 +96,12 @@ abstract class PowerApiSpec(backend: String)
     }
 
     "successfully pass metadata from server to client" in {
-      implicit val serializer = GreeterService.Serializers.HelloReplySerializer
+      implicit val serializer: ScalapbProtobufSerializer[HelloReply] = GreeterService.Serializers.HelloReplySerializer
       val specialServer =
         Http()
           .newServerAt("localhost", 0)
           .bind(path(GreeterService.name / "SayHello") {
-            implicit val writer = GrpcProtocolNative.newWriter(Identity)
+            implicit val writer: GrpcProtocol.GrpcProtocolWriter = GrpcProtocolNative.newWriter(Identity)
             val trailingMetadata = new HeaderMetadataImpl(List(RawHeader("foo", "bar")))
             complete(
               GrpcResponseHelpers(
@@ -155,12 +155,12 @@ abstract class PowerApiSpec(backend: String)
     "successfully pass metadata from server to client (for client-streaming calls)" in {
       val trailer = Promise[TrailerFrame]() // control the sending of the trailer
 
-      implicit val serializer = GreeterService.Serializers.HelloReplySerializer
+      implicit val serializer: ScalapbProtobufSerializer[HelloReply] = GreeterService.Serializers.HelloReplySerializer
       val metadataServer =
         Http()
           .newServerAt("localhost", 0)
           .bind(path(GreeterService.name / "ItKeepsTalking") {
-            implicit val writer = GrpcProtocolNative.newWriter(Identity)
+            implicit val writer: GrpcProtocol.GrpcProtocolWriter = GrpcProtocolNative.newWriter(Identity)
             complete(
               GrpcResponseHelpers(Source.single(HelloReply("Hello there!")), trail = Source.future(trailer.future))
                 .addHeader(RawHeader("foo", "bar")))

@@ -13,7 +13,7 @@
 
 package org.apache.pekko.grpc.scaladsl
 
-import scala.concurrent.Await
+import scala.concurrent.{ Await, ExecutionContext }
 import scala.concurrent.duration._
 
 import org.apache.pekko
@@ -23,7 +23,7 @@ import pekko.grpc.{ GrpcChannel, GrpcClientCloseException, GrpcClientSettings }
 import pekko.http.scaladsl.Http
 import pekko.http.scaladsl.model.RemoteAddress
 import pekko.http.scaladsl.server.Directives
-import pekko.stream.SystemMaterializer
+import pekko.stream.{ Materializer, SystemMaterializer }
 import com.typesafe.config.{ Config, ConfigFactory }
 import example.myapp.helloworld.grpc.helloworld._
 import org.scalatest.BeforeAndAfterAll
@@ -39,9 +39,9 @@ class GrpcChannelSpec(config: Config = ConfigFactory.load())
     with Matchers
     with BeforeAndAfterAll
     with ScalaFutures {
-  implicit val system = ActorSystem("GrpcChannelSpec", config)
-  implicit val mat = SystemMaterializer(system).materializer
-  implicit val ec = system.dispatcher
+  implicit val system: ActorSystem = ActorSystem("GrpcChannelSpec", config)
+  implicit val mat: Materializer = SystemMaterializer(system).materializer
+  implicit val ec: ExecutionContext = system.dispatcher
 
   override implicit val patienceConfig: PatienceConfig = PatienceConfig(5.seconds, Span(10, org.scalatest.time.Millis))
 
