@@ -12,6 +12,7 @@
       <description>Generate Apache Pekko gRPC model and service code</description>
       <implementation>org.apache.pekko.grpc.maven.GenerateMojo</implementation>
       <instantiationStrategy>singleton</instantiationStrategy>
+      <threadSafe>true</threadSafe>
       <phase>generate-sources</phase>
 
       <parameters>
@@ -103,6 +104,7 @@
       <description>Generate test Apache Pekko gRPC model and service code</description>
       <implementation>org.apache.pekko.grpc.maven.TestGenerateMojo</implementation>
       <instantiationStrategy>singleton</instantiationStrategy>
+      <threadSafe>true</threadSafe>
       <phase>generate-test-sources</phase>
 
       <parameters>
