@@ -15,14 +15,14 @@ import sbt.plugins.JvmPlugin
 import org.apache.pekko.grpc.Dependencies.Versions.{ scala212, scala213 }
 import com.lightbend.paradox.projectinfo.ParadoxProjectInfoPluginKeys.projectInfoVersion
 import com.typesafe.tools.mima.plugin.MimaKeys._
-import org.mdedetrich.apache.sonatype.SonatypeApachePlugin
+import org.mdedetrich.apache.sonatype.ApacheSonatypePlugin
 import sbtdynver.DynVerPlugin
 import sbtdynver.DynVerPlugin.autoImport.dynverSonatypeSnapshots
 
 object Common extends AutoPlugin {
   override def trigger = allRequirements
 
-  override def requires = JvmPlugin && SonatypeApachePlugin && DynVerPlugin
+  override def requires = JvmPlugin && ApacheSonatypePlugin && DynVerPlugin
 
   private val consoleDisabledOptions = Seq("-Xfatal-warnings", "-Ywarn-unused", "-Ywarn-unused-import")
 
