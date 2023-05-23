@@ -24,11 +24,11 @@ object Dependencies {
 
     // We don't force Pekko updates because downstream projects can upgrade
     // themselves. For more information see
-    // https://doc.akka.io//docs/akka/current/project/downstream-upgrade-strategy.html
+    // https://pekko.apache.org//docs/pekko/current/project/downstream-upgrade-strategy.html
     val pekko = "0.0.0+26656-898c6970-SNAPSHOT"
-    val akkaBinary = "2.6"
+    val pekkoBinary = "current"
     val pekkoHttp = "0.0.0+4345-fa1cb9cb-SNAPSHOT"
-    val akkaHttpBinary = "10.2"
+    val pekkoHttpBinary = "current"
 
     val grpc = "1.48.1" // checked synced by VersionSyncCheckPlugin
     // Even referenced explicitly in the sbt-plugin's sbt-tests

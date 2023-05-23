@@ -1,6 +1,6 @@
 # Consuming Services (Client)
 
-Get our Quickstart project (available for [Scala](https://developer.lightbend.com/start/?group=akka&project=akka-grpc-quickstart-scala) and [Java](https://developer.lightbend.com/start/?group=akka&project=akka-grpc-quickstart-java)) to get started quickly.
+See the Akka gRPC Quickstart project (available for [Scala](https://developer.lightbend.com/start/?group=akka&project=akka-grpc-quickstart-scala) and [Java](https://developer.lightbend.com/start/?group=akka&project=akka-grpc-quickstart-java)) to get started quickly.
 
 @@ toc
 

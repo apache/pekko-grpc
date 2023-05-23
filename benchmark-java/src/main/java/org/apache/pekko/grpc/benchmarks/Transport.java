@@ -23,7 +23,7 @@ import java.net.SocketAddress;
  * All of the supported transports.
  */
 public enum Transport {
-  AKKA_HTTP(true, "The Akka HTTP transport.", SocketAddressValidator.INET);
+  PEKKO_HTTP(true, "The Apache Pekko HTTP transport.", SocketAddressValidator.INET);
 
   public final boolean tlsSupported;
   final String description;

@@ -188,9 +188,9 @@ lazy val docs = Project(id = "docs", base = file("docs"))
     makeSite := makeSite.dependsOn(LocalRootProject / ScalaUnidoc / doc).value,
     pekkoParadoxGithub := Some("https://github.com/apache/incubator-pekko-grpc"),
     previewPath := (Paradox / siteSubdirName).value,
-    Preprocess / siteSubdirName := s"api/akka-grpc/${projectInfoVersion.value}",
+    Preprocess / siteSubdirName := s"api/pekko-grpc/${projectInfoVersion.value}",
     Preprocess / sourceDirectory := (LocalRootProject / ScalaUnidoc / unidoc / target).value,
-    Paradox / siteSubdirName := s"docs/akka-grpc/${projectInfoVersion.value}",
+    Paradox / siteSubdirName := s"docs/pekko-grpc/${projectInfoVersion.value}",
     // Make sure code generation is run before paradox:
     (Compile / paradox) := (Compile / paradox).dependsOn(Compile / compile).value,
     paradoxGroups := Map("Language" -> Seq("Java", "Scala"), "Buildtool" -> Seq("sbt", "Gradle", "Maven")),
@@ -206,12 +206,12 @@ lazy val docs = Project(id = "docs", base = file("docs"))
       "scaladoc.pekko.base_url" -> "https://pekko.apache.org/docs/pekko-grpc/current/",
       "javadoc.pekko.base_url" -> "https://pekko.apache.org/docs/pekko-grpc/current/",
       // Apache Pekko HTTP
-      "extref.pekko-http.base_url" -> s"https://doc.akka.io/docs/akka-http/${Dependencies.Versions.akkaHttpBinary}/%s",
-      "scaladoc.pekko-http.base_url" -> s"https://doc.akka.io/api/akka-http/${Dependencies.Versions.akkaHttpBinary}/",
-      "javadoc.pekko-http.base_url" -> s"https://doc.akka.io/japi/akka-http/${Dependencies.Versions.akkaHttpBinary}/",
+      "extref.pekko-http.base_url" -> s"https://pekko.apache.org/docs/pekko-http/${Dependencies.Versions.pekkoHttpBinary}/%s",
+      "scaladoc.pekko-http.base_url" -> s"https://pekko.apache.org/api/pekko-http/${Dependencies.Versions.pekkoHttpBinary}/",
+      "javadoc.pekko-http.base_url" -> s"https://pekko.apache.org/japi/pekkp-http/${Dependencies.Versions.pekkoHttpBinary}/",
       // Apache Pekko gRPC
-      "scaladoc.akka.grpc.base_url" -> s"/${(Preprocess / siteSubdirName).value}/",
-      "javadoc.akka.grpc.base_url" -> "" // @apidoc links to Scaladoc
+      "scaladoc.org.apache.pekko.grpc.base_url" -> s"/${(Preprocess / siteSubdirName).value}/",
+      "javadoc.org.apache.pekko.grpc.base_url" -> "" // @apidoc links to Scaladoc
     ),
     apidocRootPackage := "org.apache.pekko",
     resolvers += Resolver.jcenterRepo,

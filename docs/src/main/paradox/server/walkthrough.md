@@ -123,7 +123,7 @@ Gradle
 
 Maven
 :   ```
-mvn akka-grpc:generate
+mvn pekko-grpc:generate
     ```
 
 From the above definition, Pekko gRPC generates interfaces that look like this:

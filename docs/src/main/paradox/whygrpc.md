@@ -40,7 +40,7 @@ That makes it well-suited for:
 ## gRPC vs Pekko Remoting
 
 * While Pekko Remoting allows exchanging messages between Pekko ActorSystems transparently, it still requires significant effort to support efficient and compatible message serialization.
-  Large messages can clog the message transport. In contrast to gRPC, streaming is not first-class but needs to be built on top of message passing (e.g. by using [StreamRefs](https://doc.akka.io/docs/akka/current/stream/stream-refs.html)).
+  Large messages can clog the message transport. In contrast to gRPC, streaming is not first-class but needs to be built on top of message passing (e.g. by using [StreamRefs](https://pekko.apache.org/docs/pekko/current/stream/stream-refs.html)).
 * Pekko Remoting's wire protocol might change with Pekko versions and configuration, so you need to make sure that all parts of your system run similar enough versions. gRPC on the other
   hand guarantees longer-term stability of the protocol, so gRPC clients and services are more loosely coupled.
 * Where message passing as with Pekko Remoting is fire-and-forget which decouples service execution, any kind of RPC requires waiting until the remote procedure call is answered.

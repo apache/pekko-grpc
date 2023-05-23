@@ -4,7 +4,7 @@ Benchmark test project that is using the same approach and proto messages as
 [grpc-java](https://github.com/grpc/grpc-java/tree/master/benchmarks).
 
 It is compatible with grpc-java and it's possible to test combinations of client and server from
-grpc-java and akka-grpc.
+grpc-java and pekko-grpc.
 
 ## How to run
 
