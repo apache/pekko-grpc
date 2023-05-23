@@ -33,7 +33,7 @@ import static java.lang.Integer.parseInt;
 class ServerConfiguration implements Configuration {
   private static final ServerConfiguration DEFAULT = new ServerConfiguration();
 
-  Transport transport = Transport.AKKA_HTTP;
+  Transport transport = Transport.PEKKO_HTTP;
   boolean tls;
   SocketAddress address;
 
@@ -82,7 +82,7 @@ class ServerConfiguration implements Configuration {
    * All of the supported transports.
    */
   public enum Transport {
-    AKKA_HTTP(true, "The Akka HTTP transport.", SocketAddressValidator.INET);
+    PEKKO_HTTP(true, "The Apache Pekko HTTP transport.", SocketAddressValidator.INET);
 
     private final boolean tlsSupported;
     private final String description;

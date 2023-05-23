@@ -12,7 +12,7 @@ toolkit.
 
 ## Project Status
 
-This library is ready to be used in production, but API's and build system plugins are still expected to be improved and [may change](https://doc.akka.io/docs/akka/current/common/may-change.html).
+This library is ready to be used in production, but API's and build system plugins are still expected to be improved and [may change](https://pekko.apache.org/docs/pekko/current/common/may-change.html).
 
 The API on both sides (Client and Server) is a simple Pekko Streams-based one.
 
@@ -49,10 +49,6 @@ The project is split up in a number of subprojects:
 
 Additionally, 'plugin-tester-java' and 'plugin-tester-scala' contain an example
 project in Java and Scala respectively, with both sbt and Gradle configurations.
-
-## Compatibility & support
-
-If used with JDK 8 prior to version 1.8.0_251 you must add an [ALPN agent](https://doc.akka.io/docs/akka-http/10.1/server-side/http2.html#application-layer-protocol-negotiation-alpn-).
 
 ## License
 

@@ -177,6 +177,6 @@ Gradle
 
 Maven
 :   ```
-mvn akka-grpc:generate compile exec:java -Dexec.mainClass=io.grpc.examples.helloworld.GreeterClient
+mvn pekko-grpc:generate compile exec:java -Dexec.mainClass=io.grpc.examples.helloworld.GreeterClient
 ```
 

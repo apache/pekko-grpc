@@ -68,7 +68,7 @@ object Common extends AutoPlugin {
       "-sourcepath",
       (ThisBuild / baseDirectory).value.toString,
       "-skip-packages",
-      "akka.pattern:" + // for some reason Scaladoc creates this
+      "org.apache.pekko.pattern:" + // for some reason Scaladoc creates this
       "templates",
       "-doc-source-url", {
         val branch = if (isSnapshot.value) "main" else s"v${version.value}"

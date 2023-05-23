@@ -6,7 +6,7 @@ The project layout is roughly as follows:
 
 * `src/main/*`: code shared between this subproject and the `00-interop-tests` scripted tests
 * `src/main/*/io/grpc/testing/integration2`: infrastructure taken from grpc-java, but generalized to also allow invoking the Apache Pekko gRPC implementation
-* `src/*/*/akka/grpc/interop`: `grpc-interop-testing` tests
+* `src/*/*/org/apache/pekko/grpc/interop`: `grpc-interop-testing` tests
 * `src/test/scala/org/apache/pekko/grpc/scaladsl` other tests that require code generation
 
 ## grpc-interop-testing tests
