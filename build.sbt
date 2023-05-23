@@ -206,9 +206,9 @@ lazy val docs = Project(id = "docs", base = file("docs"))
       "scaladoc.pekko.base_url" -> "https://pekko.apache.org/docs/pekko-grpc/current/",
       "javadoc.pekko.base_url" -> "https://pekko.apache.org/docs/pekko-grpc/current/",
       // Apache Pekko HTTP
-      "extref.pekko-http.base_url" -> s"https://pekko.apache.org/docs/pekko-http/${Dependencies.Versions.akkaHttpBinary}/%s",
-      "scaladoc.pekko-http.base_url" -> s"https://pekko.apache.org/api/pekko-http/${Dependencies.Versions.akkaHttpBinary}/",
-      "javadoc.pekko-http.base_url" -> s"https://pekko.apache.org/japi/pekkp-http/${Dependencies.Versions.akkaHttpBinary}/",
+      "extref.pekko-http.base_url" -> s"https://pekko.apache.org/docs/pekko-http/${Dependencies.Versions.pekkoHttpBinary}/%s",
+      "scaladoc.pekko-http.base_url" -> s"https://pekko.apache.org/api/pekko-http/${Dependencies.Versions.pekkoHttpBinary}/",
+      "javadoc.pekko-http.base_url" -> s"https://pekko.apache.org/japi/pekkp-http/${Dependencies.Versions.pekkoHttpBinary}/",
       // Apache Pekko gRPC
       "scaladoc.org.apache.pekko.grpc.base_url" -> s"/${(Preprocess / siteSubdirName).value}/",
       "javadoc.org.apache.pekko.grpc.base_url" -> "" // @apidoc links to Scaladoc
