@@ -180,7 +180,7 @@ lazy val docs = Project(id = "docs", base = file("docs"))
 // Make sure code generation is run:
   .dependsOn(pluginTesterScala)
   .dependsOn(pluginTesterJava)
-  .enablePlugins(PekkoParadoxPlugin, ParadoxSitePlugin, PreprocessPlugin, PublishRsyncPlugin)
+  .enablePlugins(PekkoParadoxPlugin, ParadoxSitePlugin, PreprocessPlugin)
   .disablePlugins(MimaPlugin)
   .settings(
     name := s"$pekkoPrefix-docs",
@@ -213,10 +213,7 @@ lazy val docs = Project(id = "docs", base = file("docs"))
       "scaladoc.org.apache.pekko.grpc.base_url" -> s"/${(Preprocess / siteSubdirName).value}/",
       "javadoc.org.apache.pekko.grpc.base_url" -> "" // @apidoc links to Scaladoc
     ),
-    apidocRootPackage := "org.apache.pekko",
-    resolvers += Resolver.jcenterRepo,
-    publishRsyncArtifacts += makeSite.value -> "www/",
-    publishRsyncHost := "akkarepo@gustav.akka.io")
+    apidocRootPackage := "org.apache.pekko")
   .settings(
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
     scalaVersion := Dependencies.Versions.CrossScalaForLib.head)
