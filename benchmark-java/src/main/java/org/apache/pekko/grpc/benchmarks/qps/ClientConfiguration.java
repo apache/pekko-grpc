@@ -41,7 +41,7 @@ import static java.util.Arrays.asList;
 public class ClientConfiguration implements Configuration {
   private static final ClientConfiguration DEFAULT = new ClientConfiguration();
 
-  Transport transport = Transport.AKKA_HTTP;
+  Transport transport = Transport.PEKKO_HTTP;
   boolean tls = false;
   // currently we only support testca
   boolean testca = true;
