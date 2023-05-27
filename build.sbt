@@ -16,7 +16,7 @@ lazy val mkBatAssemblyTask = taskKey[File]("Create a Windows bat assembly")
 // gradle plugin compatibility (avoid `+` in snapshot versions)
 (ThisBuild / dynverSeparator) := "-"
 
-ThisBuild / resolvers += "Apache Snapshots".at("https://repository.apache.org/content/repositories/snapshots/")
+ThisBuild / resolvers += Resolver.ApacheMavenSnapshotsRepo
 ThisBuild / resolvers ++= Resolver.sonatypeOssRepos("snapshot") // TODO Remove when proper release of pekko-http-cors is made
 
 val pekkoGrpcCodegenId = s"$pekkoPrefix-codegen"
@@ -143,9 +143,10 @@ lazy val interopTests = Project(id = "interop-tests", base = file("interop-tests
     ReflectiveCodeGen.extraGenerators := Seq("ScalaMarshallersCodeGenerator"),
     ReflectiveCodeGen.codeGeneratorSettings ++= Seq("server_power_apis"),
     PB.protocVersion := Dependencies.Versions.googleProtobuf,
-    // This project should use 'publish/skip := true', but we need
-    // to be able to `publishLocal` to run the interop tests as an
-    // sbt scripted test. At least skip scaladoc generation though.
+    // We need to be able to publish locally in order for sbt interopt tests to work
+    // however this sbt project should not be published to an actual repository
+    publish / skip := true,
+    publishLocal / skip := false,
     Compile / doc := (Compile / doc / target).value)
   .settings(inConfig(Test)(Seq(
     reStart / mainClass := (Test / run / mainClass).value, {

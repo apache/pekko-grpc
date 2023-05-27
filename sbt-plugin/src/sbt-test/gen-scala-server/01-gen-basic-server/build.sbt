@@ -2,7 +2,7 @@
 // https://github.com/akka/akka-grpc/pull/1279
 scalaVersion := "2.12.17"
 
-resolvers += "Apache Snapshots".at("https://repository.apache.org/content/repositories/snapshots/")
+resolvers += Resolver.ApacheMavenSnapshotsRepo
 
 scalacOptions += "-Xfatal-warnings"
 
