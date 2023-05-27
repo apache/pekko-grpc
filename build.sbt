@@ -7,6 +7,7 @@ import sbt.Keys.scalaVersion
 
 ThisBuild / apacheSonatypeProjectProfile := "pekko"
 sourceDistName := "incubating-pekko-grpc"
+ThisBuild / versionScheme := Some("semver-spec")
 
 val pekkoPrefix = "pekko-grpc"
 val pekkoGrpcRuntimeName = s"$pekkoPrefix-runtime"
