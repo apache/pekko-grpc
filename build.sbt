@@ -225,6 +225,7 @@ lazy val pluginTesterScala = Project(id = "plugin-tester-scala", base = file("pl
   .settings(
     name := s"$pekkoPrefix-plugin-tester-scala",
     (publish / skip) := true,
+    Compile / doc / sources := Seq(),
     fork := true,
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
     scalaVersion := scala212,
@@ -237,6 +238,7 @@ lazy val pluginTesterJava = Project(id = "plugin-tester-java", base = file("plug
   .settings(
     name := s"$pekkoPrefix-plugin-tester-java",
     (publish / skip) := true,
+    Compile / doc / sources := Seq(),
     fork := true,
     ReflectiveCodeGen.generatedLanguages := Seq("Java"),
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
