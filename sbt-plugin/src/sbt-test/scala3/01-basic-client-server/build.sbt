@@ -1,6 +1,6 @@
 scalaVersion := "3.3.0"
 
-resolvers += "Apache Snapshots".at("https://repository.apache.org/content/repositories/snapshots/")
+resolvers += Resolver.ApacheMavenSnapshotsRepo
 
 scalacOptions += "-Xfatal-warnings"
 

@@ -20,7 +20,7 @@ addSbtPlugin("org.mdedetrich" % "sbt-apache-sonatype" % "0.1.9")
 addSbtPlugin("com.github.pjfanning" % "sbt-source-dist" % "0.1.5")
 
 // allow access to snapshots for pekko-sbt-paradox
-resolvers += "Apache Nexus Snapshots".at("https://repository.apache.org/content/repositories/snapshots/")
+resolvers += Resolver.ApacheMavenSnapshotsRepo
 
 // See https://github.com/akka/akka-http/pull/3995 and https://github.com/akka/akka-http/pull/3995#issuecomment-1026978593
 libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % "always"
