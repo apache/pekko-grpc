@@ -213,7 +213,7 @@ final class GrpcClientSettings private (
   require(
     if (sslContext.isDefined) sslProvider.forall(_ == SslProvider.JDK) else true,
     "When sslContext is configured, sslProvider must not set to something different than JDK")
-  require(backend == "netty" || backend == "pekko-http", "backend should be 'netty' or 'pekko-http'");
+  require(backend == "netty" || backend == "pekko-http", "backend should be 'netty' or 'pekko-http'")
 
   /**
    * If using ServiceDiscovery and no port is returned use this one.
