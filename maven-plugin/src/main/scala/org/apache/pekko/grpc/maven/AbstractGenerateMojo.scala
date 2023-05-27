@@ -153,7 +153,7 @@ abstract class AbstractGenerateMojo @Inject() (buildContext: BuildContext) exten
       if (protoDir.exists()) {
         directoryFound = true
         // generated sources should be compiled
-        val generatedSourcesDir = s"${outputDirectory}/pekko-grpc${chosenLanguage.targetDirSuffix}"
+        val generatedSourcesDir = s"$outputDirectory/pekko-grpc${chosenLanguage.targetDirSuffix}"
         val compileSourceRoot = {
           val generatedSourcesFile = new File(generatedSourcesDir)
           if (!generatedSourcesFile.isAbsolute()) {
