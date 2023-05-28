@@ -1,6 +1,7 @@
 import org.apache.pekko.grpc.Dependencies
 import org.apache.pekko.grpc.Dependencies.Versions.{ scala212, scala213 }
 import org.apache.pekko.grpc.ProjectExtensions._
+import org.apache.pekko.grpc.NoPublish
 import org.apache.pekko.grpc.build.ReflectiveCodeGen
 import com.typesafe.tools.mima.core._
 import sbt.Keys.scalaVersion
@@ -146,7 +147,6 @@ lazy val interopTests = Project(id = "interop-tests", base = file("interop-tests
     PB.protocVersion := Dependencies.Versions.googleProtobuf,
     // We need to be able to publish locally in order for sbt interopt tests to work
     // however this sbt project should not be published to an actual repository
-    publish / skip := true,
     publishLocal / skip := false,
     Compile / doc := (Compile / doc / target).value)
   .settings(inConfig(Test)(Seq(
@@ -166,7 +166,7 @@ lazy val interopTests = Project(id = "interop-tests", base = file("interop-tests
         }
         .dependsOn(Compile / products)
         .evaluated
-    })))
+    }))).enablePlugins(NoPublish)
 
 lazy val benchmarks = Project(id = "benchmarks", base = file("benchmarks"))
   .dependsOn(runtime)
@@ -175,8 +175,8 @@ lazy val benchmarks = Project(id = "benchmarks", base = file("benchmarks"))
   .settings(
     name := s"$pekkoPrefix-benchmarks",
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
-    scalaVersion := Dependencies.Versions.CrossScalaForLib.head,
-    (publish / skip) := true)
+    scalaVersion := Dependencies.Versions.CrossScalaForLib.head)
+  .enablePlugins(NoPublish)
 
 lazy val docs = Project(id = "docs", base = file("docs"))
 // Make sure code generation is run:
@@ -186,7 +186,6 @@ lazy val docs = Project(id = "docs", base = file("docs"))
   .disablePlugins(MimaPlugin)
   .settings(
     name := s"$pekkoPrefix-docs",
-    publish / skip := true,
     makeSite := makeSite.dependsOn(LocalRootProject / ScalaUnidoc / doc).value,
     pekkoParadoxGithub := Some("https://github.com/apache/incubator-pekko-grpc"),
     previewPath := (Paradox / siteSubdirName).value,
@@ -219,33 +218,32 @@ lazy val docs = Project(id = "docs", base = file("docs"))
   .settings(
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
     scalaVersion := Dependencies.Versions.CrossScalaForLib.head)
+  .enablePlugins(NoPublish)
 
 lazy val pluginTesterScala = Project(id = "plugin-tester-scala", base = file("plugin-tester-scala"))
   .disablePlugins(MimaPlugin)
   .settings(Dependencies.pluginTester)
   .settings(
     name := s"$pekkoPrefix-plugin-tester-scala",
-    (publish / skip) := true,
-    Compile / doc / sources := Seq(),
     fork := true,
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
     scalaVersion := scala212,
     ReflectiveCodeGen.codeGeneratorSettings ++= Seq("flat_package", "server_power_apis"))
   .pluginTestingSettings
+  .enablePlugins(NoPublish)
 
 lazy val pluginTesterJava = Project(id = "plugin-tester-java", base = file("plugin-tester-java"))
   .disablePlugins(MimaPlugin)
   .settings(Dependencies.pluginTester)
   .settings(
     name := s"$pekkoPrefix-plugin-tester-java",
-    (publish / skip) := true,
-    Compile / doc / sources := Seq(),
     fork := true,
     ReflectiveCodeGen.generatedLanguages := Seq("Java"),
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
     scalaVersion := scala212,
     ReflectiveCodeGen.codeGeneratorSettings ++= Seq("server_power_apis"))
   .pluginTestingSettings
+  .enablePlugins(NoPublish)
 
 lazy val root = Project(id = "pekko-grpc", base = file("."))
   .enablePlugins(ScalaUnidocPlugin)
@@ -263,7 +261,6 @@ lazy val root = Project(id = "pekko-grpc", base = file("."))
     docs)
   .settings(
     name := s"$pekkoPrefix-root",
-    (publish / skip) := true,
     (Compile / headerCreate / unmanagedSources) := (baseDirectory.value / "project").**("*.scala").get,
     // unidoc combines sources and jars from all subprojects and that
     // might include some incompatible ones. Depending on the
@@ -278,3 +275,4 @@ lazy val root = Project(id = "pekko-grpc", base = file("."))
     // can then decide which scalaVersion and crossCalaVersions they use.
     crossScalaVersions := Nil,
     scalaVersion := scala212)
+  .enablePlugins(NoPublish)
