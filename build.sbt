@@ -18,7 +18,9 @@ lazy val mkBatAssemblyTask = taskKey[File]("Create a Windows bat assembly")
 // gradle plugin compatibility (avoid `+` in snapshot versions)
 (ThisBuild / dynverSeparator) := "-"
 
+// TODO: Remove when Pekko has a proper release
 ThisBuild / resolvers += Resolver.ApacheMavenSnapshotsRepo
+ThisBuild / updateOptions := updateOptions.value.withLatestSnapshots(false)
 ThisBuild / resolvers ++= Resolver.sonatypeOssRepos("snapshot") // TODO Remove when proper release of pekko-http-cors is made
 
 val pekkoGrpcCodegenId = s"$pekkoPrefix-codegen"
