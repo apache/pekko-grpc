@@ -1,6 +1,6 @@
 # Pekko HTTP interop
 
-Pekko gRPC is built on top of [Pekko HTTP](https://pekko.apache.org/docs/pekko-http).
+Pekko gRPC is built on top of @extref[Pekko HTTP](pekko-http:).
 This means it is possible to leverage the Pekko HTTP API's to create more
 complicated services, for example serving non-gRPC endpoints next to
 gRPC endpoints or adding additional behavior around your gRPC routes.

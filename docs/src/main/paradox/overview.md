@@ -23,7 +23,7 @@ It features:
     - @extref[Pekko HTTP/2 support](pekko-http:server-side/http2.html) for the server side and 
     - `grpc-netty-shaded` for the client side.
  * Support for @ref[sbt](buildtools/sbt.md), @ref[gradle](buildtools/gradle.md), @ref[Maven](buildtools/maven.md),
-   and the [Play Framework](https://developer.lightbend.com/docs/play-grpc/current/).
+   and the [Play Framework](https://github.com/playframework/play-grpc).
 
 ## Project Information
 
