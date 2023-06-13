@@ -66,7 +66,7 @@ lazy val runtime = Project(id = "runtime", base = file("runtime"))
     AutomaticModuleName.settings("pekko.grpc.runtime"),
     ReflectiveCodeGen.generatedLanguages := Seq("Scala"),
     ReflectiveCodeGen.extraGenerators := Seq("ScalaMarshallersCodeGenerator"),
-    PB.protocVersion := Dependencies.Versions.googleProtobuf)
+    PB.protocVersion := Dependencies.Versions.protoc)
   .enablePlugins(org.apache.pekko.grpc.build.ReflectiveCodeGen)
   .enablePlugins(ReproducibleBuildsPlugin)
 

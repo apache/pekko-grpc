@@ -36,6 +36,7 @@ object Dependencies {
     // If changing this, remember to update protoc plugin version to align in
     // maven-plugin/src/main/maven/plugin.xml and org.apache.pekko.grpc.sbt.PekkoGrpcPlugin
     val googleProtobuf = "3.21.7" // checked synced by VersionSyncCheckPlugin
+    val protoc = "3.20.3" // using an older version than `googleProtobuf` because of https://github.com/protocolbuffers/protobuf-javascript/issues/105
 
     val scalaTest = "3.2.15"
 
