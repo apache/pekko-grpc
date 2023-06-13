@@ -54,7 +54,7 @@ class PekkoDiscoveryNameResolverSpec
 
     "support serving a static host/port" in {
       // Unfortunately it needs to be an actually resolvable address...
-      val host = "akka.io"
+      val host = "pekko.io"
       val port = 4040
       val resolver = PekkoDiscoveryNameResolver(GrpcClientSettings.connectToServiceAt(host, port))
       val probe = new NameResolverListenerProbe()
