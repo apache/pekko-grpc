@@ -46,7 +46,7 @@ class PekkoDiscoveryNameResolverProviderSpec
     with Matchers
     with ScalaFutures {
 
-  implicit override val patienceConfig =
+  implicit override val patienceConfig: PatienceConfig =
     PatienceConfig(timeout = scaled(Span(2, Seconds)), interval = scaled(Span(5, Millis)))
 
   "PekkoDiscoveryNameResolverProviderSpec" should {
