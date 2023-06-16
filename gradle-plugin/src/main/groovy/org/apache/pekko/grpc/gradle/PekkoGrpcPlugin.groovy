@@ -182,7 +182,7 @@ class PekkoGrpcPlugin implements Plugin<Project> {
     }
 
     String autodetectScala() {
-        def cfg = project.configurations.compileClasspath.copyRecursive()
+        def cfg = project.configurations.compileClasspath.copyRecursive(duplicatesStrategy=DuplicateStrategy.WARN)
 
         def scalaVersions = cfg.incoming.resolutionResult.allDependencies
             .findAll { it.requested.class != DefaultProjectComponentSelector }
