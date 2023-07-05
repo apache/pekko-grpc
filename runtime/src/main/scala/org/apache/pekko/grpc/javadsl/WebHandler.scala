@@ -21,6 +21,8 @@ import pekko.NotUsed
 import pekko.actor.ClassicActorSystemProvider
 import pekko.annotation.ApiMayChange
 import pekko.grpc.javadsl.ServiceHandler.{ concatOrNotFound, unsupportedMediaType }
+import pekko.http.cors.javadsl.settings.CorsSettings
+import pekko.http.cors.javadsl.CorsDirectives
 import pekko.http.javadsl.marshalling.Marshaller
 import pekko.http.javadsl.model.{ HttpRequest, HttpResponse }
 import pekko.http.javadsl.server.Route
@@ -32,8 +34,6 @@ import pekko.japi.function.{ Function => JFunction }
 import pekko.stream.Materializer
 import pekko.stream.javadsl.{ Keep, Sink, Source }
 import pekko.util.ConstantFun
-import ch.megard.pekko.http.cors.javadsl.settings.CorsSettings
-import ch.megard.pekko.http.cors.javadsl.CorsDirectives
 
 @ApiMayChange
 object WebHandler {
