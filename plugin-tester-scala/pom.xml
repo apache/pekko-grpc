@@ -13,8 +13,8 @@
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
-    <pekko.version>0.0.0+26669-ec5b6764-SNAPSHOT</pekko.version>
-    <pekko.http.cors.version>0.0.0-SNAPSHOT</pekko.http.cors.version>
+    <pekko.version>1.0.0-RC3</pekko.version>
+    <pekko.http.version>0.0.0+4456-9a4c0fc7-SNAPSHOT</pekko.http.version>
     <grpc.version>1.48.1</grpc.version> <!-- checked synced by VersionSyncCheckPlugin -->
     <project.encoding>UTF-8</project.encoding>
   </properties>
@@ -25,11 +25,11 @@
       <name>Apache Snapshots Repository</name>
       <url>https://repository.apache.org/content/repositories/snapshots/</url>
     </repository>
-    <!-- TODO Remove when proper release of pekko-http-cors is made -->
+    <!-- TODO remove this resolver when we start using released Pekko jars -->
     <repository>
-      <id>sonatype-snapshots</id>
-      <name>Sonatype Snapshots Repository</name>
-      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+      <id>apache-staging</id>
+      <name>Apache Staging Repository</name>
+      <url>https://repository.apache.org/content/groups/staging/</url>
     </repository>
   </repositories>
 
@@ -40,9 +40,9 @@
       <version>${pekko.grpc.project.version}</version>
     </dependency>
     <dependency>
-      <groupId>ch.megard</groupId>
+      <groupId>org.apache.pekko</groupId>
       <artifactId>pekko-http-cors_2.12</artifactId>
-      <version>${pekko.http.cors.version}</version>
+      <version>${pekko.http.version}</version>
     </dependency>
 
     <dependency>

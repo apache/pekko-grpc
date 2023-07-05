@@ -1,6 +1,8 @@
 scalaVersion := "3.3.0"
 
+// TODO remove these resolvers when we start using released Pekko jars
 resolvers += Resolver.ApacheMavenSnapshotsRepo
+resolvers += "apache-staging".at("https://repository.apache.org/content/groups/staging/")
 
 scalacOptions += "-Xfatal-warnings"
 

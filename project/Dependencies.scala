@@ -26,9 +26,9 @@ object Dependencies {
     // We don't force Pekko updates because downstream projects can upgrade
     // themselves. For more information see
     // https://pekko.apache.org//docs/pekko/current/project/downstream-upgrade-strategy.html
-    val pekko = "0.0.0+26669-ec5b6764-SNAPSHOT"
+    val pekko = "1.0.0-RC3"
     val pekkoBinary = "current"
-    val pekkoHttp = "0.0.0+4411-6fe04045-SNAPSHOT"
+    val pekkoHttp = "0.0.0+4456-9a4c0fc7-SNAPSHOT"
     val pekkoHttpBinary = "current"
 
     val grpc = "1.48.1" // checked synced by VersionSyncCheckPlugin
@@ -46,10 +46,9 @@ object Dependencies {
     val pekkoStream = "org.apache.pekko" %% "pekko-stream" % Versions.pekko
     val pekkoHttp = "org.apache.pekko" %% "pekko-http" % Versions.pekkoHttp
     val pekkoHttpCore = "org.apache.pekko" %% "pekko-http-core" % Versions.pekkoHttp
+    val pekkoHttpCors = "org.apache.pekko" %% "pekko-http-cors" % Versions.pekkoHttp
     val pekkoDiscovery = "org.apache.pekko" %% "pekko-discovery" % Versions.pekko
     val pekkoSlf4j = "org.apache.pekko" %% "pekko-slf4j" % Versions.pekko
-
-    val pekkoHttpCors = "ch.megard" %% "pekko-http-cors" % "0.0.0-SNAPSHOT" // Apache v2
 
     val scalapbCompilerPlugin = "com.thesamet.scalapb" %% "compilerplugin" % scalapb.compiler.Version.scalapbVersion
     val scalapbRuntime = ("com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion)
@@ -115,9 +114,7 @@ object Dependencies {
     Compile.pekkoHttpCore,
     Compile.pekkoHttp,
     Compile.pekkoDiscovery,
-    // TODO Remove exclusion rule when proper release of pekko-http-cors is made
-    (Compile.pekkoHttpCors % "provided").excludeAll(
-      "org.apache.pekko" %% "pekko-http"),
+    Compile.pekkoHttpCors,
     Compile.pekkoHttp % "provided",
     Test.pekkoTestkit,
     Test.pekkoStreamTestkit,
@@ -151,9 +148,7 @@ object Dependencies {
   val pluginTester = l ++= Seq(
     // usually automatically added by `suggestedDependencies`, which doesn't work with ReflectiveCodeGen
     Compile.grpcStub,
-    // TODO Remove exclusion rule when proper release of pekko-http-cors is made
-    Compile.pekkoHttpCors.excludeAll(
-      "org.apache.pekko" %% "pekko-http"),
+    Compile.pekkoHttpCors,
     Compile.pekkoHttp,
     Test.scalaTest,
     Test.scalaTestPlusJunit,

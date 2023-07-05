@@ -15,23 +15,24 @@ package org.apache.pekko.grpc.scaladsl
 
 import scala.collection.immutable
 import scala.concurrent.Future
+import com.typesafe.config.ConfigFactory
 import org.apache.pekko
-import pekko.actor.ClassicActorSystemProvider
+import pekko.actor.{ ActorSystem, ClassicActorSystemProvider }
 import pekko.annotation.ApiMayChange
+import pekko.http.cors.scaladsl.CorsDirectives.cors
+import pekko.http.cors.scaladsl.model.HttpHeaderRange
+import pekko.http.cors.scaladsl.settings.CorsSettings
 import pekko.http.javadsl.{ model => jmodel }
 import pekko.http.scaladsl.model.{ HttpMethods, HttpRequest, HttpResponse }
 import pekko.http.scaladsl.model.headers._
 import pekko.http.scaladsl.server.Route
 import pekko.http.scaladsl.server.directives.MarshallingDirectives.handleWith
-import ch.megard.pekko.http.cors.scaladsl.CorsDirectives.cors
-import ch.megard.pekko.http.cors.scaladsl.model.HttpHeaderRange
-import ch.megard.pekko.http.cors.scaladsl.settings.CorsSettings
 
 @ApiMayChange
 object WebHandler {
 
   /** Default CORS settings to use for grpc-web */
-  val defaultCorsSettings: CorsSettings = CorsSettings.defaultSettings
+  val defaultCorsSettings: CorsSettings = CorsSettings(ConfigFactory.load())
     .withAllowCredentials(true)
     .withAllowedMethods(immutable.Seq(HttpMethods.POST, HttpMethods.OPTIONS))
     .withExposedHeaders(immutable.Seq(headers.`Status`.name, headers.`Status-Message`.name, `Content-Encoding`.name))
@@ -60,7 +61,7 @@ object WebHandler {
   def grpcWebHandler(handlers: PartialFunction[HttpRequest, Future[HttpResponse]]*)(
       implicit as: ClassicActorSystemProvider,
       corsSettings: CorsSettings = defaultCorsSettings): HttpRequest => Future[HttpResponse] = {
-    implicit val system = as.classicSystem
+    implicit val system: ActorSystem = as.classicSystem
     val servicesHandler = ServiceHandler.concat(handlers: _*)
     Route.toFunction(cors(corsSettings) {
       handleWith(servicesHandler)
