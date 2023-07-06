@@ -42,9 +42,9 @@ object WebHandler {
    * Creates a `HttpRequest` to `HttpResponse` handler for gRPC services that can be used in
    * for example `Http().bindAndHandleAsync` for the generated partial function handlers:
    *  - The generated handler supports the `application/grpc-web` and `application/grpc-web-text` media types.
-   *  - CORS is implemented for handled servives, including pre-flight requests and request enforcement.
+   *  - CORS is implemented for handled services, including pre-flight requests and request enforcement.
    *  - If the request s not a CORS pre-flight request, and has an invalid media type, then a _415: Unsupported Media Type_ response is produced.
-   *  - Otherise if the request is not handled by one of the provided handlers, a _404: Not Found_ response is produced.
+   *  - Otherwise if the request is not handled by one of the provided handlers, a _404: Not Found_ response is produced.
    */
   def grpcWebHandler(
       handlers: util.List[JFunction[HttpRequest, CompletionStage[HttpResponse]]],
@@ -66,9 +66,9 @@ object WebHandler {
    * Creates a `HttpRequest` to `HttpResponse` handler for gRPC services that can be used in
    * for example `Http().bind` for the generated partial function handlers:
    *  - The generated handler supports the `application/grpc-web` and `application/grpc-web-text` media types.
-   *  - CORS is implemented for handled servives, including pre-flight requests and request enforcement.
+   *  - CORS is implemented for handled services, including pre-flight requests and request enforcement.
    *  - If the request s not a CORS pre-flight request, and has an invalid media type, then a _415: Unsupported Media Type_ response is produced.
-   *  - Otherise if the request is not handled by one of the provided handlers, a _404: Not Found_ response is produced.
+   *  - Otherwise if the request is not handled by one of the provided handlers, a _404: Not Found_ response is produced.
    */
   def grpcWebHandler(
       handlers: util.List[JFunction[HttpRequest, CompletionStage[HttpResponse]]],
