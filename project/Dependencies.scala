@@ -26,9 +26,9 @@ object Dependencies {
     // We don't force Pekko updates because downstream projects can upgrade
     // themselves. For more information see
     // https://pekko.apache.org//docs/pekko/current/project/downstream-upgrade-strategy.html
-    val pekko = "1.0.0-RC3"
+    val pekko = "1.0.0"
     val pekkoBinary = "current"
-    val pekkoHttp = "0.0.0+4456-9a4c0fc7-SNAPSHOT"
+    val pekkoHttp = "0.0.0+4468-963bd592-SNAPSHOT"
     val pekkoHttpBinary = "current"
 
     val grpc = "1.48.1" // checked synced by VersionSyncCheckPlugin

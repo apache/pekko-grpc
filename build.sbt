@@ -29,7 +29,6 @@ lazy val mkBatAssemblyTask = taskKey[File]("Create a Windows bat assembly")
 
 // TODO remove these resolvers when we start using released Pekko jars
 ThisBuild / resolvers += Resolver.ApacheMavenSnapshotsRepo
-ThisBuild / resolvers += "apache-staging".at("https://repository.apache.org/content/groups/staging/")
 ThisBuild / updateOptions := updateOptions.value.withLatestSnapshots(false)
 
 val pekkoGrpcCodegenId = s"$pekkoPrefix-codegen"

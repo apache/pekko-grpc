@@ -15,7 +15,7 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven-dependency-plugin.version>3.1.2</maven-dependency-plugin.version>
     <maven-exec-plugin.version>3.0.0</maven-exec-plugin.version>
-    <pekko.http.version>0.0.0+4456-9a4c0fc7-SNAPSHOT</pekko.http.version>
+    <pekko.http.version>0.0.0+4468-963bd592-SNAPSHOT</pekko.http.version>
     <grpc.version>1.48.1</grpc.version> <!-- checked synced by VersionSyncCheckPlugin -->
     <project.encoding>UTF-8</project.encoding>
   </properties>
@@ -25,12 +25,6 @@
       <id>apache-snapshots</id>
       <name>Apache Snapshots Repository</name>
       <url>https://repository.apache.org/content/repositories/snapshots/</url>
-    </repository>
-    <!-- TODO remove this resolver when we start using released Pekko jars -->
-    <repository>
-      <id>apache-staging</id>
-      <name>Apache Staging Repository</name>
-      <url>https://repository.apache.org/content/groups/staging/</url>
     </repository>
   </repositories>
 
