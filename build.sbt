@@ -16,7 +16,8 @@ import com.typesafe.tools.mima.core._
 import sbt.Keys.scalaVersion
 
 ThisBuild / apacheSonatypeProjectProfile := "pekko"
-sourceDistName := "incubating-pekko-grpc"
+sourceDistName := "apache-pekko-grpc"
+sourceDistIncubating := true
 ThisBuild / versionScheme := Some(VersionScheme.SemVerSpec)
 
 val pekkoPrefix = "pekko-grpc"
