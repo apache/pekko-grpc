@@ -1,5 +1,6 @@
 scalaVersion := "3.3.0"
 
+// TODO remove these resolvers when we start using released Pekko jars
 resolvers += Resolver.ApacheMavenSnapshotsRepo
 
 scalacOptions += "-Xfatal-warnings"

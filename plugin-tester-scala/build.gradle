@@ -8,7 +8,6 @@ pekkoGrpc {
 
 repositories {
   mavenLocal()
-  maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' } // TODO Remove when proper release of pekko-http-cors is made
 }
 
 def scalaFullVersion = "2.12.18"
@@ -16,10 +15,9 @@ def scalaVersion = org.gradle.util.VersionNumber.parse(scalaFullVersion)
 def scalaBinaryVersion = "${scalaVersion.major}.${scalaVersion.minor}"
 
 dependencies {
-  implementation group: 'ch.megard', name: "pekko-http-cors_${scalaBinaryVersion}", version: '0.0.0-SNAPSHOT'
+  implementation group: 'org.apache.pekko', name: "pekko-http-cors_${scalaBinaryVersion}", version: '0.0.0+4468-963bd592-SNAPSHOT'
   implementation "org.scala-lang:scala-library:${scalaFullVersion}"
-  testImplementation "org.apache.pekko:pekko-stream-testkit_${scalaBinaryVersion}:0.0.0+26669-ec5b6764-SNAPSHOT"
+  testImplementation "org.apache.pekko:pekko-stream-testkit_${scalaBinaryVersion}:1.0.0"
   testImplementation "org.scalatest:scalatest_${scalaBinaryVersion}:3.2.15"
   testImplementation "org.scalatestplus:junit-4-13_${scalaBinaryVersion}:3.2.15.0"
 }
-

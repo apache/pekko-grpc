@@ -1,3 +1,12 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * license agreements; and to You under the Apache License, version 2.0:
+ *
+ *   https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * This file is part of the Apache Pekko project, derived from Akka.
+ */
+
 import org.apache.pekko.grpc.Dependencies
 import org.apache.pekko.grpc.Dependencies.Versions.{ scala212, scala213 }
 import org.apache.pekko.grpc.ProjectExtensions._
@@ -7,8 +16,15 @@ import com.typesafe.tools.mima.core._
 import sbt.Keys.scalaVersion
 
 ThisBuild / apacheSonatypeProjectProfile := "pekko"
-sourceDistName := "incubating-pekko-grpc"
+sourceDistName := "apache-pekko-grpc"
+sourceDistIncubating := true
 ThisBuild / versionScheme := Some(VersionScheme.SemVerSpec)
+
+commands := commands.value.filterNot { command =>
+  command.nameOption.exists { name =>
+    name.contains("sonatypeRelease") || name.contains("sonatypeBundleRelease")
+  }
+}
 
 val pekkoPrefix = "pekko-grpc"
 val pekkoGrpcRuntimeName = s"$pekkoPrefix-runtime"
@@ -18,8 +34,9 @@ lazy val mkBatAssemblyTask = taskKey[File]("Create a Windows bat assembly")
 // gradle plugin compatibility (avoid `+` in snapshot versions)
 (ThisBuild / dynverSeparator) := "-"
 
+// TODO remove these resolvers when we start using released Pekko jars
 ThisBuild / resolvers += Resolver.ApacheMavenSnapshotsRepo
-ThisBuild / resolvers ++= Resolver.sonatypeOssRepos("snapshot") // TODO Remove when proper release of pekko-http-cors is made
+ThisBuild / updateOptions := updateOptions.value.withLatestSnapshots(false)
 
 val pekkoGrpcCodegenId = s"$pekkoPrefix-codegen"
 lazy val codegen = Project(id = "codegen", base = file("codegen"))
@@ -203,9 +220,9 @@ lazy val docs = Project(id = "docs", base = file("docs"))
       "canonical.base_url" -> "https://pekko.apache.org/docs/pekko-grpc/current",
       "scaladoc.scala.base_url" -> s"https://www.scala-lang.org/api/current/",
       // Apache Pekko
-      "extref.pekko.base_url" -> s"https://pekko.apache.org/docs/pekko-grpc/current/%s",
-      "scaladoc.pekko.base_url" -> "https://pekko.apache.org/docs/pekko-grpc/current/",
-      "javadoc.pekko.base_url" -> "https://pekko.apache.org/docs/pekko-grpc/current/",
+      "extref.pekko.base_url" -> s"https://pekko.apache.org/docs/pekko/current/%s",
+      "scaladoc.pekko.base_url" -> "https://pekko.apache.org/docs/pekko/current/",
+      "javadoc.pekko.base_url" -> "https://pekko.apache.org/docs/pekko/current/",
       // Apache Pekko HTTP
       "extref.pekko-http.base_url" -> s"https://pekko.apache.org/docs/pekko-http/${Dependencies.Versions.pekkoHttpBinary}/%s",
       "scaladoc.pekko-http.base_url" -> s"https://pekko.apache.org/api/pekko-http/${Dependencies.Versions.pekkoHttpBinary}/",

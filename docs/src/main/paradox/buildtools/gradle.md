@@ -1,6 +1,6 @@
 # Gradle
 
-To get started with Pekko gRPC read the @ref[client](../client/index.md) or @ref[server](../server/index.md) introductions.
+To get started with Pekko gRPC, read the @ref[client](../client/index.md) or @ref[server](../server/index.md) introductions.
 
 ## Configuring plugin
 
@@ -9,9 +9,11 @@ Most of the settings could be configured using related setting of `protobuf-grad
 Consult [protobuf-gradle-plugin](https://github.com/google/protobuf-gradle-plugin#protobuf-plugin-for-gradle-) documentation for details.
 
 The plugin can generate either Java or Scala classes, and then server and or client for the corresponding language.
-By default both client and server are generated and Java or Scala is autodetected depending on the presence of source files with language extension in `src/main`.
+By default, both client and server are generated and Java or Scala is autodetected depending on the presence of source files with language extension in `src/main`.
 
 ### Installation
+
+**The Gradle plugin is not yet deployed to plugins.gradle.org.**
 
 Follow instructions at [Gradle plugin portal](https://plugins.gradle.org/plugin/org.apache.pekko.grpc.gradle) to apply plugin.
 
@@ -99,4 +101,4 @@ Then, the server can then be started from the command line with:
 
 ## Play Framework support
 
-See the [Play gRPC documentation](https://developer.lightbend.com/docs/play-grpc/current/play/gradle-support.html) for details.
+See the [Play gRPC documentation](https://github.com/playframework/play-grpc) for details.

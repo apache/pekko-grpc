@@ -4,7 +4,7 @@
  *
  *   https://www.apache.org/licenses/LICENSE-2.0
  *
- * This file is part of the Apache Pekko project, derived from Akka.
+ * This file is part of the Apache Pekko project, which was derived from Akka.
  */
 
 import sbt.Keys._
@@ -13,7 +13,7 @@ import sbt._
 /**
  * Generate version.conf file based on the version setting.
  *
- * This was adapted from https://github.com/akka/akka/blob/v2.6.8/project/VersionGenerator.scala
+ * This was adapted from https://github.com/apache/incubator-pekko/blob/main/project/VersionGenerator.scala
  */
 object VersionGenerator {
 

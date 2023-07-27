@@ -2,6 +2,7 @@
 // https://github.com/akka/akka-grpc/pull/1279
 scalaVersion := "2.12.18"
 
+// TODO remove these resolvers when we start using released Pekko jars
 resolvers += Resolver.ApacheMavenSnapshotsRepo
 
 organization := "org.apache.pekko"

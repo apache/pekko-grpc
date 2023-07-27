@@ -4,7 +4,7 @@
  *
  *   https://www.apache.org/licenses/LICENSE-2.0
  *
- * This file is part of the Apache Pekko project, derived from Akka.
+ * This file is part of the Apache Pekko project, which was derived from Akka.
  */
 
 /*
@@ -98,7 +98,7 @@ class NonBalancingIntegrationSpec(backend: String)
 
       if (this.isInstanceOf[NonBalancingIntegrationSpecNetty] && service1.greetings.get != numberOfRequests) {
         system.log.warning(
-          s"Found only ${service1.greetings.get} requests rather than $numberOfRequests, likely a flakey test")
+          s"Found only ${service1.greetings.get} requests rather than $numberOfRequests, likely a flaky test")
         pending
       } else
         service1.greetings.get should be(numberOfRequests)

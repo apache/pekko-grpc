@@ -37,9 +37,9 @@ gRPC-Web endpoint with basic CORS infrastructure in place. To use CORS,
 you will need to add the pekko-http-cors dependency to your project:
 
 @@dependency[sbt,Maven,Gradle] {
-  group="ch.megard"
-  artifact="pekko-http-cors_2.12"
-  version="0.0.0-SNAPSHOT" // Update when proper release of pekko-http-cors is made
+  group="org.apache.pekko"
+  artifact="pekko-http-cors_$scala.binary.version$"
+  version="$pekko-http.version$"
 }
 
 And then serve the handlers with @apidoc[WebHandler.grpcWebHandler](WebHandler$) like this:

@@ -76,7 +76,7 @@ Java
 
 ## Rich error model
 
-Beyond status codes you can also use the [Rich error model](https://www.grpc.io/docs/guides/error/#richer-error-model). Currently there is no particular support for consuming such error objects (such as the ones based on the [common protobuf](https://cloud.google.com/apis/design/errors#error_model), but you can obtain them 'manually'.
+Beyond status codes you can also use the [Rich error model](https://grpc.io/docs/guides/error/#richer-error-model). Currently there is no particular support for consuming such error objects (such as the ones based on the [common protobuf](https://cloud.google.com/apis/design/errors#error_model), but you can obtain them 'manually'.
 
 Extract the `StatusRuntimeException` and parse the Rich error model to access `code`, `message` and `details`. Then find the details you are looking for based on their `typeUrl` and unpack them:
 

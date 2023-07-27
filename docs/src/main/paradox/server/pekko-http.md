@@ -1,6 +1,6 @@
 # Pekko HTTP interop
 
-Pekko gRPC is built on top of [Pekko HTTP](https://pekko.apache.org/docs/pekko-http).
+Pekko gRPC is built on top of @extref[Pekko HTTP](pekko-http:).
 This means it is possible to leverage the Pekko HTTP API's to create more
 complicated services, for example serving non-gRPC endpoints next to
 gRPC endpoints or adding additional behavior around your gRPC routes.
@@ -125,7 +125,7 @@ We make three calls: one with a valid name, one with a lowercase name, and one w
 For the valid name, the RPC succeeds and the server prints only the response log:
 
 ```
-[INFO] [05/15/2022 09:24:36.850] [Server-akka.actor.default-dispatcher-8] [akka.actor.ActorSystemImpl(Server)] loggingErrorHandlingGrpcRoute: Response for
+[INFO] [05/15/2022 09:24:36.850] [Server-pekko.actor.default-dispatcher-8] [org.apache.pekko.actor.ActorSystemImpl(Server)] loggingErrorHandlingGrpcRoute: Response for
   Request : HttpRequest(HttpMethod(POST),http://127.0.0.1/helloworld.GreeterService/SayHello,Vector(TE: trailers, User-Agent: grpc-java-netty/1.45.1, grpc-accept-encoding: gzip),HttpEntity.Chunked(application/grpc),HttpProtocol(HTTP/2.0))
   Response: Complete(HttpResponse(200 OK,List(grpc-encoding: gzip),HttpEntity.Strict(application/grpc+proto,42 bytes total),HttpProtocol(HTTP/1.1)))
 ```
@@ -135,27 +135,27 @@ Note that the server still returns a status code 200, even though the RPC failed
 This is because gRPC encodes a failure as a successful HTTP response containing the error in the body.
 
 ```
-[ERROR] [05/15/2022 09:24:36.902] [Server-akka.actor.default-dispatcher-5] [akka.actor.ActorSystemImpl(Server)] Grpc failure handled and mapped to akka.grpc.Trailers@4ab49ff7
+[ERROR] [05/15/2022 09:24:36.902] [Server-pekko.actor.default-dispatcher-5] [org.apache.pekko.actor.ActorSystemImpl(Server)] Grpc failure handled and mapped to akka.grpc.Trailers@4ab49ff7
 java.lang.IllegalArgumentException: Name must be capitalized
 	at example.myapp.helloworld.LoggingErrorHandlingGreeterServer$Impl$1.sayHello(LoggingErrorHandlingGreeterServer.scala:43)
 	at example.myapp.helloworld.grpc.GreeterServiceHandler$.$anonfun$partial$2(GreeterServiceHandler.scala:118)
 	at scala.concurrent.Future.$anonfun$flatMap$1(Future.scala:307)
 	at scala.concurrent.impl.Promise.$anonfun$transformWith$1(Promise.scala:41)
 	at scala.concurrent.impl.CallbackRunnable.run(Promise.scala:64)
-	at akka.dispatch.BatchingExecutor$AbstractBatch.processBatch(BatchingExecutor.scala:56)
-	at akka.dispatch.BatchingExecutor$BlockableBatch.$anonfun$run$1(BatchingExecutor.scala:93)
+	at org.apache.pekko.dispatch.BatchingExecutor$AbstractBatch.processBatch(BatchingExecutor.scala:56)
+	at org.apache.pekko.dispatch.BatchingExecutor$BlockableBatch.$anonfun$run$1(BatchingExecutor.scala:93)
 	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
 	at scala.concurrent.BlockContext$.withBlockContext(BlockContext.scala:85)
-	at akka.dispatch.BatchingExecutor$BlockableBatch.run(BatchingExecutor.scala:93)
-	at akka.dispatch.TaskInvocation.run(AbstractDispatcher.scala:48)
-	at akka.dispatch.ForkJoinExecutorConfigurator$AkkaForkJoinTask.exec(ForkJoinExecutorConfigurator.scala:48)
+	at org.apache.pekko.dispatch.BatchingExecutor$BlockableBatch.run(BatchingExecutor.scala:93)
+	at org.apache.pekko.dispatch.TaskInvocation.run(AbstractDispatcher.scala:48)
+	at org.apache.pekko.dispatch.ForkJoinExecutorConfigurator$AkkaForkJoinTask.exec(ForkJoinExecutorConfigurator.scala:48)
 	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:290)
 	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1020)
 	at java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1656)
 	at java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1594)
 	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:183)
 
-[INFO] [05/15/2022 09:24:36.905] [Server-akka.actor.default-dispatcher-5] [akka.actor.ActorSystemImpl(Server)] loggingErrorHandlingGrpcRoute: Response for
+[INFO] [05/15/2022 09:24:36.905] [Server-pekko.actor.default-dispatcher-5] [org.apache.pekko.actor.ActorSystemImpl(Server)] loggingErrorHandlingGrpcRoute: Response for
   Request : HttpRequest(HttpMethod(POST),http://127.0.0.1/helloworld.GreeterService/SayHello,Vector(TE: trailers, User-Agent: grpc-java-netty/1.45.1, grpc-accept-encoding: gzip),HttpEntity.Chunked(application/grpc),HttpProtocol(HTTP/2.0))
   Response: Complete(HttpResponse(200 OK,List(grpc-encoding: gzip),HttpEntity.Chunked(application/grpc+proto),HttpProtocol(HTTP/1.1)))
 ```
@@ -163,7 +163,7 @@ java.lang.IllegalArgumentException: Name must be capitalized
 For the empty name, the server prints a slightly different error log and the response log, 
 
 ```
-[ERROR] [05/15/2022 09:24:36.914] [Server-akka.actor.default-dispatcher-5] [akka.actor.ActorSystemImpl(Server)] Grpc failure UNHANDLED and mapped to akka.grpc.Trailers@5e1d9001
+[ERROR] [05/15/2022 09:24:36.914] [Server-pekko.actor.default-dispatcher-5] [org.apache.pekko.actor.ActorSystemImpl(Server)] Grpc failure UNHANDLED and mapped to akka.grpc.Trailers@5e1d9001
 java.util.NoSuchElementException: next on empty iterator
 	at scala.collection.Iterator$$anon$2.next(Iterator.scala:41)
 	at scala.collection.Iterator$$anon$2.next(Iterator.scala:39)
@@ -178,20 +178,20 @@ java.util.NoSuchElementException: next on empty iterator
 	at scala.concurrent.Future.$anonfun$flatMap$1(Future.scala:307)
 	at scala.concurrent.impl.Promise.$anonfun$transformWith$1(Promise.scala:41)
 	at scala.concurrent.impl.CallbackRunnable.run(Promise.scala:64)
-	at akka.dispatch.BatchingExecutor$AbstractBatch.processBatch(BatchingExecutor.scala:56)
-	at akka.dispatch.BatchingExecutor$BlockableBatch.$anonfun$run$1(BatchingExecutor.scala:93)
+	at org.apache.pekko.dispatch.BatchingExecutor$AbstractBatch.processBatch(BatchingExecutor.scala:56)
+	at org.apache.pekko.dispatch.BatchingExecutor$BlockableBatch.$anonfun$run$1(BatchingExecutor.scala:93)
 	at scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.java:23)
 	at scala.concurrent.BlockContext$.withBlockContext(BlockContext.scala:85)
-	at akka.dispatch.BatchingExecutor$BlockableBatch.run(BatchingExecutor.scala:93)
-	at akka.dispatch.TaskInvocation.run(AbstractDispatcher.scala:48)
-	at akka.dispatch.ForkJoinExecutorConfigurator$AkkaForkJoinTask.exec(ForkJoinExecutorConfigurator.scala:48)
+	at org.apache.pekko.dispatch.BatchingExecutor$BlockableBatch.run(BatchingExecutor.scala:93)
+	at org.apache.pekko.dispatch.TaskInvocation.run(AbstractDispatcher.scala:48)
+	at org.apache.pekko.dispatch.ForkJoinExecutorConfigurator$AkkaForkJoinTask.exec(ForkJoinExecutorConfigurator.scala:48)
 	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:290)
 	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1020)
 	at java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1656)
 	at java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1594)
 	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:183)
 
-[INFO] [05/15/2022 09:24:36.914] [Server-akka.actor.default-dispatcher-5] [akka.actor.ActorSystemImpl(Server)] loggingErrorHandlingGrpcRoute: Response for
+[INFO] [05/15/2022 09:24:36.914] [Server-pekko.actor.default-dispatcher-5] [org.apache.pekko.actor.ActorSystemImpl(Server)] loggingErrorHandlingGrpcRoute: Response for
   Request : HttpRequest(HttpMethod(POST),http://127.0.0.1/helloworld.GreeterService/SayHello,Vector(TE: trailers, User-Agent: grpc-java-netty/1.45.1, grpc-accept-encoding: gzip),HttpEntity.Chunked(application/grpc),HttpProtocol(HTTP/2.0))
   Response: Complete(HttpResponse(200 OK,List(grpc-encoding: gzip),HttpEntity.Chunked(application/grpc+proto),HttpProtocol(HTTP/1.1)))
 ```

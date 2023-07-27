@@ -4,7 +4,7 @@
  *
  *   https://www.apache.org/licenses/LICENSE-2.0
  *
- * This file is part of the Apache Pekko project, derived from Akka.
+ * This file is part of the Apache Pekko project, which was derived from Akka.
  */
 
 /*
@@ -13,17 +13,16 @@
 
 package org.apache.pekko.grpc.scaladsl
 
+import java.util.concurrent.ConcurrentHashMap
 import scala.concurrent.{ ExecutionContext, Future }
-import scala.jdk.CollectionConverters._
 
 import org.apache.pekko
 import pekko.Done
 import pekko.actor.{ CoordinatedShutdown, ExtendedActorSystem, Extension, ExtensionId, ExtensionIdProvider }
 import pekko.annotation.InternalApi
-import java.util.concurrent.ConcurrentHashMap
-
 import pekko.event.{ LogSource, Logging }
 import pekko.grpc.GrpcChannel
+import pekko.util.ccompat.JavaConverters._
 
 /** INTERNAL API */
 @InternalApi

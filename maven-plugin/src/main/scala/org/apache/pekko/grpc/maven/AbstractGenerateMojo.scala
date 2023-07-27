@@ -4,7 +4,7 @@
  *
  *   https://www.apache.org/licenses/LICENSE-2.0
  *
- * This file is part of the Apache Pekko project, derived from Akka.
+ * This file is part of the Apache Pekko project, which was derived from Akka.
  */
 
 /*
@@ -42,7 +42,7 @@ object AbstractGenerateMojo {
         Right(unknown)
     }
 
-  private def captureStdOutAnderr[T](block: => T): (String, String, T) = {
+  private def captureStdOutAndErr[T](block: => T): (String, String, T) = {
     val errBao = new ByteArrayOutputStream()
     val errPrinter = new PrintStream(errBao, true, "UTF-8")
     val outBao = new ByteArrayOutputStream()
@@ -265,7 +265,7 @@ abstract class AbstractGenerateMojo @Inject() (buildContext: BuildContext) exten
       getLog.debug("protoc options: %s".format(protocOptions.mkString(",")))
 
       getLog.info("Compiling protobuf")
-      val (out, err, exitCode) = captureStdOutAnderr {
+      val (out, err, exitCode) = captureStdOutAndErr {
         executeProtoc(protocCommand, schemas, protoDir, protocOptions, generatedTargets)
       }
       if (exitCode != 0) {
