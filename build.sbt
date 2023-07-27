@@ -56,7 +56,8 @@ lazy val codegen = Project(id = "codegen", base = file("codegen"))
     buildInfoKeys += "pekkoVersion" -> Dependencies.Versions.pekko,
     buildInfoKeys += "pekkoHttpVersion" -> Dependencies.Versions.pekkoHttp,
     buildInfoKeys += "grpcVersion" -> Dependencies.Versions.grpc,
-    buildInfoKeys += "googleProtobufVersion" -> Dependencies.Versions.googleProtobuf,
+    buildInfoKeys += "googleProtocVersion" -> Dependencies.Versions.googleProtoc,
+    buildInfoKeys += "googleProtobufJavaVersion" -> Dependencies.Versions.googleProtobufJava,
     buildInfoPackage := "org.apache.pekko.grpc.gen",
     (Compile / assembly / artifact) := {
       val art = (Compile / assembly / artifact).value
@@ -83,7 +84,7 @@ lazy val runtime = Project(id = "runtime", base = file("runtime"))
     AutomaticModuleName.settings("pekko.grpc.runtime"),
     ReflectiveCodeGen.generatedLanguages := Seq("Scala"),
     ReflectiveCodeGen.extraGenerators := Seq("ScalaMarshallersCodeGenerator"),
-    PB.protocVersion := Dependencies.Versions.googleProtobuf)
+    PB.protocVersion := Dependencies.Versions.googleProtoc)
   .enablePlugins(org.apache.pekko.grpc.build.ReflectiveCodeGen)
   .enablePlugins(ReproducibleBuildsPlugin)
 
@@ -161,7 +162,7 @@ lazy val interopTests = Project(id = "interop-tests", base = file("interop-tests
     ReflectiveCodeGen.generatedLanguages := Seq("Scala", "Java"),
     ReflectiveCodeGen.extraGenerators := Seq("ScalaMarshallersCodeGenerator"),
     ReflectiveCodeGen.codeGeneratorSettings ++= Seq("server_power_apis"),
-    PB.protocVersion := Dependencies.Versions.googleProtobuf,
+    PB.protocVersion := Dependencies.Versions.googleProtoc,
     // We need to be able to publish locally in order for sbt interopt tests to work
     // however this sbt project should not be published to an actual repository
     publishLocal / skip := false,
