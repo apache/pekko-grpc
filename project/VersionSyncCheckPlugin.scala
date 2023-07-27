@@ -40,7 +40,7 @@ object VersionSyncCheckPlugin extends AutoPlugin {
         Paths.get("gradle-plugin/src/main/groovy/org/apache/pekko/grpc/gradle/PekkoGrpcPluginExtension.groovy"))).value,
     googleProtobufVersionSyncCheck := versionSyncCheckImpl(
       "Google Protobuf",
-      Dependencies.Versions.googleProtobuf,
+      Dependencies.Versions.googleProtoc,
       raw"""(?i)protoc_?version.*= ?"-?v?(\d+\.\d+\.\d+)"""".r.unanchored,
       Seq(
         Paths.get("maven-plugin/src/main/maven/plugin.xml"),
