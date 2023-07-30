@@ -111,7 +111,7 @@ object PekkoGrpcPlugin extends AutoPlugin {
         generatorLogger.logger = streams.value.log
         (Test / PB.recompile).value
       },
-      PB.protocVersion := BuildInfo.googleProtobufVersion)
+      PB.protocVersion := BuildInfo.googleProtocVersion)
 
   def configSettings(config: Configuration): Seq[Setting[_]] =
     inConfig(config)(
