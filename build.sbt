@@ -34,10 +34,6 @@ lazy val mkBatAssemblyTask = taskKey[File]("Create a Windows bat assembly")
 // gradle plugin compatibility (avoid `+` in snapshot versions)
 (ThisBuild / dynverSeparator) := "-"
 
-// TODO remove these resolvers when we start using released Pekko jars
-ThisBuild / resolvers += Resolver.ApacheMavenSnapshotsRepo
-ThisBuild / updateOptions := updateOptions.value.withLatestSnapshots(false)
-
 val pekkoGrpcCodegenId = s"$pekkoPrefix-codegen"
 lazy val codegen = Project(id = "codegen", base = file("codegen"))
   .enablePlugins(SbtTwirl, BuildInfoPlugin)
