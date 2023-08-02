@@ -52,12 +52,8 @@ class PekkoGrpcPlugin implements Plugin<Project> {
         def baselineVersion = getBaselineVersion(pekkoGrpcExt.pluginVersion)
 
         project.repositories {
-            mavenLocal()
             mavenCentral()
             if (VersionNumber.parse(baselineVersion).qualifier) {
-                maven {
-                    url "https://oss.sonatype.org/content/repositories/snapshots"
-                }
                 maven {
                     url "https://repository.apache.org/content/groups/snapshots"
                 }
