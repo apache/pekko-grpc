@@ -116,7 +116,7 @@ final class ScalaClientStreamingRequestBuilder[I, O](
       settings: GrpcClientSettings)(implicit mat: Materializer, ec: ExecutionContext) =
     this(descriptor, channel, defaultOptions, settings, MetadataImpl.empty)
 
-  @deprecated("fqMethodName was removed since it can be derived from the descriptor", "1.1.0")
+  @deprecated("fqMethodName was removed since it can be derived from the descriptor", "akka-grpc 1.1.0")
   @InternalStableApi
   def this(
       descriptor: MethodDescriptor[I, O],
@@ -182,7 +182,7 @@ final class JavaClientStreamingRequestBuilder[I, O](
       settings: GrpcClientSettings)(implicit mat: Materializer, ec: ExecutionContext) =
     this(descriptor, channel, defaultOptions, settings, MetadataImpl.empty)
 
-  @deprecated("fqMethodName was removed since it can be derived from the descriptor", "1.1.0")
+  @deprecated("fqMethodName was removed since it can be derived from the descriptor", "akka-grpc 1.1.0")
   @InternalStableApi
   def this(
       descriptor: MethodDescriptor[I, O],
@@ -225,7 +225,7 @@ final class ScalaServerStreamingRequestBuilder[I, O](
       settings: GrpcClientSettings)(implicit ec: ExecutionContext) =
     this(descriptor, channel, defaultOptions, settings, MetadataImpl.empty)
 
-  @deprecated("fqMethodName was removed since it can be derived from the descriptor", "1.1.0")
+  @deprecated("fqMethodName was removed since it can be derived from the descriptor", "akka-grpc 1.1.0")
   @InternalStableApi
   def this(
       descriptor: MethodDescriptor[I, O],
@@ -268,7 +268,7 @@ final class JavaServerStreamingRequestBuilder[I, O](
       settings: GrpcClientSettings)(implicit ec: ExecutionContext) =
     this(descriptor, channel, defaultOptions, settings, MetadataImpl.empty)
 
-  @deprecated("fqMethodName was removed since it can be derived from the descriptor", "1.1.0")
+  @deprecated("fqMethodName was removed since it can be derived from the descriptor", "akka-grpc 1.1.0")
   @InternalStableApi
   def this(
       descriptor: MethodDescriptor[I, O],
@@ -312,7 +312,7 @@ final class ScalaBidirectionalStreamingRequestBuilder[I, O](
       settings: GrpcClientSettings)(implicit ec: ExecutionContext) =
     this(descriptor, channel, defaultOptions, settings, MetadataImpl.empty)
 
-  @deprecated("fqMethodName was removed since it can be derived from the descriptor", "1.1.0")
+  @deprecated("fqMethodName was removed since it can be derived from the descriptor", "akka-grpc 1.1.0")
   @InternalStableApi
   def this(
       descriptor: MethodDescriptor[I, O],
@@ -355,7 +355,7 @@ final class JavaBidirectionalStreamingRequestBuilder[I, O](
       settings: GrpcClientSettings)(implicit ec: ExecutionContext) =
     this(descriptor, channel, defaultOptions, settings, MetadataImpl.empty)
 
-  @deprecated("fqMethodName was removed since it can be derived from the descriptor", "1.1.0")
+  @deprecated("fqMethodName was removed since it can be derived from the descriptor", "akka-grpc 1.1.0")
   @InternalStableApi
   def this(
       descriptor: MethodDescriptor[I, O],

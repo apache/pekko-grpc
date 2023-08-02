@@ -270,7 +270,7 @@ final class GrpcClientSettings private (
   def withLoadBalancingPolicy(loadBalancingPolicy: String): GrpcClientSettings =
     copy(loadBalancingPolicy = Some(loadBalancingPolicy))
 
-  @deprecated("use withLoadBalancingPolicy", since = "1.0.0")
+  @deprecated("use withLoadBalancingPolicy", since = "akka-grpc 1.0.0")
   def withGrpcLoadBalancingType(loadBalancingType: String): GrpcClientSettings =
     withLoadBalancingPolicy(loadBalancingType)
 
