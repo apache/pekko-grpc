@@ -19,4 +19,6 @@ target
 /gradle-plugin/.gradle/
 /gradle-plugin/build/
 
+gradle-wrapper.jar
+
 .bsp/
