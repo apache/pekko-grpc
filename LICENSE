@@ -199,3 +199,12 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+
+---------------
+
+interop-tests contains test code from grpc-java <https://github.com/grpc/grpc-java>
+distributed under the Apache 2.0 license.
+- interop-tests/src/main/java/io/grpc/testing/integration2/TestServiceClient.java
+- interop-tests/src/main/java/io/grpc/testing/integration2/TestServiceServer.java
+
+Copyright 2014 The gRPC Authors
