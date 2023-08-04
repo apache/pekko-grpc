@@ -70,6 +70,7 @@ lazy val codegen = Project(id = "codegen", base = file("codegen"))
 lazy val runtime = Project(id = "runtime", base = file("runtime"))
   .settings(Dependencies.runtime)
   .settings(VersionGenerator.settings)
+  .settings(MetaInfLicenseNoticeCopy.runtimeSettings)
   .settings(
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
     scalaVersion := Dependencies.Versions.CrossScalaForLib.head)

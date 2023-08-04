@@ -202,46 +202,7 @@
 
 ---------------
 
-Pekko gRPC has copied the gradlew files from Apache Kafka. This code is based on
-code originally developed by Gradle <https://github.com/gradle/gradle>.
-This code is licensed under the Apache 2.0 license.
-
- - gradle-plugin/gradlew
- - plugin-tester-java/gradlew
- - plugin-tester-scala/gradlew
-
-Copyright © 2015-2021 the original authors.
-
----------------
-
-Pekko gRPC has copied the wrapper.gradle files from Apache Kafka.
-This code is licensed under the Apache 2.0 license.
-
- - gradle-plugin/wrapper.gradle
- - plugin-tester-java/wrapper.gradle
- - plugin-tester-scala/wrapper.gradle
-
----------------
-
 Pekko gRPC contains code from grpc-java <https://github.com/grpc/grpc-java>
 distributed under the Apache 2.0 license.
 
 - runtime/src/main/scala/org/apache/pekko/grpc/scaladsl/headers/PercentEncoding.scala
-- interop-tests/src/main/java/io/grpc/testing/integration2/TestServiceClient.java
-- interop-tests/src/main/java/io/grpc/testing/integration2/TestServiceServer.java
-- benchmark-java/src/main/java/org/apache/pekko/grpc/benchmarks/SocketAddressValidator.java
-- benchmark-java/src/main/java/org/apache/pekko/grpc/benchmarks/Transport.java
-- benchmark-java/src/main/java/org/apache/pekko/grpc/benchmarks/Utils.java
-- benchmark-java/src/test/java/org/apache/pekko/grpc/benchmarks/driver/LoadWorkerTest.java
-- benchmark-java/src/test/java/org/apache/pekko/grpc/benchmarks/driver/LoadClientTest.java
-- benchmark-java/src/main/java/org/apache/pekko/grpc/benchmarks/driver/LoadClient.java
-- benchmark-java/src/main/java/org/apache/pekko/grpc/benchmarks/driver/LoadServer.java
-- benchmark-java/src/main/java/org/apache/pekko/grpc/benchmarks/driver/LoadWorker.java
-- benchmark-java/src/main/java/org/apache/pekko/grpc/benchmarks/qps/AbstractConfigurationBuilder.java
-- benchmark-java/src/main/java/org/apache/pekko/grpc/benchmarks/qps/AsyncServer.java
-- benchmark-java/src/main/java/org/apache/pekko/grpc/benchmarks/qps/ClientConfiguration.java
-- benchmark-java/src/main/java/org/apache/pekko/grpc/benchmarks/qps/Configuration.java
-- benchmark-java/src/main/java/org/apache/pekko/grpc/benchmarks/qps/ServerConfiguration.java
-- benchmark-java/src/main/java/org/apache/pekko/grpc/benchmarks/qps/AsyncClient.java
-
-Copyright 2014 The gRPC Authors
