@@ -18,7 +18,7 @@ The API on both sides (Client and Server) is a simple Pekko Streams-based one.
 
 The client side is
 currently implemented on top of [io.grpc:grpc-netty-shaded](https://mvnrepository.com/artifact/io.grpc/grpc-netty-shaded),
-we plan to replace this by just [io.grpc:grpc-core](https://mvnrepository.com/artifact/io.grpc/grpc-core) and @extref[Pekko HTTP](pekko-http:).
+we plan to replace this by just [io.grpc:grpc-core](https://mvnrepository.com/artifact/io.grpc/grpc-core) and [Pekko HTTP](https://pekko.apache.org/docs/pekko-http/current/).
 
 As for performance, we are currently relying on the JVM TLS implementation,
 which is sufficient for many use cases, but is planned to be replaced with
