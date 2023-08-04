@@ -199,33 +199,3 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-
----------------
-
-Pekko gRPC has copied the gradlew files from Apache Kafka. This code is based on
-code originally developed by Gradle <https://github.com/gradle/gradle>.
-This code is licensed under the Apache 2.0 license.
-
- - gradle-plugin/gradlew
- - plugin-tester-java/gradlew
- - plugin-tester-scala/gradlew
-
-Copyright © 2015-2021 the original authors.
-
----------------
-
-Pekko gRPC has copied the wrapper.gradle files from Apache Kafka.
-This code is licensed under the Apache 2.0 license.
-
- - gradle-plugin/wrapper.gradle
- - plugin-tester-java/wrapper.gradle
- - plugin-tester-scala/wrapper.gradle
-
----------------
-
-interop-tests contains test code from grpc-java <https://github.com/grpc/grpc-java>
-distributed under the Apache 2.0 license.
-- interop-tests/src/main/java/io/grpc/testing/integration2/TestServiceClient.java
-- interop-tests/src/main/java/io/grpc/testing/integration2/TestServiceServer.java
-
-Copyright 2014 The gRPC Authors
