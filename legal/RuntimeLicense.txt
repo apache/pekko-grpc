@@ -206,3 +206,5 @@ Pekko gRPC contains code from grpc-java <https://github.com/grpc/grpc-java>
 distributed under the Apache 2.0 license.
 
 - runtime/src/main/scala/org/apache/pekko/grpc/scaladsl/headers/PercentEncoding.scala
+
+Copyright 2014 The gRPC Authors
