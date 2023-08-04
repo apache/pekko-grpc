@@ -9,3 +9,10 @@ Copyright (C) 2009-2022 Lightbend Inc. <https://www.lightbend.com>
 
 Apache Pekko gRPC is derived from Akka gRPC 2.1.x, the last version that was distributed under the
 Apache License, Version 2.0 License.
+
+---------------
+
+interop-tests contains test code from grpc-java <https://github.com/grpc/grpc-java>
+distributed under the Apache 2.0 license.
+
+Copyright 2014 The gRPC Authors
