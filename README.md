@@ -98,7 +98,7 @@ See the note in the [Akka HTTP docs](https://doc.akka.io/docs/akka-http/10.1/ser
     - `mvn -Dpekko.grpc.project.version=<version> pekko-grpc:generate scala:compile`
 
 #### Gradle plugin
-- link to pekko docs page
+- see [Installation docs](https://pekko.apache.org/docs/pekko-grpc/current/buildtools/gradle.html#installation)
 
 ## License
 
