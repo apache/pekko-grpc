@@ -223,6 +223,15 @@ This code is licensed under the Apache 2.0 license.
 
 ---------------
 
+Pekko gRPC has build code derived from Lagom <https://github.com/lagom/lagom>.
+This code is licensed under the Apache 2.0 license.
+
+ - project/SbtMavenPlugin.scala
+
+Copyright (C) Lightbend Inc. <https://www.lightbend.com>
+
+---------------
+
 Pekko gRPC contains code from grpc-java <https://github.com/grpc/grpc-java>
 distributed under the Apache 2.0 license.
 
