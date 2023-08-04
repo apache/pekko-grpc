@@ -18,18 +18,21 @@
 import sbt.Keys._
 import sbt._
 import org.mdedetrich.apache.sonatype.ApacheSonatypePlugin
-import ApacheSonatypePlugin.autoImport.apacheSonatypeDisclaimerFile
+import ApacheSonatypePlugin.autoImport.{apacheSonatypeDisclaimerFile, apacheSonatypeLicenseFile}
 
 /**
  * Copies LICENSE and NOTICE files into jar META-INF dir
  */
 object MetaInfLicenseNoticeCopy extends AutoPlugin {
 
+  private lazy val baseDir = LocalRootProject / baseDirectory
+
   override def trigger = allRequirements
 
   override def requires = ApacheSonatypePlugin
 
   override lazy val projectSettings = Seq(
+    apacheSonatypeLicenseFile := baseDir.value / "legal" / "StandardLicense.txt",
     apacheSonatypeDisclaimerFile := Some((LocalRootProject / baseDirectory).value / "DISCLAIMER"))
 
 }
