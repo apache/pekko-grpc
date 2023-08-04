@@ -15,7 +15,25 @@ By default, both client and server are generated and Java or Scala is autodetect
 
 **The Gradle plugin is not yet deployed to plugins.gradle.org.**
 
-Follow instructions at [Gradle plugin portal](https://plugins.gradle.org/plugin/org.apache.pekko.grpc.gradle) to apply plugin.
+For now, you will you need to build the plugin yourself and deploy to your local Maven repository.
+Unfortunately, the [Gradle Plugin Publishing](https://docs.gradle.org/current/userguide/publishing_gradle_plugins.html) plugin
+does not appear to support publishing to repositories that require authentication (e.g. Artifactory).
+
+If you check out the source code from our [git repo](https://github.com/apache/incubator-pekko-grpc)
+or [download](https://pekko.apache.org/download.html) a source release, you can change directory to the
+`gradle-plugin` directory and run this Gradle command.
+
+```shell
+./gradlew clean publishToMavenLocal
+```
+
+To consume this plugin, you will need to update the consuming project's `build.gradle` to include the `mavenLocal` repository.
+
+```groovy
+repositories {
+  mavenLocal()
+}
+```
 
 ### Available plugin options
 
