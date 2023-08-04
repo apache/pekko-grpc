@@ -106,7 +106,7 @@ object Settings {
         case "test_case"                => settings.copy(testCase = value)
         case "use_tls"                  => settings.copy(useTls = value.toBoolean)
         case "use_test_ca"              => settings.copy(useTestCa = value.toBoolean)
-        case "use_pekkoHttp"             => settings.copy(usePekkoHttp = value.toBoolean)
+        case "use_pekkoHttp"            => settings.copy(usePekkoHttp = value.toBoolean)
         case "default_service_account"  => settings.copy(defaultServiceAccount = value)
         case "service_account_key_file" => settings.copy(serviceAccountKeyFile = value)
         case "oauth_scope"              => settings.copy(oauthScope = value)
