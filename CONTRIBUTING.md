@@ -139,7 +139,7 @@ Some additional guidelines regarding source code are:
 - keep the code [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)
 - apply the [Boy Scout Rule](https://www.oreilly.com/library/view/97-things-every/9780596809515/ch08.html) whenever you have the chance to
 - Never delete or change existing copyright notices, just add additional info.  
-- Do not use ``@author`` tags since it does not encourage [Collective Code Ownership](https://www.extremeprogramming.org/rules/collective.html).
+- Do not use ``@author`` tags since it does not encourage [Collective Code Ownership](http://www.extremeprogramming.org/rules/collective.html).
   - Contributors , each project should make sure that the contributors gets the credit they deserve—in a text file or page on the project website and in the release notes etc.
 
 If these requirements are not met then the code should **not** be merged into main, or even reviewed - regardless of how good or important it is. No exceptions.
