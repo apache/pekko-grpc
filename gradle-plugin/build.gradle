@@ -43,6 +43,15 @@ jar {
   }
 }
 
+jar.dependsOn('copyLicenseToBuildResources')
+
+tasks.register('copyLicenseToBuildResources', Copy) {
+    from layout.projectDirectory.file("../LICENSE")
+    from layout.projectDirectory.file("../NOTICE")
+    from layout.projectDirectory.file("../DISCLAIMER")
+    into layout.buildDirectory.dir("resources/main/META-INF")
+}
+
 repositories {
   mavenCentral()
 }
