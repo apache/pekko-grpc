@@ -220,3 +220,12 @@ This code is licensed under the Apache 2.0 license.
  - gradle-plugin/wrapper.gradle
  - plugin-tester-java/wrapper.gradle
  - plugin-tester-scala/wrapper.gradle
+
+---------------
+
+interop-tests contains test code from grpc-java <https://github.com/grpc/grpc-java>
+distributed under the Apache 2.0 license.
+- interop-tests/src/main/java/io/grpc/testing/integration2/TestServiceClient.java
+- interop-tests/src/main/java/io/grpc/testing/integration2/TestServiceServer.java
+
+Copyright 2014 The gRPC Authors
