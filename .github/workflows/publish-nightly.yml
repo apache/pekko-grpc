@@ -1,10 +1,9 @@
-name: Publish
+name: Publish Nightly
 
 on:
-  push:
-    branches:
-      - main
-    tags: ["*"]
+  schedule:
+    - cron: "0 1 * * *"
+  workflow_dispatch:
 
 jobs:
   sbt:
