@@ -135,7 +135,7 @@ Note that the server still returns a status code 200, even though the RPC failed
 This is because gRPC encodes a failure as a successful HTTP response containing the error in the body.
 
 ```
-[ERROR] [05/15/2022 09:24:36.902] [Server-pekko.actor.default-dispatcher-5] [org.apache.pekko.actor.ActorSystemImpl(Server)] Grpc failure handled and mapped to akka.grpc.Trailers@4ab49ff7
+[ERROR] [05/15/2022 09:24:36.902] [Server-pekko.actor.default-dispatcher-5] [org.apache.pekko.actor.ActorSystemImpl(Server)] Grpc failure handled and mapped to org.apache.pekko.grpc.Trailers@4ab49ff7
 java.lang.IllegalArgumentException: Name must be capitalized
 	at example.myapp.helloworld.LoggingErrorHandlingGreeterServer$Impl$1.sayHello(LoggingErrorHandlingGreeterServer.scala:43)
 	at example.myapp.helloworld.grpc.GreeterServiceHandler$.$anonfun$partial$2(GreeterServiceHandler.scala:118)
@@ -148,7 +148,7 @@ java.lang.IllegalArgumentException: Name must be capitalized
 	at scala.concurrent.BlockContext$.withBlockContext(BlockContext.scala:85)
 	at org.apache.pekko.dispatch.BatchingExecutor$BlockableBatch.run(BatchingExecutor.scala:93)
 	at org.apache.pekko.dispatch.TaskInvocation.run(AbstractDispatcher.scala:48)
-	at org.apache.pekko.dispatch.ForkJoinExecutorConfigurator$AkkaForkJoinTask.exec(ForkJoinExecutorConfigurator.scala:48)
+	at org.apache.pekko.dispatch.ForkJoinExecutorConfigurator$PekkoForkJoinTask.exec(ForkJoinExecutorConfigurator.scala:48)
 	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:290)
 	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1020)
 	at java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1656)
@@ -163,7 +163,7 @@ java.lang.IllegalArgumentException: Name must be capitalized
 For the empty name, the server prints a slightly different error log and the response log, 
 
 ```
-[ERROR] [05/15/2022 09:24:36.914] [Server-pekko.actor.default-dispatcher-5] [org.apache.pekko.actor.ActorSystemImpl(Server)] Grpc failure UNHANDLED and mapped to akka.grpc.Trailers@5e1d9001
+[ERROR] [05/15/2022 09:24:36.914] [Server-pekko.actor.default-dispatcher-5] [org.apache.pekko.actor.ActorSystemImpl(Server)] Grpc failure UNHANDLED and mapped to org.apache.pekko.grpc.Trailers@5e1d9001
 java.util.NoSuchElementException: next on empty iterator
 	at scala.collection.Iterator$$anon$2.next(Iterator.scala:41)
 	at scala.collection.Iterator$$anon$2.next(Iterator.scala:39)
@@ -184,7 +184,7 @@ java.util.NoSuchElementException: next on empty iterator
 	at scala.concurrent.BlockContext$.withBlockContext(BlockContext.scala:85)
 	at org.apache.pekko.dispatch.BatchingExecutor$BlockableBatch.run(BatchingExecutor.scala:93)
 	at org.apache.pekko.dispatch.TaskInvocation.run(AbstractDispatcher.scala:48)
-	at org.apache.pekko.dispatch.ForkJoinExecutorConfigurator$AkkaForkJoinTask.exec(ForkJoinExecutorConfigurator.scala:48)
+	at org.apache.pekko.dispatch.ForkJoinExecutorConfigurator$PekkoForkJoinTask.exec(ForkJoinExecutorConfigurator.scala:48)
 	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:290)
 	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1020)
 	at java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1656)
