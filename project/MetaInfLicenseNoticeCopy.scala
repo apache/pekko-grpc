@@ -18,7 +18,7 @@
 import sbt.Keys._
 import sbt._
 import org.mdedetrich.apache.sonatype.ApacheSonatypePlugin
-import ApacheSonatypePlugin.autoImport.{apacheSonatypeDisclaimerFile, apacheSonatypeLicenseFile}
+import ApacheSonatypePlugin.autoImport.{ apacheSonatypeDisclaimerFile, apacheSonatypeLicenseFile }
 
 /**
  * Copies LICENSE and NOTICE files into jar META-INF dir
