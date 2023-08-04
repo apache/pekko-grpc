@@ -130,22 +130,16 @@ For a Pull Request to be considered at all it has to meet these requirements:
 1. Regardless if the code introduces new features or fixes bugs or regressions, it must have comprehensive tests.
 1. The code must be well documented in the Lightbend's standard documentation format (see the ‘Documentation’ section below).
 1. The commit messages must properly describe the changes, see further below.
-1. All Apache projects must include Apache copyright notices.  Each project can choose between one of two approaches:
-
-    1. All source files in the project must have an Apache copyright notice in the file header.
-    1. The Notices file for the project includes the Apache copyright notice and no other files contain copyright notices.  See https://www.apache.org/legal/src-headers.html for instructions for managing this approach for copyrights.
-
-    Pekko gRPC uses the first choice, having copyright notices in every file header.
-
+1. All new source files should have [Apache source headers](https://www.apache.org/legal/src-headers.html).
 
 ### Additional guidelines
 
 Some additional guidelines regarding source code are:
 
-- keep the code [DRY](https://www.oreilly.com/library/view/97-things-every/9780596809515/ch30.html)
+- keep the code [DRY](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself)
 - apply the [Boy Scout Rule](https://www.oreilly.com/library/view/97-things-every/9780596809515/ch08.html) whenever you have the chance to
 - Never delete or change existing copyright notices, just add additional info.  
-- Do not use ``@author`` tags since it does not encourage [Collective Code Ownership](http://www.extremeprogramming.org/rules/collective.html).
+- Do not use ``@author`` tags since it does not encourage [Collective Code Ownership](https://www.extremeprogramming.org/rules/collective.html).
   - Contributors , each project should make sure that the contributors gets the credit they deserve—in a text file or page on the project website and in the release notes etc.
 
 If these requirements are not met then the code should **not** be merged into main, or even reviewed - regardless of how good or important it is. No exceptions.
@@ -207,7 +201,7 @@ Each project must also create and maintain a list of all dependencies and their 
 
 Follow these guidelines when creating public commits and writing commit messages.
 
-1. If your work spans multiple local commits (for example; if you do safe point commits while working in a feature branch or work in a branch for a long time doing merges/rebases etc.) then please do not commit it all but rewrite the history by squashing the commits into a single big commit which you write a good commit message for (like discussed in the following sections). For more info read this article: [Git Workflow](http://sandofsky.com/blog/git-workflow.html). Every commit should be able to be used in isolation, cherry picked etc.
+1. If your work spans multiple local commits (for example; if you do safe point commits while working in a feature branch or work in a branch for a long time doing merges/rebases etc.) then please do not commit it all but rewrite the history by squashing the commits into a single big commit which you write a good commit message for (like discussed in the following sections). For more info read this article: [Git Workflow](https://sandofsky.com/blog/git-workflow.html). Every commit should be able to be used in isolation, cherry picked etc.
 
 2. First line should be a descriptive sentence what the commit is doing, including the ticket number. It should be possible to fully understand what the commit does—but not necessarily how it does it—by just reading this single line. We follow the “imperative present tense” style for commit messages ([more info here](https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html)).
 
