@@ -32,6 +32,7 @@ object CopyrightHeader extends AutoPlugin {
           headerMappings := headerMappings.value ++ Map(
             HeaderFileType.scala -> cStyleComment,
             HeaderFileType.java -> cStyleComment,
+            HeaderFileType("sbt") -> cStyleComment,
             HeaderFileType.conf -> hashLineComment,
             HeaderFileType("txt") -> twirlStyleBlockComment),
           (headerCreate / unmanagedResourceDirectories) += baseDirectory.value / "src" / "main" / "twirl"))
