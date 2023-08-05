@@ -33,6 +33,9 @@ object MetaInfLicenseNoticeCopy extends AutoPlugin {
 
   override lazy val projectSettings = Seq(
     apacheSonatypeLicenseFile := baseDir.value / "legal" / "StandardLicense.txt",
-    apacheSonatypeDisclaimerFile := Some((LocalRootProject / baseDirectory).value / "DISCLAIMER"))
+    apacheSonatypeDisclaimerFile := Some(baseDir.value / "DISCLAIMER"))
+
+  lazy val runtimeSettings = Seq(
+    apacheSonatypeLicenseFile := baseDir.value / "legal" / "RuntimeLicense.txt")
 
 }
