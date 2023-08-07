@@ -3,7 +3,7 @@ plugins {
   id 'java-gradle-plugin'
   id 'maven-publish'
   id 'com.palantir.git-version' version '0.10.1'
-  id 'com.gradle.plugin-publish' version '0.11.0'
+  id 'io.github.gradle-nexus.publish-plugin' version '1.0.0'
 }
 
 group = "org.apache.pekko"
@@ -23,18 +23,43 @@ gradlePlugin {
   }
 }
 
-pluginBundle {
-  website = 'https://pekko.apache.org/docs/pekko-grpc/current/'
-  vcsUrl = 'https://github.com/apache/incubator-pekko-grpc'
-  description = 'Building streaming gRPC servers and clients on top of Apache Pekko Streams'
-  tags = ['pekko', 'streams', 'reactive']
-
-  plugins {
-    pekkoGrpcPlugin {
-      id = 'org.apache.pekko.grpc.gradle'
-      displayName = 'Apache Pekko gRPC'
+publishing {
+    publications.withType(MavenPublication) {
+        pom {
+            name = "pekko-grpc-gradle-plugin"
+            description = "Apache Pekko gRPC - Support for building streaming gRPC servers and clients on top of Pekko Streams."
+            url = "https://pekko.apache.org/"
+            licenses {
+                license {
+                    name = "Apache-2.0"
+                    url = "https://www.apache.org/licenses/LICENSE-2.0.html"
+                }
+            }
+            developers {
+                developer {
+                    id = 'contributors'
+                    name = 'Contributors'
+                    url = 'https://github.com/apache/incubator-pekko-grpc/graphs/contributors'
+                    email = 'dev@pekko.apache.org'
+                }
+            }
+            scm {
+                connection = 'git@github.com:apache/incubator-pekko-grpc'
+                url = 'https://github.com/apache/incubator-pekko-grpc'
+            }
+        }
     }
-  }
+}
+
+nexusPublishing {
+    repositories {
+        sonatype {
+            nexusUrl.set(uri("https://repository.apache.org/"))
+            snapshotRepositoryUrl.set(uri("https://repository.apache.org/content/repositories/snapshots/"))
+            username = System.getenv("NEXUS_USER")
+            password = System.getenv("NEXUS_PW")
+        }
+    }
 }
 
 jar {
