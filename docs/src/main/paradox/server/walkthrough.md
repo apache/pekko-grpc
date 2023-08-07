@@ -26,6 +26,7 @@ Gradle
       repositories {
         mavenLocal()
         gradlePluginPortal()
+        mavenCentral()
       }
       dependencies {
         // see https://plugins.gradle.org/plugin/org.apache.pekko.grpc.gradle
@@ -256,5 +257,3 @@ Java
 :  @@snip [GreeterActor.java](/plugin-tester-java/src/main/java/example/myapp/statefulhelloworld/GreeterActor.java) { #actor }
 
 Now the actor mailbox is used to synchronize accesses to the mutable state.
-
-

@@ -98,7 +98,13 @@ See the note in the [Akka HTTP docs](https://doc.akka.io/docs/akka-http/10.1/ser
     - `mvn -Dpekko.grpc.project.version=<version> pekko-grpc:generate scala:compile`
 
 #### Gradle plugin
-- see [Installation docs](https://pekko.apache.org/docs/pekko-grpc/current/buildtools/gradle.html#installation)
+- the Gradle plugin is built using gradle
+- The gradle plugin will automatically derive the version of the artifact from sbt.
+  - In other words sbt is the source of truth when it comes to deriving the version
+- You can test the Gradle plugin by change directory into the `plugin-tester-java` dir
+  - `./gradlew clean test -Dpekko.grpc.project.version=<version>`
+- You can run the equivalent Scala tests by changing directory into the `plugin-tester-scala` dir
+  - `./gradlew clean test -Dpekko.grpc.project.version=<version>`
 
 ## License
 

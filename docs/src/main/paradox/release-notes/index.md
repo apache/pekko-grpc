@@ -24,6 +24,12 @@ We haven't had to fix any significant bugs that were in Akka gRPC 2.1.6.
     * `googleProtocVersion` is the version of [Protoc](https://grpc.io/docs/protoc-installation/) that is supported (3.20.1)
     * `googleProtobufJavaVersion` is the version of [Protobuf Java](https://protobuf.dev/getting-started/javatutorial/) that is supported (3.20.3)
     * Akka gRPC 2.1.6 equivalent has just one property, `googleProtobufVersion`.
+* The Pekko gRPC plugin is deployed in Maven Central unlike the Akka gRPC plugin which was deployed
+  in [Gradle Plugin Portal](https://plugins.gradle.org/). This means that in addition to changing
+  the artifact from `akka-grpc-gradle-plugin` to `pekko-grpc-gradle-plugin` you also need to add
+  `mavenCentral()` to the `pluginManagement`'s `repositories` entry. See
+  [Installation docs](https://pekko.apache.org/docs/pekko-grpc/current/buildtools/gradle.html#installation) for more
+  info.
 
 ### Additions
 
