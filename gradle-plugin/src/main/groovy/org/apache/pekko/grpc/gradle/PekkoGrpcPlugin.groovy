@@ -21,14 +21,8 @@ class PekkoGrpcPlugin implements Plugin<Project> {
 
     Project project
 
-    // workaround for test projects, when one only needs to tests a new plugin version without rebuilding dependencies.
-    String getBaselineVersion(String pluginVersion) {
-        def pv = System.getProperty("pekko.grpc.baseline.version", pluginVersion)
-        if (VersionNumber.parse(pv).qualifier) {
-            pv + "-SNAPSHOT"
-        } else {
-            pv
-        }
+    static String getBaselineVersion(String pluginVersion) {
+        System.getProperty("pekko.grpc.baseline.version", pluginVersion)
     }
 
     @Override
