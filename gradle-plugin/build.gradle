@@ -54,7 +54,7 @@ publishing {
 nexusPublishing {
     repositories {
         sonatype {
-            nexusUrl.set(uri("https://repository.apache.org/"))
+            nexusUrl.set(uri("https://repository.apache.org/service/local/"))
             snapshotRepositoryUrl.set(uri("https://repository.apache.org/content/repositories/snapshots/"))
             username = System.getenv("NEXUS_USER")
             password = System.getenv("NEXUS_PW")
