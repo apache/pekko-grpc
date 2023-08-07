@@ -2,17 +2,25 @@ plugins {
   id 'groovy'
   id 'java-gradle-plugin'
   id 'maven-publish'
-  id 'com.palantir.git-version' version '0.10.1'
   id 'io.github.gradle-nexus.publish-plugin' version '1.0.0'
 }
 
 group = "org.apache.pekko"
-// https://github.com/palantir/gradle-git-version/issues/97
 
-def tag = "git describe --tags".execute().text.substring(1).split("-g")[0].replace("\n", "")
-def finalVersion = (tag == versionDetails().lastTag.substring(1)) ? tag : tag.reverse().reverse() + "-" + versionDetails().gitHash.substring(0, 8)
-
-version = finalVersion
+def getVersionFromParentSbtBuild() {
+    ByteArrayOutputStream os = new ByteArrayOutputStream()
+    String parentDir = project.rootDir.getParentFile().getPath()
+    exec {
+        workingDir parentDir
+        commandLine 'sbt', '--no-colors', '--error', 'set aggregate := false; print version'
+        standardOutput os
+    }
+    os.close()
+    String finalVersion = os.toString().trim()
+    project.logger.info("Derived gradle version from parent sbt build: $finalVersion")
+    return finalVersion
+}
+version = getVersionFromParentSbtBuild()
 
 gradlePlugin {
   plugins {

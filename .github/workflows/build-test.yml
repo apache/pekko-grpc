@@ -31,14 +31,6 @@ jobs:
       - name: Cache Coursier cache
         uses: coursier/cache-action@v6
 
-      #- name: FOSSA policy check
-      #  if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == 'apache/incubator-pekko-grpc' }}
-      #  run: |-
-      #    curl -H 'Cache-Control: no-cache' https://raw.githubusercontent.com/fossas/spectrometer/master/install.sh | bash
-      #    fossa analyze && fossa test
-      #  env:
-      #    FOSSA_API_KEY: "${{secrets.FOSSA_API_KEY}}"
-
       - name: Binary-compatibility check
         run: |-
           cp .jvmopts-ci .jvmopts
@@ -143,7 +135,7 @@ jobs:
 
       - name: Gather version
         run: |-
-          echo `git describe --tags | sed -e "s/v\(.*\)-\([0-9][0-9]*\).*/\\1-\\2-/"``git rev-parse HEAD | head -c8`-SNAPSHOT > ~/.version
+          echo `sbt --no-colors --error 'set aggregate := false; print version' | xargs` > ~/.version
           cat ~/.version
 
       - name: Cache local Gradle repository
@@ -167,12 +159,12 @@ jobs:
       - name: Test Gradle Java ${{ matrix.SCALA_VERSION }}
         run: |-
           cd plugin-tester-java
-          ./gradlew clean test --console=plain --info --stacktrace -Dpekko.grpc.project.version=$(cat ~/.version | sed -e s/-SNAPSHOT//)
+          ./gradlew clean test --console=plain --info --stacktrace -Dpekko.grpc.project.version=$(cat ~/.version)
 
       - name: Test Gradle Scala ${{ matrix.SCALA_VERSION }}
         run: |-
           cd plugin-tester-scala
-          ./gradlew clean test --console=plain --info --stacktrace -Dpekko.grpc.project.version=$(cat ~/.version | sed -e s/-SNAPSHOT//)
+          ./gradlew clean test --console=plain --info --stacktrace -Dpekko.grpc.project.version=$(cat ~/.version)
 
       - name: Stop Gradle Daemon
         # as suggested in https://github.com/actions/cache/blob/main/examples.md#java---gradle
@@ -199,7 +191,7 @@ jobs:
 
       - name: Gather version
         run: |-
-          echo `git describe --tags | sed -e "s/v\(.*\)-\([0-9][0-9]*\).*/\\1-\\2-/"``git rev-parse HEAD | head -c8`-SNAPSHOT > ~/.version
+          echo `sbt --no-colors --error 'set aggregate := false; print version' | xargs` > ~/.version
           cat ~/.version
 
       - name: Cache local Maven repository
