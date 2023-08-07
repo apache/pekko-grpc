@@ -1,7 +1,7 @@
 pluginManagement {
   repositories {
     mavenLocal()
-    gradlePluginPortal()
+    mavenCentral()
   }
   plugins {
     id 'org.apache.pekko.grpc.gradle' version "${System.getProperty('pekko.grpc.project.version')}"

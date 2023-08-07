@@ -31,7 +31,7 @@ jobs:
           NEXUS_USER: ${{ secrets.NEXUS_USER }}
           NEXUS_PW: ${{ secrets.NEXUS_PW }}
 
-      - name: Publish Gradle Plugin to Apache Nexus Repository
+      - name: Publish Gradle Plugin
         run: cd gradle-plugin && ./gradlew publishToSonatype
         env:
           NEXUS_USER: ${{ secrets.NEXUS_USER }}
