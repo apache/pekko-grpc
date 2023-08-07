@@ -31,26 +31,11 @@ jobs:
           NEXUS_USER: ${{ secrets.NEXUS_USER }}
           NEXUS_PW: ${{ secrets.NEXUS_PW }}
 
-# TODO: Need to figure out where to publish gradle plugin, see https://github.com/apache/incubator-pekko-grpc/issues/40
-#  gradle-plugin:
-#    name: Release gradle plugin
-#    runs-on: ubuntu-latest
-#    if: github.repository == 'apache/incubator-pekko-grpc'
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v3
-#        with:
-#          # we don't know what commit the last tag was it's safer to get entire repo so previousStableVersion resolves
-#          fetch-depth: 0
-#
-#      - name: Setup Java 8
-#        uses: actions/setup-java@v3
-#        with:
-#          distribution: temurin
-#          java-version: 8
-#
-#      - name: Publish Plugin to Gradle Plugin Repository
-#        run: cd gradle-plugin && ./gradlew publishPlugins -Pgradle.publish.key='${{ secrets.GRADLE_PUBLISH_KEY }}' -Pgradle.publish.secret='${{ secrets.GRADLE_SECRET }}'
+      - name: Publish Plugin to Gradle Plugin Repository
+        run: cd gradle-plugin && ./gradlew publishToSonatype
+        env:
+          NEXUS_USER: ${{ secrets.NEXUS_USER }}
+          NEXUS_PW: ${{ secrets.NEXUS_PW }}
 
       - name: Build Documentation
         run: |-
