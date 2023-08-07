@@ -51,13 +51,24 @@ publishing {
     }
 }
 
+def getEnvVariable(String envVariableName) {
+    String envVariableValue = System.getenv(envVariableName)
+    if (envVariableValue == null)
+        project.logger.error("${envVariableName} is null")
+    else if (envVariableValue.isEmpty())
+        project.logger.error("${envVariableName} is is empty")
+    else if (envVariableValue.isBlank())
+        project.logger.error("${envVariableName} is is blank")
+    return envVariableValue
+}
+
 nexusPublishing {
     repositories {
         sonatype {
-            nexusUrl.set(uri("https://repository.apache.org/service/local/"))
-            snapshotRepositoryUrl.set(uri("https://repository.apache.org/content/repositories/snapshots/"))
-            username = System.getenv("NEXUS_USER")
-            password = System.getenv("NEXUS_PW")
+            nexusUrl = uri("https://repository.apache.org/service/local/")
+            snapshotRepositoryUrl = uri("https://repository.apache.org/content/repositories/snapshots/")
+            username = getEnvVariable("NEXUS_USER")
+            password = getEnvVariable("NEXUS_PW")
         }
     }
 }
