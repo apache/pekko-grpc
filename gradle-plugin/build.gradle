@@ -2,6 +2,7 @@ plugins {
   id 'groovy'
   id 'java-gradle-plugin'
   id 'maven-publish'
+  id 'signing'
   id 'io.github.gradle-nexus.publish-plugin' version '1.0.0'
 }
 
@@ -79,6 +80,16 @@ nexusPublishing {
             password = getEnvVariable("NEXUS_PW")
         }
     }
+}
+
+Boolean isReleaseVersion = !version.toString().endsWith("SNAPSHOT")
+
+signing {
+    setRequired({
+        isReleaseVersion && gradle.taskGraph.hasTask("publish")
+    })
+    useGpgCmd()
+    sign configurations.archives
 }
 
 jar {
