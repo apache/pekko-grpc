@@ -16,5 +16,6 @@
  * [Deployment](deploy.md)
  * [Troubleshooting](troubleshooting.md)
  * [Release Notes](release-notes/index.md)
+ * [License Report](license-report.md)
 
 @@@

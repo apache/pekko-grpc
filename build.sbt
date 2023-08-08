@@ -229,7 +229,14 @@ lazy val docs = Project(id = "docs", base = file("docs"))
       "scaladoc.org.apache.pekko.grpc.base_url" -> s"/${(Preprocess / siteSubdirName).value}/",
       "javadoc.org.apache.pekko.grpc.base_url" -> "" // @apidoc links to Scaladoc
     ),
-    apidocRootPackage := "org.apache.pekko")
+    apidocRootPackage := "org.apache.pekko",
+    Compile / paradoxMarkdownToHtml / sourceGenerators += Def.taskDyn {
+      val targetFile = (Compile / paradox / sourceManaged).value / "license-report.md"
+
+      (LocalRootProject / dumpLicenseReportAggregate).map { dir =>
+        IO.copy(List(dir / "pekko-grpc-root-licenses.md" -> targetFile)).toList
+      }
+    }.taskValue)
   .settings(
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
     scalaVersion := Dependencies.Versions.CrossScalaForLib.head)
