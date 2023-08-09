@@ -42,7 +42,7 @@ class GradleCompatibilitySpec extends BaseSpec {
         then:
         result.task(":tasks").outcome == TaskOutcome.SUCCESS
         where:
-        gradleVersion << ["5.6", "5.6.4", "6.4.1"]
+        gradleVersion << ["5.6", "5.6.4", "6.9.1"]
     }
 
     @Unroll
