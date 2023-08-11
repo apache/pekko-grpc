@@ -7,6 +7,7 @@
  * This file is part of the Apache Pekko project, derived from Akka.
  */
 
+import net.bzzt.reproduciblebuilds.ReproducibleBuildsPlugin.reproducibleBuildsCheckResolver
 import org.apache.pekko.grpc.Dependencies
 import org.apache.pekko.grpc.Dependencies.Versions.{ scala212, scala213 }
 import org.apache.pekko.grpc.ProjectExtensions._
@@ -25,6 +26,9 @@ commands := commands.value.filterNot { command =>
     name.contains("sonatypeRelease") || name.contains("sonatypeBundleRelease")
   }
 }
+
+ThisBuild / reproducibleBuildsCheckResolver :=
+  "Apache Pekko Staging".at("https://repository.apache.org/content/groups/staging/")
 
 val pekkoPrefix = "pekko-grpc"
 val pekkoGrpcRuntimeName = s"$pekkoPrefix-runtime"
