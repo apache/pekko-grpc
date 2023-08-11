@@ -7,4 +7,4 @@
  * This file is part of the Apache Pekko project, which was derived from Akka.
  */
 
-addSbtPlugin("org.apache.pekko" % "sbt-pekko-grpc" % sys.props("project.version"))
+addSbtPlugin("org.apache.pekko" % "pekko-grpc-sbt-plugin" % sys.props("project.version"))
