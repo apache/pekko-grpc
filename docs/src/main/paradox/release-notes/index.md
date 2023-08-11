@@ -30,6 +30,9 @@ We haven't had to fix any significant bugs that were in Akka gRPC 2.1.6.
   `mavenCentral()` to the `pluginManagement`'s `repositories` entry. See
   [Installation docs](https://pekko.apache.org/docs/pekko-grpc/current/buildtools/gradle.html#installation) for more
   info.
+* The naming convention of the Pekko gRPC sbt plugin has changed, i.e. whereas
+  with Akka the artifact was named `sbt-akka-grpc` with Pekko it's named
+  `pekko-grpc-sbt-plugin` so it's consistent with `pekko-grpc-gradle-plugin`/`pekko-grpc-maven-plugin`.
 
 ### Additions
 

@@ -133,7 +133,7 @@ lazy val sbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
   .disablePlugins(MimaPlugin)
   .settings(Dependencies.sbtPlugin)
   .settings(
-    name := s"sbt-$pekkoPrefix",
+    name := s"$pekkoPrefix-sbt-plugin",
     /** And for scripted tests: */
     scriptedLaunchOpts += ("-Dproject.version=" + version.value),
     scriptedLaunchOpts ++= sys.props.collect { case (k @ "sbt.ivy.home", v) => s"-D$k=$v" }.toSeq,
