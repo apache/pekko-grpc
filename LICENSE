@@ -235,6 +235,7 @@ Copyright (C) Lightbend Inc. <https://www.lightbend.com>
 Pekko gRPC contains code from grpc-java <https://github.com/grpc/grpc-java>
 distributed under the Apache 2.0 license.
 
+- runtime/src/main/protobuf/grpc/reflection/v1alpha/reflection.proto
 - runtime/src/main/scala/org/apache/pekko/grpc/scaladsl/headers/PercentEncoding.scala
 - runtime/src/test/scala/org/apache/pekko/grpc/scaladsl/headers/HeadersSpec.scala
 - interop-tests/src/main/java/io/grpc/testing/integration2/TestServiceClient.java
@@ -253,5 +254,10 @@ distributed under the Apache 2.0 license.
 - benchmark-java/src/main/java/org/apache/pekko/grpc/benchmarks/qps/Configuration.java
 - benchmark-java/src/main/java/org/apache/pekko/grpc/benchmarks/qps/ServerConfiguration.java
 - benchmark-java/src/main/java/org/apache/pekko/grpc/benchmarks/qps/AsyncClient.java
+- benchmark-java/src/main/protobuf/services.proto
+- benchmark-java/src/main/protobuf/control.proto
+- benchmark-java/src/main/protobuf/messages.proto
+- benchmark-java/src/main/protobuf/payloads.proto
+- benchmark-java/src/main/protobuf/stats.proto
 
 Copyright 2014 The gRPC Authors
