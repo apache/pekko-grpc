@@ -264,7 +264,7 @@ Copyright 2014 The gRPC Authors
 
 ---------------
 
-Pekko gRPC contains a sample proto file from cloudstateio/dotnet-suppor
+Pekko gRPC contains a sample proto file from cloudstateio/dotnet-support
 <https://github.com/cloudstateio/dotnet-support> distributed under the Apache 2.0 license.
 
  - interop-tests/src/main/protobuf/crdt-example.proto
