@@ -14,7 +14,7 @@ sbt
 :   @@@vars
 ```scala
 // in project/plugins.sbt:
-addSbtPlugin("org.apache.pekko" % "sbt-pekko-grpc" % "$project.version$")
+addSbtPlugin("org.apache.pekko" % "pekko-grpc-sbt-plugin" % "$project.version$")
 // in build.sbt:
 enablePlugins(PekkoGrpcPlugin)
 ```
