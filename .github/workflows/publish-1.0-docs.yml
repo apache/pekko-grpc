@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  publish-1.0-docs:
+  publish-docs:
     name: sbt publish
     runs-on: ubuntu-latest
     if: github.repository == 'apache/incubator-pekko-grpc'
