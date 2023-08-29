@@ -30,8 +30,6 @@ object Common extends AutoPlugin {
 
   override def globalSettings =
     Seq(
-      resolvers ++= Resolver.sonatypeOssRepos("staging"),
-      resolvers += Resolver.ApacheMavenSnapshotsRepo,
       homepage := Some(url("https://pekko.apache.org//")),
       scmInfo := Some(ScmInfo(url("https://github.com/apache/incubator-pekko-grpc"),
         "git@github.com:apache/incubator-pekko-grpc")),
