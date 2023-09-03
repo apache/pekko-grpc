@@ -31,8 +31,10 @@ enablePlugins(PekkoGrpcPlugin)
 // They have different "java_outer_classname" options, but scalapb does not look at it:
 // https://github.com/scalapb/ScalaPB/issues/243#issuecomment-279769902
 // Therefore we exclude it here.
-PB.generate / excludeFilter := new SimpleFileFilter((f: File) =>
-  f.getAbsolutePath.endsWith("google/protobuf/empty.proto"))
+PB.generate / excludeFilter := new SimpleFileFilter(f => {
+  val path = f.getAbsolutePath
+  path.contains("envoy") || path.endsWith("google/protobuf/empty.proto")
+})
 
 //#sources-both
 // This is the default - both client and server
