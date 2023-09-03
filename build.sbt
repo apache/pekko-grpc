@@ -163,6 +163,8 @@ lazy val interopTests = Project(id = "interop-tests", base = file("interop-tests
     ReflectiveCodeGen.generatedLanguages := Seq("Scala", "Java"),
     ReflectiveCodeGen.extraGenerators := Seq("ScalaMarshallersCodeGenerator"),
     ReflectiveCodeGen.codeGeneratorSettings ++= Seq("server_power_apis"),
+    // grpc 1.53.0 brings in extra unnecessary proto files that cause build issues
+    PB.generate / excludeFilter := new SimpleFileFilter(f => f.getAbsolutePath().startsWith("envoy")),
     PB.protocVersion := Dependencies.Versions.googleProtoc,
     // We need to be able to publish locally in order for sbt interopt tests to work
     // however this sbt project should not be published to an actual repository
