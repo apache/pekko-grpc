@@ -31,12 +31,12 @@ object Dependencies {
     val pekkoHttp = "1.0.0"
     val pekkoHttpBinary = "current"
 
-    val grpc = "1.56.1" // checked synced by VersionSyncCheckPlugin
+    val grpc = "1.53.0" // checked synced by VersionSyncCheckPlugin
     // Even referenced explicitly in the sbt-plugin's sbt-tests
     // If changing this, remember to update protoc plugin version to align in
     // maven-plugin/src/main/maven/plugin.xml and org.apache.pekko.grpc.sbt.PekkoGrpcPlugin
     val googleProtoc = "3.20.1" // checked synced by VersionSyncCheckPlugin
-    val googleProtobufJava = "3.22.5"
+    val googleProtobufJava = "3.21.12"
 
     val scalaTest = "3.2.15"
 
