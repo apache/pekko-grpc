@@ -13,7 +13,7 @@ scalaVersion := "2.12.18"
 
 organization := "org.apache.pekko"
 
-val grpcVersion = "1.48.1" // checked synced by VersionSyncCheckPlugin
+val grpcVersion = "1.54.2" // checked synced by VersionSyncCheckPlugin
 
 libraryDependencies ++= Seq(
   "io.grpc" % "grpc-interop-testing" % grpcVersion % "protobuf-src",
@@ -31,8 +31,11 @@ enablePlugins(PekkoGrpcPlugin)
 // They have different "java_outer_classname" options, but scalapb does not look at it:
 // https://github.com/scalapb/ScalaPB/issues/243#issuecomment-279769902
 // Therefore we exclude it here.
-PB.generate / excludeFilter := new SimpleFileFilter((f: File) =>
-  f.getAbsolutePath.endsWith("google/protobuf/empty.proto"))
+PB.generate / excludeFilter := new SimpleFileFilter(f => {
+  val path = f.getAbsolutePath
+  val ps = java.io.File.pathSeparator
+  path.contains("envoy") || path.endsWith(s"google${ps}protobuf${ps}empty.proto")
+})
 
 //#sources-both
 // This is the default - both client and server
