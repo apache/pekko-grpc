@@ -33,7 +33,8 @@ enablePlugins(PekkoGrpcPlugin)
 // Therefore we exclude it here.
 PB.generate / excludeFilter := new SimpleFileFilter(f => {
   val path = f.getAbsolutePath
-  path.contains("envoy") || path.endsWith("empty.proto")
+  val ps = java.io.File.pathSeparator
+  path.contains("envoy") || path.endsWith(s"google${ps}protobuf${ps}empty.proto")
 })
 
 //#sources-both
