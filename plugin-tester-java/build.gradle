@@ -35,3 +35,7 @@ dependencies {
   testImplementation "org.scalatest:scalatest_${scalaBinaryVersion}:3.2.15"
   testImplementation "org.scalatestplus:junit-4-13_${scalaBinaryVersion}:3.2.15.0"
 }
+
+tasks.withType(Copy).configureEach {
+  duplicatesStrategy = DuplicatesStrategy.WARN
+}
