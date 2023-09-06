@@ -153,7 +153,7 @@ jobs:
           cp .jvmopts-ci .jvmopts
           sbt codegen/publishM2 scalapb-protoc-plugin/publishM2 +runtime/publishM2
           cd gradle-plugin
-          ./gradlew clean publishToMavenLocal --console=plain --info --stacktrace
+          ./gradlew clean test publishToMavenLocal --console=plain --info --stacktrace
           find ~/.m2 | grep gradle
 
       - name: Test Gradle Java ${{ matrix.SCALA_VERSION }}
