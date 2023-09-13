@@ -55,10 +55,15 @@ object Dependencies {
     val scalapbRuntime = ("com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion)
       .exclude("io.grpc", "grpc-netty")
 
-    val grpcCore = "io.grpc" % "grpc-core" % Versions.grpc
-    val grpcStub = "io.grpc" % "grpc-stub" % Versions.grpc
-    val grpcNettyShaded = "io.grpc" % "grpc-netty-shaded" % Versions.grpc
-    val grpcProtobuf = "io.grpc" % "grpc-protobuf" % Versions.grpc
+    // we force the use of a newer version of guava due to CVEs
+    val grpcCore = ("io.grpc" % "grpc-core" % Versions.grpc)
+      .excludeAll("com.google.guava" % "guava")
+    val grpcProtobuf = ("io.grpc" % "grpc-protobuf" % Versions.grpc)
+      .excludeAll("com.google.guava" % "guava")
+    val grpcNettyShaded = ("io.grpc" % "grpc-netty-shaded" % Versions.grpc)
+      .excludeAll("com.google.guava" % "guava")
+    val grpcStub = ("io.grpc" % "grpc-stub" % Versions.grpc)
+      .excludeAll("com.google.guava" % "guava")
 
     // Excluding grpc-alts works around a complex resolution bug
     // Details are in https://github.com/akka/akka-grpc/pull/469
@@ -76,15 +81,16 @@ object Dependencies {
 
   object Test {
     final val Test = sbt.Test
-    val scalaTest = "org.scalatest" %% "scalatest" % Versions.scalaTest % "test" // Apache V2
-    val scalaTestPlusJunit = "org.scalatestplus" %% "junit-4-13" % (Versions.scalaTest + ".0") % "test" // Apache V2
-    val pekkoDiscoveryConfig = "org.apache.pekko" %% "pekko-discovery" % Versions.pekko % "test"
-    val pekkoTestkit = "org.apache.pekko" %% "pekko-testkit" % Versions.pekko % "test"
-    val pekkoStreamTestkit = "org.apache.pekko" %% "pekko-stream-testkit" % Versions.pekko % "test"
+    val scalaTest = "org.scalatest" %% "scalatest" % Versions.scalaTest % Test // Apache V2
+    val scalaTestPlusJunit = "org.scalatestplus" %% "junit-4-13" % (Versions.scalaTest + ".0") % Test // Apache V2
+    val pekkoDiscoveryConfig = "org.apache.pekko" %% "pekko-discovery" % Versions.pekko % Test
+    val pekkoTestkit = "org.apache.pekko" %% "pekko-testkit" % Versions.pekko % Test
+    val pekkoStreamTestkit = "org.apache.pekko" %% "pekko-stream-testkit" % Versions.pekko % Test
   }
 
   object Runtime {
     val logback = "ch.qos.logback" % "logback-classic" % "1.2.11" % "runtime" // Eclipse 1.0
+    val guavaAndroid = "com.google.guava" % "guava" % "32.1.2-android" % "runtime"
   }
 
   object Protobuf {
@@ -102,6 +108,7 @@ object Dependencies {
     Compile.scalapbCompilerPlugin,
     Protobuf.protobufJava, // or else scalapb pulls older version in transitively
     Compile.grpcProtobuf,
+    Runtime.guavaAndroid, // forces a newer version than grpc-protobuf defaults too
     Test.scalaTest)
 
   val runtime = l ++= Seq(
@@ -109,14 +116,15 @@ object Dependencies {
     Protobuf.protobufJava, // or else scalapb pulls older version in transitively
     Compile.grpcProtobuf,
     Compile.grpcCore,
-    Compile.grpcStub % "provided", // comes from the generators
+    Compile.grpcStub % Provided, // comes from the generators
     Compile.grpcNettyShaded,
+    Runtime.guavaAndroid, // forces a newer version than grpc-core/grpc-protobuf default too
     Compile.pekkoStream,
     Compile.pekkoHttpCore,
     Compile.pekkoHttp,
     Compile.pekkoDiscovery,
     Compile.pekkoHttpCors,
-    Compile.pekkoHttp % "provided",
+    Compile.pekkoHttp % Provided,
     Test.pekkoTestkit,
     Test.pekkoStreamTestkit,
     Test.scalaTest,
@@ -149,6 +157,7 @@ object Dependencies {
   val pluginTester = l ++= Seq(
     // usually automatically added by `suggestedDependencies`, which doesn't work with ReflectiveCodeGen
     Compile.grpcStub,
+    Runtime.guavaAndroid,
     Compile.pekkoHttpCors,
     Compile.pekkoHttp,
     Test.scalaTest,
