@@ -34,7 +34,7 @@ import pekko.grpc.PekkoGrpcGenerated
 @{
   def withSingleResponse(stmt: String) = Set("import pekko.grpc.scaladsl.SingleResponseRequestBuilder", stmt)
   def withStreamResponse(stmt: String) = Set("import pekko.grpc.scaladsl.StreamResponseRequestBuilder", stmt)
-  service.methods.flatMap { method: org.apache.pekko.grpc.gen.scaladsl.Method =>
+  service.methods.flatMap { (method: org.apache.pekko.grpc.gen.scaladsl.Method) =>
 
     val statements = method.methodType match {
       case org.apache.pekko.grpc.gen.Unary => withSingleResponse("import pekko.grpc.internal.ScalaUnaryRequestBuilder")

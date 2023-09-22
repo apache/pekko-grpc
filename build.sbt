@@ -65,8 +65,16 @@ lazy val codegen = Project(id = "codegen", base = file("codegen"))
     (assembly / mainClass) := Some("org.apache.pekko.grpc.gen.Main"),
     (assembly / assemblyOption) := (assembly / assemblyOption).value.withPrependShellScript(
       Some(sbtassembly.AssemblyPlugin.defaultUniversalScript(shebang = true))),
-    crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
-    scalaVersion := scala212)
+    crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
+    scalaVersion := scala212,
+    Compile / unmanagedSourceDirectories ++= {
+      if (scalaBinaryVersion.value == "2.12") {
+        Seq.empty
+      } else {
+        Seq(
+          project.base / "src" / "main" / "scala-2.13+")
+      }
+    })
   .settings(addArtifact(Compile / assembly / artifact, assembly))
   .settings(addArtifact(Artifact(pekkoGrpcCodegenId, "bat", "bat", "bat"), mkBatAssemblyTask))
 
