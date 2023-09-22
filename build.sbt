@@ -29,6 +29,8 @@ commands := commands.value.filterNot { command =>
 
 ThisBuild / reproducibleBuildsCheckResolver := Resolver.ApacheMavenStagingRepo
 
+ThisBuild / resolvers += Resolver.mavenLocal
+
 val pekkoPrefix = "pekko-grpc"
 val pekkoGrpcRuntimeName = s"$pekkoPrefix-runtime"
 
