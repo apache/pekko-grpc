@@ -65,7 +65,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        SCALA_VERSION: [2.12, 2.13, 3.3]
+        SCALA_VERSION: [2.12.18, 2.13.11, 3.3.1]
         JAVA_VERSION: [8, 11]
     steps:
       - name: Checkout
@@ -83,8 +83,9 @@ jobs:
         uses: coursier/cache-action@v6
 
       - name: Compile and test for JDK ${{ matrix.JAVA_VERSION }}, Scala ${{ matrix.SCALA_VERSION }}
-        run: sbt ++${{ matrix.SCALA_VERSION }}.* test
-
+        run: |-
+          sbt ++${{ matrix.SCALA_VERSION }} test
+          sbt ++${{ matrix.SCALA_VERSION }}! codegen/test
 
   test-sbt:
     name: sbt scripted tests

@@ -29,8 +29,6 @@ commands := commands.value.filterNot { command =>
 
 ThisBuild / reproducibleBuildsCheckResolver := Resolver.ApacheMavenStagingRepo
 
-ThisBuild / resolvers += Resolver.mavenLocal
-
 val pekkoPrefix = "pekko-grpc"
 val pekkoGrpcRuntimeName = s"$pekkoPrefix-runtime"
 
@@ -67,7 +65,7 @@ lazy val codegen = Project(id = "codegen", base = file("codegen"))
     (assembly / mainClass) := Some("org.apache.pekko.grpc.gen.Main"),
     (assembly / assemblyOption) := (assembly / assemblyOption).value.withPrependShellScript(
       Some(sbtassembly.AssemblyPlugin.defaultUniversalScript(shebang = true))),
-    crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
+    crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
     scalaVersion := scala212,
     Compile / unmanagedSourceDirectories ++= {
       if (scalaBinaryVersion.value == "2.12") {
