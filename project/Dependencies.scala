@@ -91,7 +91,7 @@ object Dependencies {
 
   object Runtime {
     val logback = "ch.qos.logback" % "logback-classic" % "1.2.11" % "runtime" // Eclipse 1.0
-    val guavaAndroid = "com.google.guava" % "guava" % "32.1.2-android" % "runtime"
+    val guava = "com.google.guava" % "guava" % "32.1.2-jre" % "runtime"
   }
 
   object Protobuf {
@@ -109,7 +109,7 @@ object Dependencies {
     Compile.scalapbCompilerPlugin,
     Protobuf.protobufJava, // or else scalapb pulls older version in transitively
     Compile.grpcProtobuf,
-    Runtime.guavaAndroid, // forces a newer version than grpc-protobuf defaults too
+    Runtime.guava, // forces a newer version than grpc-protobuf defaults too
     Test.scalaTest)
 
   val runtime = l ++= Seq(
@@ -119,7 +119,7 @@ object Dependencies {
     Compile.grpcCore,
     Compile.grpcStub % Provided, // comes from the generators
     Compile.grpcNettyShaded,
-    Runtime.guavaAndroid, // forces a newer version than grpc-core/grpc-protobuf default too
+    Runtime.guava, // forces a newer version than grpc-core/grpc-protobuf default too
     Compile.pekkoStream,
     Compile.pekkoHttpCore,
     Compile.pekkoHttp,
@@ -158,7 +158,7 @@ object Dependencies {
   val pluginTester = l ++= Seq(
     // usually automatically added by `suggestedDependencies`, which doesn't work with ReflectiveCodeGen
     Compile.grpcStub,
-    Runtime.guavaAndroid,
+    Runtime.guava,
     Compile.pekkoHttpCors,
     Compile.pekkoHttp,
     Test.scalaTest,
