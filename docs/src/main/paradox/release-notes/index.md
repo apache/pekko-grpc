@@ -1,5 +1,23 @@
 # Release Notes
 
+## 1.0.1
+
+A minor dependency change release. The main aim is to avoid relying on older dependency versions, especially when
+there are security issues published for those versions.
+
+### Additions
+
+* Release Scala 2.13 and Scala 3 versions of pekko-grpc-codegen. This jar is used as a sbt plugin but it is useful to also support other Scala versions so other build frameworks can use use it ([`#180`](https://github.com/apache/incubator-pekko-grpc/issues/180)).
+
+### Dependency Upgrades
+
+* Use Gradle 7 when building pekko-grpc-gradle-plugin
+* upgrade protobuf-gradle-plugin to 0.9.4
+* protobuf-java 3.21.12
+* io.grpc dependencies upgraded to 1.54.2
+* guava 32.1.2
+* Scala 3 dependency changed to 3.3.1
+
 ## 1.0.0
 Apache Pekko gRPC 1.0.0 is based on Akka gRPC 2.1.6. Pekko came about as a result of Lightbend's decision to make future
 Akka releases under a [Business Software License](https://www.lightbend.com/blog/why-we-are-changing-the-license-for-akka),
