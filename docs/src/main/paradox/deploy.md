@@ -12,4 +12,4 @@ When using HTTPS and running your application on a JDK 8 prior to version 1.8.0_
 
 ## Example: Kubernetes
 
-As an example, [akka-grpc-sample-kubernetes-scala](https://developer.lightbend.com/start/?group=akka&project=akka-grpc-sample-kubernetes-scala) is a complete project consisting of two applications (a gRPC service and an HTTP service that consumes the gRPC service) that can be deployed together in Kubernetes.
+As an example, [pekko-grpc-sample-kubernetes-scala](https://pekko.apache.org/docs/pekko-samples/current/pekko-sample-grpc-kubernetes-scala/) is a complete project consisting of two applications (a gRPC service and an HTTP service that consumes the gRPC service) that can be deployed together in Kubernetes.
