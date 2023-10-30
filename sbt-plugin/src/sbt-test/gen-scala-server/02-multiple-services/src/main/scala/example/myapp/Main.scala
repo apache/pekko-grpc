@@ -15,7 +15,6 @@ import javax.net.ssl.{ KeyManagerFactory, SSLContext }
 
 import org.apache.pekko
 import pekko.actor.ActorSystem
-import pekko.stream.ActorMaterializer
 import pekko.grpc.scaladsl.ServiceHandler
 import pekko.http.scaladsl.{ Http, HttpsConnectionContext }
 
@@ -27,7 +26,6 @@ import example.myapp.helloworld.grpc.GreeterServiceHandler
 
 object Main extends App {
   implicit val system = ActorSystem()
-  implicit val mat = ActorMaterializer()
 
   val echoHandler = EchoServiceHandler.partial(new EchoServiceImpl)
   val greeterHandler = GreeterServiceHandler.partial(new GreeterServiceImpl)

@@ -35,7 +35,6 @@ object Main extends App {
     .withFallback(ConfigFactory.defaultApplication())
   implicit val sys = ActorSystem("HelloWorld", conf)
 
-  implicit val mat: Materializer = ActorMaterializer()
   implicit val ec: ExecutionContext = sys.dispatcher
 
   // #server-reflection
