@@ -28,9 +28,9 @@ object Dependencies {
     // themselves. For more information see
     // https://pekko.apache.org//docs/pekko/current/project/downstream-upgrade-strategy.html
     val pekko = "1.0.1"
-    val pekkoBinary = "current"
+    val pekkoBinary = "1.0"
     val pekkoHttp = "1.0.0"
-    val pekkoHttpBinary = "current"
+    val pekkoHttpBinary = "1.0"
 
     val grpc = "1.54.2" // checked synced by VersionSyncCheckPlugin
     // Even referenced explicitly in the sbt-plugin's sbt-tests
