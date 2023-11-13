@@ -88,7 +88,8 @@ lazy val runtime = Project(id = "runtime", base = file("runtime"))
   .settings(
     name := pekkoGrpcRuntimeName,
     mimaFailOnNoPrevious := true,
-    mimaPreviousArtifacts := Set.empty, // temporarily disable mima checks
+    mimaPreviousArtifacts := previousStableVersion.value.map(v =>
+      Set(organization.value %% "pekko-grpc-runtime" % v)).getOrElse(Set.empty),
     AutomaticModuleName.settings("pekko.grpc.runtime"),
     ReflectiveCodeGen.generatedLanguages := Seq("Scala"),
     ReflectiveCodeGen.extraGenerators := Seq("ScalaMarshallersCodeGenerator"),
