@@ -1,4 +1,4 @@
-# Pekko gRPC
+# Apache Pekko gRPC
 
 @@toc
 
