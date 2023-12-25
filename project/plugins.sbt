@@ -26,7 +26,7 @@ addSbtPlugin("net.bzzt" % "sbt-reproducible-builds" % "0.31")
 addSbtPlugin("pl.project13.scala" % "sbt-jmh" % "0.4.3")
 addSbtPlugin("com.dwijnand" % "sbt-dynver" % "4.1.1")
 addSbtPlugin("org.mdedetrich" % "sbt-apache-sonatype" % "0.1.10")
-addSbtPlugin("com.github.pjfanning" % "sbt-source-dist" % "0.1.10")
+addSbtPlugin("com.github.pjfanning" % "sbt-source-dist" % "0.1.11")
 addSbtPlugin("com.github.sbt" % "sbt-license-report" % "1.6.1")
 
 // See https://github.com/akka/akka-http/pull/3995 and https://github.com/akka/akka-http/pull/3995#issuecomment-1026978593
