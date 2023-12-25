@@ -184,6 +184,7 @@ object NettyClientUtils {
   private def createNettySslContext(javaSslContext: SSLContext): SslContext = {
     import io.grpc.netty.shaded.io.netty.handler.ssl.{
       ApplicationProtocolConfig,
+      ApplicationProtocolNames,
       ClientAuth,
       IdentityCipherSuiteFilter,
       JdkSslContext
@@ -195,8 +196,12 @@ object NettyClientUtils {
       /* boolean isClient */ true,
       /* Iterable<String> ciphers */ null, // use JDK defaults (null is accepted as indicated in constructor Javadoc)
       IdentityCipherSuiteFilter.INSTANCE,
-      /* ApplicationProtocolConfig apn */ ApplicationProtocolConfig.DISABLED, // use JDK default (null would also be acceptable, DISABLED config will select the NONE protocol and thus the JdkDefaultApplicationProtocolNegotiator)
-      ClientAuth.NONE, // server-only option, which is ignored as isClient=true (as indicated in constructor Javadoc)
+      new ApplicationProtocolConfig(
+        ApplicationProtocolConfig.Protocol.ALPN,
+        ApplicationProtocolConfig.SelectorFailureBehavior.NO_ADVERTISE,
+        ApplicationProtocolConfig.SelectedListenerFailureBehavior.ACCEPT,
+        ApplicationProtocolNames.HTTP_2),
+      ClientAuth.OPTIONAL, // server-only option, which is ignored as isClient=true (as indicated in constructor Javadoc)
       /* String[] protocols */ null, // use JDK defaults (null is accepted as indicated in constructor Javadoc)
       /* boolean startTls */ false)
   }
