@@ -182,10 +182,7 @@ object NettyClientUtils {
    */
   @InternalApi
   private def createNettySslContext(javaSslContext: SSLContext): SslContext = {
-    import io.grpc.netty.shaded.io.netty.handler.ssl.{
-      JdkSslContext,
-      SslProvider
-    }
+    import io.grpc.netty.shaded.io.netty.handler.ssl.{ JdkSslContext, SslProvider }
     import java.lang.reflect.Field
 
     // This is a hack for situations where the SSLContext is given.
