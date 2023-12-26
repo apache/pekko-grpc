@@ -22,7 +22,7 @@ import scala.concurrent.duration._
 
 object AuthenticatedGreeterClient {
   def main(args: Array[String]): Unit = {
-    // Boot akka
+    // Boot pekko
     implicit val sys: ActorSystem = ActorSystem("HelloWorldClient")
 
     // Take details how to connect to the service from the config.

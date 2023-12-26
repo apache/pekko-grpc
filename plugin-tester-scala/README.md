@@ -9,11 +9,11 @@ The version must either be published to Gradle plugin portal or to local maven (
 $ ./gradlew clean test -Dpekko.grpc.project.version=1.0.0
 ```
 
-## Use different versions of Gradle plugin and akka grpc libraries.
+## Use different versions of Gradle plugin and pekko grpc libraries.
 
-Sometimes, it may be required to only tests changes in plugin itself, without publishing a new version of akka grpc libraries to repository.
-There's additional parameter for this that may override akka grpc libraries used by plugin.
-Libraries must be published to akka grpc release or snapshot repo.
+Sometimes, it may be required to only tests changes in plugin itself, without publishing a new version of pekko grpc libraries to repository.
+There's additional parameter for this that may override pekko grpc libraries used by plugin.
+Libraries must be published to pekko grpc release or snapshot repo.
 
 [source,sh]
 ```shell script
