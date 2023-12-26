@@ -46,6 +46,8 @@ object NettyClientUtils {
   def createChannel(settings: GrpcClientSettings, log: LoggingAdapter)(
       implicit ec: ExecutionContext): InternalChannel = {
 
+    if (1==1) throw new RuntimeException("deliberate")
+
     @nowarn("cat=deprecation")
     var builder =
       NettyChannelBuilder
