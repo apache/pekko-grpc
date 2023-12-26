@@ -20,6 +20,7 @@ ThisBuild / apacheSonatypeProjectProfile := "pekko"
 sourceDistName := "apache-pekko-grpc"
 sourceDistIncubating := true
 ThisBuild / versionScheme := Some(VersionScheme.SemVerSpec)
+ThisBuild / resolvers += Resolver.ApacheMavenSnapshotsRepo
 
 commands := commands.value.filterNot { command =>
   command.nameOption.exists { name =>
