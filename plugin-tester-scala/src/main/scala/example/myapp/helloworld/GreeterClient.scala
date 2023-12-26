@@ -27,7 +27,7 @@ import scala.util.{ Failure, Success }
 
 object GreeterClient {
   def main(args: Array[String]): Unit = {
-    // Boot akka
+    // Boot pekko
     implicit val sys: ActorSystem = ActorSystem("HelloWorldClient")
     implicit val ec: ExecutionContext = sys.dispatcher
 

@@ -22,7 +22,7 @@ import scala.concurrent.duration._
 
 object LoggingErrorHandlingGreeterClient {
   def main(args: Array[String]): Unit = {
-    // Boot akka
+    // Boot pekko
     implicit val sys = ActorSystem("LoggingErrorHandlingGreeterClient")
 
     // Take details how to connect to the service from the config.

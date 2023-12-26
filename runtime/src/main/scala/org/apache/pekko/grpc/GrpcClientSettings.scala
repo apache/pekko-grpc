@@ -57,14 +57,14 @@ object GrpcClientSettings {
    */
   def fromConfig(clientName: String)(implicit actorSystem: ClassicActorSystemProvider): GrpcClientSettings = {
     val system = actorSystem.classicSystem
-    val akkaGrpcClientConfig = system.settings.config.getConfig("pekko.grpc.client")
+    val pekkoGrpcClientConfig = system.settings.config.getConfig("pekko.grpc.client")
     val clientConfig = {
       // Use config named "*" by default
-      val defaultServiceConfig = akkaGrpcClientConfig.getConfig("\"*\"")
+      val defaultServiceConfig = pekkoGrpcClientConfig.getConfig("\"*\"")
       require(
-        akkaGrpcClientConfig.hasPath(s""""$clientName""""),
+        pekkoGrpcClientConfig.hasPath(s""""$clientName""""),
         s"Config path `pekko.grpc.client.$clientName` does not exist")
-      akkaGrpcClientConfig.getConfig(s""""$clientName"""").withFallback(defaultServiceConfig)
+      pekkoGrpcClientConfig.getConfig(s""""$clientName"""").withFallback(defaultServiceConfig)
     }
 
     GrpcClientSettings.fromConfig(clientConfig)

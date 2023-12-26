@@ -51,7 +51,7 @@ trait JavaClientCodeGenerator extends JavaCodeGenerator {
         BuildInfo.organization,
         BuildInfo.runtimeArtifactName + "_" + scalaBinaryVersion.prefix,
         BuildInfo.version),
-      // TODO: remove grpc-stub dependency once we have a akka-http based client #193
+      // TODO: remove grpc-stub dependency once we have a pekko-http based client #193
       Artifact("io.grpc", "grpc-stub", BuildInfo.grpcVersion))
 }
 
