@@ -194,7 +194,7 @@ object NettyClientUtils {
       GrpcSslContexts.configure(GrpcSslContexts.forClient, SslProvider.JDK).build.asInstanceOf[JdkSslContext]
 
     // Patch the SSLContext value inside the JdkSslContext object
-    val nettySslContextField: Field = classOf[JdkSslContext].getDeclaredField("sslContext")
+    val nettySslContextField: Field = classOf[JdkSslContext].getDeclaredField("sslContextx")
     nettySslContextField.setAccessible(true)
     nettySslContextField.set(nettySslContext, javaSslContext)
 
