@@ -17,9 +17,13 @@ import io.grpc.testing.integration.TestServiceHandlerFactory
 
 class GrpcInteropIoWithIoSpec extends GrpcInteropTests(Servers.IoGrpc, Clients.IoGrpc)
 class GrpcInteropIoWithPekkoNettyScalaSpec extends GrpcInteropTests(Servers.IoGrpc, Clients.PekkoNetty.Scala)
+class GrpcInteropIoWithPekkoNettyScalaWithSslContextSpec
+    extends GrpcInteropTests(Servers.IoGrpc, Clients.PekkoNetty.ScalaWithSslContext)
 class GrpcInteropIoWithPekkoNettyJavaSpec extends GrpcInteropTests(Servers.IoGrpc, Clients.PekkoNetty.Java)
 class GrpcInteropIoWithPekkkoHttpScalaSpec extends GrpcInteropTests(Servers.IoGrpc, Clients.PekkoHttp.Scala)
-//class GrpcInteropIoWithpekkoHttpJavaSpec extends GrpcInteropTests(Servers.IoGrpc, Clients.PekkoHttp.Java)
+class GrpcInteropIoWithPekkkoHttpScalaWithSslContextSpec
+    extends GrpcInteropTests(Servers.IoGrpc, Clients.PekkoHttp.ScalaWithSslContext)
+//class GrpcInteropIoWithPekkoHttpJavaSpec extends GrpcInteropTests(Servers.IoGrpc, Clients.PekkoHttp.Java)
 
 class GrpcInteropPekkoScalaWithIoSpec extends GrpcInteropTests(Servers.Pekko.Scala, Clients.IoGrpc)
 class GrpcInteropPekkoScalaWithPekkoNettyScalaSpec
@@ -48,12 +52,14 @@ object Clients {
   val IoGrpc = IoGrpcJavaClientProvider
   object PekkoNetty {
     val Java = PekkoNettyClientProviderJava$
-    val Scala = new PekkoClientProviderScala("netty")
+    val Scala = new PekkoClientProviderScala("netty", false)
+    val ScalaWithSslContext = new PekkoClientProviderScala("netty", true)
   }
   object PekkoHttp {
     // FIXME: let's have Scala stable and we'll do Java later.
     // val Java = PekkoHttpClientProviderJava
-    val Scala = new PekkoClientProviderScala("pekko-http")
+    val Scala = new PekkoClientProviderScala("pekko-http", false)
+    val ScalaWithSslContext = new PekkoClientProviderScala("pekko-http", true)
   }
 }
 
@@ -70,10 +76,11 @@ object PekkoHttpServerProviderJava$ extends PekkoHttpServerProvider {
   })
 }
 
-class PekkoClientProviderScala(backend: String) extends PekkoClientProvider {
+class PekkoClientProviderScala(backend: String, testWithSslContext: Boolean) extends PekkoClientProvider {
   val label: String = s"pekko-grpc scala client tester $backend"
 
-  def client = PekkoGrpcClientScala(settings => implicit sys => new PekkoGrpcScalaClientTester(settings, backend))
+  def client = PekkoGrpcClientScala(settings =>
+    implicit sys => new PekkoGrpcScalaClientTester(settings, backend, testWithSslContext))
 }
 
 object PekkoNettyClientProviderJava$ extends PekkoClientProvider {

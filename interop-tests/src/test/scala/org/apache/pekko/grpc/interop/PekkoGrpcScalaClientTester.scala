@@ -13,8 +13,6 @@
 
 package org.apache.pekko.grpc.interop
 
-import java.io.InputStream
-
 import org.apache.pekko
 import pekko.actor.ActorSystem
 import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, SSLContextUtils }
@@ -29,6 +27,8 @@ import io.grpc.{ Status, StatusRuntimeException }
 import org.junit.Assert._
 import org.scalatest.matchers.should.Matchers._
 
+import java.io.InputStream
+import javax.net.ssl.SSLContext
 import scala.concurrent.duration._
 import scala.concurrent.{ Await, Future }
 import scala.util.control.NoStackTrace
@@ -41,8 +41,8 @@ import scala.util.control.NoStackTrace
  * The same implementation is also be found as part of the 'scripted' tests at
  * /sbt-plugin/src/sbt-test/gen-scala-server/00-interop/src/test/scala/org/apache/pekko/grpc/PekkoGrpcClientTester.scala
  */
-class PekkoGrpcScalaClientTester(val settings: Settings, backend: String)(implicit system: ActorSystem)
-    extends ClientTester {
+class PekkoGrpcScalaClientTester(val settings: Settings, backend: String, testWithSslContext: Boolean)(
+    implicit system: ActorSystem) extends ClientTester {
   private var client: TestServiceClient = null
   private var clientUnimplementedService: UnimplementedServiceClient = null
   private implicit val mat: Materializer = SystemMaterializer(system).materializer
@@ -50,12 +50,20 @@ class PekkoGrpcScalaClientTester(val settings: Settings, backend: String)(implic
   private val awaitTimeout = 15.seconds
 
   def setUp(): Unit = {
-    val grpcSettings = GrpcClientSettings
+    val trustManager = SSLContextUtils.trustManagerFromResource("/certs/ca.pem")
+    val baseGrpcSettings = GrpcClientSettings
       .connectToServiceAt(settings.serverHost, settings.serverPort)
       .withBackend(backend)
       .withOverrideAuthority(settings.serverHostOverride)
       .withTls(settings.useTls)
-      .withTrustManager(SSLContextUtils.trustManagerFromResource("/certs/ca.pem"))
+
+    val grpcSettings = if (testWithSslContext) {
+      val sslContext = SSLContext.getInstance("TLS")
+      sslContext.init(null, Array(trustManager), null)
+      baseGrpcSettings.withSslContext(sslContext)
+    } else {
+      baseGrpcSettings.withTrustManager(trustManager)
+    }
 
     client = TestServiceClient(grpcSettings)
     clientUnimplementedService = UnimplementedServiceClient(grpcSettings)
