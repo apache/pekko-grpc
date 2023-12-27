@@ -1,5 +1,17 @@
 # Release Notes
 
+## 1.0.2
+
+A minor bug fix and dependency change release.
+
+### Bug Fixes
+
+* Revert Netty SSL Context change that was added in akka-grpc 2.1.6 that broke the support for Netty with custom SSL Contexts ([PR200](https://github.com/apache/incubator-pekko-grpc/pull/200))
+
+### Dependency Upgrades
+
+* Use sbt-twirl from `org.playframework.twirl`, the new groupId for Play Twirl releases ([PR196](https://github.com/apache/incubator-pekko-grpc/pull/196))
+
 ## 1.0.1
 
 A minor dependency change release. The main aim is to avoid relying on older dependency versions, especially when
