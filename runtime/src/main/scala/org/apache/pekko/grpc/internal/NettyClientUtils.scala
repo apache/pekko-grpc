@@ -46,8 +46,6 @@ object NettyClientUtils {
   def createChannel(settings: GrpcClientSettings, log: LoggingAdapter)(
       implicit ec: ExecutionContext): InternalChannel = {
 
-    if (1==1) throw new RuntimeException("deliberate")
-
     @nowarn("cat=deprecation")
     var builder =
       NettyChannelBuilder
@@ -67,6 +65,7 @@ object NettyClientUtils {
     if (!settings.useTls)
       builder = builder.usePlaintext()
     else {
+      if (1==1) throw new RuntimeException(s"deliberate sslContext=${settings.sslContext.nonEmpty}")
       builder = builder.negotiationType(NegotiationType.TLS)
       builder = settings.sslContext match {
         case Some(sslContext) =>
