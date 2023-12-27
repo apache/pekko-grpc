@@ -20,6 +20,7 @@ ThisBuild / apacheSonatypeProjectProfile := "pekko"
 sourceDistName := "apache-pekko-grpc"
 sourceDistIncubating := true
 ThisBuild / versionScheme := Some(VersionScheme.SemVerSpec)
+ThisBuild / resolvers += Resolver.ApacheMavenSnapshotsRepo
 
 commands := commands.value.filterNot { command =>
   command.nameOption.exists { name =>
@@ -313,3 +314,11 @@ lazy val root = Project(id = "pekko-grpc", base = file("."))
     crossScalaVersions := Nil,
     scalaVersion := scala212)
   .enablePlugins(NoPublish)
+
+Global / onLoad := (Global / onLoad).value.andThen { s =>
+  val v = version.value
+  val log = sLog.value
+  log.info(
+    s"Building Pekko gRPC $v against Pekko ${Dependencies.Versions.pekko} and Pekko HTTP ${Dependencies.Versions.pekkoHttp}")
+  s
+}
