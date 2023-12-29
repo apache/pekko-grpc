@@ -1,0 +1,30 @@
+name: Nightly Snapshot Dependency Test
+
+on:
+  schedule:
+    - cron: "0 1 * * *"
+  workflow_dispatch:
+  pull_request:
+
+jobs:
+  sbt:
+    name: sbt test with pekko/pekko-main 1.1 snapshots
+    runs-on: ubuntu-latest
+    if: github.repository == 'apache/incubator-pekko-grpc'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # we don't know what commit the last tag was it's safer to get entire repo so previousStableVersion resolves
+          fetch-depth: 0
+          
+      - name: Setup Java 8
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 8    
+
+      - name: Publish
+        run: |-
+          cp .jvmopts-ci .jvmopts
+          sbt -Dpekko.build.pekko.version=main -Dpekko.build.pekko.http.version=main test
