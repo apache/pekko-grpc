@@ -24,7 +24,7 @@ jobs:
           distribution: temurin
           java-version: 8    
 
-      - name: Publish
+      - name: Test
         run: |-
           cp .jvmopts-ci .jvmopts
           sbt -Dpekko.build.pekko.version=main -Dpekko.build.pekko.http.version=main test
