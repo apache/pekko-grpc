@@ -12,7 +12,6 @@ package org.apache.pekko.grpc
 import sbt._
 import sbt.Keys._
 import buildinfo.BuildInfo
-import com.github.pjfanning.pekkobuild.{ PekkoDependency, PekkoHttpDependency }
 
 object Dependencies {
   object Versions {
@@ -28,9 +27,9 @@ object Dependencies {
     // We don't force Pekko updates because downstream projects can upgrade
     // themselves. For more information see
     // https://pekko.apache.org//docs/pekko/current/project/downstream-upgrade-strategy.html
-    val pekko = PekkoDependency.pekkoVersion
+    val pekko = PekkoCoreDependency.version
     val pekkoBinary = pekko.take(3)
-    val pekkoHttp = PekkoHttpDependency.pekkoHttpVersion
+    val pekkoHttp = PekkoHttpDependency.version
     val pekkoHttpBinary = pekkoHttp.take(3)
 
     val grpc = "1.54.2" // checked synced by VersionSyncCheckPlugin
