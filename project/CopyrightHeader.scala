@@ -21,10 +21,10 @@ import org.apache.commons.lang3.StringUtils
 object CopyrightHeader extends AutoPlugin {
   import HeaderPlugin.autoImport._
 
-  override def requires = HeaderPlugin
-  override def trigger = allRequirements
+  override lazy val requires = HeaderPlugin
+  override lazy val trigger = allRequirements
 
-  override def projectSettings =
+  override lazy val projectSettings =
     Def.settings(Seq(Compile, Test).flatMap { config =>
       inConfig(config)(
         Seq(
@@ -130,7 +130,6 @@ object CopyrightHeader extends AutoPlugin {
   private def isLightbendCopyrighted(text: String): Boolean =
     StringUtils.containsIgnoreCase(text, "lightbend inc.")
 
-  private def isOnlyLightbendCopyrightAnnotated(text: String): Boolean = {
+  private def isOnlyLightbendCopyrightAnnotated(text: String): Boolean =
     isLightbendCopyrighted(text) && !isApacheCopyrighted(text)
-  }
 }

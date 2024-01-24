@@ -22,19 +22,19 @@ import scala.xml.{ Elem, PrettyPrinter, XML }
  * Inspired by https://github.com/lagom/lagom/blob/master/project/SbtMavenPlugin.scala
  */
 object SbtMavenPlugin extends AutoPlugin {
-  override def trigger = noTrigger
+  override lazy val trigger = noTrigger
 
-  override def requires = JvmPlugin
+  override lazy val requires = JvmPlugin
 
   object autoImport {
-    val mavenGeneratePluginXml = taskKey[Seq[File]]("Generate the maven plugin xml")
+    lazy val mavenGeneratePluginXml = taskKey[Seq[File]]("Generate the maven plugin xml")
   }
 
   import autoImport._
 
-  override def projectSettings: Seq[Setting[_]] = inConfig(Compile)(unscopedSettings)
+  override lazy val projectSettings: Seq[Setting[_]] = inConfig(Compile)(unscopedSettings)
 
-  def unscopedSettings =
+  lazy val unscopedSettings =
     Seq(
       (mavenGeneratePluginXml / sourceDirectory) := sourceDirectory.value / "maven",
       (mavenGeneratePluginXml / sources) :=
