@@ -73,24 +73,24 @@ object Dependencies {
       .exclude("io.grpc", "grpc-xds")
 
     val slf4jApi = "org.slf4j" % "slf4j-api" % "1.7.36"
-    val mavenPluginApi = "org.apache.maven" % "maven-plugin-api" % Versions.maven // Apache v2
-    val mavenCore = "org.apache.maven" % "maven-core" % Versions.maven // Apache v2
+    val mavenPluginApi = "org.apache.maven" % "maven-plugin-api" % Versions.maven
+    val mavenCore = "org.apache.maven" % "maven-core" % Versions.maven
     val protocJar = "com.github.os72" % "protoc-jar" % "3.11.4"
 
-    val plexusBuildApi = "org.sonatype.plexus" % "plexus-build-api" % "0.0.7" % "optional" // Apache v2
+    val plexusBuildApi = "org.sonatype.plexus" % "plexus-build-api" % "0.0.7" % "optional"
   }
 
   object Test {
     final val Test = sbt.Test
-    val scalaTest = "org.scalatest" %% "scalatest" % Versions.scalaTest % Test // Apache V2
-    val scalaTestPlusJunit = "org.scalatestplus" %% "junit-4-13" % (Versions.scalaTest + ".0") % Test // Apache V2
+    val scalaTest = "org.scalatest" %% "scalatest" % Versions.scalaTest % Test
+    val scalaTestPlusJunit = "org.scalatestplus" %% "junit-4-13" % (Versions.scalaTest + ".0") % Test
     val pekkoDiscoveryConfig = "org.apache.pekko" %% "pekko-discovery" % Versions.pekko % Test
     val pekkoTestkit = "org.apache.pekko" %% "pekko-testkit" % Versions.pekko % Test
     val pekkoStreamTestkit = "org.apache.pekko" %% "pekko-stream-testkit" % Versions.pekko % Test
   }
 
   object Runtime {
-    val logback = "ch.qos.logback" % "logback-classic" % "1.2.13" % "runtime" // Eclipse 1.0
+    val logback = "ch.qos.logback" % "logback-classic" % "1.2.13" % "runtime"
     val guavaAndroid = "com.google.guava" % "guava" % "32.1.2-android" % "runtime"
   }
 
