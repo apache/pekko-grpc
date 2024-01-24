@@ -19,13 +19,16 @@ group = "org.apache.pekko"
 
 def getVersionFromParentSbtBuild() {
     ByteArrayOutputStream os = new ByteArrayOutputStream()
-    String parentDir = project.rootDir.getParentFile().getPath()
-    exec {
-        workingDir parentDir
-        commandLine 'sbt', '--no-colors', '--error', 'set aggregate := false; print version'
-        standardOutput os
+    try {
+        String parentDir = project.rootDir.getParentFile().getPath()
+        exec {
+            workingDir parentDir
+            commandLine 'sbt', '--no-colors', '--error', 'set aggregate := false; print version'
+            standardOutput os
+        }
+    } finally {
+        os.close()
     }
-    os.close()
     String finalVersion = os.toString().trim()
     project.logger.info("Derived gradle version from parent sbt build: $finalVersion")
     return finalVersion
