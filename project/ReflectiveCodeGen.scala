@@ -24,16 +24,16 @@ import protocbridge.{ Artifact => BridgeArtifact }
 
 /** A plugin that allows to use a code generator compiled in one subproject to be used in a test project */
 object ReflectiveCodeGen extends AutoPlugin {
-  val generatedLanguages = SettingKey[Seq[String]]("reflectiveGrpcGeneratedLanguages")
-  val generatedSources = SettingKey[Seq[String]]("reflectiveGrpcGeneratedSources")
-  val extraGenerators = SettingKey[Seq[String]]("reflectiveGrpcExtraGenerators")
-  val codeGeneratorSettings = settingKey[Seq[String]]("Code generator settings")
-  val protocOptions = settingKey[Seq[String]]("Protoc Options.")
+  lazy val generatedLanguages = SettingKey[Seq[String]]("reflectiveGrpcGeneratedLanguages")
+  lazy val generatedSources = SettingKey[Seq[String]]("reflectiveGrpcGeneratedSources")
+  lazy val extraGenerators = SettingKey[Seq[String]]("reflectiveGrpcExtraGenerators")
+  lazy val codeGeneratorSettings = settingKey[Seq[String]]("Code generator settings")
+  lazy val protocOptions = settingKey[Seq[String]]("Protoc Options.")
 
   // needed to be able to override the PB.generate task reliably
-  override def requires = ProtocPlugin
+  override lazy val requires = ProtocPlugin
 
-  override def projectSettings: Seq[Def.Setting[_]] =
+  override lazy val projectSettings: Seq[Def.Setting[_]] =
     inConfig(Compile)(
       Seq(
         PB.protocOptions := protocOptions.value,
@@ -93,7 +93,7 @@ object ReflectiveCodeGen extends AutoPlugin {
       watchSources ++= (ProjectRef(file("."), "codegen") / watchSources).value,
       watchSources ++= (ProjectRef(file("."), "sbt-plugin") / watchSources).value)
 
-  val setCodeGenerator = taskKey[Unit]("grpc-set-code-generator")
+  lazy val setCodeGenerator = taskKey[Unit]("grpc-set-code-generator")
 
   def loadAndSetGenerator(
       classpath: Classpath,
@@ -146,7 +146,7 @@ object ReflectiveCodeGen extends AutoPlugin {
     targets ++= generators.asInstanceOf[Seq[Target]]
   }
 
-  def generateTaskFromProtocPlugin: Def.Initialize[Task[Seq[File]]] =
+  lazy val generateTaskFromProtocPlugin: Def.Initialize[Task[Seq[File]]] =
     // lookup and return `PB.generate := ...` setting from ProtocPlugin
     ProtocPlugin.projectSettings
       .find(_.key.key == PB.generate.key)

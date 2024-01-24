@@ -24,8 +24,8 @@ import sbt.Keys._
  * For projects that are not to be published.
  */
 object NoPublish extends AutoPlugin {
-  override def requires = plugins.JvmPlugin
+  override lazy val requires = plugins.JvmPlugin
 
-  override def projectSettings =
+  override lazy val projectSettings =
     Seq(publish / skip := true, Compile / doc / sources := Seq.empty)
 }

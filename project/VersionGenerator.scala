@@ -17,7 +17,7 @@ import sbt._
  */
 object VersionGenerator {
 
-  val settings: Seq[Setting[_]] = inConfig(Compile)(
+  lazy val settings: Seq[Setting[_]] = inConfig(Compile)(
     Seq(
       resourceGenerators += generateVersion(resourceManaged, _ / "pekko-grpc-version.conf",
         """|pekko.grpc.version = "%s"

@@ -103,16 +103,16 @@ object Dependencies {
     val sbtProtoc = "com.thesamet" % "sbt-protoc" % BuildInfo.sbtProtocVersion
   }
 
-  private val l = libraryDependencies
+  private lazy val l = libraryDependencies
 
-  val codegen = l ++= Seq(
+  lazy val codegen = l ++= Seq(
     Compile.scalapbCompilerPlugin,
     Protobuf.protobufJava, // or else scalapb pulls older version in transitively
     Compile.grpcProtobuf,
     Runtime.guavaAndroid, // forces a newer version than grpc-protobuf defaults too
     Test.scalaTest)
 
-  val runtime = l ++= Seq(
+  lazy val runtime = l ++= Seq(
     Compile.scalapbRuntime,
     Protobuf.protobufJava, // or else scalapb pulls older version in transitively
     Compile.grpcProtobuf,
@@ -131,7 +131,7 @@ object Dependencies {
     Test.scalaTest,
     Test.scalaTestPlusJunit)
 
-  val mavenPlugin = l ++= Seq(
+  lazy val mavenPlugin = l ++= Seq(
     Compile.slf4jApi,
     Compile.mavenPluginApi,
     Compile.mavenCore,
@@ -139,12 +139,12 @@ object Dependencies {
     Compile.plexusBuildApi,
     Test.scalaTest)
 
-  val sbtPlugin = Seq(
+  lazy val sbtPlugin = Seq(
     l += Compile.scalapbCompilerPlugin,
     // we depend on it in the settings of the plugin since we set keys of the sbt-protoc plugin
     addSbtPlugin(Plugins.sbtProtoc))
 
-  val interopTests = l ++= Seq(
+  lazy val interopTests = l ++= Seq(
     Compile.grpcInteropTesting,
     Compile.grpcInteropTesting % "protobuf", // gets the proto files for interop tests
     Compile.pekkoHttp,
@@ -155,7 +155,7 @@ object Dependencies {
     Test.pekkoTestkit,
     Test.pekkoStreamTestkit)
 
-  val pluginTester = l ++= Seq(
+  lazy val pluginTester = l ++= Seq(
     // usually automatically added by `suggestedDependencies`, which doesn't work with ReflectiveCodeGen
     Compile.grpcStub,
     Runtime.guavaAndroid,
