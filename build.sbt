@@ -32,6 +32,11 @@ commands := commands.value.filterNot { command =>
 
 ThisBuild / reproducibleBuildsCheckResolver := Resolver.ApacheMavenStagingRepo
 
+// So that gRPC is properly styled
+ThisBuild / apacheSonatypeArtifactNameProcessor := apacheSonatypeArtifactNameProcessor.value.andThen {
+  _.replaceAll("Grpc", "gRPC")
+}
+
 val pekkoPrefix = "pekko-grpc"
 val pekkoGrpcRuntimeName = s"$pekkoPrefix-runtime"
 
