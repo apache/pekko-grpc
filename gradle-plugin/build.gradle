@@ -44,7 +44,7 @@ gradlePlugin {
 publishing {
     publications.withType(MavenPublication) {
         pom {
-            name = "pekko-grpc-gradle-plugin"
+            name = "Apache Pekko Grpc Gradle Plugin"
             description = "Apache Pekko gRPC - Support for building streaming gRPC servers and clients on top of Pekko Streams."
             url = "https://pekko.apache.org/"
             licenses {
