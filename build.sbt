@@ -18,7 +18,6 @@ import sbt.Keys.scalaVersion
 
 // pekkoInlineEnabled should be set to true when we start building 1.1.x builds
 ThisBuild / pekkoInlineEnabled := false
-ThisBuild / apacheSonatypeProjectProfile := "pekko"
 sourceDistName := "apache-pekko-grpc"
 sourceDistIncubating := true
 ThisBuild / versionScheme := Some(VersionScheme.SemVerSpec)
