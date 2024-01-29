@@ -1,6 +1,6 @@
 # Kubernetes
 
-An Pekko gRPC service can be deployed to a Kubernetes cluster just like any other HTTP-based application,
+An Apache Pekko gRPC service can be deployed to a Kubernetes cluster just like any other HTTP-based application,
 but if you want to make sure HTTP/2 is used across the board there are some things to consider.
 
 There are 3 ways to use HTTP/2:
