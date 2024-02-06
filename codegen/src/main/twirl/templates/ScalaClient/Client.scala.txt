@@ -59,7 +59,7 @@ object @{service.name}Client {
     new Default@{service.name}Client(channel, isChannelOwned = false)
 
   private class Default@{service.name}Client(channel: GrpcChannel, isChannelOwned: Boolean)(implicit sys: ClassicActorSystemProvider) extends @{service.name}Client {
-    import @{service.name}.MethodDescriptors._
+    import @{service.name}.MethodDescriptors.@{service.scalaCompatConstants.WildcardImport}
 
     private implicit val ex: ExecutionContext = sys.classicSystem.dispatcher
     private val settings = channel.settings
