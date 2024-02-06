@@ -1,0 +1,41 @@
+name: Publish 1.0 Nightly
+
+on:
+  schedule:
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+
+jobs:
+  sbt:
+    name: sbt publish
+    runs-on: ubuntu-latest
+    if: github.repository == 'apache/incubator-pekko-grpc'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # we don't know what commit the last tag was it's safer to get entire repo so previousStableVersion resolves
+          fetch-depth: 0
+          ref: 1.0.x
+          
+      - name: Setup Java 8
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 8    
+
+      - name: Publish
+        run: |-
+          cp .jvmopts-ci .jvmopts
+          sbt +publish
+          sbt ++2.13.12! codegen/publish
+          sbt ++3.3.1! codegen/publish
+        env:
+          NEXUS_USER: ${{ secrets.NEXUS_USER }}
+          NEXUS_PW: ${{ secrets.NEXUS_PW }}
+
+      - name: Publish Gradle Plugin
+        run: cd gradle-plugin && ./gradlew publishToSonatype
+        env:
+          NEXUS_USER: ${{ secrets.NEXUS_USER }}
+          NEXUS_PW: ${{ secrets.NEXUS_PW }}
