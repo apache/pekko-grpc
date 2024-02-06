@@ -25,7 +25,7 @@
     <maven-dependency-plugin.version>3.1.2</maven-dependency-plugin.version>
     <maven-exec-plugin.version>3.0.0</maven-exec-plugin.version>
     <pekko.http.version>1.0.0</pekko.http.version>
-    <grpc.version>1.54.2</grpc.version> <!-- checked synced by VersionSyncCheckPlugin -->
+    <grpc.version>1.60.0</grpc.version> <!-- checked synced by VersionSyncCheckPlugin -->
     <project.encoding>UTF-8</project.encoding>
   </properties>
 

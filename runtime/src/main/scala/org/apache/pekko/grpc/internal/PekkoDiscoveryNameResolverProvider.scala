@@ -24,6 +24,7 @@ import scala.concurrent.duration.FiniteDuration
 class PekkoDiscoveryNameResolverProvider(
     discovery: ServiceDiscovery,
     defaultPort: Int,
+    serviceName: String,
     portName: Option[String],
     protocol: Option[String],
     resolveTimeout: FiniteDuration)(implicit ec: ExecutionContext)
@@ -34,8 +35,7 @@ class PekkoDiscoveryNameResolverProvider(
 
   override def getDefaultScheme: String = "http"
 
-  override def newNameResolver(targetUri: URI, args: NameResolver.Args): PekkoDiscoveryNameResolver = {
-    require(targetUri.getAuthority != null, s"target uri should not have null authority, got [$targetUri]")
-    new PekkoDiscoveryNameResolver(discovery, defaultPort, targetUri.getAuthority, portName, protocol, resolveTimeout)
-  }
+  override def newNameResolver(targetUri: URI, args: NameResolver.Args): PekkoDiscoveryNameResolver =
+    new PekkoDiscoveryNameResolver(discovery, defaultPort, serviceName, portName, protocol, resolveTimeout)
+
 }

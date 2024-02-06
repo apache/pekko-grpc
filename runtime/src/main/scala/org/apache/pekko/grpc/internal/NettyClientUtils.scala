@@ -58,6 +58,7 @@ object NettyClientUtils {
           new PekkoDiscoveryNameResolverProvider(
             settings.serviceDiscovery,
             settings.defaultPort,
+            settings.serviceName,
             settings.servicePortName,
             settings.serviceProtocol,
             settings.resolveTimeout))

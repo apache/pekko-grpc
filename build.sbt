@@ -283,6 +283,7 @@ lazy val pluginTesterJava = Project(id = "plugin-tester-java", base = file("plug
   .settings(
     name := s"$pekkoPrefix-plugin-tester-java",
     fork := true,
+    PB.protocVersion := Dependencies.Versions.googleProtoc,
     ReflectiveCodeGen.generatedLanguages := Seq("Java"),
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
     scalaVersion := scala212,
