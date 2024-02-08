@@ -18,7 +18,7 @@ val grpcVersion = "1.54.2" // checked synced by VersionSyncCheckPlugin
 libraryDependencies ++= Seq(
   "io.grpc" % "grpc-interop-testing" % grpcVersion % "protobuf-src",
   "org.apache.pekko" %% "pekko-grpc-interop-tests" % sys.props("project.version") % "test",
-  "org.scalatest" %% "scalatest" % "3.2.15" % "test" // ApacheV2
+  "org.scalatest" %% "scalatest" % "3.2.18" % Test
 )
 
 scalacOptions ++= List("-unchecked", "-deprecation", "-language:_", "-encoding", "UTF-8")
