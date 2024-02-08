@@ -86,6 +86,8 @@ lazy val codegen = Project(id = "codegen", base = file("codegen"))
   .settings(addArtifact(Compile / assembly / artifact, assembly))
   .settings(addArtifact(Artifact(pekkoGrpcCodegenId, "bat", "bat", "bat"), mkBatAssemblyTask))
 
+val mimaCompareVersion = "1.0.2"
+
 lazy val runtime = Project(id = "runtime", base = file("runtime"))
   .settings(Dependencies.runtime)
   .settings(VersionGenerator.settings)
@@ -96,8 +98,8 @@ lazy val runtime = Project(id = "runtime", base = file("runtime"))
   .settings(
     name := pekkoGrpcRuntimeName,
     mimaFailOnNoPrevious := true,
-    mimaPreviousArtifacts := previousStableVersion.value.map(v =>
-      Set(organization.value %% "pekko-grpc-runtime" % v)).getOrElse(Set.empty),
+    mimaPreviousArtifacts := Set(
+      organization.value %% "pekko-grpc-runtime" % mimaCompareVersion),
     AutomaticModuleName.settings("pekko.grpc.runtime"),
     ReflectiveCodeGen.generatedLanguages := Seq("Scala"),
     ReflectiveCodeGen.extraGenerators := Seq("ScalaMarshallersCodeGenerator"),
