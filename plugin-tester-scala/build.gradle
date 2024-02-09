@@ -27,8 +27,8 @@ dependencies {
   implementation group: 'org.apache.pekko', name: "pekko-http-cors_${scalaBinaryVersion}", version: '1.0.0'
   implementation "org.scala-lang:scala-library:${scalaFullVersion}"
   testImplementation "org.apache.pekko:pekko-stream-testkit_${scalaBinaryVersion}:1.0.2"
-  testImplementation "org.scalatest:scalatest_${scalaBinaryVersion}:3.2.15"
-  testImplementation "org.scalatestplus:junit-4-13_${scalaBinaryVersion}:3.2.15.0"
+  testImplementation "org.scalatest:scalatest_${scalaBinaryVersion}:3.2.18"
+  testImplementation "org.scalatestplus:junit-4-13_${scalaBinaryVersion}:3.2.18.0"
 }
 
 tasks.withType(Copy).configureEach {
