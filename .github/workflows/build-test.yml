@@ -110,18 +110,17 @@ jobs:
           distribution: temurin
           java-version: 8
 
-      - name: Install go & go-protobuf
-      - uses: actions/setup-go@v5
+      - name: Install go
+        uses: actions/setup-go@v5
         with:
           go-version: '^1.20'
+        run: go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.32.0
 
       - name: Cache Coursier cache
         uses: coursier/cache-action@v6
 
       - name: Scripted ${{ matrix.test-set }}
-        run: |-
-          go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.32.0
-          cp .jvmopts-ci .jvmopts && sbt ++${{ matrix.scala-version }}.* "sbt-plugin/scripted ${{ matrix.test-set }}/*"
+        run: cp .jvmopts-ci .jvmopts && sbt ++${{ matrix.scala-version }}.* "sbt-plugin/scripted ${{ matrix.test-set }}/*"
 
   test-gradle:
     name: Gradle tests
