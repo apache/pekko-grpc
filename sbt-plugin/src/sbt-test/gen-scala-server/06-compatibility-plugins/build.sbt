@@ -11,6 +11,6 @@
 // https://github.com/akka/akka-grpc/pull/1279
 scalaVersion := "2.12.18"
 
-enablePlugins(ProtocJSPlugin) // enable it first to test possibility of getting overriden
+enablePlugins(ProtocGoPlugin) // enable it first to test possibility of getting overriden
 
 enablePlugins(PekkoGrpcPlugin)
