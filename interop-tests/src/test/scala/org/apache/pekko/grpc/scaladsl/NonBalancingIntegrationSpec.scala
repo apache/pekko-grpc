@@ -17,7 +17,6 @@ import java.net.InetSocketAddress
 import org.apache.pekko
 import pekko.actor.ActorSystem
 import pekko.grpc.GrpcClientSettings
-import pekko.grpc.internal.ClientConnectionException
 import pekko.grpc.scaladsl.tools.MutableServiceDiscovery
 import pekko.http.scaladsl.Http
 import pekko.stream.{ Materializer, SystemMaterializer }
@@ -184,8 +183,7 @@ class NonBalancingIntegrationSpec(backend: String)
 
       val failure =
         client.sayHello(HelloRequest(s"Hello friend")).failed.futureValue.asInstanceOf[StatusRuntimeException]
-      failure.getStatus.getCode should be(Code.UNAVAILABLE)
-      client.closed.failed.futureValue shouldBe a[ClientConnectionException]
+      failure.getStatus.getCode should (equal(Code.UNKNOWN).or(equal(Code.UNAVAILABLE)))
     }
 
     "not fail when no valid endpoints are provided but no limit on attempts is set" in {

@@ -58,7 +58,7 @@ object @{service.name} extends pekko.grpc.ServiceDescription {
   object MethodDescriptors {
     import pekko.grpc.internal.Marshaller
     import io.grpc.MethodDescriptor
-    import Serializers._
+    import Serializers.@{service.scalaCompatConstants.WildcardImport}
 
     @for(method <- service.methods) {
     val @{method.name}Descriptor: MethodDescriptor[@method.inputTypeUnboxed, @method.outputTypeUnboxed] =

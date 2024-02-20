@@ -99,6 +99,7 @@ abstract class ScalaCodeGenerator extends CodeGenerator {
       case (p, "no_lenses")                   => p.copy(lenses = false)
       case (p, "retain_source_code_info")     => p.copy(retainSourceCodeInfo = true)
       case (p, "grpc")                        => p.copy(grpc = true)
+      case (p, "scala3_sources")              => p.copy(scala3Sources = true)
       case (x, _)                             => x
     }
 }

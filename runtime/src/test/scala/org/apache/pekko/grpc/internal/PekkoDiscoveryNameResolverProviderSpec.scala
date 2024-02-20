@@ -61,6 +61,7 @@ class PekkoDiscoveryNameResolverProviderSpec
       val provider = new PekkoDiscoveryNameResolverProvider(
         discovery,
         443,
+        serviceName,
         portName = None,
         protocol = None,
         resolveTimeout = 3.seconds)

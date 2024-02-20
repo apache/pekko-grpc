@@ -121,7 +121,7 @@ object @{serviceName}Handler {
       implicit val ec: ExecutionContext = mat.executionContext
       val spi = TelemetryExtension(system).spi
 
-      import @{service.name}.Serializers._
+      import @{service.name}.Serializers.@{service.scalaCompatConstants.WildcardImport}
 
       def handle(request: model.HttpRequest, method: String): scala.concurrent.Future[model.HttpResponse] =
         GrpcMarshalling.negotiated(request, (reader, writer) =>

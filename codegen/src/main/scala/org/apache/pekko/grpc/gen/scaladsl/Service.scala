@@ -28,7 +28,8 @@ case class Service(
     serverPowerApi: Boolean,
     usePlayActions: Boolean,
     options: com.google.protobuf.DescriptorProtos.ServiceOptions,
-    comment: Option[String] = None) {
+    comment: Option[String] = None,
+    scalaCompatConstants: ScalaCompatConstants) {
   def serializers: Seq[Serializer] = (methods.map(_.deserializer) ++ methods.map(_.serializer)).distinct
   def packageDir = packageName.replace('.', '/')
 }
@@ -56,6 +57,7 @@ object Service {
       serverPowerApi,
       usePlayActions,
       serviceDescriptor.getOptions,
-      serviceDescriptor.comment)
+      serviceDescriptor.comment,
+      new ScalaCompatConstants(fileDesc.emitScala3Sources))
   }
 }
