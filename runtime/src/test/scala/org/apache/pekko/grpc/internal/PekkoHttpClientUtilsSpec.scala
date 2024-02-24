@@ -19,12 +19,12 @@ import scala.concurrent.duration._
 import org.apache.pekko
 import pekko.actor.ActorSystem
 import pekko.http.scaladsl.model.HttpEntity.Strict
-import pekko.http.scaladsl.model.HttpResponse
+import pekko.http.scaladsl.model._
 import pekko.http.scaladsl.model.StatusCodes._
 import pekko.http.scaladsl.model.headers.RawHeader
 import pekko.testkit.TestKit
 import pekko.util.ByteString
-import io.grpc.{ Status, StatusRuntimeException }
+import io.grpc.{ Metadata, Status, StatusRuntimeException }
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.time.Span
@@ -47,12 +47,33 @@ class PekkoHttpClientUtilsSpec extends TestKit(ActorSystem()) with AnyWordSpecLi
     }
 
     "map a strict 200 response with non-0 gRPC error code to a failed stream" in {
-      val response = Future.successful(
-        HttpResponse(OK, List(RawHeader("grpc-status", "9")), Strict(GrpcProtocolNative.contentType, ByteString.empty)))
+      val responseHeaders = List(RawHeader("grpc-status", "9"), RawHeader("custom-key", "custom-value-in-header"))
+      val response =
+        Future.successful(HttpResponse(OK, responseHeaders, Strict(GrpcProtocolNative.contentType, ByteString.empty)))
       val source = PekkoHttpClientUtils.responseToSource(response, null)
 
       val failure = source.run().failed.futureValue
       failure.asInstanceOf[StatusRuntimeException].getStatus.getCode should be(Status.Code.FAILED_PRECONDITION)
+      failure.asInstanceOf[StatusRuntimeException].getTrailers.get(key) should be("custom-value-in-header")
     }
+
+    "map a strict 200 response with non-0 gRPC error code with a trailer to a failed stream with trailer metadata" in {
+      val responseHeaders = List(RawHeader("grpc-status", "9"))
+      val responseTrailers = Trailer(RawHeader("custom-key", "custom-trailer-value") :: Nil)
+      val response = Future.successful(
+        new HttpResponse(
+          OK,
+          responseHeaders,
+          Map.empty[AttributeKey[_], Any].updated(AttributeKeys.trailer, responseTrailers),
+          Strict(GrpcProtocolNative.contentType, ByteString.empty),
+          HttpProtocols.`HTTP/1.1`))
+      val source = PekkoHttpClientUtils.responseToSource(response, null)
+
+      val failure = source.run().failed.futureValue
+      failure.asInstanceOf[StatusRuntimeException].getStatus.getCode should be(Status.Code.FAILED_PRECONDITION)
+      failure.asInstanceOf[StatusRuntimeException].getTrailers.get(key) should be("custom-trailer-value")
+    }
+
+    lazy val key = Metadata.Key.of("custom-key", Metadata.ASCII_STRING_MARSHALLER)
   }
 }
