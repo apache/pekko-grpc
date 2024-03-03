@@ -13,7 +13,6 @@ val sbtProtocV = "1.0.6"
 
 buildInfoKeys := Seq[BuildInfoKey]("sbtProtocVersion" -> sbtProtocV)
 
-addSbtPlugin("lt.dvim.authors" % "sbt-authors" % "1.3")
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.2")
 addSbtPlugin("de.heikoseeberger" % "sbt-header" % "5.10.0")
 addSbtPlugin("com.thesamet" % "sbt-protoc" % sbtProtocV)
@@ -29,21 +28,12 @@ addSbtPlugin("com.github.pjfanning" % "sbt-pekko-build" % "0.3.1")
 addSbtPlugin("com.github.pjfanning" % "sbt-source-dist" % "0.1.11")
 addSbtPlugin("com.github.sbt" % "sbt-license-report" % "1.6.1")
 
-// See https://github.com/akka/akka-http/pull/3995 and https://github.com/akka/akka-http/pull/3995#issuecomment-1026978593
-libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % "always"
-
-// We have to deliberately use older versions of sbt-paradox because current Pekko sbt build
-// only loads on JDK 1.8 so we need to bring in older versions of parboiled which support JDK 1.8
-addSbtPlugin(("org.apache.pekko" % "pekko-sbt-paradox" % "1.0.0").excludeAll(
-  "com.lightbend.paradox", "sbt-paradox",
-  "com.lightbend.paradox" % "sbt-paradox-apidoc",
-  "com.lightbend.paradox" % "sbt-paradox-project-info"))
-addSbtPlugin(("com.lightbend.paradox" % "sbt-paradox" % "0.9.2").force())
-addSbtPlugin(("com.lightbend.paradox" % "sbt-paradox-apidoc" % "0.10.1").force())
-addSbtPlugin(("com.lightbend.paradox" % "sbt-paradox-project-info" % "2.0.0").force())
+resolvers += Resolver.ApacheMavenSnapshotsRepo
+addSbtPlugin("org.apache.pekko" % "pekko-sbt-paradox" % "1.0.1-RC1+3-2b1f8708-SNAPSHOT")
+addSbtPlugin(("com.github.sbt" % "sbt-site-paradox" % "1.5.0").excludeAll(
+  "com.lightbend.paradox", "sbt-paradox"))
 
 addSbtPlugin("com.github.sbt" % "sbt-unidoc" % "0.5.0")
-addSbtPlugin("com.typesafe.sbt" % "sbt-site" % "1.4.1")
 
 // For RawText
 libraryDependencies += "org.eclipse.jgit" % "org.eclipse.jgit" % "5.13.1.202206130422-r"
