@@ -28,8 +28,7 @@ addSbtPlugin("com.github.pjfanning" % "sbt-pekko-build" % "0.3.3")
 addSbtPlugin("com.github.pjfanning" % "sbt-source-dist" % "0.1.12")
 addSbtPlugin("com.github.sbt" % "sbt-license-report" % "1.6.1")
 
-resolvers += Resolver.ApacheMavenSnapshotsRepo
-addSbtPlugin("org.apache.pekko" % "pekko-sbt-paradox" % "1.0.1-RC1+5-13892678-SNAPSHOT")
+addSbtPlugin("org.apache.pekko" % "pekko-sbt-paradox" % "1.0.1")
 addSbtPlugin(("com.github.sbt" % "sbt-site-paradox" % "1.5.0").excludeAll(
   "com.lightbend.paradox", "sbt-paradox"))
 
