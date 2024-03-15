@@ -21,7 +21,6 @@ ThisBuild / pekkoInlineEnabled := false
 sourceDistName := "apache-pekko-grpc"
 sourceDistIncubating := true
 ThisBuild / versionScheme := Some(VersionScheme.SemVerSpec)
-ThisBuild / resolvers += Resolver.ApacheMavenSnapshotsRepo
 ThisBuild / resolvers += Resolver.ApacheMavenStagingRepo
 
 commands := commands.value.filterNot { command =>
