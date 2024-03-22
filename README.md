@@ -66,7 +66,7 @@ See the note in the [Akka HTTP docs](https://doc.akka.io/docs/akka-http/10.1/ser
 
 ### Running the Build
 - Open a command window and change directory to your preferred base directory
-- Use git to clone the [repo](https://github.com/apache/incubator-pekko-grpc) or download a source release from https://pekko.apache.org (and unzip or untar it, as appropriate)
+- Use git to clone the [repo](https://github.com/apache/pekko-grpc) or download a source release from https://pekko.apache.org (and unzip or untar it, as appropriate)
 - Change directory to the directory where you installed the source (you should have a file called `build.sbt` in this directory)
 - `sbt compile` compiles the main source for project default version of Scala (2.12)
     - `sbt +compile` will compile for all supported versions of Scala

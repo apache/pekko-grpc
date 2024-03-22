@@ -10,7 +10,7 @@ services generated with older versions of Pekko gRPC.
 
 There may be missing features and bugs in the current implementation. If you
 encounter any, you are welcome to share a reproducer in our
-[issue tracker](https://github.com/apache/incubator-pekko-grpc/issues).
+[issue tracker](https://github.com/apache/pekko-grpc/issues).
 
 @@@
 

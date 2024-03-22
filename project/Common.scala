@@ -31,13 +31,13 @@ object Common extends AutoPlugin {
   override def globalSettings =
     Seq(
       homepage := Some(url("https://pekko.apache.org//")),
-      scmInfo := Some(ScmInfo(url("https://github.com/apache/incubator-pekko-grpc"),
-        "git@github.com:apache/incubator-pekko-grpc")),
+      scmInfo := Some(ScmInfo(url("https://github.com/apache/pekko-grpc"),
+        "git@github.com:apache/pekko-grpc")),
       developers += Developer(
         "contributors",
         "Contributors",
         "dev@pekko.apache.org",
-        url("https://github.com/apache/incubator-pekko-grpc/graphs/contributors")),
+        url("https://github.com/apache/pekko-grpc/graphs/contributors")),
       description := "Apache Pekko gRPC - Support for building streaming gRPC servers and clients on top of Pekko Streams.")
 
   override lazy val projectSettings = Seq(
@@ -89,7 +89,7 @@ object Common extends AutoPlugin {
       (ThisBuild / baseDirectory).value.toString,
       "-doc-source-url", {
         val branch = if (isSnapshot.value) "main" else s"v${version.value}"
-        s"https://github.com/apache/incubator-pekko-grpc/tree/${branch}€{FILE_PATH_EXT}#L€{FILE_LINE}"
+        s"https://github.com/apache/pekko-grpc/tree/${branch}€{FILE_PATH_EXT}#L€{FILE_LINE}"
       },
       "-doc-canonical-base-url",
       "https://pekko.apache.org/api/pekko-grpc/current/") ++ (

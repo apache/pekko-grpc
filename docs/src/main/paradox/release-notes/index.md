@@ -6,11 +6,11 @@ A minor bug fix and dependency change release.
 
 ### Bug Fixes
 
-* Revert Netty SSL Context change that was added in akka-grpc 2.1.6 that broke the support for Netty with custom SSL Contexts ([PR200](https://github.com/apache/incubator-pekko-grpc/pull/200))
+* Revert Netty SSL Context change that was added in akka-grpc 2.1.6 that broke the support for Netty with custom SSL Contexts ([PR200](https://github.com/apache/pekko-grpc/pull/200))
 
 ### Dependency Upgrades
 
-* Use sbt-twirl from `org.playframework.twirl`, the new groupId for Play Twirl releases ([PR196](https://github.com/apache/incubator-pekko-grpc/pull/196))
+* Use sbt-twirl from `org.playframework.twirl`, the new groupId for Play Twirl releases ([PR196](https://github.com/apache/pekko-grpc/pull/196))
 
 ## 1.0.1
 
@@ -19,7 +19,7 @@ there are security issues published for those versions.
 
 ### Additions
 
-* Release Scala 2.13 and Scala 3 versions of pekko-grpc-codegen. This jar is used as a sbt plugin but it is useful to also support other Scala versions so other build frameworks can use use it ([`#180`](https://github.com/apache/incubator-pekko-grpc/issues/180)).
+* Release Scala 2.13 and Scala 3 versions of pekko-grpc-codegen. This jar is used as a sbt plugin but it is useful to also support other Scala versions so other build frameworks can use use it ([`#180`](https://github.com/apache/pekko-grpc/issues/180)).
 
 ### Dependency Upgrades
 
