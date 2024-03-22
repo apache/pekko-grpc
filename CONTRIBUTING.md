@@ -8,9 +8,9 @@ You're always welcome to submit your PR straight away and start the discussion (
 
 If you have questions about the contribution process or discuss specific issues, please interact with the community using the following resources.
 
-- [GitHub discussions](https://github.com/apache/incubator-pekko-grpc/discussions): for questions and general discussion.
+- [GitHub discussions](https://github.com/apache/pekko-grpc/discussions): for questions and general discussion.
 - [Pekko dev mailing list](https://lists.apache.org/list.html?dev@pekko.apache.org): for Pekko development discussions.
-- [GitHub issues](https://github.com/apache/incubator-pekko-grpc/issues): for bug reports and feature requests. Please search the existing issues before creating new ones. If you are unsure whether you have found a bug, consider asking in GitHub discussions or the mailing list first.
+- [GitHub issues](https://github.com/apache/pekko-grpc/issues): for bug reports and feature requests. Please search the existing issues before creating new ones. If you are unsure whether you have found a bug, consider asking in GitHub discussions or the mailing list first.
 
 # Navigating around the project & codebase
 
@@ -25,13 +25,13 @@ Depending on which version (or sometimes module) you want to work on, you should
 In general *all issues are open for anyone working on them*, however if you're new to the project and looking for an issue
 that will be accepted and likely is a nice one to get started you should check out the following tags:
 
-- [help wanted](https://github.com/apache/incubator-pekko-grpc/labels/help%20wanted) - which identifies issues that the core team will likely not have time to work on, or the issue is a nice entry level ticket. If you're not sure how to solve a ticket but would like to work on it feel free to ask in the issue about clarification or tips.
-- [nice-to-have (low-priority)](https://github.com/apache/incubator-pekko-grpc/labels/nice-to-have%20%28low-prio%29) - are tasks which make sense, however are not very high priority (in face of other very high priority issues). If you see something interesting in this list, a contribution would be really wonderful!
+- [help wanted](https://github.com/apache/pekko-grpc/labels/help%20wanted) - which identifies issues that the core team will likely not have time to work on, or the issue is a nice entry level ticket. If you're not sure how to solve a ticket but would like to work on it feel free to ask in the issue about clarification or tips.
+- [nice-to-have (low-priority)](https://github.com/apache/pekko-grpc/labels/nice-to-have%20%28low-prio%29) - are tasks which make sense, however are not very high priority (in face of other very high priority issues). If you see something interesting in this list, a contribution would be really wonderful!
 
 Another group of special tags indicate specific states a ticket is in:
 
-- [bug](https://github.com/apache/incubator-pekko-grpc/labels/bug) - bugs take priority in being fixed above features. The core team dedicates a number of days to working on bugs each sprint. Bugs which have reproducers are also great for community contributions as they're well isolated. Sometimes we're not as lucky to have reproducers though, then a bugfix should also include a test reproducing the original error along with the fix.
-- [failed](https://github.com/apache/incubator-pekko-grpc/labels/failed) - tickets indicate a Jenkins failure (for example from a nightly build). These tickets usually start with the `FAILED: ...` message, and include a stacktrace + link to the Jenkins failure. The tickets are collected and worked on with priority to keep the build stable and healthy. Often times it may be simple timeout issues (Jenkins boxes are slow), though sometimes real bugs are discovered this way.
+- [bug](https://github.com/apache/pekko-grpc/labels/bug) - bugs take priority in being fixed above features. The core team dedicates a number of days to working on bugs each sprint. Bugs which have reproducers are also great for community contributions as they're well isolated. Sometimes we're not as lucky to have reproducers though, then a bugfix should also include a test reproducing the original error along with the fix.
+- [failed](https://github.com/apache/pekko-grpc/labels/failed) - tickets indicate a Jenkins failure (for example from a nightly build). These tickets usually start with the `FAILED: ...` message, and include a stacktrace + link to the Jenkins failure. The tickets are collected and worked on with priority to keep the build stable and healthy. Often times it may be simple timeout issues (Jenkins boxes are slow), though sometimes real bugs are discovered this way.
 
 Pull Request validation states:
 
@@ -45,8 +45,8 @@ If you are running on JDK 8, you will need to use at least version 1.8.0u251 to 
 
 # Pekko gRPC contributing guidelines
 
-These guidelines apply to all Pekko projects, by which we mean both the `apache/incubator-pekko` repository,
-as well as any plugins or additional repos located under the Apache Pekko GitHub organisation, e.g. `apache/incubator-pekko-grpc` and others.
+These guidelines apply to all Pekko projects, by which we mean both the `apache/pekko` repository,
+as well as any plugins or additional repos located under the Apache Pekko GitHub organisation, e.g. `apache/pekko-grpc` and others.
 
 These guidelines are meant to be a living document that should be changed and adapted as needed.
 We encourage changes that make it easier to achieve our goals in an efficient way.
@@ -59,9 +59,9 @@ You can read its full text here: [ASF Code of Conduct](https://www.apache.org/fo
 The below steps are how to get a patch into a main development branch (e.g. `main`).
 The steps are exactly the same for everyone involved in the project (be it core team, or first time contributor).
 
-1. To avoid duplicated effort, it might be good to check the [issue tracker](https://github.com/apache/incubator-pekko-grpc/issues) and [existing pull requests](https://github.com/apache/incubator-pekko-grpc/pulls) for existing work.
-   - If there is no ticket yet, feel free to [create one](https://github.com/apache/incubator-pekko-grpc/issues/new) to discuss the problem and the approach you want to take to solve it.
-1. [Fork the project](https://github.com/apache/incubator-pekko-grpc#fork-destination-box) on GitHub. You'll need to create a feature-branch for your work on your fork, as this way you'll be able to submit a PullRequest against the mainline Pekko-gRPC.
+1. To avoid duplicated effort, it might be good to check the [issue tracker](https://github.com/apache/pekko-grpc/issues) and [existing pull requests](https://github.com/apache/pekko-grpc/pulls) for existing work.
+   - If there is no ticket yet, feel free to [create one](https://github.com/apache/pekko-grpc/issues/new) to discuss the problem and the approach you want to take to solve it.
+1. [Fork the project](https://github.com/apache/pekko-grpc#fork-destination-box) on GitHub. You'll need to create a feature-branch for your work on your fork, as this way you'll be able to submit a PullRequest against the mainline Pekko-gRPC.
 1. Create a branch on your fork and work on the feature. For example: `git checkout -b wip-custom-headers-pekko-grpc`
    - Please make sure to follow the general quality guidelines (specified below) when developing your patch.
    - Please write additional tests covering your feature and adjust existing ones if needed before submitting your Pull Request. The `validatePullRequest` sbt task ([explained below](#the-validatepullrequest-task)) may come in handy to verify your changes are correct.
@@ -268,7 +268,7 @@ There is a number of ways timeouts can be defined in Pekko tests. The following 
 
 Special care should be given `expectNoMessage` calls, which indeed will wait the entire timeout before continuing, therefore a shorter timeout should be used in those, for example `200` or `300.millis`.
 
-You can read up on remaining and friends in [TestKit.scala](https://github.com/apache/incubator-pekko/blob/main/testkit/src/main/scala/org/apache/pekko/testkit/TestKit.scala)
+You can read up on remaining and friends in [TestKit.scala](https://github.com/apache/pekko/blob/main/testkit/src/main/scala/org/apache/pekko/testkit/TestKit.scala)
 
 # Supporting infrastructure
 
@@ -279,5 +279,5 @@ pekko-grpc currently uses Github Actions for Continuous Integration. See the `Ch
 ## Related links
 
 * [Apache Contributor License Agreement](https://www.apache.org/licenses/contributor-agreements.html)
-* [Pekko gRPC Issue Tracker](https://github.com/apache/incubator-pekko-grpc/issues)
+* [Pekko gRPC Issue Tracker](https://github.com/apache/pekko-grpc/issues)
 * [Scalariform](https://github.com/daniel-trinh/scalariform)

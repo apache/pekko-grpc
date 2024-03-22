@@ -13,7 +13,7 @@ import sbt._
 /**
  * Generate version.conf file based on the version setting.
  *
- * This was adapted from https://github.com/apache/incubator-pekko/blob/main/project/VersionGenerator.scala
+ * This was adapted from https://github.com/apache/pekko/blob/main/project/VersionGenerator.scala
  */
 object VersionGenerator {
 

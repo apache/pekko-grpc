@@ -2,7 +2,7 @@
 
 ## Apache Pekko gRPC Quickstart
 
-To try out Pekko gRPC and understand how the development process might work out, try the [Pekko gRPC Quickstart with Scala](https://github.com//apache/incubator-pekko-grpc-quickstart-scala.g8/) or the [Pekko gRPC Quickstart with Java](https://github.com//apache/incubator-pekko-grpc-quickstart-java.g8/).
+To try out Pekko gRPC and understand how the development process might work out, try the [Pekko gRPC Quickstart with Scala](https://github.com//apache/pekko-grpc-quickstart-scala.g8/) or the [Pekko gRPC Quickstart with Java](https://github.com//apache/pekko-grpc-quickstart-java.g8/).
 
 ## Video Introduction
 

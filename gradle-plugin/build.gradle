@@ -60,13 +60,13 @@ publishing {
                 developer {
                     id = 'contributors'
                     name = 'Contributors'
-                    url = 'https://github.com/apache/incubator-pekko-grpc/graphs/contributors'
+                    url = 'https://github.com/apache/pekko-grpc/graphs/contributors'
                     email = 'dev@pekko.apache.org'
                 }
             }
             scm {
-                connection = 'git@github.com:apache/incubator-pekko-grpc'
-                url = 'https://github.com/apache/incubator-pekko-grpc'
+                connection = 'git@github.com:apache/pekko-grpc'
+                url = 'https://github.com/apache/pekko-grpc'
             }
         }
     }
