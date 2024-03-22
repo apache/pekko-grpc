@@ -17,7 +17,7 @@ import com.typesafe.tools.mima.core._
 import sbt.Keys.scalaVersion
 
 sourceDistName := "apache-pekko-grpc"
-sourceDistIncubating := true
+sourceDistIncubating := false
 ThisBuild / versionScheme := Some(VersionScheme.SemVerSpec)
 ThisBuild / resolvers += Resolver.ApacheMavenStagingRepo
 
@@ -224,7 +224,7 @@ lazy val docs = Project(id = "docs", base = file("docs"))
   .settings(
     name := s"$pekkoPrefix-docs",
     makeSite := makeSite.dependsOn(LocalRootProject / ScalaUnidoc / doc).value,
-    pekkoParadoxGithub := Some("https://github.com/apache/incubator-pekko-grpc"),
+    pekkoParadoxGithub := Some("https://github.com/apache/pekko-grpc"),
     previewPath := (Paradox / siteSubdirName).value,
     Preprocess / siteSubdirName := s"api/pekko-grpc/${projectInfoVersion.value}",
     Preprocess / sourceDirectory := (LocalRootProject / ScalaUnidoc / unidoc / target).value,

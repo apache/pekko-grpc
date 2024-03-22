@@ -7,7 +7,7 @@ jobs:
   publish-docs:
     name: sbt publish
     runs-on: ubuntu-latest
-    if: github.repository == 'apache/incubator-pekko-grpc'
+    if: github.repository == 'apache/pekko-grpc'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
