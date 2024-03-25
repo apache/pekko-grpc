@@ -232,6 +232,7 @@ lazy val docs = Project(id = "docs", base = file("docs"))
     // Make sure code generation is run before paradox:
     (Compile / paradox) := (Compile / paradox).dependsOn(Compile / compile).value,
     paradoxGroups := Map("Language" -> Seq("Java", "Scala"), "Buildtool" -> Seq("sbt", "Gradle", "Maven")),
+    Global / pekkoParadoxIncubatorNotice := None,
     Compile / paradoxProperties ++= Map(
       "pekko.version" -> Dependencies.Versions.pekko,
       "pekko-http.version" -> Dependencies.Versions.pekkoHttp,
