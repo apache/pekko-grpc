@@ -27,7 +27,7 @@ commands := commands.value.filterNot { command =>
   }
 }
 
-ThisBuild / resolvers += Resolver.ApacheMavenSnspshotsRepo
+ThisBuild / resolvers += Resolver.ApacheMavenSnapshotsRepo
 ThisBuild / reproducibleBuildsCheckResolver := Resolver.ApacheMavenStagingRepo
 
 // So that gRPC is properly styled
