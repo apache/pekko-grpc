@@ -23,20 +23,20 @@ class GrpcInteropIoWithPekkoNettyJavaSpec extends GrpcInteropTests(Servers.IoGrp
 class GrpcInteropIoWithPekkoHttpScalaSpec extends GrpcInteropTests(Servers.IoGrpc, Clients.PekkoHttp.Scala)
 class GrpcInteropIoWithPekkoHttpScalaWithSslContextSpec
     extends GrpcInteropTests(Servers.IoGrpc, Clients.PekkoHttp.ScalaWithSslContext)
-//class GrpcInteropIoWithPekkoHttpJavaSpec extends GrpcInteropTests(Servers.IoGrpc, Clients.PekkoHttp.Java)
+class GrpcInteropIoWithPekkoHttpJavaSpec extends GrpcInteropTests(Servers.IoGrpc, Clients.PekkoHttp.Java)
 
 class GrpcInteropPekkoScalaWithIoSpec extends GrpcInteropTests(Servers.Pekko.Scala, Clients.IoGrpc)
 class GrpcInteropPekkoScalaWithPekkoNettyScalaSpec
     extends GrpcInteropTests(Servers.Pekko.Scala, Clients.PekkoNetty.Scala)
 class GrpcInteropPekkoScalaWithPekkoNettyJavaSpec extends GrpcInteropTests(Servers.Pekko.Scala, Clients.PekkoNetty.Java)
 class GrpcInteropPekkoScalaWithPekkoHttpScalaSpec extends GrpcInteropTests(Servers.Pekko.Scala, Clients.PekkoHttp.Scala)
-//class GrpcInteropPekkoScalaWithPekkoHttpJavaSpec extends GrpcInteropTests(Servers.Pekko.Scala, Clients.PekkoHttp.Java)
+class GrpcInteropPekkoScalaWithPekkoHttpJavaSpec extends GrpcInteropTests(Servers.Pekko.Scala, Clients.PekkoHttp.Java)
 
 class GrpcInteropPekkoJavaWithIoSpec extends GrpcInteropTests(Servers.Pekko.Java, Clients.IoGrpc)
 class GrpcInteropPekkoJavaWithPekkoNettyScalaSpec extends GrpcInteropTests(Servers.Pekko.Java, Clients.PekkoNetty.Scala)
 class GrpcInteropPekkoJavaWithPekkoNettyJavaSpec extends GrpcInteropTests(Servers.Pekko.Java, Clients.PekkoNetty.Java)
 class GrpcInteropPekkoJavaWithPekkoHttpScalaSpec extends GrpcInteropTests(Servers.Pekko.Java, Clients.PekkoHttp.Scala)
-//class GrpcInteropPekkoJavaWithPekkoHttpJavaSpec extends GrpcInteropTests(Servers.Pekko.Java, Clients.PekkoHttp.Java)
+class GrpcInteropPekkoJavaWithPekkoHttpJavaSpec extends GrpcInteropTests(Servers.Pekko.Java, Clients.PekkoHttp.Java)
 
 //--- Aliases
 
@@ -57,7 +57,7 @@ object Clients {
   }
   object PekkoHttp {
     // FIXME: let's have Scala stable and we'll do Java later.
-//    val Java = PekkoHttpClientProviderJava$
+    val Java = PekkoHttpClientProviderJava$
     val Scala = new PekkoClientProviderScala("pekko-http", false)
     val ScalaWithSslContext = new PekkoClientProviderScala("pekko-http", true)
   }
@@ -84,6 +84,12 @@ class PekkoClientProviderScala(backend: String, testWithSslContext: Boolean) ext
 }
 
 object PekkoNettyClientProviderJava$ extends PekkoClientProvider {
+  val label: String = "pekko-grpc java client tester"
+
+  def client = new PekkoGrpcClientJava((settings, sys) => new PekkoGrpcJavaClientTester(settings, sys))
+}
+
+object PekkoHttpClientProviderJava$ extends PekkoClientProvider {
   val label: String = "pekko-grpc java client tester"
 
   def client = new PekkoGrpcClientJava((settings, sys) => new PekkoGrpcJavaClientTester(settings, sys))
