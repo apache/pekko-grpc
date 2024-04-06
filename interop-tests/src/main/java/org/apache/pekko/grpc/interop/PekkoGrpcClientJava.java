@@ -13,16 +13,15 @@
 
 package org.apache.pekko.grpc.interop;
 
-import org.apache.pekko.actor.ActorSystem;
 import io.grpc.internal.testing.TestUtils;
 import io.grpc.testing.integration2.ClientTester;
-import io.grpc.testing.integration2.TestServiceClient;
 import io.grpc.testing.integration2.Settings;
+import io.grpc.testing.integration2.TestServiceClient;
+import java.util.concurrent.TimeUnit;
+import org.apache.pekko.actor.ActorSystem;
 import scala.Function2;
 import scala.concurrent.Await;
 import scala.concurrent.duration.Duration;
-
-import java.util.concurrent.TimeUnit;
 
 public class PekkoGrpcClientJava extends GrpcClient {
 
@@ -38,18 +37,17 @@ public class PekkoGrpcClientJava extends GrpcClient {
 
     final ActorSystem sys = ActorSystem.create("PekkoGrpcClientJava");
 
-    final TestServiceClient client = new TestServiceClient(clientTesterFactory.apply(settings, sys));
+    final TestServiceClient client =
+        new TestServiceClient(clientTesterFactory.apply(settings, sys));
     client.setUp();
 
     try {
       client.run(settings);
-    }
-    finally {
+    } finally {
       client.tearDown();
       try {
         Await.result(sys.terminate(), Duration.apply(5, TimeUnit.SECONDS));
-      }
-      catch (Exception ex) {
+      } catch (Exception ex) {
         throw new RuntimeException(ex);
       }
     }

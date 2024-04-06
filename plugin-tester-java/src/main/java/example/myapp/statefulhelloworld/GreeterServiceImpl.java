@@ -13,15 +13,14 @@
 
 package example.myapp.statefulhelloworld;
 
-import example.myapp.statefulhelloworld.grpc.*;
-
-import org.apache.pekko.actor.ActorSystem;
-import org.apache.pekko.actor.ActorRef;
 import static org.apache.pekko.pattern.Patterns.ask;
 
+import example.myapp.statefulhelloworld.grpc.*;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import org.apache.pekko.actor.ActorRef;
+import org.apache.pekko.actor.ActorSystem;
 
 // #stateful-service
 public final class GreeterServiceImpl implements GreeterService {
@@ -36,17 +35,16 @@ public final class GreeterServiceImpl implements GreeterService {
 
   public CompletionStage<HelloReply> sayHello(HelloRequest in) {
     return ask(greeterActor, GreeterActor.GET_GREETING, Duration.ofSeconds(5))
-        .thenApply(message ->
-          HelloReply.newBuilder()
-            .setMessage(((GreeterActor.Greeting) message).greeting)
-            .build()
-        );
+        .thenApply(
+            message ->
+                HelloReply.newBuilder()
+                    .setMessage(((GreeterActor.Greeting) message).greeting)
+                    .build());
   }
 
   public CompletionStage<ChangeResponse> changeGreeting(ChangeRequest in) {
     greeterActor.tell(new GreeterActor.ChangeGreeting(in.getNewGreeting()), ActorRef.noSender());
     return CompletableFuture.completedFuture(ChangeResponse.newBuilder().build());
   }
-
 }
 // #stateful-service

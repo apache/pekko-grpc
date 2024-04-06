@@ -21,15 +21,19 @@ public class GreeterActor extends AbstractActor {
 
   public static class ChangeGreeting {
     public final String newGreeting;
+
     public ChangeGreeting(String newGreeting) {
       this.newGreeting = newGreeting;
     }
   }
+
   public static class GetGreeting {}
+
   public static GetGreeting GET_GREETING = new GetGreeting();
 
   public static class Greeting {
     public final String greeting;
+
     public Greeting(String greeting) {
       this.greeting = greeting;
     }
