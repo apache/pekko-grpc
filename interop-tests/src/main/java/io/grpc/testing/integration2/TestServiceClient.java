@@ -21,7 +21,6 @@ import com.google.common.io.Files;
 import io.grpc.internal.testing.TestUtils;
 import io.grpc.testing.integration.TestCases;
 import io.grpc.testing.integration.TestServiceGrpc;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.charset.Charset;
@@ -32,190 +31,208 @@ import java.nio.charset.Charset;
  */
 public class TestServiceClient {
 
-    private static final Charset UTF_8 = Charset.forName("UTF-8");
+  private static final Charset UTF_8 = Charset.forName("UTF-8");
 
-    private String testCase = "empty_unary";
+  private String testCase = "empty_unary";
 
-    /**
-     * The main application allowing this client to be launched from the command line.
-     */
-    public static void main(String[] args) throws Exception {
-        // Let OkHttp use Conscrypt if it is available.
-        TestUtils.installConscryptIfAvailable();
-        Settings settings = Settings.parseArgs(args);
-        final TestServiceClient client = new TestServiceClient(new GrpcJavaClientTester(settings));
-        client.setUp();
+  /** The main application allowing this client to be launched from the command line. */
+  public static void main(String[] args) throws Exception {
+    // Let OkHttp use Conscrypt if it is available.
+    TestUtils.installConscryptIfAvailable();
+    Settings settings = Settings.parseArgs(args);
+    final TestServiceClient client = new TestServiceClient(new GrpcJavaClientTester(settings));
+    client.setUp();
 
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
+    Runtime.getRuntime()
+        .addShutdownHook(
+            new Thread() {
+              @Override
+              public void run() {
                 System.out.println("Shutting down");
                 try {
-                    client.tearDown();
+                  client.tearDown();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                  e.printStackTrace();
                 }
-            }
-        });
+              }
+            });
 
-        try {
-            client.run(settings);
-        } finally {
-            client.tearDown();
+    try {
+      client.run(settings);
+    } finally {
+      client.tearDown();
+    }
+    System.exit(0);
+  }
+
+  private ClientTester clientTester;
+
+  public TestServiceClient(ClientTester clientTester) {
+    this.clientTester = clientTester;
+  }
+
+  @VisibleForTesting
+  public void setUp() {
+    clientTester.setUp();
+  }
+
+  public synchronized void tearDown() {
+    try {
+      clientTester.tearDown();
+    } catch (RuntimeException ex) {
+      throw ex;
+    } catch (Exception ex) {
+      throw new RuntimeException(ex);
+    }
+  }
+
+  public void run(Settings settings) {
+    System.out.println("Running test " + settings.getTestCase());
+    try {
+      runTest(TestCases.fromString(settings.getTestCase()), settings);
+    } catch (RuntimeException ex) {
+      throw ex;
+    } catch (Exception ex) {
+      throw new RuntimeException(ex);
+    }
+    System.out.println("Test completed.");
+  }
+
+  private void runTest(TestCases testCase, Settings settings) throws Exception {
+    switch (testCase) {
+      case EMPTY_UNARY:
+        clientTester.emptyUnary();
+        break;
+
+      case CACHEABLE_UNARY:
+        {
+          clientTester.cacheableUnary();
+          break;
         }
-        System.exit(0);
-    }
 
-    private ClientTester clientTester;
+      case LARGE_UNARY:
+        clientTester.largeUnary();
+        break;
 
-    public TestServiceClient(ClientTester clientTester) {
-        this.clientTester = clientTester;
-    }
+      case CLIENT_COMPRESSED_UNARY:
+        clientTester.clientCompressedUnary(false);
+        break;
 
-    @VisibleForTesting
-    public void setUp() {
-        clientTester.setUp();
-    }
+      case SERVER_COMPRESSED_UNARY:
+        clientTester.serverCompressedUnary();
+        break;
 
-    public synchronized void tearDown() {
-        try {
-            clientTester.tearDown();
-        } catch (RuntimeException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
+      case CLIENT_STREAMING:
+        clientTester.clientStreaming();
+        break;
+
+      case CLIENT_COMPRESSED_STREAMING:
+        clientTester.clientCompressedStreaming(false);
+        break;
+
+      case SERVER_STREAMING:
+        clientTester.serverStreaming();
+        break;
+
+      case SERVER_COMPRESSED_STREAMING:
+        clientTester.serverCompressedStreaming();
+        break;
+
+      case PING_PONG:
+        clientTester.pingPong();
+        break;
+
+      case EMPTY_STREAM:
+        clientTester.emptyStream();
+        break;
+
+      case COMPUTE_ENGINE_CREDS:
+        clientTester.computeEngineCreds(
+            settings.getDefaultServiceAccount(), settings.getOauthScope());
+        break;
+
+      case SERVICE_ACCOUNT_CREDS:
+        {
+          String jsonKey =
+              Files.asCharSource(new File(settings.getServiceAccountKeyFile()), UTF_8).read();
+          FileInputStream credentialsStream =
+              new FileInputStream(new File(settings.getServiceAccountKeyFile()));
+          clientTester.serviceAccountCreds(jsonKey, credentialsStream, settings.getOauthScope());
+          break;
         }
-    }
 
-    public void run(Settings settings) {
-        System.out.println("Running test " + settings.getTestCase());
-        try {
-            runTest(TestCases.fromString(settings.getTestCase()), settings);
-        } catch (RuntimeException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
+      case JWT_TOKEN_CREDS:
+        {
+          FileInputStream credentialsStream =
+              new FileInputStream(new File(settings.getServiceAccountKeyFile()));
+          clientTester.jwtTokenCreds(credentialsStream);
+          break;
         }
-        System.out.println("Test completed.");
-    }
 
-    private void runTest(TestCases testCase, Settings settings) throws Exception {
-        switch (testCase) {
-            case EMPTY_UNARY:
-                clientTester.emptyUnary();
-                break;
-
-            case CACHEABLE_UNARY: {
-                clientTester.cacheableUnary();
-                break;
-            }
-
-            case LARGE_UNARY:
-                clientTester.largeUnary();
-                break;
-
-            case CLIENT_COMPRESSED_UNARY:
-                clientTester.clientCompressedUnary(false);
-                break;
-
-            case SERVER_COMPRESSED_UNARY:
-                clientTester.serverCompressedUnary();
-                break;
-
-            case CLIENT_STREAMING:
-                clientTester.clientStreaming();
-                break;
-
-            case CLIENT_COMPRESSED_STREAMING:
-                clientTester.clientCompressedStreaming(false);
-                break;
-
-            case SERVER_STREAMING:
-                clientTester.serverStreaming();
-                break;
-
-            case SERVER_COMPRESSED_STREAMING:
-                clientTester.serverCompressedStreaming();
-                break;
-
-            case PING_PONG:
-                clientTester.pingPong();
-                break;
-
-            case EMPTY_STREAM:
-                clientTester.emptyStream();
-                break;
-
-            case COMPUTE_ENGINE_CREDS:
-                clientTester.computeEngineCreds(settings.getDefaultServiceAccount(), settings.getOauthScope());
-                break;
-
-            case SERVICE_ACCOUNT_CREDS: {
-                String jsonKey = Files.asCharSource(new File(settings.getServiceAccountKeyFile()), UTF_8).read();
-                FileInputStream credentialsStream = new FileInputStream(new File(settings.getServiceAccountKeyFile()));
-                clientTester.serviceAccountCreds(jsonKey, credentialsStream, settings.getOauthScope());
-                break;
-            }
-
-            case JWT_TOKEN_CREDS: {
-                FileInputStream credentialsStream = new FileInputStream(new File(settings.getServiceAccountKeyFile()));
-                clientTester.jwtTokenCreds(credentialsStream);
-                break;
-            }
-
-            case OAUTH2_AUTH_TOKEN: {
-                String jsonKey = Files.asCharSource(new File(settings.getServiceAccountKeyFile()), UTF_8).read();
-                FileInputStream credentialsStream = new FileInputStream(new File(settings.getServiceAccountKeyFile()));
-                clientTester.oauth2AuthToken(jsonKey, credentialsStream, settings.getOauthScope());
-                break;
-            }
-
-            case PER_RPC_CREDS: {
-                String jsonKey = Files.asCharSource(new File(settings.getServiceAccountKeyFile()), UTF_8).read();
-                FileInputStream credentialsStream = new FileInputStream(new File(settings.getServiceAccountKeyFile()));
-                clientTester.perRpcCreds(jsonKey, credentialsStream, settings.getOauthScope());
-                break;
-            }
-
-            case CUSTOM_METADATA: {
-                clientTester.customMetadata();
-                break;
-            }
-
-            case STATUS_CODE_AND_MESSAGE: {
-                clientTester.statusCodeAndMessage();
-                break;
-            }
-
-            case UNIMPLEMENTED_METHOD: {
-                clientTester.unimplementedMethod();
-                break;
-            }
-
-            case UNIMPLEMENTED_SERVICE: {
-                clientTester.unimplementedService();
-                break;
-            }
-
-            case CANCEL_AFTER_BEGIN: {
-                clientTester.cancelAfterBegin();
-                break;
-            }
-
-            case CANCEL_AFTER_FIRST_RESPONSE: {
-                clientTester.cancelAfterFirstResponse();
-                break;
-            }
-
-            case TIMEOUT_ON_SLEEPING_SERVER: {
-                clientTester.timeoutOnSleepingServer();
-                break;
-            }
-
-            default:
-                throw new IllegalArgumentException("Unknown test case: " + testCase);
+      case OAUTH2_AUTH_TOKEN:
+        {
+          String jsonKey =
+              Files.asCharSource(new File(settings.getServiceAccountKeyFile()), UTF_8).read();
+          FileInputStream credentialsStream =
+              new FileInputStream(new File(settings.getServiceAccountKeyFile()));
+          clientTester.oauth2AuthToken(jsonKey, credentialsStream, settings.getOauthScope());
+          break;
         }
+
+      case PER_RPC_CREDS:
+        {
+          String jsonKey =
+              Files.asCharSource(new File(settings.getServiceAccountKeyFile()), UTF_8).read();
+          FileInputStream credentialsStream =
+              new FileInputStream(new File(settings.getServiceAccountKeyFile()));
+          clientTester.perRpcCreds(jsonKey, credentialsStream, settings.getOauthScope());
+          break;
+        }
+
+      case CUSTOM_METADATA:
+        {
+          clientTester.customMetadata();
+          break;
+        }
+
+      case STATUS_CODE_AND_MESSAGE:
+        {
+          clientTester.statusCodeAndMessage();
+          break;
+        }
+
+      case UNIMPLEMENTED_METHOD:
+        {
+          clientTester.unimplementedMethod();
+          break;
+        }
+
+      case UNIMPLEMENTED_SERVICE:
+        {
+          clientTester.unimplementedService();
+          break;
+        }
+
+      case CANCEL_AFTER_BEGIN:
+        {
+          clientTester.cancelAfterBegin();
+          break;
+        }
+
+      case CANCEL_AFTER_FIRST_RESPONSE:
+        {
+          clientTester.cancelAfterFirstResponse();
+          break;
+        }
+
+      case TIMEOUT_ON_SLEEPING_SERVER:
+        {
+          clientTester.timeoutOnSleepingServer();
+          break;
+        }
+
+      default:
+        throw new IllegalArgumentException("Unknown test case: " + testCase);
     }
-
-
+  }
 }

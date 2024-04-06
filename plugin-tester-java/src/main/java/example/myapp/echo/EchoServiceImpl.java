@@ -13,10 +13,9 @@
 
 package example.myapp.echo;
 
+import example.myapp.echo.grpc.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-
-import example.myapp.echo.grpc.*;
 
 public class EchoServiceImpl implements EchoService {
 
@@ -25,4 +24,3 @@ public class EchoServiceImpl implements EchoService {
     return CompletableFuture.completedFuture(in);
   }
 }
-

@@ -13,43 +13,38 @@
 
 package jdocs.org.apache.pekko.grpc.client;
 
+import java.time.Duration;
 import org.apache.pekko.actor.ActorSystem;
 import org.apache.pekko.discovery.Discovery;
 import org.apache.pekko.discovery.ServiceDiscovery;
 import org.apache.pekko.grpc.GrpcClientSettings;
-import scala.Some;
-
-import java.time.Duration;
 
 public class GrpcClientSettingsCompileOnly {
-    public static void sd() {
+  public static void sd() {
 
-        ActorSystem actorSystem = ActorSystem.create();
-        //#simple
-        GrpcClientSettings.connectToServiceAt("localhost", 443, actorSystem);
-        //#simple
+    ActorSystem actorSystem = ActorSystem.create();
+    // #simple
+    GrpcClientSettings.connectToServiceAt("localhost", 443, actorSystem);
+    // #simple
 
-        //#simple-programmatic
-        GrpcClientSettings.connectToServiceAt("localhost", 443, actorSystem)
-                .withDeadline(Duration.ofSeconds(1))
-                .withTls(false);
-        //#simple-programmatic
+    // #simple-programmatic
+    GrpcClientSettings.connectToServiceAt("localhost", 443, actorSystem)
+        .withDeadline(Duration.ofSeconds(1))
+        .withTls(false);
+    // #simple-programmatic
 
-        ServiceDiscovery serviceDiscovery = Discovery.get(actorSystem).discovery();
+    ServiceDiscovery serviceDiscovery = Discovery.get(actorSystem).discovery();
 
-        //#provide-sd
-        // An ActorSystem's default service discovery mechanism
-        GrpcClientSettings
-                .usingServiceDiscovery("my-service", actorSystem)
-                .withServicePortName("https"); // (optional) refine the lookup operation to only https ports
-        //#provide-sd
+    // #provide-sd
+    // An ActorSystem's default service discovery mechanism
+    GrpcClientSettings.usingServiceDiscovery("my-service", actorSystem)
+        .withServicePortName("https"); // (optional) refine the lookup operation to only https ports
+    // #provide-sd
 
-        //#sd-settings
-        // an ActorSystem is required for service discovery
-        GrpcClientSettings.fromConfig(
-                "project.WithConfigServiceDiscovery", actorSystem
-        );
-        //#sd-settings
+    // #sd-settings
+    // an ActorSystem is required for service discovery
+    GrpcClientSettings.fromConfig("project.WithConfigServiceDiscovery", actorSystem);
+    // #sd-settings
 
-    }
+  }
 }

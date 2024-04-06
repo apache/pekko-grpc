@@ -13,67 +13,68 @@
 
 package io.grpc.testing.integration2;
 
-import io.grpc.ManagedChannel;
-
 import java.io.InputStream;
 
 /**
- *  This class has all the methods of the grpc-java AbstractInteropTest, but none of the implementations,
- *  so it can be implemented either by calling AbstractInteropTest or with an Apache Pekko gRPC implementation.
+ * This class has all the methods of the grpc-java AbstractInteropTest, but none of the
+ * implementations, so it can be implemented either by calling AbstractInteropTest or with an Apache
+ * Pekko gRPC implementation.
  *
- * Test requirements documentation: https://github.com/grpc/grpc/blob/master/doc/interop-test-descriptions.md
+ * <p>Test requirements documentation:
+ * https://github.com/grpc/grpc/blob/master/doc/interop-test-descriptions.md
  */
 public interface ClientTester {
 
-    void setUp();
+  void setUp();
 
-    void tearDown() throws Exception;
+  void tearDown() throws Exception;
 
-    void emptyUnary() throws Exception;
+  void emptyUnary() throws Exception;
 
-    void cacheableUnary();
+  void cacheableUnary();
 
-    void largeUnary() throws Exception;
+  void largeUnary() throws Exception;
 
-    void clientCompressedUnary(boolean probe) throws Exception;
+  void clientCompressedUnary(boolean probe) throws Exception;
 
-    void serverCompressedUnary() throws Exception;
+  void serverCompressedUnary() throws Exception;
 
-    void clientStreaming() throws Exception;
+  void clientStreaming() throws Exception;
 
-    void clientCompressedStreaming(boolean probe) throws Exception;
+  void clientCompressedStreaming(boolean probe) throws Exception;
 
-    void serverStreaming() throws Exception;
+  void serverStreaming() throws Exception;
 
-    void serverCompressedStreaming() throws Exception;
-    
-    void pingPong() throws Exception;
+  void serverCompressedStreaming() throws Exception;
 
-    void emptyStream() throws Exception;
+  void pingPong() throws Exception;
 
-    void computeEngineCreds(String serviceAccount, String oauthScope) throws Exception;
+  void emptyStream() throws Exception;
 
-    void serviceAccountCreds(String jsonKey, InputStream credentialsStream, String authScope) throws Exception;
+  void computeEngineCreds(String serviceAccount, String oauthScope) throws Exception;
 
-    void jwtTokenCreds(InputStream serviceAccountJson) throws Exception;
+  void serviceAccountCreds(String jsonKey, InputStream credentialsStream, String authScope)
+      throws Exception;
 
-    void oauth2AuthToken(String jsonKey, InputStream credentialsStream, String authScope) throws Exception;
+  void jwtTokenCreds(InputStream serviceAccountJson) throws Exception;
 
-    void perRpcCreds(String jsonKey, InputStream credentialsStream, String oauthScope) throws Exception;
+  void oauth2AuthToken(String jsonKey, InputStream credentialsStream, String authScope)
+      throws Exception;
 
-    void customMetadata() throws Exception;
+  void perRpcCreds(String jsonKey, InputStream credentialsStream, String oauthScope)
+      throws Exception;
 
-    void statusCodeAndMessage() throws Exception;
+  void customMetadata() throws Exception;
 
-    void unimplementedMethod();
+  void statusCodeAndMessage() throws Exception;
 
-    void unimplementedService();
+  void unimplementedMethod();
 
-    void cancelAfterBegin() throws Exception;
+  void unimplementedService();
 
-    void cancelAfterFirstResponse() throws Exception;
+  void cancelAfterBegin() throws Exception;
 
-    void timeoutOnSleepingServer() throws Exception;
+  void cancelAfterFirstResponse() throws Exception;
 
-
+  void timeoutOnSleepingServer() throws Exception;
 }
