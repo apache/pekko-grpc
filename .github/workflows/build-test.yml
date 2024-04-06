@@ -65,8 +65,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        SCALA_VERSION: [2.12.18, 2.13.12, 3.3.1]
-        JAVA_VERSION: [8, 11]
+        SCALA_VERSION: [2.12.19, 2.13.13, 3.3.3]
+        JAVA_VERSION: [8, 11, 17]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -84,6 +84,7 @@ jobs:
 
       - name: Compile and test for JDK ${{ matrix.JAVA_VERSION }}, Scala ${{ matrix.SCALA_VERSION }}
         run: |-
+          cp .jvmopts-ci .jvmopts
           sbt ++${{ matrix.SCALA_VERSION }} test
           sbt ++${{ matrix.SCALA_VERSION }}! codegen/test
 
@@ -148,7 +149,7 @@ jobs:
           cat ~/.version
 
       - name: Cache local Gradle repository
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
@@ -204,7 +205,7 @@ jobs:
           cat ~/.version
 
       - name: Cache local Maven repository
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('plugin-tester-*/pom.xml') }}
