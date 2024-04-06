@@ -30,7 +30,7 @@ addSbtPlugin("com.github.pjfanning" % "sbt-source-dist" % "0.1.12")
 addSbtPlugin("com.github.sbt" % "sbt-license-report" % "1.6.1")
 
 addSbtPlugin("org.apache.pekko" % "pekko-sbt-paradox" % "1.0.1")
-addSbtPlugin(("com.github.sbt" % "sbt-site-paradox" % "1.5.0").excludeAll(
+addSbtPlugin(("com.github.sbt" % "sbt-site-paradox" % "1.7.0").excludeAll(
   "com.lightbend.paradox", "sbt-paradox"))
 
 addSbtPlugin("com.github.sbt" % "sbt-unidoc" % "0.5.0")
