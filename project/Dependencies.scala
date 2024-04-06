@@ -59,7 +59,7 @@ object Dependencies {
     val grpcCore = "io.grpc" % "grpc-core" % Versions.grpc
     val grpcProtobuf = "io.grpc" % "grpc-protobuf" % Versions.grpc
     val grpcNettyShaded = "io.grpc" % "grpc-netty-shaded" % Versions.grpc
-    val grpcStub = ("io.grpc" % "grpc-stub" % Versions.grpc
+    val grpcStub = "io.grpc" % "grpc-stub" % Versions.grpc
 
     // Excluding grpc-alts works around a complex resolution bug
     // Details are in https://github.com/akka/akka-grpc/pull/469
