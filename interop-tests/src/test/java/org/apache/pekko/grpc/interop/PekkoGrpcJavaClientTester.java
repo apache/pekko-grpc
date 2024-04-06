@@ -13,6 +13,19 @@
 
 package org.apache.pekko.grpc.interop;
 
+import org.apache.pekko.actor.ActorSystem;
+import org.apache.pekko.grpc.GrpcClientSettings;
+import org.apache.pekko.grpc.GrpcResponseMetadata;
+import org.apache.pekko.grpc.GrpcSingleResponse;
+import org.apache.pekko.grpc.SSLContextUtils;
+import org.apache.pekko.grpc.javadsl.Metadata;
+import org.apache.pekko.japi.Pair;
+import org.apache.pekko.stream.Materializer;
+import org.apache.pekko.stream.SystemMaterializer;
+import org.apache.pekko.stream.javadsl.Keep;
+import org.apache.pekko.stream.javadsl.Sink;
+import org.apache.pekko.stream.javadsl.Source;
+import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -25,12 +38,23 @@ import io.grpc.testing.integration.TestServiceClient;
 import io.grpc.testing.integration.UnimplementedServiceClient;
 import io.grpc.testing.integration2.ClientTester;
 import io.grpc.testing.integration2.Settings;
+
 import java.io.InputStream;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+
+import scala.concurrent.ExecutionContext;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import org.apache.pekko.actor.ActorSystem;
 import org.apache.pekko.grpc.GrpcClientSettings;
 import org.apache.pekko.grpc.GrpcResponseMetadata;
@@ -47,37 +71,53 @@ import org.junit.Assert;
 import scala.concurrent.ExecutionContext;
 
 /**
- * ClientTester implementation that uses the generated pekko-grpc Java client to exercise a server
- * under test.
- *
- * <p>Essentially porting the client code from [[io.grpc.testing.integration.AbstractInteropTest]]
- * against our Scala API's
+ * ClientTester implementation that uses the generated pekko-grpc Java client to exercise a server under test.
+ * <p>
+ * Essentially porting the client code from [[io.grpc.testing.integration.AbstractInteropTest]] against our Scala API's
  */
 public class PekkoGrpcJavaClientTester implements ClientTester {
+
   private final Settings settings;
   private final Materializer mat;
   private final ExecutionContext ec;
   private final ActorSystem as;
+  private final String backend;
+  private final Boolean testWithSslContext;
 
   private TestServiceClient client;
   private UnimplementedServiceClient clientUnimplementedService;
 
   private static int AWAIT_TIME_SECONDS = 3;
 
-  public PekkoGrpcJavaClientTester(Settings settings, ActorSystem sys) {
+  public PekkoGrpcJavaClientTester(Settings settings, ActorSystem sys, String backend, Boolean testWithSslContext) {
     this.settings = settings;
     this.mat = SystemMaterializer.get(sys).materializer();
     this.as = sys;
+    this.backend = backend;
+    this.testWithSslContext = testWithSslContext;
     this.ec = sys.dispatcher();
   }
 
   @Override
   public void setUp() {
-    final GrpcClientSettings grpcSettings =
-        GrpcClientSettings.connectToServiceAt(settings.serverHost(), settings.serverPort(), as)
+    TrustManager trustManager = SSLContextUtils.trustManagerFromResource("/certs/ca.pem");
+    GrpcClientSettings grpcSettings =
+        GrpcClientSettings
+            .connectToServiceAt(settings.serverHost(), settings.serverPort(), as)
+            .withBackend(backend)
             .withOverrideAuthority(settings.serverHostOverride())
-            .withTls(settings.useTls())
-            .withTrustManager(SSLContextUtils.trustManagerFromResource("/certs/ca.pem"));
+            .withTls(settings.useTls());
+    try {
+      if (testWithSslContext) {
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(null, new TrustManager[]{trustManager}, null);
+        grpcSettings = grpcSettings.withSslContext(sslContext);
+      } else {
+        grpcSettings = grpcSettings.withTrustManager(trustManager);
+      }
+    } catch (NoSuchAlgorithmException | KeyManagementException e) {
+      throw new RuntimeException(e);
+    }
     client = TestServiceClient.create(grpcSettings, as);
     clientUnimplementedService = UnimplementedServiceClient.create(grpcSettings, as);
   }
