@@ -90,7 +90,7 @@ object Dependencies {
   }
 
   object Runtime {
-    val logback = "ch.qos.logback" % "logback-classic" % "1.2.13" % "runtime"
+    val logback = "ch.qos.logback" % "logback-classic" % "1.3.14" % "runtime"
     val guavaAndroid = "com.google.guava" % "guava" % "32.1.2-android" % "runtime"
   }
 
