@@ -37,11 +37,11 @@ object Dependencies {
     // If changing this, remember to update protoc plugin version to align in
     // maven-plugin/src/main/maven/plugin.xml and org.apache.pekko.grpc.sbt.PekkoGrpcPlugin
     val googleProtoc = "3.24.0" // checked synced by VersionSyncCheckPlugin
-    val googleProtobufJava = "3.24.0"
+    val googleProtobufJava = "3.24.4"
 
     val scalaTest = "3.2.18"
 
-    val maven = "3.8.6"
+    val maven = "3.8.8"
   }
 
   object Compile {
@@ -72,7 +72,7 @@ object Dependencies {
       .exclude("io.grpc", "grpc-alts")
       .exclude("io.grpc", "grpc-xds")
 
-    val slf4jApi = "org.slf4j" % "slf4j-api" % "1.7.36"
+    val slf4jApi = "org.slf4j" % "slf4j-api" % "2.0.12"
     val mavenPluginApi = "org.apache.maven" % "maven-plugin-api" % Versions.maven
     val mavenCore = "org.apache.maven" % "maven-core" % Versions.maven
     val protocJar = "com.github.os72" % "protoc-jar" % "3.11.4"
@@ -90,7 +90,7 @@ object Dependencies {
   }
 
   object Runtime {
-    val logback = "ch.qos.logback" % "logback-classic" % "1.2.13" % "runtime"
+    val logback = "ch.qos.logback" % "logback-classic" % "1.3.14" % "runtime"
     val guavaAndroid = "com.google.guava" % "guava" % "32.1.2-jre" % "runtime"
   }
 
