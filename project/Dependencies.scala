@@ -56,15 +56,10 @@ object Dependencies {
     val scalapbRuntime = ("com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion)
       .exclude("io.grpc", "grpc-netty")
 
-    // we force the use of a newer version of guava due to CVEs
-    val grpcCore = ("io.grpc" % "grpc-core" % Versions.grpc)
-      .excludeAll("com.google.guava" % "guava")
-    val grpcProtobuf = ("io.grpc" % "grpc-protobuf" % Versions.grpc)
-      .excludeAll("com.google.guava" % "guava")
-    val grpcNettyShaded = ("io.grpc" % "grpc-netty-shaded" % Versions.grpc)
-      .excludeAll("com.google.guava" % "guava")
-    val grpcStub = ("io.grpc" % "grpc-stub" % Versions.grpc)
-      .excludeAll("com.google.guava" % "guava")
+    val grpcCore = "io.grpc" % "grpc-core" % Versions.grpc
+    val grpcProtobuf = "io.grpc" % "grpc-protobuf" % Versions.grpc
+    val grpcNettyShaded = "io.grpc" % "grpc-netty-shaded" % Versions.grpc
+    val grpcStub = "io.grpc" % "grpc-stub" % Versions.grpc
 
     // Excluding grpc-alts works around a complex resolution bug
     // Details are in https://github.com/akka/akka-grpc/pull/469
@@ -91,7 +86,6 @@ object Dependencies {
 
   object Runtime {
     val logback = "ch.qos.logback" % "logback-classic" % "1.3.14" % "runtime"
-    val guavaAndroid = "com.google.guava" % "guava" % "32.1.2-android" % "runtime"
   }
 
   object Protobuf {
@@ -109,7 +103,6 @@ object Dependencies {
     Compile.scalapbCompilerPlugin,
     Protobuf.protobufJava, // or else scalapb pulls older version in transitively
     Compile.grpcProtobuf,
-    Runtime.guavaAndroid, // forces a newer version than grpc-protobuf defaults too
     Test.scalaTest)
 
   lazy val runtime = l ++= Seq(
@@ -119,7 +112,6 @@ object Dependencies {
     Compile.grpcCore,
     Compile.grpcStub % Provided, // comes from the generators
     Compile.grpcNettyShaded,
-    Runtime.guavaAndroid, // forces a newer version than grpc-core/grpc-protobuf default too
     Compile.pekkoStream,
     Compile.pekkoHttpCore,
     Compile.pekkoHttp,
@@ -158,7 +150,6 @@ object Dependencies {
   lazy val pluginTester = l ++= Seq(
     // usually automatically added by `suggestedDependencies`, which doesn't work with ReflectiveCodeGen
     Compile.grpcStub,
-    Runtime.guavaAndroid,
     Compile.pekkoHttpCors,
     Compile.pekkoHttp,
     Test.scalaTest,
