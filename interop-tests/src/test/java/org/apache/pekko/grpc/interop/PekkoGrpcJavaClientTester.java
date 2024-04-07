@@ -21,16 +21,22 @@ import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.testing.integration.EmptyProtos;
 import io.grpc.testing.integration.Messages;
+import io.grpc.testing.integration.Messages.SimpleResponse;
+import io.grpc.testing.integration.Messages.StreamingOutputCallResponse;
 import io.grpc.testing.integration.TestServiceClient;
 import io.grpc.testing.integration.UnimplementedServiceClient;
 import io.grpc.testing.integration2.ClientTester;
 import io.grpc.testing.integration2.Settings;
 import java.io.InputStream;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
 import org.apache.pekko.actor.ActorSystem;
 import org.apache.pekko.grpc.GrpcClientSettings;
 import org.apache.pekko.grpc.GrpcResponseMetadata;
@@ -54,30 +60,48 @@ import scala.concurrent.ExecutionContext;
  * against our Scala API's
  */
 public class PekkoGrpcJavaClientTester implements ClientTester {
+
   private final Settings settings;
   private final Materializer mat;
   private final ExecutionContext ec;
   private final ActorSystem as;
+  private final String backend;
+  private final Boolean testWithSslContext;
 
   private TestServiceClient client;
   private UnimplementedServiceClient clientUnimplementedService;
 
   private static int AWAIT_TIME_SECONDS = 3;
 
-  public PekkoGrpcJavaClientTester(Settings settings, ActorSystem sys) {
+  public PekkoGrpcJavaClientTester(
+      Settings settings, ActorSystem sys, String backend, Boolean testWithSslContext) {
     this.settings = settings;
     this.mat = SystemMaterializer.get(sys).materializer();
     this.as = sys;
+    this.backend = backend;
+    this.testWithSslContext = testWithSslContext;
     this.ec = sys.dispatcher();
   }
 
   @Override
   public void setUp() {
-    final GrpcClientSettings grpcSettings =
+    TrustManager trustManager = SSLContextUtils.trustManagerFromResource("/certs/ca.pem");
+    GrpcClientSettings grpcSettings =
         GrpcClientSettings.connectToServiceAt(settings.serverHost(), settings.serverPort(), as)
+            .withBackend(backend)
             .withOverrideAuthority(settings.serverHostOverride())
-            .withTls(settings.useTls())
-            .withTrustManager(SSLContextUtils.trustManagerFromResource("/certs/ca.pem"));
+            .withTls(settings.useTls());
+    try {
+      if (testWithSslContext) {
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(null, new TrustManager[] {trustManager}, null);
+        grpcSettings = grpcSettings.withSslContext(sslContext);
+      } else {
+        grpcSettings = grpcSettings.withTrustManager(trustManager);
+      }
+    } catch (NoSuchAlgorithmException | KeyManagementException e) {
+      throw new RuntimeException(e);
+    }
     client = TestServiceClient.create(grpcSettings, as);
     clientUnimplementedService = UnimplementedServiceClient.create(grpcSettings, as);
   }
@@ -196,7 +220,7 @@ public class PekkoGrpcJavaClientTester implements ClientTester {
             .setPayload(Messages.Payload.newBuilder().setBody(ByteString.copyFrom(new byte[58979])))
             .build());
 
-    final List<Messages.StreamingOutputCallResponse> response =
+    final List<StreamingOutputCallResponse> response =
         client
             .streamingOutputCall(request)
             .toMat(Sink.seq(), Keep.right())
@@ -349,7 +373,7 @@ public class PekkoGrpcJavaClientTester implements ClientTester {
     // unary call
     org.apache.pekko.util.ByteString binaryValue =
         org.apache.pekko.util.ByteString.fromInts(0xababab);
-    CompletionStage<GrpcSingleResponse<Messages.SimpleResponse>> unaryResponseCs =
+    CompletionStage<GrpcSingleResponse<SimpleResponse>> unaryResponseCs =
         client
             .unaryCall()
             .addHeader("x-grpc-test-echo-initial", "test_initial_metadata_value")
