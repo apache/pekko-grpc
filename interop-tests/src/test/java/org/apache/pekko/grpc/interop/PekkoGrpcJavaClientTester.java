@@ -13,19 +13,6 @@
 
 package org.apache.pekko.grpc.interop;
 
-import org.apache.pekko.actor.ActorSystem;
-import org.apache.pekko.grpc.GrpcClientSettings;
-import org.apache.pekko.grpc.GrpcResponseMetadata;
-import org.apache.pekko.grpc.GrpcSingleResponse;
-import org.apache.pekko.grpc.SSLContextUtils;
-import org.apache.pekko.grpc.javadsl.Metadata;
-import org.apache.pekko.japi.Pair;
-import org.apache.pekko.stream.Materializer;
-import org.apache.pekko.stream.SystemMaterializer;
-import org.apache.pekko.stream.javadsl.Keep;
-import org.apache.pekko.stream.javadsl.Sink;
-import org.apache.pekko.stream.javadsl.Source;
-import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -34,27 +21,22 @@ import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.testing.integration.EmptyProtos;
 import io.grpc.testing.integration.Messages;
+import io.grpc.testing.integration.Messages.SimpleResponse;
+import io.grpc.testing.integration.Messages.StreamingOutputCallResponse;
 import io.grpc.testing.integration.TestServiceClient;
 import io.grpc.testing.integration.UnimplementedServiceClient;
 import io.grpc.testing.integration2.ClientTester;
 import io.grpc.testing.integration2.Settings;
-
 import java.io.InputStream;
-
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
-
-import scala.concurrent.ExecutionContext;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import org.apache.pekko.actor.ActorSystem;
 import org.apache.pekko.grpc.GrpcClientSettings;
 import org.apache.pekko.grpc.GrpcResponseMetadata;
@@ -71,9 +53,11 @@ import org.junit.Assert;
 import scala.concurrent.ExecutionContext;
 
 /**
- * ClientTester implementation that uses the generated pekko-grpc Java client to exercise a server under test.
- * <p>
- * Essentially porting the client code from [[io.grpc.testing.integration.AbstractInteropTest]] against our Scala API's
+ * ClientTester implementation that uses the generated pekko-grpc Java client to exercise a server
+ * under test.
+ *
+ * <p>Essentially porting the client code from [[io.grpc.testing.integration.AbstractInteropTest]]
+ * against our Scala API's
  */
 public class PekkoGrpcJavaClientTester implements ClientTester {
 
@@ -89,7 +73,8 @@ public class PekkoGrpcJavaClientTester implements ClientTester {
 
   private static int AWAIT_TIME_SECONDS = 3;
 
-  public PekkoGrpcJavaClientTester(Settings settings, ActorSystem sys, String backend, Boolean testWithSslContext) {
+  public PekkoGrpcJavaClientTester(
+      Settings settings, ActorSystem sys, String backend, Boolean testWithSslContext) {
     this.settings = settings;
     this.mat = SystemMaterializer.get(sys).materializer();
     this.as = sys;
@@ -102,15 +87,14 @@ public class PekkoGrpcJavaClientTester implements ClientTester {
   public void setUp() {
     TrustManager trustManager = SSLContextUtils.trustManagerFromResource("/certs/ca.pem");
     GrpcClientSettings grpcSettings =
-        GrpcClientSettings
-            .connectToServiceAt(settings.serverHost(), settings.serverPort(), as)
+        GrpcClientSettings.connectToServiceAt(settings.serverHost(), settings.serverPort(), as)
             .withBackend(backend)
             .withOverrideAuthority(settings.serverHostOverride())
             .withTls(settings.useTls());
     try {
       if (testWithSslContext) {
         SSLContext sslContext = SSLContext.getInstance("TLS");
-        sslContext.init(null, new TrustManager[]{trustManager}, null);
+        sslContext.init(null, new TrustManager[] {trustManager}, null);
         grpcSettings = grpcSettings.withSslContext(sslContext);
       } else {
         grpcSettings = grpcSettings.withTrustManager(trustManager);
@@ -236,7 +220,7 @@ public class PekkoGrpcJavaClientTester implements ClientTester {
             .setPayload(Messages.Payload.newBuilder().setBody(ByteString.copyFrom(new byte[58979])))
             .build());
 
-    final List<Messages.StreamingOutputCallResponse> response =
+    final List<StreamingOutputCallResponse> response =
         client
             .streamingOutputCall(request)
             .toMat(Sink.seq(), Keep.right())
@@ -389,7 +373,7 @@ public class PekkoGrpcJavaClientTester implements ClientTester {
     // unary call
     org.apache.pekko.util.ByteString binaryValue =
         org.apache.pekko.util.ByteString.fromInts(0xababab);
-    CompletionStage<GrpcSingleResponse<Messages.SimpleResponse>> unaryResponseCs =
+    CompletionStage<GrpcSingleResponse<SimpleResponse>> unaryResponseCs =
         client
             .unaryCall()
             .addHeader("x-grpc-test-echo-initial", "test_initial_metadata_value")
