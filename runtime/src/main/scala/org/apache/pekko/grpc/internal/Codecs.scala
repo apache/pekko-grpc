@@ -25,7 +25,7 @@ import scala.util.{ Failure, Success, Try }
 object Codecs {
   // TODO should this list be made user-extensible?
   val supportedCodecs = immutable.Seq(Gzip, Identity)
-  private val supportedByName = supportedCodecs.map(c => c.name -> c).toMap
+  private val supportedByName: Map[String, Codec] = supportedCodecs.map(c => c.name -> c).toMap
 
   private def extractHeaders(request: jm.HttpMessage): Iterable[jm.HttpHeader] = {
     request match {
