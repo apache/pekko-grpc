@@ -25,7 +25,6 @@ import scala.util.{ Failure, Success, Try }
 object Codecs {
   // TODO should this list be made user-extensible?
   val supportedCodecs = immutable.Seq(Gzip, Identity)
-  private val supportedNames: Set[String] = supportedCodecs.map(_.name).toSet
   private val supportedByName = supportedCodecs.map(c => c.name -> c).toMap
 
   private def extractHeaders(request: jm.HttpMessage): Iterable[jm.HttpHeader] = {
@@ -47,16 +46,12 @@ object Codecs {
   def negotiate(request: jm.HttpRequest): Codec = {
     val headers = extractHeaders(request)
     val accepted = `Message-Accept-Encoding`.findIn(headers)
-
-    if (accepted.length == 0) {
+    if (accepted.isEmpty) {
       Identity
     } else if (accepted.length == 1) {
-      supportedByName.get(accepted(0)) match {
-        case Some(codec) => codec
-        case None        => Identity
-      }
+      supportedByName.getOrElse(accepted.head, Identity)
     } else {
-      accepted.collectFirst { case a if supportedNames.contains(a) => supportedByName(a) }.getOrElse(Identity)
+      accepted.collectFirst { case a if supportedByName.contains(a) => supportedByName(a) }.getOrElse(Identity)
     }
   }
 
