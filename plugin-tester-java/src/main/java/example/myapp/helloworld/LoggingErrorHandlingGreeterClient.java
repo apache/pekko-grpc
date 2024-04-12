@@ -33,7 +33,6 @@ public class LoggingErrorHandlingGreeterClient {
     GreeterServiceClient client = GreeterServiceClient.create(clientSettings, sys);
 
     try {
-      // #client-calls
       HelloRequest Martin = HelloRequest.newBuilder().setName("Martin").build();
       CompletionStage<HelloReply> successful = client.sayHello(Martin);
       successful.toCompletableFuture().get(10, TimeUnit.SECONDS);
@@ -64,7 +63,6 @@ public class LoggingErrorHandlingGreeterClient {
               })
           .toCompletableFuture()
           .get(10, TimeUnit.SECONDS);
-      // #client-calls
     } catch (InterruptedException | ExecutionException | TimeoutException e) {
       throw new RuntimeException(e);
     }
