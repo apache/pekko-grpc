@@ -46,7 +46,7 @@ public class GreeterServiceImpl implements GreeterService {
   @Override
   public CompletionStage<HelloReply> itKeepsTalking(Source<HelloRequest, NotUsed> in) {
     System.out.println("sayHello to in stream...");
-    return in.runWith(Sink.seq(), mat)
+    return in.runWith(Sink.<HelloRequest>seq(), mat)
         .thenApply(
             elements -> {
               String elementsStr =

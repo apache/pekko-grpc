@@ -27,10 +27,10 @@ import org.apache.pekko.stream.Materializer;
 import org.apache.pekko.stream.javadsl.Sink;
 import org.apache.pekko.stream.javadsl.Source;
 
-public class GreeterServicePowerApiImpl implements GreeterServicePowerApi {
+public class PowerGreeterServiceImpl implements GreeterServicePowerApi {
   private final Materializer mat;
 
-  public GreeterServicePowerApiImpl(Materializer mat) {
+  public PowerGreeterServiceImpl(Materializer mat) {
     this.mat = mat;
   }
 
@@ -46,7 +46,7 @@ public class GreeterServicePowerApiImpl implements GreeterServicePowerApi {
   public CompletionStage<HelloReply> itKeepsTalking(
       Source<HelloRequest, NotUsed> in, Metadata metadata) {
     System.out.println("sayHello to in stream...");
-    return in.runWith(Sink.seq(), mat)
+    return in.runWith(Sink.<HelloRequest>seq(), mat)
         .thenApply(
             elements -> {
               String elementsStr =
@@ -65,10 +65,7 @@ public class GreeterServicePowerApiImpl implements GreeterServicePowerApi {
     List<Character> characters =
         ("Hello, " + greetee).chars().mapToObj(c -> (char) c).collect(Collectors.toList());
     return Source.from(characters)
-        .map(
-            character -> {
-              return HelloReply.newBuilder().setMessage(String.valueOf(character)).build();
-            });
+        .map(character -> HelloReply.newBuilder().setMessage(String.valueOf(character)).build());
   }
 
   @Override

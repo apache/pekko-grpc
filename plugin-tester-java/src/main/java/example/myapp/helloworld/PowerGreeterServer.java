@@ -46,7 +46,7 @@ class PowerGreeterServer {
     Materializer mat = SystemMaterializer.get(sys).materializer();
 
     // Instantiate implementation
-    GreeterServicePowerApi impl = new GreeterServicePowerApiImpl(mat);
+    GreeterServicePowerApi impl = new PowerGreeterServiceImpl(mat);
 
     return Http.get(sys)
         .newServerAt("127.0.0.1", 8091)
