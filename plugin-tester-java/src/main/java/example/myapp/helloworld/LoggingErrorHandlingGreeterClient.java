@@ -43,11 +43,12 @@ public class LoggingErrorHandlingGreeterClient {
       HelloRequest martin = HelloRequest.newBuilder().setName("martin").build();
       CompletionStage<HelloReply> failedBecauseLowercase = client.sayHello(martin);
       failedBecauseLowercase
-          .whenComplete(
+          .handle(
               (response, exception) -> {
                 if (exception != null) {
                   sys.log().info("Call with lowercase name failed");
                 }
+                return response;
               })
           .toCompletableFuture()
           .get(10, TimeUnit.SECONDS);
@@ -55,11 +56,12 @@ public class LoggingErrorHandlingGreeterClient {
       HelloRequest empty = HelloRequest.newBuilder().setName("").build();
       CompletionStage<HelloReply> failedBecauseEmpty = client.sayHello(empty);
       failedBecauseEmpty
-          .whenComplete(
+          .handle(
               (response, exception) -> {
                 if (exception != null) {
                   sys.log().info("Call with empty name failed");
                 }
+                return response;
               })
           .toCompletableFuture()
           .get(10, TimeUnit.SECONDS);
