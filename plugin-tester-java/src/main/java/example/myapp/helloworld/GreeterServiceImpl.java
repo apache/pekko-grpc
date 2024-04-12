@@ -64,8 +64,7 @@ public class GreeterServiceImpl implements GreeterService {
     List<Character> characters =
         ("Hello, " + in.getName()).chars().mapToObj(c -> (char) c).collect(Collectors.toList());
     return Source.from(characters)
-        .map(
-          character -> HelloReply.newBuilder().setMessage(String.valueOf(character)).build());
+        .map(character -> HelloReply.newBuilder().setMessage(String.valueOf(character)).build());
   }
 
   @Override
