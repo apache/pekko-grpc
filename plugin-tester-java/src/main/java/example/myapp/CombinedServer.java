@@ -62,9 +62,7 @@ class CombinedServer {
           .newServerAt("127.0.0.1", 8090)
           .bind(serviceHandlers)
       //#concatOrNotFound
-      .thenAccept(binding -> {
-        System.out.println("gRPC server bound to: " + binding.localAddress());
-      });
+      .thenAccept(binding -> System.out.println("gRPC server bound to: " + binding.localAddress()));
 
       //#grpc-web
       Function<HttpRequest, CompletionStage<HttpResponse>> grpcWebServiceHandlers =
@@ -74,9 +72,7 @@ class CombinedServer {
         .newServerAt("127.0.0.1", 8090)
         .bind(grpcWebServiceHandlers)
       //#grpc-web
-      .thenAccept(binding -> {
-          System.out.println("gRPC-Web server bound to: " + binding.localAddress());
-      });
+      .thenAccept(binding -> System.out.println("gRPC-Web server bound to: " + binding.localAddress()));
 
   }
 }

@@ -51,7 +51,7 @@ public class GreeterServiceImpl implements GreeterService {
             elements -> {
               String elementsStr =
                   elements.stream()
-                      .map(elem -> elem.getName())
+                      .map(HelloRequest::getName)
                       .collect(Collectors.toList())
                       .toString();
               return HelloReply.newBuilder().setMessage("Hello, " + elementsStr).build();
@@ -65,9 +65,7 @@ public class GreeterServiceImpl implements GreeterService {
         ("Hello, " + in.getName()).chars().mapToObj(c -> (char) c).collect(Collectors.toList());
     return Source.from(characters)
         .map(
-            character -> {
-              return HelloReply.newBuilder().setMessage(String.valueOf(character)).build();
-            });
+          character -> HelloReply.newBuilder().setMessage(String.valueOf(character)).build());
   }
 
   @Override
