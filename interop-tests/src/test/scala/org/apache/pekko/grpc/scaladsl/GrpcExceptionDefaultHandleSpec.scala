@@ -32,7 +32,7 @@ import org.scalatest.wordspec.AnyWordSpecLike
 import scala.concurrent.{ ExecutionContext, Future }
 
 class GrpcExceptionDefaultHandleSpec
-    extends TestKit(ActorSystem("GrpcExceptionHandlerSpec"))
+    extends TestKit(ActorSystem("GrpcExceptionDefaultHandleSpec"))
     with AnyWordSpecLike
     with Matchers
     with ScalaFutures {

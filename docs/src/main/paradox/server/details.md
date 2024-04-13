@@ -30,7 +30,7 @@ For an overview of gRPC status codes and their meaning see [statuscodes.md](http
 For unary responses:
 
 Scala
-:    @@snip[GrpcExceptionHandlerSpec](/interop-tests/src/test/scala/org/apache/pekko/grpc/scaladsl/GrpcExceptionHandlerSpec.scala) { #unary }
+:    @@snip[GrpcExceptionDefaultHandleSpec](/interop-tests/src/test/scala/org/apache/pekko/grpc/scaladsl/GrpcExceptionDefaultHandleSpec.scala) { #unary }
 
 Java
 :   @@snip[ExceptionGreeterServiceImpl](/interop-tests/src/test/java/example/myapp/helloworld/grpc/ExceptionGreeterServiceImpl.java) { #unary }
@@ -38,7 +38,7 @@ Java
 For streaming responses:
 
 Scala
-:    @@snip[GrpcExceptionHandlerSpec](/interop-tests/src/test/scala/org/apache/pekko/grpc/scaladsl/GrpcExceptionHandlerSpec.scala) { #streaming }
+:    @@snip[GrpcExceptionDefaultHandleSpec](/interop-tests/src/test/scala/org/apache/pekko/grpc/scaladsl/GrpcExceptionDefaultHandleSpec.scala) { #streaming }
 
 Java
 :   @@snip[ExceptionGreeterServiceImpl](/interop-tests/src/test/java/example/myapp/helloworld/grpc/ExceptionGreeterServiceImpl.java) { #streaming }
