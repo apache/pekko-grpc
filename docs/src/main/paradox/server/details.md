@@ -16,10 +16,10 @@ generated client stubs.
 Here's an example implementation of these server power APIs:
 
 Scala
-:  @@snip [GreeterServicePowerApiImpl.scala](/plugin-tester-scala/src/main/scala/example/myapp/helloworld/PowerGreeterServiceImpl.scala) { #full-service-impl }
+:  @@snip [PowerGreeterServiceImpl.scala](/plugin-tester-scala/src/main/scala/example/myapp/helloworld/PowerGreeterServiceImpl.scala) { #full-service-impl }
 
 Java
-:  @@snip [GreeterServicePowerApiImpl.java](/plugin-tester-java/src/main/java/example/myapp/helloworld/GreeterServicePowerApiImpl.java) { #full-service-impl }
+:  @@snip [PowerGreeterServiceImpl.java](/plugin-tester-java/src/main/java/example/myapp/helloworld/PowerGreeterServiceImpl.java) { #full-service-impl }
 
 ## Status codes
 
