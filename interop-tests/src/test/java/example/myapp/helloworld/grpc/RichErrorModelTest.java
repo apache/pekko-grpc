@@ -20,7 +20,9 @@ import com.typesafe.config.ConfigFactory;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.protobuf.StatusProto;
+import java.time.Duration;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.TimeUnit;
 import org.apache.pekko.actor.ActorSystem;
 import org.apache.pekko.grpc.GrpcClientSettings;
 import org.apache.pekko.http.javadsl.Http;
@@ -43,7 +45,6 @@ public class RichErrorModelTest extends JUnitSuite {
 
     org.apache.pekko.japi.function.Function<HttpRequest, CompletionStage<HttpResponse>> service =
         GreeterServiceHandlerFactory.create(impl, sys);
-
     return Http.get(sys).newServerAt("127.0.0.1", 8090).bind(service);
   }
 
@@ -52,8 +53,7 @@ public class RichErrorModelTest extends JUnitSuite {
   public void testManualApproach() throws Exception {
     Config conf = ConfigFactory.load();
     ActorSystem sys = ActorSystem.create("HelloWorld", conf);
-    run(sys);
-
+    ServerBinding serverBinding = run(sys).toCompletableFuture().get(60, TimeUnit.SECONDS);
     GrpcClientSettings settings =
         GrpcClientSettings.connectToServiceAt("127.0.0.1", 8090, sys).withTls(false);
 
@@ -68,9 +68,7 @@ public class RichErrorModelTest extends JUnitSuite {
           response
               .toCompletableFuture()
               .handle(
-                  (res, ex) -> {
-                    return (StatusRuntimeException) ex;
-                  })
+                  (res, ex) -> (StatusRuntimeException) ex)
               .get();
 
       com.google.rpc.Status status =
@@ -94,6 +92,8 @@ public class RichErrorModelTest extends JUnitSuite {
     } finally {
       if (client != null) client.close();
       sys.terminate();
+      serverBinding.unbind();
+      serverBinding.terminate(Duration.ofSeconds(10));
     }
   }
 }
