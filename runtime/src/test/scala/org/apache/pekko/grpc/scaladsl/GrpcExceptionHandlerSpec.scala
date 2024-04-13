@@ -48,10 +48,10 @@ class GrpcExceptionHandlerSpec extends AnyWordSpec with Matchers with ScalaFutur
 
   val otherTypes: Seq[Throwable] = Seq(
     new GrpcServiceException(status = Status.DEADLINE_EXCEEDED),
-    new NotImplementedError,
-    new UnsupportedOperationException,
-    new NullPointerException,
-    new RuntimeException,
+    new NotImplementedError(),
+    new UnsupportedOperationException(),
+    new NullPointerException(),
+    new RuntimeException(),
     new StatusRuntimeException(io.grpc.Status.DEADLINE_EXCEEDED))
 
   val executionExceptions: Seq[Throwable] =
