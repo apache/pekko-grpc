@@ -36,9 +36,9 @@ class HeadersSpec extends AnyWordSpec with Matchers {
         ("my favorite character is %", "my favorite character is %25"),
         ("my favorite character is 𐀁", "my favorite character is %F0%90%80%81"),
         // \ud801 is a high surrogate, a lone surrogate character is getting decoded as ? with UTF-8
-        ("my favorite character is \ud801", "my favorite character is ?"),
+        (s"my favorite character is ${0xD801.toChar}", "my favorite character is ?"),
         // \udc37 is a low surrogate, a lone surrogate character is getting decoded as ? with UTF-8
-        ("my favorite character is \udc37", "my favorite character is ?"),
+        (s"my favorite character is ${0xDC37.toChar}", "my favorite character is ?"),
         // a pair of surrogate characters is fine
         ("my favorite character is " + 0xDBFF.toChar + 0xDFFF.toChar, "my favorite character is %F4%8F%BF%BF"))
 
