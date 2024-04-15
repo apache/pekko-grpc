@@ -242,12 +242,12 @@ lazy val docs = Project(id = "docs", base = file("docs"))
       "scaladoc.scala.base_url" -> "https://www.scala-lang.org/api/current/",
       // Apache Pekko
       "extref.pekko.base_url" -> s"https://pekko.apache.org/docs/pekko/${Dependencies.Versions.pekkoBinary}/%s",
-      "scaladoc.pekko.base_url" -> s"https://pekko.apache.org/docs/pekko/${Dependencies.Versions.pekkoBinary}/",
-      "javadoc.pekko.base_url" -> s"https://pekko.apache.org/docs/pekko/${Dependencies.Versions.pekkoBinary}/",
+      "scaladoc.org.apache.pekko.base_url" -> s"https://pekko.apache.org/api/pekko/${Dependencies.Versions.pekkoBinary}/",
+      "javadoc.org.apache.pekko.base_url" -> s"https://pekko.apache.org/japi/pekko/${Dependencies.Versions.pekkoBinary}/",
       // Apache Pekko HTTP
       "extref.pekko-http.base_url" -> s"https://pekko.apache.org/docs/pekko-http/${Dependencies.Versions.pekkoHttpBinary}/%s",
-      "scaladoc.pekko-http.base_url" -> s"https://pekko.apache.org/api/pekko-http/${Dependencies.Versions.pekkoHttpBinary}/",
-      "javadoc.pekko-http.base_url" -> s"https://pekko.apache.org/japi/pekkp-http/${Dependencies.Versions.pekkoHttpBinary}/",
+      "scaladoc.org.apache.pekko.http.base_url" -> s"https://pekko.apache.org/api/pekko-http/${Dependencies.Versions.pekkoHttpBinary}/",
+      "javadoc.org.apache.pekko.http.base_url" -> s"https://pekko.apache.org/japi/pekko-http/${Dependencies.Versions.pekkoHttpBinary}/",
       // Apache Pekko gRPC
       "scaladoc.org.apache.pekko.grpc.base_url" -> s"/${(Preprocess / siteSubdirName).value}/",
       "javadoc.org.apache.pekko.grpc.base_url" -> "" // @apidoc links to Scaladoc
