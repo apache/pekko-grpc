@@ -198,9 +198,9 @@ java.util.NoSuchElementException: next on empty iterator
 
 ## Future work
 
-For in-depth pekko-grpc/pekko-http integration we currently need to pass information from the Pekko HTTP route
+For in-depth pekko-grpc/pekko-http integration, we currently need to pass information from the Pekko HTTP route
 into the service implementation constructor, and construct a new Handler for each request.
 This pattern is shown in an example above.
 
 In the future we plan to provide a nicer API for this, for example we could pass the
-Pekko HTTP attributes (introduced in 10.2.0) as Metadata when using the PowerApi.
+Pekko HTTP attributes (introduced in Akka HTTP 10.2.0) as Metadata when using the PowerApi.
