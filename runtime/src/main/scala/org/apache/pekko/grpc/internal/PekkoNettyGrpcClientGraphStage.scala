@@ -13,15 +13,15 @@
 
 package org.apache.pekko.grpc.internal
 
+import io.grpc._
 import org.apache.pekko
 import pekko.annotation.InternalApi
 import pekko.dispatch.ExecutionContexts
-import pekko.grpc.{ GrpcResponseMetadata, GrpcServiceException }
+import pekko.grpc.GrpcResponseMetadata
 import pekko.stream
 import pekko.stream.{ Attributes => _, _ }
 import pekko.stream.stage._
 import pekko.util.FutureConverters._
-import io.grpc._
 
 import scala.concurrent.{ Future, Promise }
 import scala.util.Success
@@ -179,8 +179,8 @@ private final class PekkoNettyGrpcClientGraphStage[I, O](
           completeStage()
         } else {
           matVal.future.onComplete {
-            case Success(metadata) => failStage(new GrpcServiceException(status, metadata.headers))
-            case _                 => failStage(new GrpcServiceException(status))
+            case Success(metadata) => failStage(status.asRuntimeException(metadata.headers.raw.orNull))
+            case _                 => failStage(status.asRuntimeException())
           }(ExecutionContexts.parasitic)
         }
         call = null
