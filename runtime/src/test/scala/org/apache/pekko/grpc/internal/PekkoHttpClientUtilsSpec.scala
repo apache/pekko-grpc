@@ -66,8 +66,8 @@ class PekkoHttpClientUtilsSpec extends TestKit(ActorSystem()) with AnyWordSpecLi
       val responseHeaders = List(RawHeader("grpc-status", "9"))
       val responseTrailers = Trailer(
         RawHeader("custom-key", "custom-trailer-value") ::
-          RawHeader("custom-key-bin", ByteString("custom-trailer-value").encodeBase64.utf8String) ::
-          Nil)
+        RawHeader("custom-key-bin", ByteString("custom-trailer-value").encodeBase64.utf8String) ::
+        Nil)
       val response = Future.successful(
         new HttpResponse(
           OK,
