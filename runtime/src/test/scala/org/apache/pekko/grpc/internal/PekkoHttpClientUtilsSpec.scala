@@ -42,24 +42,32 @@ class PekkoHttpClientUtilsSpec extends TestKit(ActorSystem()) with AnyWordSpecLi
       val source = PekkoHttpClientUtils.responseToSource(response, null)
 
       val failure = source.run().failed.futureValue
+      failure shouldBe a[StatusRuntimeException]
       // https://github.com/grpc/grpc/blob/master/doc/http-grpc-status-mapping.md
       failure.asInstanceOf[StatusRuntimeException].getStatus.getCode should be(Status.Code.UNIMPLEMENTED)
     }
 
     "map a strict 200 response with non-0 gRPC error code to a failed stream" in {
-      val responseHeaders = List(RawHeader("grpc-status", "9"), RawHeader("custom-key", "custom-value-in-header"))
+      val responseHeaders = RawHeader("grpc-status", "9") ::
+        RawHeader("custom-key", "custom-value-in-header") ::
+        RawHeader("custom-key-bin", ByteString("custom-trailer-value").encodeBase64.utf8String) ::
+        Nil
       val response =
         Future.successful(HttpResponse(OK, responseHeaders, Strict(GrpcProtocolNative.contentType, ByteString.empty)))
       val source = PekkoHttpClientUtils.responseToSource(response, null)
 
       val failure = source.run().failed.futureValue
+      failure shouldBe a[StatusRuntimeException]
       failure.asInstanceOf[StatusRuntimeException].getStatus.getCode should be(Status.Code.FAILED_PRECONDITION)
       failure.asInstanceOf[StatusRuntimeException].getTrailers.get(key) should be("custom-value-in-header")
     }
 
     "map a strict 200 response with non-0 gRPC error code with a trailer to a failed stream with trailer metadata" in {
       val responseHeaders = List(RawHeader("grpc-status", "9"))
-      val responseTrailers = Trailer(RawHeader("custom-key", "custom-trailer-value") :: Nil)
+      val responseTrailers = Trailer(
+        RawHeader("custom-key", "custom-trailer-value") ::
+          RawHeader("custom-key-bin", ByteString("custom-trailer-value").encodeBase64.utf8String) ::
+          Nil)
       val response = Future.successful(
         new HttpResponse(
           OK,
@@ -72,8 +80,10 @@ class PekkoHttpClientUtilsSpec extends TestKit(ActorSystem()) with AnyWordSpecLi
       val failure = source.run().failed.futureValue
       failure.asInstanceOf[StatusRuntimeException].getStatus.getCode should be(Status.Code.FAILED_PRECONDITION)
       failure.asInstanceOf[StatusRuntimeException].getTrailers.get(key) should be("custom-trailer-value")
+      failure.asInstanceOf[StatusRuntimeException].getTrailers.get(keyBin) should be(ByteString("custom-trailer-value"))
     }
 
     lazy val key = Metadata.Key.of("custom-key", Metadata.ASCII_STRING_MARSHALLER)
+    lazy val keyBin = Metadata.Key.of("custom-key-bin", Metadata.BINARY_BYTE_MARSHALLER)
   }
 }
