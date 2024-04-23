@@ -24,10 +24,10 @@ import pekko.annotation.InternalApi
 import pekko.event.LoggingAdapter
 import pekko.grpc.GrpcProtocol.GrpcProtocolReader
 import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, GrpcSingleResponse, ProtobufSerializer }
-import pekko.grpc.scaladsl.StringEntry
 import pekko.http.scaladsl.model.HttpEntity.{ Chunk, Chunked, LastChunk, Strict }
 import pekko.http.scaladsl.{ ClientTransport, ConnectionContext, Http }
 import pekko.http.scaladsl.model._
+import pekko.http.scaladsl.model.headers.RawHeader
 import pekko.http.scaladsl.settings.ClientConnectionSettings
 import pekko.stream.{ Materializer, OverflowStrategy }
 import pekko.stream.scaladsl.{ Keep, Sink, Source }
@@ -228,9 +228,7 @@ object PekkoHttpClientUtils {
                     case Strict(_, data) =>
                       val rawTrailers =
                         response.attribute(AttributeKeys.trailer).map(_.headers).getOrElse(immutable.Seq.empty)
-                      val trailers = rawTrailers.map(h => HttpHeader.parse(h._1, h._2)).collect {
-                        case HttpHeader.ParsingResult.Ok(header, _) => header
-                      }
+                      val trailers = rawTrailers.map(h => RawHeader(h._1, h._2))
                       trailerPromise.success(trailers)
                       Source.single[ByteString](data)
                     case _ =>
@@ -285,8 +283,7 @@ object PekkoHttpClientUtils {
 
   private def mapToStatusException(response: HttpResponse, trailers: Seq[HttpHeader]): StatusRuntimeException = {
     val allHeaders = response.headers ++ trailers
-    val metadata: io.grpc.Metadata =
-      new MetadataImpl(allHeaders.map(h => (h.name, StringEntry(h.value))).toList).toGoogleGrpcMetadata()
+    val metadata: io.grpc.Metadata = new MetadataImpl(new HeaderMetadataImpl(allHeaders).asList).toGoogleGrpcMetadata()
     allHeaders.find(_.name == "grpc-status").map(_.value) match {
       case None =>
         new StatusRuntimeException(mapHttpStatus(response).withDescription("No grpc-status found"), metadata)
