@@ -31,7 +31,7 @@ import scala.concurrent.{ Await, ExecutionContext }
 import scala.concurrent.duration._
 
 @RunWith(classOf[JUnitRunner])
-class GreeterSpec extends Matchers with AnyWordSpecLike with BeforeAndAfterAll with ScalaFutures {
+class GreeterServiceSpec extends Matchers with AnyWordSpecLike with BeforeAndAfterAll with ScalaFutures {
 
   implicit val patience: PatienceConfig = PatienceConfig(10.seconds, Span(100, org.scalatest.time.Millis))
 

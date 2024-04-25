@@ -37,9 +37,7 @@ class GreeterServer {
 
     run(sys)
         .thenAccept(
-            binding -> {
-              System.out.println("gRPC server bound to: " + binding.localAddress());
-            });
+            binding -> System.out.println("gRPC server bound to: " + binding.localAddress()));
 
     // ActorSystem threads will keep the app alive until `system.terminate()` is called
   }

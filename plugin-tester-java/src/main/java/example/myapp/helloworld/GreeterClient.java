@@ -17,25 +17,22 @@ package example.myapp.helloworld;
 import example.myapp.helloworld.grpc.*;
 import io.grpc.StatusRuntimeException;
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.pekko.Done;
 import org.apache.pekko.NotUsed;
 import org.apache.pekko.actor.ActorSystem;
 import org.apache.pekko.grpc.GrpcClientSettings;
+import org.apache.pekko.japi.Pair;
 import org.apache.pekko.stream.Materializer;
 import org.apache.pekko.stream.SystemMaterializer;
 import org.apache.pekko.stream.javadsl.Source;
 
 class GreeterClient {
   public static void main(String[] args) throws Exception {
-
-    String serverHost = "127.0.0.1";
-    int serverPort = 8090;
-
     ActorSystem system = ActorSystem.create("HelloWorldClient");
     Materializer materializer = SystemMaterializer.get(system).materializer();
 
@@ -73,7 +70,7 @@ class GreeterClient {
 
   private static void streamingRequest(GreeterService client) throws Exception {
     List<HelloRequest> requests =
-        Arrays.asList("Alice", "Bob", "Peter").stream()
+        Stream.of("Alice", "Bob", "Peter")
             .map(name -> HelloRequest.newBuilder().setName(name).build())
             .collect(Collectors.toList());
     CompletionStage<HelloReply> reply = client.itKeepsTalking(Source.from(requests));
@@ -98,7 +95,7 @@ class GreeterClient {
     Source<HelloRequest, NotUsed> requestStream =
         Source.tick(interval, interval, "tick")
             .zipWithIndex()
-            .map(pair -> pair.second())
+            .map(Pair::second)
             .map(i -> HelloRequest.newBuilder().setName("Alice-" + i).build())
             .take(10)
             .mapMaterializedValue(m -> NotUsed.getInstance());

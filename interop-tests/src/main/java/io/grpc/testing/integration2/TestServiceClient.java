@@ -156,7 +156,7 @@ public class TestServiceClient {
           String jsonKey =
               Files.asCharSource(new File(settings.getServiceAccountKeyFile()), UTF_8).read();
           FileInputStream credentialsStream =
-              new FileInputStream(new File(settings.getServiceAccountKeyFile()));
+              new FileInputStream(settings.getServiceAccountKeyFile());
           clientTester.serviceAccountCreds(jsonKey, credentialsStream, settings.getOauthScope());
           break;
         }
@@ -164,7 +164,7 @@ public class TestServiceClient {
       case JWT_TOKEN_CREDS:
         {
           FileInputStream credentialsStream =
-              new FileInputStream(new File(settings.getServiceAccountKeyFile()));
+              new FileInputStream(settings.getServiceAccountKeyFile());
           clientTester.jwtTokenCreds(credentialsStream);
           break;
         }
@@ -174,7 +174,7 @@ public class TestServiceClient {
           String jsonKey =
               Files.asCharSource(new File(settings.getServiceAccountKeyFile()), UTF_8).read();
           FileInputStream credentialsStream =
-              new FileInputStream(new File(settings.getServiceAccountKeyFile()));
+              new FileInputStream(settings.getServiceAccountKeyFile());
           clientTester.oauth2AuthToken(jsonKey, credentialsStream, settings.getOauthScope());
           break;
         }
@@ -184,7 +184,7 @@ public class TestServiceClient {
           String jsonKey =
               Files.asCharSource(new File(settings.getServiceAccountKeyFile()), UTF_8).read();
           FileInputStream credentialsStream =
-              new FileInputStream(new File(settings.getServiceAccountKeyFile()));
+              new FileInputStream(settings.getServiceAccountKeyFile());
           clientTester.perRpcCreds(jsonKey, credentialsStream, settings.getOauthScope());
           break;
         }

@@ -46,12 +46,12 @@ public class GreeterServiceImpl implements GreeterService {
   @Override
   public CompletionStage<HelloReply> itKeepsTalking(Source<HelloRequest, NotUsed> in) {
     System.out.println("sayHello to in stream...");
-    return in.runWith(Sink.seq(), mat)
+    return in.runWith(Sink.<HelloRequest>seq(), mat)
         .thenApply(
             elements -> {
               String elementsStr =
                   elements.stream()
-                      .map(elem -> elem.getName())
+                      .map(HelloRequest::getName)
                       .collect(Collectors.toList())
                       .toString();
               return HelloReply.newBuilder().setMessage("Hello, " + elementsStr).build();
@@ -64,10 +64,7 @@ public class GreeterServiceImpl implements GreeterService {
     List<Character> characters =
         ("Hello, " + in.getName()).chars().mapToObj(c -> (char) c).collect(Collectors.toList());
     return Source.from(characters)
-        .map(
-            character -> {
-              return HelloReply.newBuilder().setMessage(String.valueOf(character)).build();
-            });
+        .map(character -> HelloReply.newBuilder().setMessage(String.valueOf(character)).build());
   }
 
   @Override
