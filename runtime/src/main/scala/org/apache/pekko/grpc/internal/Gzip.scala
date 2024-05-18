@@ -24,13 +24,13 @@ object Gzip extends Codec {
   override def compress(uncompressed: ByteString): ByteString = {
     val baos = new ByteArrayOutputStream(uncompressed.size)
     val gzos = new GZIPOutputStream(baos)
-    try gzos.write(uncompressed.toArray)
+    try gzos.write(uncompressed.toArrayUnsafe())
     finally gzos.close()
     ByteString.fromArrayUnsafe(baos.toByteArray)
   }
 
   override def uncompress(compressed: ByteString): ByteString = {
-    val gzis = new GZIPInputStream(new ByteArrayInputStream(compressed.toArray))
+    val gzis = new GZIPInputStream(new ByteArrayInputStream(compressed.toArrayUnsafe()))
 
     val baos = new ByteArrayOutputStream(compressed.size)
     val buffer = new Array[Byte](32 * 1024)
