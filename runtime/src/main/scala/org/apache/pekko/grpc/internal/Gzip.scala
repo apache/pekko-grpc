@@ -13,7 +13,7 @@
 
 package org.apache.pekko.grpc.internal
 
-import java.io.{ ByteArrayInputStream, ByteArrayOutputStream }
+import java.io.ByteArrayOutputStream
 import java.util.zip.{ GZIPInputStream, GZIPOutputStream }
 
 import org.apache.pekko.util.ByteString
