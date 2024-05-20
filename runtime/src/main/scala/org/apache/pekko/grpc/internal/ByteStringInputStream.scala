@@ -13,7 +13,7 @@
 
 package org.apache.pekko.grpc.internal
 
-import java.io.{ ByteArrayInputStream, InputStream }
+import java.io.{ ByteArrayInputStream, InputStream, SequenceInputStream }
 import java.lang.invoke.{ MethodHandles, MethodType }
 
 import scala.util.Try
@@ -22,6 +22,8 @@ import org.apache.pekko
 import pekko.annotation.InternalApi
 import pekko.util.ByteString
 import pekko.util.ByteString.ByteString1C
+import pekko.util.ByteString.ByteStrings
+import pekko.util.ccompat.JavaConverters._
 
 /** INTERNAL API */
 @InternalApi
@@ -40,16 +42,15 @@ private[internal] object ByteStringInputStream {
       if (byteStringInputStreamMethodTypeOpt.isDefined) {
         byteStringInputStreamMethodTypeOpt.get.invoke(bs).asInstanceOf[InputStream]
       } else {
-        legacyConvert(bs.compact)
+        legacyConvert(bs)
       }
   }
 
   private def legacyConvert(bs: ByteString): InputStream = bs match {
-    case cs: ByteString1C =>
-      getInputStreamUnsafe(cs)
+    case bss: ByteStrings =>
+      new SequenceInputStream(bss.bytestrings.iterator.map(legacyConvert).asJavaEnumeration)
     case _ =>
-      // NOTE: We actually measured recently, and compact + use array was pretty good usually
-      legacyConvert(bs.compact)
+      getInputStreamUnsafe(bs)
   }
 
   private def getInputStreamUnsafe(bs: ByteString): InputStream =
