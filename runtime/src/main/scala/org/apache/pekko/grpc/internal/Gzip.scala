@@ -13,7 +13,7 @@
 
 package org.apache.pekko.grpc.internal
 
-import java.io.{ ByteArrayInputStream, ByteArrayOutputStream }
+import java.io.ByteArrayOutputStream
 import java.util.zip.{ GZIPInputStream, GZIPOutputStream }
 
 import org.apache.pekko.util.ByteString
@@ -30,7 +30,7 @@ object Gzip extends Codec {
   }
 
   override def uncompress(compressed: ByteString): ByteString = {
-    val gzis = new GZIPInputStream(new ByteArrayInputStream(compressed.toArrayUnsafe()))
+    val gzis = new GZIPInputStream(ByteStringInputStream(compressed))
 
     val baos = new ByteArrayOutputStream(compressed.size)
     val buffer = new Array[Byte](32 * 1024)
