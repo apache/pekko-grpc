@@ -32,7 +32,7 @@ object Dependencies {
     val pekkoHttp = PekkoHttpDependency.version
     val pekkoHttpBinary = pekkoHttp.take(3)
 
-    val grpc = "1.62.2" // checked synced by VersionSyncCheckPlugin
+    val grpc = "1.64.0" // checked synced by VersionSyncCheckPlugin
     // Even referenced explicitly in the sbt-plugin's sbt-tests
     // If changing this, remember to update protoc plugin version to align in
     // maven-plugin/src/main/maven/plugin.xml and org.apache.pekko.grpc.sbt.PekkoGrpcPlugin
