@@ -65,7 +65,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        SCALA_VERSION: [2.12.19, 2.13.13, 3.3.3]
+        SCALA_VERSION: [2.12.19, 2.13.14, 3.3.3]
         JAVA_VERSION: [8, 11, 17]
     steps:
       - name: Checkout
