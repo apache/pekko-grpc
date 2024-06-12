@@ -109,10 +109,11 @@ lazy val runtime = Project(id = "runtime", base = file("runtime"))
 val pekkoGrpcProtocPluginId = s"$pekkoPrefix-scalapb-protoc-plugin"
 lazy val scalapbProtocPlugin = Project(id = "scalapb-protoc-plugin", base = file("scalapb-protoc-plugin"))
   .disablePlugins(MimaPlugin)
-  /** TODO we only really need to depend on scalapb */
-  .dependsOn(codegen)
   .settings(
     name := s"$pekkoPrefix-scalapb-protoc-plugin",
+    libraryDependencies += {
+      Dependencies.Compile.scalapbCompilerPlugin
+    },
     mkBatAssemblyTask := {
       val file = assembly.value
       Assemblies.mkBatAssembly(file)
@@ -125,8 +126,8 @@ lazy val scalapbProtocPlugin = Project(id = "scalapb-protoc-plugin", base = file
     (assembly / assemblyOption) := (assembly / assemblyOption).value.withPrependShellScript(
       Some(sbtassembly.AssemblyPlugin.defaultUniversalScript(shebang = true))))
   .settings(
-    crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
-    scalaVersion := Dependencies.Versions.CrossScalaForPlugin.head)
+    crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
+    scalaVersion := Dependencies.Versions.CrossScalaForLib.head)
   .settings(addArtifact(Compile / assembly / artifact, assembly))
   .settings(addArtifact(Artifact(pekkoGrpcProtocPluginId, "bat", "bat", "bat"), mkBatAssemblyTask))
   .enablePlugins(ReproducibleBuildsPlugin)
