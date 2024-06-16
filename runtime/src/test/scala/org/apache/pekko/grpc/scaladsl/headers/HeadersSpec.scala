@@ -29,8 +29,7 @@ class HeadersSpec extends AnyWordSpec with Matchers {
     "use percent-encoding" in {
       // test cases taken from https://github.com/grpc/grpc-java/blob/79e75bace40cea7e4be72e7dcd1f41c3ad6ee857/api/src/test/java/io/grpc/StatusTest.java#L65
       val inAndExpectedOut = Table(
-        ("raw input", "expected encoded value"),
-        ("my favorite character is i", "my favorite character is i"),
+        ("raw input", "expected encoded value"), ("my favorite character is i", "my favorite character is i"),
         ("my favorite character is \n", "my favorite character is %0A"),
         ("my favorite character is \u0000", "my favorite character is %00"),
         ("my favorite character is %", "my favorite character is %25"),
@@ -52,10 +51,8 @@ class HeadersSpec extends AnyWordSpec with Matchers {
     "should decode percent-encoded values" in {
       // test cases taken from https://github.com/grpc/grpc-java/blob/79e75bace40cea7e4be72e7dcd1f41c3ad6ee857/api/src/test/java/io/grpc/StatusTest.java#L65
       val inAndExpectedOut = Table(
-        ("raw input", "expected decoded value"),
-        (Array[Byte]('H', 'e', 'l', 'l', 'o'), "Hello"),
-        (Array[Byte]('H', '%', '6', '1', 'o'), "Hao"),
-        (Array[Byte]('H', '%', '0', 'A', 'o'), "H\no"),
+        ("raw input", "expected decoded value"), (Array[Byte]('H', 'e', 'l', 'l', 'o'), "Hello"),
+        (Array[Byte]('H', '%', '6', '1', 'o'), "Hao"), (Array[Byte]('H', '%', '0', 'A', 'o'), "H\no"),
         (Array[Byte]('%', 'F', '0', '%', '9', '0', '%', '8', '0', '%', '8', '1'), "𐀁"),
         (Array[Byte]('a', 'b', 'c', '%', 'C', '5', '%', '8', '2'), "abcł"))
 
@@ -67,11 +64,8 @@ class HeadersSpec extends AnyWordSpec with Matchers {
 
     "should decode as is in case two chars following percent cannot be decoded as hex" in {
       val inAndExpectedOut = Table(
-        ("raw input", "expected decoded value"),
-        (Array[Byte]('%', 'G'), "%G"),
-        (Array[Byte]('%', 'G', '0'), "%G0"),
-        (Array[Byte]('%', 'G', '0', '%', ',', '0'), "%G0%,0"),
-        (Array[Byte]('%', '%', '0', '%', '%'), "%%0%%"))
+        ("raw input", "expected decoded value"), (Array[Byte]('%', 'G'), "%G"), (Array[Byte]('%', 'G', '0'), "%G0"),
+        (Array[Byte]('%', 'G', '0', '%', ',', '0'), "%G0%,0"), (Array[Byte]('%', '%', '0', '%', '%'), "%%0%%"))
 
       forAll(inAndExpectedOut) { (in, expected) =>
         val actual = `Status-Message`.parse(new String(in))

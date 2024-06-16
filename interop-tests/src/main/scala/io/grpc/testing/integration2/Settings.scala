@@ -68,9 +68,12 @@ object Settings {
              |   --use_tls=true|false        Whether to use TLS. Default ${defaultSettings.useTls}
              |   --use_test_ca=true|false    Whether to trust our fake CA. Requires --use_tls=true
              |                               to have effect. Default ${defaultSettings.useTestCa}
-             |   --use_pekkoHttp=true|false  Whether to use pekko-http instead of Netty. Default ${defaultSettings.usePekkoHttp}
-             |   --default_service_account   Email of GCE default service account. Default ${defaultSettings.defaultServiceAccount}
-             |   --service_account_key_file  Path to service account json key file. ${defaultSettings.serviceAccountKeyFile}
+             |   --use_pekkoHttp=true|false  Whether to use pekko-http instead of Netty. Default ${defaultSettings
+                  .usePekkoHttp}
+             |   --default_service_account   Email of GCE default service account. Default ${defaultSettings
+                  .defaultServiceAccount}
+             |   --service_account_key_file  Path to service account json key file. ${defaultSettings
+                  .serviceAccountKeyFile}
              |   --oauth_scope               Scope for OAuth tokens. Default ${defaultSettings.oauthScope}
            """.stripMargin)
       System.exit(-1)
