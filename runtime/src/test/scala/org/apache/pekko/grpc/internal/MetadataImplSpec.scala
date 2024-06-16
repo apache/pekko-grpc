@@ -25,8 +25,7 @@ object MetadataImplSpec {
   val TEXT_ENTRIES = List(("key-a", "value-a"), ("key-c", "value-c"), ("key-b", "value-b"))
 
   val BINARY_ENTRIES = List(
-    ("key-a-bin", ByteString.fromInts(10, 20, 30, 40)),
-    ("key-c-bin", ByteString.fromInts(11, 21, 31, 41)),
+    ("key-a-bin", ByteString.fromInts(10, 20, 30, 40)), ("key-c-bin", ByteString.fromInts(11, 21, 31, 41)),
     ("key-b-bin", ByteString.fromInts(12, 22, 32, 42)))
 
   val DUPE_TEXT_KEY = "key-dupe"

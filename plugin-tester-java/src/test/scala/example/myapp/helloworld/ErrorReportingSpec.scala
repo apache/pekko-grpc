@@ -50,7 +50,8 @@ class ErrorReportingSpec extends AnyWordSpec with Matchers with ScalaFutures wit
 
       Http(sys)
         .newServerAt("127.0.0.1", 0)
-        .bind((req => handler(req)): pekko.japi.function.Function[HttpRequest, CompletionStage[
+        .bind((req => handler(req)): pekko.japi.function.Function[HttpRequest,
+          CompletionStage[
             HttpResponse]])
         .toCompletableFuture
         .get
