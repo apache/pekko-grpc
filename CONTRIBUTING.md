@@ -166,7 +166,7 @@ To generate documentation you can:
 > paradox
 ```
 
-The rendered documentation will be available under `docs/target/paradox/site/main/index.html`. 
+The rendered documentation will be available under `docs/target/paradox/site/main/index.html`.
 
 ### JavaDoc
 
@@ -229,22 +229,11 @@ git blame to ignore these commits you can execute the following.
 git config blame.ignoreRevsFile .git-blame-ignore-revs
 ```
 
-## Pull request validation workflow details
-
-Pekko gRPC uses [Jenkins GitHub pull request builder plugin](https://wiki.jenkins-ci.org/display/JENKINS/GitHub+pull+request+builder+plugin)
-that automatically merges the code, builds it, runs the tests and comments on the Pull Request in GitHub.
-
-Upon a submission of a Pull Request the GitHub pull request builder plugin will post a following comment:
-
-    Can one of the repo owners verify this patch?
-
-This requires a member from a core team to start Pull Request validation process by posting comment consisting only of `OK TO TEST`. From now on, whenever new commits are pushed to the Pull Request, a validation job will be automatically started and the results of the validation posted to the Pull Request.
-
 ## Source style
 
 ### Scala style 
 
-Pekko gRPC uses [Scalariform](https://github.com/daniel-trinh/scalariform) to enforce some of the code style rules.
+Pekko gRPC uses [scalafmt](https://scalameta.org/scalafmt) to enforce some of the code style rules.
 
 ### Java style
 
@@ -270,6 +259,23 @@ Special care should be given `expectNoMessage` calls, which indeed will wait the
 
 You can read up on remaining and friends in [TestKit.scala](https://github.com/apache/pekko/blob/main/testkit/src/main/scala/org/apache/pekko/testkit/TestKit.scala)
 
+## Testing
+
+As a rule contributions should be accompanied by tests.
+
+### interop-tests
+
+The `interop-tests` subproject holds the `org.apache.pekko.grpc.interop.GrpcInteropTests`,
+which runs a selection of the tests from https://github.com/grpc/grpc-web/blob/master/doc/interop-test-descriptions.md
+between various variations of Pekko gRPC and the grpc-java implementation.
+
+This subproject also holds tests for the `codegen` subproject that want to test the actually generated code.
+Such tests are not in the `codegen` project because otherwise it would create an almost
+circular dependency, where the codegen test classes cannot be compiled before the generated
+classes have been created, which requires the codegen main classes to have been compiled.
+
+Alternatively, you can create a `scripted` test under `sbt-plugin` for a more self-contained testcase.
+
 # Supporting infrastructure
 
 ## Continuous Integration
@@ -280,4 +286,3 @@ pekko-grpc currently uses Github Actions for Continuous Integration. See the `Ch
 
 * [Apache Contributor License Agreement](https://www.apache.org/licenses/contributor-agreements.html)
 * [Pekko gRPC Issue Tracker](https://github.com/apache/pekko-grpc/issues)
-* [Scalariform](https://github.com/daniel-trinh/scalariform)
