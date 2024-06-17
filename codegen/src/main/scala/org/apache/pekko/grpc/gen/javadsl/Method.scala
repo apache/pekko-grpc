@@ -95,7 +95,10 @@ object Method {
     "_root_." + t.getFile.getOptions.getJavaPackage + "." + Service.protoName(t.getFile) + "." + t.getName
 
   /** Java API */
-  def getMessageType(t: Descriptor) = {
+  def getMessageType(t: Descriptor): String = {
+    if (t.getContainingType != null)
+      return getMessageType(t.getContainingType) + "." + t.getName
+
     val packageName =
       if (t.getFile.getOptions.hasJavaPackage) t.getFile.getOptions.getJavaPackage
       else t.getFile.getPackage

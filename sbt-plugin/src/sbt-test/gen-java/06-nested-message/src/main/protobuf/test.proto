@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option java_generate_equals_and_hash = true;
+option java_package = "org.example.service.v1";
+
+message EnvelopeTest {
+  oneof type
+  {
+    RequestTest request = 4;
+    ResponseTest response = 6;
+  }
+  message RequestTest {
+  }
+  message ResponseTest {
+  }
+}
+
+service TestGrpcsService {
+  rpc Transceive(EnvelopeTest.RequestTest) returns (stream EnvelopeTest.ResponseTest) {}
+}
