@@ -30,7 +30,7 @@ object Common extends AutoPlugin {
 
   override def globalSettings =
     Seq(
-      homepage := Some(url("https://pekko.apache.org//")),
+      homepage := Some(url("https://pekko.apache.org/")),
       scmInfo := Some(ScmInfo(url("https://github.com/apache/pekko-grpc"),
         "git@github.com:apache/pekko-grpc")),
       developers += Developer(
