@@ -26,7 +26,7 @@ object Dependencies {
 
     // We don't force Pekko updates because downstream projects can upgrade
     // themselves. For more information see
-    // https://pekko.apache.org//docs/pekko/current/project/downstream-upgrade-strategy.html
+    // https://pekko.apache.org/docs/pekko/current/project/downstream-upgrade-strategy.html
     val pekko = PekkoCoreDependency.version
     val pekkoBinary = pekko.take(3)
     val pekkoHttp = PekkoHttpDependency.version
