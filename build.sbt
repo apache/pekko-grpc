@@ -73,7 +73,7 @@ lazy val codegen = Project(id = "codegen", base = file("codegen"))
       Some(sbtassembly.AssemblyPlugin.defaultUniversalScript(shebang = true))),
     (assembly / assemblyMergeStrategy) := {
       case PathList("META-INF", _*) => MergeStrategy.discard
-      case _                        => MergeStrategy.first
+      case _                        => MergeStrategy.deduplicate
     },
     crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
     scalaVersion := scala212,
