@@ -71,6 +71,10 @@ lazy val codegen = Project(id = "codegen", base = file("codegen"))
     (assembly / mainClass) := Some("org.apache.pekko.grpc.gen.Main"),
     (assembly / assemblyOption) := (assembly / assemblyOption).value.withPrependShellScript(
       Some(sbtassembly.AssemblyPlugin.defaultUniversalScript(shebang = true))),
+    (assembly / assemblyMergeStrategy) := {
+      case PathList("META-INF", _*) => MergeStrategy.discard
+      case _                        => MergeStrategy.deduplicate
+    },
     crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
     scalaVersion := scala212,
     Compile / unmanagedSourceDirectories ++= {
