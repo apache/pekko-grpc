@@ -26,6 +26,8 @@ import pekko.http.javadsl.model.HttpResponse
 import pekko.japi.{ Function => jFunction }
 import io.grpc.{ Status, StatusRuntimeException }
 
+import org.apache.pekko.http.scaladsl.model.http2.PeerClosedStreamException
+
 import scala.concurrent.ExecutionException
 import pekko.event.Logging
 
@@ -39,6 +41,8 @@ object GrpcExceptionHandler {
       override def apply(system: ActorSystem): jFunction[Throwable, Trailers] =
         default(system)
     }
+
+  private def log(system: ActorSystem) = Logging(system, "org.apache.pekko.grpc.javadsl.GrpcExceptionHandler")
 
   /** INTERNAL API */
   @InternalApi
@@ -57,9 +61,11 @@ object GrpcExceptionHandler {
           case e: NotImplementedError              => Trailers(Status.UNIMPLEMENTED.withDescription(e.getMessage))
           case e: UnsupportedOperationException    => Trailers(Status.UNIMPLEMENTED.withDescription(e.getMessage))
           case e: StatusRuntimeException           => Trailers(e.getStatus, new GrpcMetadataImpl(e.getTrailers))
+          case e: PeerClosedStreamException =>
+            log(system).warning(e, "Peer closed the stream: [{}]", e.getMessage)
+            INTERNAL
           case other =>
-            val log = Logging(system, "org.apache.pekko.grpc.javadsl.GrpcExceptionHandler")
-            log.error(other, "Unhandled error: [{}]", other.getMessage)
+            log(system).error(other, "Unhandled error: [{}]", other.getMessage)
             INTERNAL
         }
     }

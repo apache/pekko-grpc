@@ -22,6 +22,7 @@ import pekko.grpc.GrpcProtocol.GrpcProtocolWriter
 import pekko.grpc.internal.{ GrpcMetadataImpl, GrpcResponseHelpers, MissingParameterException }
 import pekko.http.scaladsl.model.HttpResponse
 import io.grpc.{ Status, StatusRuntimeException }
+import org.apache.pekko.http.scaladsl.model.http2.PeerClosedStreamException
 
 import scala.concurrent.{ ExecutionException, Future }
 import pekko.event.Logging
@@ -30,6 +31,8 @@ import pekko.event.Logging
 object GrpcExceptionHandler {
   private val INTERNAL = Trailers(Status.INTERNAL)
   private val INVALID_ARGUMENT = Trailers(Status.INVALID_ARGUMENT)
+
+  private def log(system: ActorSystem) = Logging(system, "org.apache.pekko.grpc.scaladsl.GrpcExceptionHandler")
 
   def defaultMapper(system: ActorSystem): PartialFunction[Throwable, Trailers] = {
     case e: ExecutionException =>
@@ -42,9 +45,11 @@ object GrpcExceptionHandler {
     case e: StatusRuntimeException =>
       val meta = Option(e.getTrailers).getOrElse(new io.grpc.Metadata())
       Trailers(e.getStatus, new GrpcMetadataImpl(meta))
+    case e: PeerClosedStreamException =>
+      log(system).warning(e, "Peer closed the stream: [{}]", e.getMessage)
+      INTERNAL
     case other =>
-      val log = Logging(system, "org.apache.pekko.grpc.scaladsl.GrpcExceptionHandler")
-      log.error(other, "Unhandled error: [{}]", other.getMessage)
+      log(system).error(other, "Unhandled error: [{}]", other.getMessage)
       INTERNAL
   }
 
