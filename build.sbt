@@ -20,6 +20,7 @@ sourceDistName := "apache-pekko-grpc"
 sourceDistIncubating := false
 ThisBuild / versionScheme := Some(VersionScheme.SemVerSpec)
 ThisBuild / resolvers += Resolver.ApacheMavenStagingRepo
+ThisBuild / resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
 commands := commands.value.filterNot { command =>
   command.nameOption.exists { name =>
@@ -302,6 +303,7 @@ lazy val pluginTesterScala = Project(id = "plugin-tester-scala", base = file("pl
     PB.protocVersion := Dependencies.Versions.googleProtoc,
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
     scalaVersion := scala212,
+    PB.protocVersion := Dependencies.Versions.googleProtoc,
     ReflectiveCodeGen.codeGeneratorSettings ++= Seq("flat_package", "server_power_apis"))
   .pluginTestingSettings
   .enablePlugins(NoPublish)
