@@ -11,7 +11,7 @@ resolvers ++= Resolver.sonatypeOssRepos("snapshots")
 
 enablePlugins(BuildInfoPlugin)
 
-val sbtProtocV = "1.0.7"
+val sbtProtocV = "0.0.0+1-4f4f3b1e-SNAPSHOT"
 
 buildInfoKeys := Seq[BuildInfoKey]("sbtProtocVersion" -> sbtProtocV)
 
