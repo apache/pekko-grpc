@@ -15,6 +15,7 @@ package io.grpc.testing.integration2;
 
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.testing.integration.AbstractInteropTest;
+import java.io.InputStream;
 
 /** Implementation of ClientTester that forwards all calls to the grpc-java AbstractInteropTest. */
 public class GrpcJavaClientTester implements ClientTester {
@@ -41,6 +42,9 @@ public class GrpcJavaClientTester implements ClientTester {
   public void emptyUnary() throws Exception {
     tester.emptyUnary();
   }
+
+  @Override
+  public void cacheableUnary() {}
 
   @Override
   public void largeUnary() throws Exception {
@@ -86,6 +90,24 @@ public class GrpcJavaClientTester implements ClientTester {
   public void emptyStream() throws Exception {
     tester.emptyStream();
   }
+
+  @Override
+  public void computeEngineCreds(String serviceAccount, String oauthScope) throws Exception {}
+
+  @Override
+  public void serviceAccountCreds(String jsonKey, InputStream credentialsStream, String authScope)
+      throws Exception {}
+
+  @Override
+  public void jwtTokenCreds(InputStream serviceAccountJson) throws Exception {}
+
+  @Override
+  public void oauth2AuthToken(String jsonKey, InputStream credentialsStream, String authScope)
+      throws Exception {}
+
+  @Override
+  public void perRpcCreds(String jsonKey, InputStream credentialsStream, String oauthScope)
+      throws Exception {}
 
   @Override
   public void customMetadata() throws Exception {
