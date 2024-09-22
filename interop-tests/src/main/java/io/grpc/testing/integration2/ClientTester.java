@@ -31,6 +31,8 @@ public interface ClientTester {
 
   void emptyUnary() throws Exception;
 
+  void cacheableUnary();
+
   void largeUnary() throws Exception;
 
   void clientCompressedUnary(boolean probe) throws Exception;
@@ -48,6 +50,19 @@ public interface ClientTester {
   void pingPong() throws Exception;
 
   void emptyStream() throws Exception;
+
+  void computeEngineCreds(String serviceAccount, String oauthScope) throws Exception;
+
+  void serviceAccountCreds(String jsonKey, InputStream credentialsStream, String authScope)
+      throws Exception;
+
+  void jwtTokenCreds(InputStream serviceAccountJson) throws Exception;
+
+  void oauth2AuthToken(String jsonKey, InputStream credentialsStream, String authScope)
+      throws Exception;
+
+  void perRpcCreds(String jsonKey, InputStream credentialsStream, String oauthScope)
+      throws Exception;
 
   void customMetadata() throws Exception;
 
