@@ -44,11 +44,6 @@ public class GrpcJavaClientTester implements ClientTester {
   }
 
   @Override
-  public void cacheableUnary() {
-    tester.cacheableUnary();
-  }
-
-  @Override
   public void largeUnary() throws Exception {
     tester.largeUnary();
   }
@@ -91,34 +86,6 @@ public class GrpcJavaClientTester implements ClientTester {
   @Override
   public void emptyStream() throws Exception {
     tester.emptyStream();
-  }
-
-  @Override
-  public void computeEngineCreds(String serviceAccount, String oauthScope) throws Exception {
-    tester.computeEngineCreds(serviceAccount, oauthScope);
-  }
-
-  @Override
-  public void serviceAccountCreds(String jsonKey, InputStream credentialsStream, String authScope)
-      throws Exception {
-    tester.serviceAccountCreds(jsonKey, credentialsStream, authScope);
-  }
-
-  @Override
-  public void jwtTokenCreds(InputStream serviceAccountJson) throws Exception {
-    tester.jwtTokenCreds(serviceAccountJson);
-  }
-
-  @Override
-  public void oauth2AuthToken(String jsonKey, InputStream credentialsStream, String authScope)
-      throws Exception {
-    tester.oauth2AuthToken(jsonKey, credentialsStream, authScope);
-  }
-
-  @Override
-  public void perRpcCreds(String jsonKey, InputStream credentialsStream, String oauthScope)
-      throws Exception {
-    tester.perRpcCreds(jsonKey, credentialsStream, oauthScope);
   }
 
   @Override
