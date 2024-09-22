@@ -65,11 +65,7 @@ public class RichErrorModelTest extends JUnitSuite {
       HelloRequest request = HelloRequest.newBuilder().setName("Alice").build();
       CompletionStage<HelloReply> response = client.sayHello(request);
       StatusRuntimeException statusEx =
-          response
-              .toCompletableFuture()
-              .handle(
-                  (res, ex) -> (StatusRuntimeException) ex)
-              .get();
+          response.toCompletableFuture().handle((res, ex) -> (StatusRuntimeException) ex).get();
 
       com.google.rpc.Status status =
           StatusProto.fromStatusAndTrailers(statusEx.getStatus(), statusEx.getTrailers());
