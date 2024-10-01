@@ -130,5 +130,6 @@ object Dependencies {
     Compile.grpcStub,
     Test.scalaTest,
     Test.scalaTestPlusJunit,
+    Protobuf.protobufJava,
     Protobuf.googleCommonProtos)
 }
