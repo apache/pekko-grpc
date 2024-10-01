@@ -154,5 +154,6 @@ object Dependencies {
     Compile.pekkoHttp,
     Test.scalaTest,
     Test.scalaTestPlusJunit,
+    Protobuf.protobufJava,
     Protobuf.googleCommonProtos)
 }

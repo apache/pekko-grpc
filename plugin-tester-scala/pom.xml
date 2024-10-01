@@ -39,11 +39,6 @@
       <artifactId>pekko-http-cors_2.12</artifactId>
       <version>${pekko.http.version}</version>
     </dependency>
-    <dependency>
-        <groupId>com.google.protobuf</groupId>
-        <artifactId>protobuf-java</artifactId>
-        <version>4.28.2</version>
-    </dependency>
 
     <dependency>
       <groupId>org.apache.pekko</groupId>
