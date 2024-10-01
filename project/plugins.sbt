@@ -7,8 +7,6 @@
  * This file is part of the Apache Pekko project, derived from Akka.
  */
 
-resolvers ++= Resolver.sonatypeOssRepos("snapshots")
-
 enablePlugins(BuildInfoPlugin)
 
 val sbtProtocV = "1.0.7"
