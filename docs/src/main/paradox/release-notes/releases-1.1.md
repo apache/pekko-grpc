@@ -1,13 +1,17 @@
 # Release Notes (1.1.x)
 
-## 1.1.0-M1
+## 1.1.0
 
-Release notes for Apache Pekko gRPC 1.1.0-M1. See [GitHub Milestone](https://github.com/apache/pekko-grpc/milestone/3?closed=1) for fuller list of changes.
-As with all milestone releases, this release is not recommended for production use - it is designed to allow users to try out the changes in a test environment.
+Release notes for Apache Pekko gRPC 1.1.0. See [GitHub Milestone for 1.1.0-M1](https://github.com/apache/pekko-grpc/milestone/3?closed=1) and [GitHub Milestone for 1.1.0](https://github.com/apache/pekko-grpc/milestone/4?closed=1) for a fuller list of changes.
+
+### Bug Fixes
+
+* fix: codegen: java: nested protobuf message types ([PR331](https://github.com/apache/pekko-grpc/pull/331)) (not in 1.1.0-M1)
 
 ### Additions
 
 * Support ScalaPB scala3_sources option. ([PR222](https://github.com/apache/pekko-grpc/pull/222))
+* Publish `pekko-grpc-scalapb-protoc-plugin` for Scala 2.13 and Scala 3 ([PR327](https://github.com/apache/pekko-grpc/pull/327)) (not in 1.1.0-M1)
 
 ### Changes
 
@@ -18,7 +22,8 @@ As with all milestone releases, this release is not recommended for production u
 
 Most of the dependency changes are small patch level upgrades. Some exceptions include:
 
-* grpc-java 1.64.0
-* protobuf-java 3.25.3
-* scalapb 0.11.15
-* slf4j 2
+* grpc-java 1.68.0
+* protobuf-java 3.25.5
+* scalapb 0.11.17
+* Twirl 2.0.7
+* slf4j 2.0.16
