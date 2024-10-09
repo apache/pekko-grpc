@@ -7,11 +7,11 @@
  * This file is part of the Apache Pekko project, derived from Akka.
  */
 
+import com.github.pjfanning.pekkobuild._
 import net.bzzt.reproduciblebuilds.ReproducibleBuildsPlugin.reproducibleBuildsCheckResolver
-import org.apache.pekko.grpc.Dependencies
+import org.apache.pekko.grpc.{ Dependencies, NoPublish, PekkoCoreDependency, PekkoHttpDependency }
 import org.apache.pekko.grpc.Dependencies.Versions.{ scala212, scala213 }
 import org.apache.pekko.grpc.ProjectExtensions._
-import org.apache.pekko.grpc.NoPublish
 import org.apache.pekko.grpc.build.ReflectiveCodeGen
 import com.typesafe.tools.mima.core._
 import sbt.Keys.scalaVersion
@@ -27,7 +27,6 @@ commands := commands.value.filterNot { command =>
   }
 }
 
-ThisBuild / resolvers += Resolver.ApacheMavenSnapshotsRepo
 ThisBuild / reproducibleBuildsCheckResolver := Resolver.ApacheMavenStagingRepo
 
 // So that gRPC is properly styled
@@ -86,11 +85,18 @@ lazy val codegen = Project(id = "codegen", base = file("codegen"))
       }
     })
   .settings(addArtifact(Compile / assembly / artifact, assembly))
-  .settings(addArtifact(Artifact(pekkoGrpcCodegenId, "bat", "bat", "bat"), mkBatAssemblyTask))
+  .settings(addArtifact(sbt.Artifact(pekkoGrpcCodegenId, "bat", "bat", "bat"), mkBatAssemblyTask))
 
 val mimaCompareVersion = "1.0.2"
 
 lazy val runtime = Project(id = "runtime", base = file("runtime"))
+  .addPekkoModuleDependency("pekko-stream", "", PekkoCoreDependency.default)
+  .addPekkoModuleDependency("pekko-http-core", "", PekkoHttpDependency.default)
+  .addPekkoModuleDependency("pekko-http", "", PekkoHttpDependency.default)
+  .addPekkoModuleDependency("pekko-discovery", "", PekkoCoreDependency.default)
+  .addPekkoModuleDependency("pekko-http-cors", "", PekkoHttpDependency.default)
+  .addPekkoModuleDependency("pekko-testkit", "test", PekkoCoreDependency.default)
+  .addPekkoModuleDependency("pekko-stream-testkit", "test", PekkoCoreDependency.default)
   .settings(Dependencies.runtime)
   .settings(VersionGenerator.settings)
   .settings(MetaInfLicenseNoticeCopy.runtimeSettings)
@@ -133,7 +139,7 @@ lazy val scalapbProtocPlugin = Project(id = "scalapb-protoc-plugin", base = file
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
     scalaVersion := Dependencies.Versions.CrossScalaForLib.head)
   .settings(addArtifact(Compile / assembly / artifact, assembly))
-  .settings(addArtifact(Artifact(pekkoGrpcProtocPluginId, "bat", "bat", "bat"), mkBatAssemblyTask))
+  .settings(addArtifact(sbt.Artifact(pekkoGrpcProtocPluginId, "bat", "bat", "bat"), mkBatAssemblyTask))
   .enablePlugins(ReproducibleBuildsPlugin)
 
 lazy val mavenPlugin = Project(id = "maven-plugin", base = file("maven-plugin"))
@@ -164,7 +170,7 @@ lazy val sbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
       val p3 = (runtime / publishLocal).value
       val p4 = (interopTests / publishLocal).value
     },
-    scriptedSbt := "1.10.0",
+    scriptedSbt := "1.10.2",
     scriptedBufferLog := false)
   .settings(
     crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
@@ -173,6 +179,10 @@ lazy val sbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
 
 lazy val interopTests = Project(id = "interop-tests", base = file("interop-tests"))
   .disablePlugins(MimaPlugin)
+  .addPekkoModuleDependency("pekko-http", "", PekkoHttpDependency.default)
+  .addPekkoModuleDependency("pekko-slf4j", "", PekkoCoreDependency.default)
+  .addPekkoModuleDependency("pekko-testkit", "test", PekkoCoreDependency.default)
+  .addPekkoModuleDependency("pekko-stream-testkit", "test", PekkoCoreDependency.default)
   .settings(Dependencies.interopTests)
   .settings(
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
@@ -273,6 +283,8 @@ lazy val docs = Project(id = "docs", base = file("docs"))
 
 lazy val pluginTesterScala = Project(id = "plugin-tester-scala", base = file("plugin-tester-scala"))
   .disablePlugins(MimaPlugin)
+  .addPekkoModuleDependency("pekko-http-cors", "", PekkoHttpDependency.default)
+  .addPekkoModuleDependency("pekko-http", "", PekkoHttpDependency.default)
   .settings(Dependencies.pluginTester)
   .settings(
     name := s"$pekkoPrefix-plugin-tester-scala",

@@ -45,13 +45,6 @@ object Dependencies {
   }
 
   object Compile {
-    val pekkoStream = "org.apache.pekko" %% "pekko-stream" % Versions.pekko
-    val pekkoHttp = "org.apache.pekko" %% "pekko-http" % Versions.pekkoHttp
-    val pekkoHttpCore = "org.apache.pekko" %% "pekko-http-core" % Versions.pekkoHttp
-    val pekkoHttpCors = "org.apache.pekko" %% "pekko-http-cors" % Versions.pekkoHttp
-    val pekkoDiscovery = "org.apache.pekko" %% "pekko-discovery" % Versions.pekko
-    val pekkoSlf4j = "org.apache.pekko" %% "pekko-slf4j" % Versions.pekko
-
     val scalapbCompilerPlugin = "com.thesamet.scalapb" %% "compilerplugin" % scalapb.compiler.Version.scalapbVersion
     val scalapbRuntime = ("com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion)
       .exclude("io.grpc", "grpc-netty")
@@ -79,9 +72,6 @@ object Dependencies {
     final val Test = sbt.Test
     val scalaTest = "org.scalatest" %% "scalatest" % Versions.scalaTest % Test
     val scalaTestPlusJunit = "org.scalatestplus" %% "junit-4-13" % (Versions.scalaTest + ".0") % Test
-    val pekkoDiscoveryConfig = "org.apache.pekko" %% "pekko-discovery" % Versions.pekko % Test
-    val pekkoTestkit = "org.apache.pekko" %% "pekko-testkit" % Versions.pekko % Test
-    val pekkoStreamTestkit = "org.apache.pekko" %% "pekko-stream-testkit" % Versions.pekko % Test
   }
 
   object Runtime {
@@ -112,14 +102,6 @@ object Dependencies {
     Compile.grpcCore,
     Compile.grpcStub % Provided, // comes from the generators
     Compile.grpcNettyShaded,
-    Compile.pekkoStream,
-    Compile.pekkoHttpCore,
-    Compile.pekkoHttp,
-    Compile.pekkoDiscovery,
-    Compile.pekkoHttpCors,
-    Compile.pekkoHttp % Provided,
-    Test.pekkoTestkit,
-    Test.pekkoStreamTestkit,
     Test.scalaTest,
     Test.scalaTestPlusJunit)
 
@@ -139,19 +121,13 @@ object Dependencies {
   lazy val interopTests = l ++= Seq(
     Compile.grpcInteropTesting,
     Compile.grpcInteropTesting % "protobuf", // gets the proto files for interop tests
-    Compile.pekkoHttp,
-    Compile.pekkoSlf4j,
     Runtime.logback,
     Test.scalaTest.withConfigurations(Some("compile")),
-    Test.scalaTestPlusJunit.withConfigurations(Some("compile")),
-    Test.pekkoTestkit,
-    Test.pekkoStreamTestkit)
+    Test.scalaTestPlusJunit.withConfigurations(Some("compile")))
 
   lazy val pluginTester = l ++= Seq(
     // usually automatically added by `suggestedDependencies`, which doesn't work with ReflectiveCodeGen
     Compile.grpcStub,
-    Compile.pekkoHttpCors,
-    Compile.pekkoHttp,
     Test.scalaTest,
     Test.scalaTestPlusJunit,
     Protobuf.googleCommonProtos)
