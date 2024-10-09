@@ -9,10 +9,9 @@
 
 import com.github.pjfanning.pekkobuild._
 import net.bzzt.reproduciblebuilds.ReproducibleBuildsPlugin.reproducibleBuildsCheckResolver
-import org.apache.pekko.grpc.Dependencies
+import org.apache.pekko.grpc.{ Dependencies, NoPublish, PekkoCoreDependency, PekkoHttpDependency }
 import org.apache.pekko.grpc.Dependencies.Versions.{ scala212, scala213 }
 import org.apache.pekko.grpc.ProjectExtensions._
-import org.apache.pekko.grpc.NoPublish
 import org.apache.pekko.grpc.build.ReflectiveCodeGen
 import com.typesafe.tools.mima.core._
 import sbt.Keys.scalaVersion
@@ -86,7 +85,7 @@ lazy val codegen = Project(id = "codegen", base = file("codegen"))
       }
     })
   .settings(addArtifact(Compile / assembly / artifact, assembly))
-  .settings(addArtifact(Artifact(pekkoGrpcCodegenId, "bat", "bat", "bat"), mkBatAssemblyTask))
+  .settings(addArtifact(sbt.Artifact(pekkoGrpcCodegenId, "bat", "bat", "bat"), mkBatAssemblyTask))
 
 val mimaCompareVersion = "1.0.2"
 
@@ -94,7 +93,7 @@ lazy val runtime = Project(id = "runtime", base = file("runtime"))
   .addPekkoModuleDependency("pekko-stream", "", PekkoCoreDependency.default)
   .addPekkoModuleDependency("pekko-http-core", "", PekkoHttpDependency.default)
   .addPekkoModuleDependency("pekko-http", "", PekkoHttpDependency.default)
-  .addPekkoModuleDependency("pekko-doscovery", "", PekkoCoreDependency.default)
+  .addPekkoModuleDependency("pekko-discovery", "", PekkoCoreDependency.default)
   .addPekkoModuleDependency("pekko-http-cors", "", PekkoHttpDependency.default)
   .addPekkoModuleDependency("pekko-testkit", "test", PekkoCoreDependency.default)
   .addPekkoModuleDependency("pekko-stream-testkit", "test", PekkoCoreDependency.default)
@@ -140,7 +139,7 @@ lazy val scalapbProtocPlugin = Project(id = "scalapb-protoc-plugin", base = file
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
     scalaVersion := Dependencies.Versions.CrossScalaForLib.head)
   .settings(addArtifact(Compile / assembly / artifact, assembly))
-  .settings(addArtifact(Artifact(pekkoGrpcProtocPluginId, "bat", "bat", "bat"), mkBatAssemblyTask))
+  .settings(addArtifact(sbt.Artifact(pekkoGrpcProtocPluginId, "bat", "bat", "bat"), mkBatAssemblyTask))
   .enablePlugins(ReproducibleBuildsPlugin)
 
 lazy val mavenPlugin = Project(id = "maven-plugin", base = file("maven-plugin"))
