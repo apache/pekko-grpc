@@ -24,6 +24,9 @@ jobs:
           distribution: temurin
           java-version: 8    
 
+      - name: Install sbt
+        uses: sbt/setup-sbt@v1
+
       - name: Publish
         run: |-
           cp .jvmopts-ci .jvmopts
