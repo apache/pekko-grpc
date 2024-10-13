@@ -8,7 +8,7 @@ on:
 jobs:
   sbt:
     name: sbt publish
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     if: github.repository == 'apache/pekko-grpc'
     steps:
       - name: Checkout
