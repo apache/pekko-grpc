@@ -74,7 +74,10 @@ object GrpcEntityHelpers {
     TrailerFrame(trailers = statusHeaders(status))
 
   def trailer(status: Status, metadata: Metadata): TrailerFrame =
-    TrailerFrame(trailers = statusHeaders(status) ++ metadataHeaders(metadata))
+    TrailerFrame(trailers = trailers(status, metadata))
+
+  def trailers(status: Status, metadata: Metadata): List[HttpHeader] =
+    statusHeaders(status) ++ metadataHeaders(metadata)
 
   def statusHeaders(status: Status): List[HttpHeader] =
     List(headers.`Status`(status.getCode.value.toString)) ++ Option(status.getDescription).map(d =>

@@ -107,6 +107,12 @@ object GrpcResponseHelpers {
       entity = HttpEntity.Chunked(writer.contentType, entity))
   }
 
-  def status(trailer: Trailers)(implicit writer: GrpcProtocolWriter): HttpResponse =
-    response(Source.single(writer.encodeFrame(GrpcEntityHelpers.trailer(trailer.status, trailer.metadata))))
+  def status(trailer: Trailers)(implicit writer: GrpcProtocolWriter): HttpResponse = {
+    HttpResponse(
+      headers =
+        headers.`Message-Encoding`(writer.messageEncoding.name) ::
+        GrpcEntityHelpers.trailers(trailer.status, trailer.metadata),
+      entity = HttpEntity.empty(writer.contentType)
+    )
+  }
 }
