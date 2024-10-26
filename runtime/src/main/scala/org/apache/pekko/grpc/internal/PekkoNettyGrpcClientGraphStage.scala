@@ -112,6 +112,7 @@ private final class PekkoNettyGrpcClientGraphStage[I, O](
         override def onMessage(message: O): Unit =
           callback.invoke(message)
         override def onClose(status: Status, trailers: Metadata): Unit = {
+          if (!matVal.isCompleted) onHeaders(trailers)
           trailerPromise.success(trailers)
           callback.invoke(Closed(status, trailers))
         }
