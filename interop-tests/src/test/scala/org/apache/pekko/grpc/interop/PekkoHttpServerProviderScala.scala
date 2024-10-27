@@ -120,7 +120,8 @@ object PekkoHttpServerProviderScala extends PekkoHttpServerProvider with Directi
         case _ =>
           response
             .attribute(AttributeKeys.trailer)
-            .map(trailer => Trailer(f(trailer.headers.map((RawHeader.apply _).tupled))))
+            .map(trailer => f(trailer.headers.map((RawHeader.apply _).tupled)))
+            .flatMap(headers => if (headers.isEmpty) None else Some(Trailer(headers)))
             .fold(response)(response.addAttribute(AttributeKeys.trailer, _))
       })
 }
