@@ -95,7 +95,7 @@
         <extraGenerators implementation="java.util.List" default-value=""/>
         <protoPaths default-value="${project.basedir}/src/main/proto,${project.basedir}/src/main/protobuf">${pekko-grpc.protoPaths}</protoPaths>
         <outputDirectory default-value="${project.build.directory}/generated-sources">${pekko-grpc.outputDirectory}</outputDirectory>
-	<protocVersion implementation="java.lang.String" default-value="-v3.25.5">${pekko-grpc.protoc-version}</protocVersion> <!-- checked synced by VersionSyncCheckPlugin -->
+	<protocVersion implementation="java.lang.String" default-value="-v4.28.2">${pekko-grpc.protoc-version}</protocVersion> <!-- checked synced by VersionSyncCheckPlugin -->
         <includeStdTypes implementation="boolean" default-value="false" />
       </configuration>
     </mojo>
@@ -187,7 +187,7 @@
         <extraGenerators implementation="java.util.List" default-value=""/>
         <protoPaths default-value="src/test/proto,src/test/protobuf">${pekko-grpc.protoPaths}</protoPaths>
         <outputDirectory default-value="target/generated-test-sources">${pekko-grpc.outputDirectory}</outputDirectory>
-        <protocVersion implementation="java.lang.String" default-value="-v3.25.5">${pekko-grpc.protoc-version}</protocVersion> <!-- checked synced by VersionSyncCheckPlugin -->
+        <protocVersion implementation="java.lang.String" default-value="-v4.28.2">${pekko-grpc.protoc-version}</protocVersion> <!-- checked synced by VersionSyncCheckPlugin -->
         <includeStdTypes implementation="boolean" default-value="false" />
       </configuration>
     </mojo>
