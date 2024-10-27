@@ -118,11 +118,9 @@ object PekkoHttpServerProviderScala extends PekkoHttpServerProvider with Directi
                   HttpEntity.LastChunk(last.extension, f(last.trailer))
               }))
         case _ =>
-          val origTrailers = response
+          response
             .attribute(AttributeKeys.trailer)
-            .map(_.headers)
-            .getOrElse(Vector.empty)
-            .map(e => RawHeader(e._1, e._2))
-          response.addAttribute(AttributeKeys.trailer, Trailer(f(origTrailers)))
+            .map(trailer => Trailer(f(trailer.headers.map((RawHeader.apply _).tupled))))
+            .fold(response)(response.addAttribute(AttributeKeys.trailer, _))
       })
 }
