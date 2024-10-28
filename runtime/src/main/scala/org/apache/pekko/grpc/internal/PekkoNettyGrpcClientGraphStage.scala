@@ -16,13 +16,14 @@ package org.apache.pekko.grpc.internal
 import org.apache.pekko
 import pekko.annotation.InternalApi
 import pekko.dispatch.ExecutionContexts
-import pekko.grpc.GrpcResponseMetadata
+import pekko.grpc.{ javadsl, scaladsl, GrpcResponseMetadata }
 import pekko.stream
 import pekko.stream.{ Attributes => _, _ }
 import pekko.stream.stage._
 import pekko.util.FutureConverters._
 import io.grpc._
 
+import java.util.concurrent.CompletionStage
 import scala.concurrent.{ Future, Promise }
 
 @InternalApi
@@ -92,27 +93,29 @@ private final class PekkoNettyGrpcClientGraphStage[I, O](
       var call: ClientCall[I, O] = null
 
       val listener = new ClientCall.Listener[O] {
-        override def onReady(): Unit =
-          callback.invoke(ReadyForSending)
-        override def onHeaders(responseHeaders: Metadata): Unit =
-          matVal.success(new GrpcResponseMetadata {
-            private lazy val sMetadata = MetadataImpl.scalaMetadataFromGoogleGrpcMetadata(responseHeaders)
-            private lazy val jMetadata = MetadataImpl.javaMetadataFromGoogleGrpcMetadata(responseHeaders)
-            def headers = sMetadata
-            def getHeaders() = jMetadata
+        private def makeResponseMetadata(metadata: Metadata) =
+          new GrpcResponseMetadata {
+            private lazy val sMetadata = MetadataImpl.scalaMetadataFromGoogleGrpcMetadata(metadata)
+            private lazy val jMetadata = MetadataImpl.javaMetadataFromGoogleGrpcMetadata(metadata)
+            def headers: scaladsl.Metadata = sMetadata
+            def getHeaders(): javadsl.Metadata = jMetadata
 
             private lazy val sTrailers =
               trailerPromise.future.map(MetadataImpl.scalaMetadataFromGoogleGrpcMetadata)(ExecutionContexts.parasitic)
             private lazy val jTrailers = trailerPromise.future
               .map(MetadataImpl.javaMetadataFromGoogleGrpcMetadata)(ExecutionContexts.parasitic)
               .asJava
-            def trailers = sTrailers
-            def getTrailers() = jTrailers
-          })
+            def trailers: Future[scaladsl.Metadata] = sTrailers
+            def getTrailers(): CompletionStage[javadsl.Metadata] = jTrailers
+          }
+        override def onReady(): Unit =
+          callback.invoke(ReadyForSending)
+        override def onHeaders(responseHeaders: Metadata): Unit =
+          matVal.success(makeResponseMetadata(responseHeaders))
         override def onMessage(message: O): Unit =
           callback.invoke(message)
         override def onClose(status: Status, trailers: Metadata): Unit = {
-          if (!matVal.isCompleted) onHeaders(trailers)
+          matVal.trySuccess(makeResponseMetadata(new Metadata()))
           trailerPromise.success(trailers)
           callback.invoke(Closed(status, trailers))
         }
