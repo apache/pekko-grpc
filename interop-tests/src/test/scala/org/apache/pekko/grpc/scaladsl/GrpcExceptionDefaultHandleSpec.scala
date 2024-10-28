@@ -17,7 +17,7 @@ import org.apache.pekko
 import pekko.actor.ActorSystem
 import pekko.grpc.internal.{ GrpcProtocolNative, GrpcRequestHelpers, Identity }
 import pekko.grpc.scaladsl.headers.`Status`
-import pekko.http.scaladsl.model.{ HttpEntity, HttpRequest, HttpResponse }
+import pekko.http.scaladsl.model._
 import pekko.http.scaladsl.model.HttpEntity.{ Chunked, LastChunk, Strict }
 import pekko.grpc.GrpcProtocol
 import pekko.stream.scaladsl.{ Sink, Source }
@@ -131,18 +131,33 @@ class GrpcExceptionDefaultHandleSpec
 
       val reply = GreeterServiceHandler(ExampleImpl).apply(request).futureValue
 
-      reply.entity shouldBe a[Strict]
-      val strict = reply.entity.asInstanceOf[Strict]
-      strict.contentType.mediaType.toString shouldBe "application/grpc+proto"
-      strict.data.isEmpty shouldBe true
+      val trailer = reply.entity match {
+        case chunked: Chunked =>
+          val lastChunkWide = chunked.chunks.runWith(Sink.last).futureValue
+          lastChunkWide shouldBe a[LastChunk]
+          val lastChunk = lastChunkWide.asInstanceOf[LastChunk]
+          val trailer = lastChunk.trailer
 
-      // Invalid argument is '3' https://github.com/grpc/grpc/blob/master/doc/statuscodes.md
-      val statusHeader = reply.headers.find(_.is("grpc-status"))
-      statusHeader.map(_.value()) should be(Some("3"))
-      val statusMessageHeader = reply.headers.find(_.is("grpc-message"))
-      statusMessageHeader.map(_.value()) should be(Some("No name found"))
+          val trailerAttribute = reply.attribute(AttributeKeys.trailer).map(_.headers)
+          trailerAttribute.isDefined shouldBe true
+          trailerAttribute.get should contain theSameElementsAs trailer.map { h => (h.name(), h.value()) }
 
-      val metadata = MetadataBuilder.fromHeaders(reply.headers)
+          trailer
+
+        case strict: Strict =>
+          strict.contentType.mediaType.toString shouldBe "application/grpc+proto"
+          strict.data.isEmpty shouldBe true
+          reply.attribute(AttributeKeys.trailer) shouldBe None
+
+          reply.headers
+
+        case _ => fail(s"Unexpected entity [$reply]. Should be one of [Chunked, Strict]")
+      }
+
+      trailer.collect { case header if header.is("grpc-status") => header.value() } shouldBe Seq("3")
+      trailer.collect { case header if header.is("grpc-message") => header.value() } shouldBe Seq("No name found")
+
+      val metadata = MetadataBuilder.fromHeaders(trailer)
       metadata.getText("test-text") should be(Some("test-text-data"))
       metadata.getBinary("test-binary-bin") should be(Some(ByteString("test-binary-data")))
     }
