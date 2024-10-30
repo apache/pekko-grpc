@@ -24,7 +24,6 @@ import pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
 import pekko.http.scaladsl.model.{ HttpEntity, HttpResponse, Trailer }
 import pekko.stream.Materializer
 import pekko.stream.scaladsl.Source
-import pekko.util.ByteString
 import io.grpc.Status
 
 import scala.collection.immutable
