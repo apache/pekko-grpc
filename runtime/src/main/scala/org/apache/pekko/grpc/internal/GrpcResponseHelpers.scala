@@ -60,12 +60,7 @@ object GrpcResponseHelpers {
     val responseHeaders = headers.`Message-Encoding`(writer.messageEncoding.name) :: Nil
     try writer.encodeDataToResponse(m.serialize(e), responseHeaders, TrailerOkAttribute)
     catch {
-      case NonFatal(ex) =>
-        val trailers = GrpcEntityHelpers.handleException(ex, eHandler)
-        writer.encodeDataToResponse(
-          ByteString.empty,
-          responseHeaders,
-          Trailer(GrpcEntityHelpers.trailer(trailers.status, trailers.metadata).trailers))
+      case NonFatal(ex) => status(GrpcEntityHelpers.handleException(ex, eHandler))
     }
   }
 
