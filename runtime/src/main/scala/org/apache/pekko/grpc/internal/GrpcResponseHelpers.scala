@@ -24,7 +24,6 @@ import pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
 import pekko.http.scaladsl.model.{ HttpEntity, HttpResponse, Trailer }
 import pekko.stream.Materializer
 import pekko.stream.scaladsl.Source
-import pekko.util.ByteString
 import io.grpc.Status
 
 import scala.collection.immutable
@@ -60,12 +59,7 @@ object GrpcResponseHelpers {
     val responseHeaders = headers.`Message-Encoding`(writer.messageEncoding.name) :: Nil
     try writer.encodeDataToResponse(m.serialize(e), responseHeaders, TrailerOkAttribute)
     catch {
-      case NonFatal(ex) =>
-        val trailers = GrpcEntityHelpers.handleException(ex, eHandler)
-        writer.encodeDataToResponse(
-          ByteString.empty,
-          responseHeaders,
-          Trailer(GrpcEntityHelpers.trailer(trailers.status, trailers.metadata).trailers))
+      case NonFatal(ex) => status(GrpcEntityHelpers.handleException(ex, eHandler))
     }
   }
 
