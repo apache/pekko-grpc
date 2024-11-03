@@ -2,8 +2,6 @@
 .settings
 .classpath
 
-/.jvmopts
-
 target
 
 .idea/
