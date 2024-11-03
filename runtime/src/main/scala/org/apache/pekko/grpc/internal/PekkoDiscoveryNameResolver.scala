@@ -52,7 +52,8 @@ class PekkoDiscoveryNameResolver(
   def lookup(listener: Listener): Unit = {
     import scala.concurrent.Await
     try {
-      val result = Await.result(discovery.lookup(Lookup(serviceName, portName, protocol), resolveTimeout), resolveTimeout)
+      val result =
+        Await.result(discovery.lookup(Lookup(serviceName, portName, protocol), resolveTimeout), resolveTimeout)
       listener.onAddresses(addresses(result.addresses), Attributes.EMPTY)
     } catch {
       case e: Throwable =>
