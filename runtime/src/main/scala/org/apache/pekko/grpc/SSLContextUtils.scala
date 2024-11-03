@@ -22,7 +22,7 @@ import javax.net.ssl.{ TrustManager, TrustManagerFactory }
 object SSLContextUtils {
   def trustManagerFromStream(certStream: InputStream): TrustManager = {
     try {
-      import scala.collection.JavaConverters._
+      import org.apache.pekko.util.ccompat.JavaConverters._
       val cf = CertificateFactory.getInstance("X.509")
       val bis = new BufferedInputStream(certStream)
 

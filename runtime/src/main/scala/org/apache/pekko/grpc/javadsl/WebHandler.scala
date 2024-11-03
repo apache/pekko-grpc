@@ -75,7 +75,7 @@ object WebHandler {
       as: ClassicActorSystemProvider,
       mat: Materializer,
       corsSettings: CorsSettings): JFunction[HttpRequest, CompletionStage[HttpResponse]] = {
-    import scala.collection.JavaConverters._
+    import pekko.util.ccompat.JavaConverters._
 
     val servicesHandler = concatOrNotFound(handlers.asScala.toList: _*)
     val servicesRoute = RouteAdapter(MarshallingDirectives.handleWith(servicesHandler.apply(_)))
