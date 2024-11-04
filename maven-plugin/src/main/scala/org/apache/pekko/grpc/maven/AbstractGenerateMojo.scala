@@ -120,7 +120,6 @@ abstract class AbstractGenerateMojo @Inject() (buildContext: BuildContext) exten
   @BeanProperty
   var generatePlayServer: Boolean = _
 
-  import scala.collection.JavaConverters._
   @BeanProperty
   var generatorSettings: java.util.Map[String, String] = _
 
@@ -179,6 +178,7 @@ abstract class AbstractGenerateMojo @Inject() (buildContext: BuildContext) exten
     if (schemas.isEmpty) {
       getLog.info("No changed or new .proto-files found in [%s], skipping code generation".format(generatedSourcesDir))
     } else {
+      import scala.collection.JavaConverters._
       val loadedExtraGenerators =
         extraGenerators.asScala.map(cls =>
           Class.forName(cls).getDeclaredConstructor().newInstance().asInstanceOf[CodeGenerator])
