@@ -289,6 +289,7 @@ lazy val pluginTesterScala = Project(id = "plugin-tester-scala", base = file("pl
   .settings(
     name := s"$pekkoPrefix-plugin-tester-scala",
     fork := true,
+    PB.protocVersion := Dependencies.Versions.googleProtoc,
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
     scalaVersion := scala212,
     ReflectiveCodeGen.codeGeneratorSettings ++= Seq("flat_package", "server_power_apis"))
