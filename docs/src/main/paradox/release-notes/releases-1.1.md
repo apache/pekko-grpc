@@ -1,5 +1,17 @@
 # Release Notes (1.1.x)
 
+## 1.1.1
+
+Release notes for Apache Pekko gRPC 1.1.1. See [GitHub Milestone for 1.1.1](https://github.com/apache/pekko-grpc/milestone/6?closed=1) for a fuller list of changes.
+
+### Changes
+
+* Merge gRPC headers and trailers in case of failure ([PR391](https://github.com/apache/pekko-grpc/pull/391))
+
+### Dependency Changes
+
+* grpc-java 1.67.1 (this is a downgrade - see [PR399](https://github.com/apache/pekko-grpc/pull/399))
+
 ## 1.1.0
 
 Release notes for Apache Pekko gRPC 1.1.0. See [GitHub Milestone for 1.1.0-M1](https://github.com/apache/pekko-grpc/milestone/3?closed=1) and [GitHub Milestone for 1.1.0](https://github.com/apache/pekko-grpc/milestone/4?closed=1) for a fuller list of changes.
@@ -22,7 +34,7 @@ Release notes for Apache Pekko gRPC 1.1.0. See [GitHub Milestone for 1.1.0-M1](h
 
 Most of the dependency changes are small patch level upgrades. Some exceptions include:
 
-* grpc-java 1.68.0
+* grpc-java 1.68.0 (this grpc-java release has since been stated marked as a mistake)
 * protobuf-java 3.25.5
 * scalapb 0.11.17
 * Twirl 2.0.7
