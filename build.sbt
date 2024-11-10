@@ -303,6 +303,7 @@ lazy val pluginTesterScala = Project(id = "plugin-tester-scala", base = file("pl
     PB.protocVersion := Dependencies.Versions.googleProtoc,
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
     scalaVersion := scala212,
+    PB.protocVersion := Dependencies.Versions.googleProtoc,
     ReflectiveCodeGen.codeGeneratorSettings ++= Seq("flat_package", "server_power_apis"))
   .pluginTestingSettings
   .enablePlugins(NoPublish)
