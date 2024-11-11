@@ -14,7 +14,7 @@ import org.gradle.api.Project
 
 class PekkoGrpcPluginExtension {
 
-    static final String PROTOC_VERSION = "3.25.5" // checked synced by VersionSyncCheckPlugin
+    static final String PROTOC_VERSION = "4.28.2" // checked synced by VersionSyncCheckPlugin
 
     static final String PROTOC_PLUGIN_SCALA_VERSION = "2.12"
 
