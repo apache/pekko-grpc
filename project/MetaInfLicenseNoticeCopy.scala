@@ -40,5 +40,5 @@ object MetaInfLicenseNoticeCopy extends AutoPlugin {
   lazy val assemblySettings = Seq(
     apacheSonatypeLicenseFile := baseDir.value / "legal" / "AssemblyLicense.txt",
     apacheSonatypeNoticeFile := baseDir.value / "legal" / "AssemblyNotice.txt")
-  
+
 }

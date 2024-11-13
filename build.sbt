@@ -144,7 +144,7 @@ lazy val scalapbProtocPlugin = Project(id = "scalapb-protoc-plugin", base = file
       case PathList("META-INF", "versions", _, "module-info.class") => MergeStrategy.discard
       case "LICENSE" | "LICENSE.txt" | "NOTICE"                     => MergeStrategy.discard
       case _                                                        => MergeStrategy.deduplicate
-    })  
+    })
   .settings(
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
     scalaVersion := Dependencies.Versions.CrossScalaForLib.head)
