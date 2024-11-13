@@ -49,6 +49,7 @@ lazy val codegen = Project(id = "codegen", base = file("codegen"))
   .disablePlugins(MimaPlugin)
   .settings(Dependencies.codegen)
   .settings(resolvers += Resolver.sbtPluginRepo("releases"))
+  .settings(MetaInfLicenseNoticeCopy.assemblySettings)
   .settings(
     name := s"$pekkoPrefix-codegen",
     mkBatAssemblyTask := {
@@ -73,7 +74,7 @@ lazy val codegen = Project(id = "codegen", base = file("codegen"))
     (assembly / assemblyMergeStrategy) := {
       case PathList("META-INF", "MANIFEST.MF")                      => MergeStrategy.discard
       case PathList("META-INF", "versions", _, "module-info.class") => MergeStrategy.discard
-      case "LICENSE" | "NOTICE"                                     => MergeStrategy.discard
+      case "LICENSE" | "LICENSE.txt" | "NOTICE"                     => MergeStrategy.discard
       case _                                                        => MergeStrategy.deduplicate
     },
     crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
@@ -121,6 +122,7 @@ lazy val runtime = Project(id = "runtime", base = file("runtime"))
 val pekkoGrpcProtocPluginId = s"$pekkoPrefix-scalapb-protoc-plugin"
 lazy val scalapbProtocPlugin = Project(id = "scalapb-protoc-plugin", base = file("scalapb-protoc-plugin"))
   .disablePlugins(MimaPlugin)
+  .settings(MetaInfLicenseNoticeCopy.assemblySettings)
   .settings(
     name := s"$pekkoPrefix-scalapb-protoc-plugin",
     libraryDependencies += {
@@ -140,7 +142,7 @@ lazy val scalapbProtocPlugin = Project(id = "scalapb-protoc-plugin", base = file
     (assembly / assemblyMergeStrategy) := {
       case PathList("META-INF", "MANIFEST.MF")                      => MergeStrategy.discard
       case PathList("META-INF", "versions", _, "module-info.class") => MergeStrategy.discard
-      case "LICENSE" | "NOTICE"                                     => MergeStrategy.discard
+      case "LICENSE" | "LICENSE.txt" | "NOTICE"                     => MergeStrategy.discard
       case _                                                        => MergeStrategy.deduplicate
     })  
   .settings(

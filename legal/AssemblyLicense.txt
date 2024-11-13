@@ -202,4 +202,57 @@
 
 ---------------
 
-TODO add dependency licenses
+The pekko-grpc-codegen and pekko-grpc-scalapb-protoc-plugin assembly jars and
+bat archives contain classes from 3rd party projects.
+
+Apache License Version 2.0:
+
+com.thesamet.scalapb:compilerplugin
+com.thesamet.scalapb:protoc-gen
+com.thesamet.scalapb:protoc-bridge
+io.grpc:grpc-api
+io.grpc:grpc-protobuf
+io.grpc:grpc-protobuf-lite
+org.checkerframework:checker-qual
+org.playframework.twirl:twirl-api
+org.scala-lang:scala-library
+org.scala-lang:scala3-library
+org.scala-lang.modules:scala-collection-compat
+org.scala-lang.modules:scala-xml
+
+----
+
+Checker Framework qualifiers
+Copyright 2004-present by the Checker Framework developers
+
+MIT License:
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+----
+
+com.google.api.grpc:proto-google-common-protos:2.41.0
+com.google.protobuf:protobuf-java
+com.google.code.findbugs:jsr305
+com.google.errorprone:error_prone_annotations
+com.google.guava:guava
+com.google.guava:failureaccess
+com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-..
+com.google.j2objc:j2objc-annotations
+dev.dirs:directories
