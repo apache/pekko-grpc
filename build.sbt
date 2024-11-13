@@ -71,8 +71,10 @@ lazy val codegen = Project(id = "codegen", base = file("codegen"))
     (assembly / assemblyOption) := (assembly / assemblyOption).value.withPrependShellScript(
       Some(sbtassembly.AssemblyPlugin.defaultUniversalScript(shebang = true))),
     (assembly / assemblyMergeStrategy) := {
-      case PathList("META-INF", _*) => MergeStrategy.discard
-      case _                        => MergeStrategy.deduplicate
+      case PathList("META-INF", "MANIFEST.MF")                      => MergeStrategy.discard
+      case PathList("META-INF", "versions", _, "module-info.class") => MergeStrategy.discard
+      case "LICENSE" | "NOTICE"                                     => MergeStrategy.discard
+      case _                                                        => MergeStrategy.deduplicate
     },
     crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
     scalaVersion := scala212,
@@ -134,7 +136,13 @@ lazy val scalapbProtocPlugin = Project(id = "scalapb-protoc-plugin", base = file
     },
     (assembly / mainClass) := Some("org.apache.pekko.grpc.scalapb.Main"),
     (assembly / assemblyOption) := (assembly / assemblyOption).value.withPrependShellScript(
-      Some(sbtassembly.AssemblyPlugin.defaultUniversalScript(shebang = true))))
+      Some(sbtassembly.AssemblyPlugin.defaultUniversalScript(shebang = true))),
+    (assembly / assemblyMergeStrategy) := {
+      case PathList("META-INF", "MANIFEST.MF")                      => MergeStrategy.discard
+      case PathList("META-INF", "versions", _, "module-info.class") => MergeStrategy.discard
+      case "LICENSE" | "NOTICE"                                     => MergeStrategy.discard
+      case _                                                        => MergeStrategy.deduplicate
+    })  
   .settings(
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
     scalaVersion := Dependencies.Versions.CrossScalaForLib.head)
