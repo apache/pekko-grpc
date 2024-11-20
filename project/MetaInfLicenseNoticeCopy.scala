@@ -18,7 +18,7 @@
 import sbt.Keys._
 import sbt._
 import org.mdedetrich.apache.sonatype.ApacheSonatypePlugin
-import ApacheSonatypePlugin.autoImport.{ apacheSonatypeDisclaimerFile, apacheSonatypeLicenseFile }
+import ApacheSonatypePlugin.autoImport.{ apacheSonatypeLicenseFile, apacheSonatypeNoticeFile }
 
 /**
  * Copies LICENSE and NOTICE files into jar META-INF dir
@@ -36,5 +36,9 @@ object MetaInfLicenseNoticeCopy extends AutoPlugin {
 
   lazy val runtimeSettings = Seq(
     apacheSonatypeLicenseFile := baseDir.value / "legal" / "RuntimeLicense.txt")
+
+  lazy val assemblySettings = Seq(
+    apacheSonatypeLicenseFile := baseDir.value / "legal" / "AssemblyLicense.txt",
+    apacheSonatypeNoticeFile := baseDir.value / "legal" / "AssemblyNotice.txt")
 
 }
