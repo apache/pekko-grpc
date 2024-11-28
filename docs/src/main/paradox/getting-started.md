@@ -6,5 +6,5 @@ To try out Pekko gRPC and understand how the development process might work out,
 
 ## Video Introduction
 
-The Akka team have a [video](https://doc.akka.io/docs/akka-grpc/current/getting-started.html#video-introduction).
+The Akka team have a [video](https://doc.akka.io/libraries/akka-grpc/current/getting-started.html#video-introduction).
 Much of what is discussed is relevant to Pekko gRPC.

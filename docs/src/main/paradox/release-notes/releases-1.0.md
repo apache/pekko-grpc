@@ -32,7 +32,7 @@ there are security issues published for those versions.
 
 ## 1.0.0
 Apache Pekko gRPC 1.0.0 is based on Akka gRPC 2.1.6. Pekko came about as a result of Lightbend's decision to make future
-Akka releases under a [Business Software License](https://www.lightbend.com/blog/why-we-are-changing-the-license-for-akka),
+Akka releases under a [Business Software License](https://akka.io/blog/why-we-are-changing-the-license-for-akka),
 a license that is not compatible with Open Source usage.
 
 Apache Pekko has changed the package names, among other changes. Config names have changed to use `pekko` instead

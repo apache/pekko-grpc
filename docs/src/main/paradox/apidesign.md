@@ -1,7 +1,7 @@
 # API Design
 
 When designing a gRPC API, you could take into consideration some of the
-[Google Cloud API Design Patterns](https://cloud.google.com/apis/design/design_patterns).
+[Google Cloud API Design Patterns](https://google.aip.dev/general#design-patterns).
 
 ## Methods without request or response
 

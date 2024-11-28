@@ -67,7 +67,7 @@ route.
 
 ## Google Cloud Endpoints
 
-The Google cloud has a [Cloud Endpoints](https://cloud.google.com/endpoints) feature that
+The Google cloud has a [Cloud Endpoints](https://cloud.google.com/endpoints/docs) feature that
 allows exposing a gRPC API in a more 'controlled' way: you can configure API key management,
 authentication, monitoring quote/rate limiting, generate a 'developer portal' for your API's users
 and much more. You need to provide your `.proto` definitions when creating the endpoint, and
