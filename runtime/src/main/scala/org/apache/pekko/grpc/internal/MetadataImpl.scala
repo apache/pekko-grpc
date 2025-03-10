@@ -15,13 +15,13 @@ package org.apache.pekko.grpc.internal
 
 import java.util.{ List => jList, Locale, Map => jMap, Optional }
 
-import scala.collection.JavaConverters._
 import scala.collection.immutable
 import org.apache.pekko
 import pekko.annotation.InternalApi
 import pekko.http.scaladsl.model.HttpHeader
 import pekko.japi.Pair
 import pekko.util.ByteString
+import pekko.util.ccompat.JavaConverters._
 import pekko.grpc.scaladsl.{ BytesEntry, Metadata, MetadataEntry, StringEntry }
 import pekko.grpc.javadsl
 import pekko.util.OptionConverters._
