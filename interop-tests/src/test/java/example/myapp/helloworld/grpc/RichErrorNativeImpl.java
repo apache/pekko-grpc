@@ -40,6 +40,7 @@ public class RichErrorNativeImpl implements GreeterService {
     future.completeExceptionally(exception);
     return future;
   }
+
   // #rich_error_model_unary
 
   @Override
