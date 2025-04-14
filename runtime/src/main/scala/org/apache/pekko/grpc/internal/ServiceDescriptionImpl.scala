@@ -13,15 +13,16 @@
 
 package org.apache.pekko.grpc.internal
 
-import com.google.protobuf.Descriptors.FileDescriptor;
-
+import com.google.protobuf.Descriptors.FileDescriptor
+import io.grpc.MethodDescriptor
 import org.apache.pekko
 import pekko.annotation.InternalApi
-
 import pekko.grpc.ServiceDescription
+
+import java.util
 
 /**
  * INTERNAL API
  */
 @InternalApi
-class ServiceDescriptionImpl(val name: String, val descriptor: FileDescriptor) extends ServiceDescription
+class ServiceDescriptionImpl(val name: String, val descriptor: FileDescriptor, val methods: util.List[MethodDescriptor[_, _]]) extends ServiceDescription

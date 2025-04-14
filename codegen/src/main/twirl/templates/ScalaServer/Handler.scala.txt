@@ -43,7 +43,7 @@ import pekko.grpc.PekkoGrpcGenerated
  */
 @@ApiMayChange
 @@PekkoGrpcGenerated
-object @{serviceName}Handler {
+object @{serviceName}Handler extends pekko.grpc.scaladsl.PekkoServiceHandler {
     private val notFound = scala.concurrent.Future.successful(model.HttpResponse(model.StatusCodes.NotFound))
     private val unsupportedMediaType = scala.concurrent.Future.successful(model.HttpResponse(model.StatusCodes.UnsupportedMediaType))
 
@@ -140,7 +140,7 @@ object @{serviceName}Handler {
 
       Function.unlift((req: model.HttpRequest) => req.uri.path match {
         case model.Uri.Path.Slash(model.Uri.Path.Segment(`prefix`, model.Uri.Path.Slash(model.Uri.Path.Segment(method, model.Uri.Path.Empty)))) =>
-          Some(handle(spi.onRequest(prefix, method, req), method))
+          Some(handle(spi.onRequest(prefix, method, req), method).map(spi.onResponse(prefix, method, req, _)))
         case _ =>
           None
       })

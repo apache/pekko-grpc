@@ -49,7 +49,7 @@ import static @{service.packageName}.@{service.name}.Serializers.*;
 @@ApiMayChange
 
 @@PekkoGrpcGenerated
-public class @{serviceName}HandlerFactory {
+public class @{serviceName}HandlerFactory implements org.apache.pekko.grpc.javadsl.PekkoServiceHandlerFactory {
 
     private static final CompletionStage<org.apache.pekko.http.javadsl.model.HttpResponse> notFound = CompletableFuture.completedFuture(
       org.apache.pekko.http.javadsl.model.HttpResponse.create().withStatus(org.apache.pekko.http.javadsl.model.StatusCodes.NOT_FOUND));
@@ -150,7 +150,7 @@ public class @{serviceName}HandlerFactory {
           String method = segments.next();
           if (segments.hasNext()) return notFound; // we don't allow any random `/prefix/Method/anything/here
           else {
-            return handle(spi.onRequest(prefix, method, req), method, implementation, mat, eHandler, system);
+            return handle(spi.onRequest(prefix, method, req), method, implementation, mat, eHandler, system).thenApply(rep -> spi.onResponse(prefix, method, req, rep));
           }
         } else {
           return notFound;

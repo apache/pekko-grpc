@@ -14,19 +14,18 @@
 package example.myapp.helloworld
 
 import scala.concurrent.Await
-
 import org.scalatest.BeforeAndAfterAll
+
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext
-
 import org.apache.pekko
 import pekko.actor.ActorSystem
-import pekko.grpc.GrpcClientSettings
+import pekko.grpc.{GrpcClientSettings, PekkoApi, PekkoPowerApi}
+import pekko.grpc.javadsl.{PekkoGrpcClient, PekkoServiceHandlerFactory}
 import com.google.protobuf.Timestamp
 import com.typesafe.config.ConfigFactory
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.Span
-
 import example.myapp.helloworld.grpc._
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
@@ -58,6 +57,16 @@ class JGreeterServiceSpec extends Matchers with AnyWordSpecLike with BeforeAndAf
   override def afterAll(): Unit = {
     Await.ready(clientSystem.terminate(), 5.seconds)
     Await.ready(serverSystem.terminate(), 5.seconds)
+  }
+
+  "GreeterService classes" should {
+    "extend pekko meta classes" in {
+      classOf[PekkoApi].isAssignableFrom(classOf[GreeterService]) shouldBe true
+      classOf[PekkoGrpcClient].isAssignableFrom(classOf[GreeterServiceClient]) shouldBe true
+      classOf[PekkoServiceHandlerFactory].isAssignableFrom(classOf[GreeterServiceHandlerFactory]) shouldBe true
+      classOf[PekkoPowerApi].isAssignableFrom(classOf[GreeterServicePowerApi]) shouldBe true
+      classOf[PekkoServiceHandlerFactory].isAssignableFrom(classOf[GreeterServicePowerApiHandlerFactory]) shouldBe true
+    }
   }
 
   "GreeterService" should {

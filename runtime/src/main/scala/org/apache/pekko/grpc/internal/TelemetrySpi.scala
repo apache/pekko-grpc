@@ -23,7 +23,7 @@ import pekko.actor.{
   ExtensionIdProvider
 }
 import pekko.annotation.{ InternalApi, InternalStableApi }
-import pekko.http.javadsl.model.HttpRequest
+import pekko.http.javadsl.model.{ HttpRequest, HttpResponse }
 
 import scala.annotation.nowarn
 
@@ -71,6 +71,9 @@ private[internal] object TelemetrySpi {
 trait TelemetrySpi {
   @nowarn
   def onRequest[T <: HttpRequest](prefix: String, method: String, request: T): T = request
+
+  @nowarn
+  def onResponse[Req <: HttpRequest, Rep <: HttpResponse](prefix: String, method: String, request: Req, response: Rep): Rep = response
 }
 
 @InternalApi

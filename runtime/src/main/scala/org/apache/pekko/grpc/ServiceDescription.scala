@@ -14,11 +14,12 @@
 package org.apache.pekko.grpc
 
 import org.apache.pekko.annotation.ApiMayChange
-
 import com.google.protobuf.Descriptors.FileDescriptor
+import io.grpc.MethodDescriptor
 
 @ApiMayChange
 trait ServiceDescription {
   def name: String
   def descriptor: FileDescriptor
+  def methods: java.util.List[MethodDescriptor[_, _]]
 }

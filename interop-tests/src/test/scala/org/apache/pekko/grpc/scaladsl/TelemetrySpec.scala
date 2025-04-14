@@ -14,17 +14,15 @@
 package org.apache.pekko.grpc.scaladsl
 
 import com.typesafe.config.ConfigFactory
-
 import org.apache.pekko
 import pekko.actor.ActorSystem
-import pekko.grpc.internal.{ GrpcProtocolNative, GrpcRequestHelpers, Identity, TelemetryExtension, TelemetrySpi }
+import pekko.grpc.internal.{GrpcProtocolNative, GrpcRequestHelpers, Identity, TelemetryExtension, TelemetrySpi}
 import pekko.grpc.GrpcProtocol
-import pekko.http.javadsl.model.HttpRequest
+import pekko.http.javadsl.model.{HttpRequest, HttpResponse}
 import pekko.stream.scaladsl.Source
 import pekko.testkit.TestKit
-
-import example.myapp.helloworld.grpc.helloworld.{ GreeterService, GreeterServiceHandler, HelloRequest }
-
+import example.myapp.helloworld.grpc.helloworld.{GreeterService, GreeterServiceHandler, HelloRequest}
+import org.apache.pekko.http.scaladsl.model.StatusCodes
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
@@ -52,10 +50,23 @@ class TelemetrySpec
 
       val spi = TelemetryExtension(system).spi.asInstanceOf[CollectingTelemetrySpi]
       spi.requests.size should be(1)
-      val (prefix, method, request) = spi.requests(0)
-      prefix should be(GreeterService.name)
-      method should be("SayHello")
-      request.entity.getContentType should be(GrpcProtocolNative.contentType)
+      spi.requests(0) match {
+        case (prefix, method, request) =>
+          prefix should be(GreeterService.name)
+          method should be("SayHello")
+          request.entity.getContentType should be(GrpcProtocolNative.contentType)
+      }
+
+      spi.responses.size should be(1)
+      spi.responses(0) match {
+        case (prefix, method, request, response) =>
+          prefix should be(GreeterService.name)
+          method should be("SayHello")
+          request.entity.getContentType should be(GrpcProtocolNative.contentType)
+
+          response.status should be(StatusCodes.OK)
+          response.entity.getContentType should be(GrpcProtocolNative.contentType)
+      }
     }
   }
 }
@@ -64,8 +75,18 @@ class CollectingTelemetrySpi extends TelemetrySpi {
   @volatile
   var requests: List[(String, String, HttpRequest)] = Nil
 
+  @volatile
+  var responses: List[(String, String, HttpRequest, HttpResponse)] = Nil
+
   override def onRequest[T <: HttpRequest](prefix: String, method: String, request: T): T = {
     requests :+= (prefix, method, request)
     request
   }
+
+  override def onResponse[Req <: HttpRequest, Rep <: HttpResponse](prefix: String, method: String, request: Req, response: Rep): Rep = {
+    responses :+= (prefix, method, request, response)
+    response
+  }
+  //  override def onResponse[Req <: HttpRequest, Rep <: HttpResponse](prefix: String, method: String, request: Req, response: Rep): Rep = {
+//  }
 }

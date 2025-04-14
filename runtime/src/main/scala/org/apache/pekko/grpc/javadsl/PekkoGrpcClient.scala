@@ -19,9 +19,9 @@ import org.apache.pekko
 import pekko.Done
 import pekko.annotation.DoNotInherit
 
-/** Common trait of all generated Apache Pekko gRPC clients. Not for user extension. */
+/** Common trait of all generated Apache Pekko gRPC java clients. Not for user extension. */
 @DoNotInherit
-trait PekkoGrpcClient {
+trait PekkoGrpcClient extends org.apache.pekko.grpc.PekkoGrpcClient {
 
   /**
    * Initiates a shutdown in which preexisting and new calls are cancelled.

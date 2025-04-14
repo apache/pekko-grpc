@@ -109,7 +109,7 @@ object @{service.name}Client {
 }
 
 @@PekkoGrpcGenerated
-trait @{service.name}ClientPowerApi {
+trait @{service.name}ClientPowerApi extends pekko.grpc.PekkoClientPowerApi {
   @for(method <- service.methods) {
   /**
    * Lower level "lifted" version of the method, giving access to request metadata etc.
