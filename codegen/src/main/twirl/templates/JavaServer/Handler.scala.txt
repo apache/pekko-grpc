@@ -31,7 +31,10 @@ import org.apache.pekko.grpc.Trailers;
 import org.apache.pekko.grpc.javadsl.GrpcMarshalling;
 import org.apache.pekko.grpc.javadsl.GrpcExceptionHandler;
 import org.apache.pekko.grpc.internal.TelemetryExtension;
+import org.apache.pekko.grpc.internal.TelemetryListenerExtension;
 import org.apache.pekko.grpc.internal.TelemetrySpi;
+import org.apache.pekko.grpc.internal.TelemetryListenerSpi;
+import org.apache.pekko.grpc.internal.TelemetryListener;
 
 import org.apache.pekko.grpc.PekkoGrpcGenerated;
 
@@ -144,13 +147,15 @@ public class @{serviceName}HandlerFactory implements org.apache.pekko.grpc.javad
      */
     public static Function<org.apache.pekko.http.javadsl.model.HttpRequest, CompletionStage<org.apache.pekko.http.javadsl.model.HttpResponse>> partial(@serviceName implementation, String prefix, Materializer mat, org.apache.pekko.japi.Function<ActorSystem, org.apache.pekko.japi.Function<Throwable, Trailers>> eHandler, ClassicActorSystemProvider system) {
       TelemetrySpi spi = TelemetryExtension.get(system).spi();
+      TelemetryListenerSpi listenerSpi = TelemetryListenerExtension.get(system).spi();
       return (req -> {
         Iterator<String> segments = req.getUri().pathSegments().iterator();
         if (segments.hasNext() && segments.next().equals(prefix) && segments.hasNext()) {
           String method = segments.next();
           if (segments.hasNext()) return notFound; // we don't allow any random `/prefix/Method/anything/here
           else {
-            return handle(spi.onRequest(prefix, method, req), method, implementation, mat, eHandler, system).thenApply(rep -> spi.onResponse(prefix, method, req, rep));
+            TelemetryListener listener = listenerSpi.server();
+            return handle(listener.onStart(spi.onRequest(prefix, method, req)), method, listener, implementation, mat, eHandler, system).thenApply(rep -> spi.onResponse(prefix, method, req, rep));
           }
         } else {
           return notFound;
@@ -162,7 +167,7 @@ public class @{serviceName}HandlerFactory implements org.apache.pekko.grpc.javad
       return @{service.name}.name;
     }
 
-    private static CompletionStage<org.apache.pekko.http.javadsl.model.HttpResponse> handle(org.apache.pekko.http.javadsl.model.HttpRequest request, String method, @serviceName implementation, Materializer mat, org.apache.pekko.japi.Function<ActorSystem, org.apache.pekko.japi.Function<Throwable, Trailers>> eHandler, ClassicActorSystemProvider system) {
+    private static CompletionStage<org.apache.pekko.http.javadsl.model.HttpResponse> handle(org.apache.pekko.http.javadsl.model.HttpRequest request, String method, TelemetryListener listener, @serviceName implementation, Materializer mat, org.apache.pekko.japi.Function<ActorSystem, org.apache.pekko.japi.Function<Throwable, Trailers>> eHandler, ClassicActorSystemProvider system) {
       return GrpcMarshalling.negotiated(request, (reader, writer) -> {
         final CompletionStage<org.apache.pekko.http.javadsl.model.HttpResponse> response;
         @{if(powerApis) { "Metadata metadata = MetadataBuilder.fromHeaders(request.getHeaders());" } else { "" }}
@@ -170,8 +175,10 @@ public class @{serviceName}HandlerFactory implements org.apache.pekko.grpc.javad
           @for(method <- service.methods) {
           case "@method.grpcName":
             response = @{method.unmarshal}(request.entity(), @method.deserializer.name, mat, reader)
+              .thenApply(in -> listener.onReceiveMessage(in))
               .@{if(method.outputStreaming) { "thenApply" } else { "thenCompose" }}(e -> implementation.@{method.name}(e@{if(powerApis) { ", metadata" } else { "" }}))
-              .thenApply(e -> @{method.marshal}(e, @method.serializer.name, writer, system, eHandler));
+              .thenApply(out -> listener.onSendMessage(out))
+              .thenApply(e -> @{method.marshal}(e, @method.serializer.name, writer, system, listener.handleError(eHandler)));
             break;
           }
           default:
@@ -179,7 +186,7 @@ public class @{serviceName}HandlerFactory implements org.apache.pekko.grpc.javad
             result.completeExceptionally(new UnsupportedOperationException("Not implemented: " + method));
             response = result;
         }
-        return response.exceptionally(e -> GrpcExceptionHandler.standard(e, eHandler, writer, system));
+        return response.exceptionally(e -> GrpcExceptionHandler.standard(e, listener.handleError(eHandler), writer, system));
       })
       .orElseGet(() -> unsupportedMediaType);
     }

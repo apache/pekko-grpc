@@ -29,6 +29,8 @@ import pekko.http.scaladsl.model
 import pekko.stream.{Materializer, SystemMaterializer}
 
 import pekko.grpc.internal.TelemetryExtension
+import pekko.grpc.internal.TelemetryListenerExtension
+import pekko.grpc.internal.TelemetryListener
 
 import pekko.grpc.PekkoGrpcGenerated
 
@@ -120,27 +122,32 @@ object @{serviceName}Handler extends pekko.grpc.scaladsl.PekkoServiceHandler {
       implicit val mat: Materializer = SystemMaterializer(system).materializer
       implicit val ec: ExecutionContext = mat.executionContext
       val spi = TelemetryExtension(system).spi
+      val listenerSpi = TelemetryListenerExtension(system).spi
 
       import @{service.name}.Serializers.@{service.scalaCompatConstants.WildcardImport}
 
-      def handle(request: model.HttpRequest, method: String): scala.concurrent.Future[model.HttpResponse] =
+      def handle(request: model.HttpRequest, method: String, listener: TelemetryListener): scala.concurrent.Future[model.HttpResponse] = {
         GrpcMarshalling.negotiated(request, (reader, writer) =>
           (method match {
             @for(method <- service.methods) {
             case "@method.grpcName" =>
                 @{if(powerApis) { "val metadata = MetadataBuilder.fromHeaders(request.headers)" } else { "" }}
                 @{method.unmarshal}(request.entity)(@method.deserializer.name, mat, reader)
+                  .map(in => listener.onReceiveMessage(in))
                   .@{if(method.outputStreaming) { "map" } else { "flatMap" }}(implementation.@{method.nameSafe}(_@{if(powerApis) { ", metadata" } else { "" }}))
-                  .map(e => @{method.marshal}(e, eHandler)(@method.serializer.name, writer, system))
+                  .map(out => listener.onSendMessage(out))
+                  .map(e => @{method.marshal}(e, listener.handleError(eHandler))(@method.serializer.name, writer, system))
             }
             case m => scala.concurrent.Future.failed(new NotImplementedError(s"Not implemented: $m"))
           })
-          .recoverWith(GrpcExceptionHandler.from(eHandler(system.classicSystem))(system, writer))
-      ).getOrElse(unsupportedMediaType)
+          .recoverWith(GrpcExceptionHandler.from(listener.handleError(eHandler)(system.classicSystem))(system, writer))
+        ).getOrElse(unsupportedMediaType)
+      }
 
       Function.unlift((req: model.HttpRequest) => req.uri.path match {
         case model.Uri.Path.Slash(model.Uri.Path.Segment(`prefix`, model.Uri.Path.Slash(model.Uri.Path.Segment(method, model.Uri.Path.Empty)))) =>
-          Some(handle(spi.onRequest(prefix, method, req), method).map(spi.onResponse(prefix, method, req, _)))
+          val listener = listenerSpi.server()
+          Some(handle(listener.onStart(spi.onRequest(prefix, method, req)), method, listener).map(rep => listener.onComplete(spi.onResponse(prefix, method, req, rep))))
         case _ =>
           None
       })
