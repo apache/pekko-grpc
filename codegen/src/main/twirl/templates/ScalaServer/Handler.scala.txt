@@ -131,6 +131,7 @@ object @{serviceName}Handler extends pekko.grpc.scaladsl.PekkoServiceHandler {
           (method match {
             @for(method <- service.methods) {
             case "@method.grpcName" =>
+                listener.onResolve(@{service.name}.MethodDescriptors.@{method.name}Descriptor)
                 @{if(powerApis) { "val metadata = MetadataBuilder.fromHeaders(request.headers)" } else { "" }}
                 @{method.unmarshal}(request.entity)(@method.deserializer.name, mat, reader)
                   .map(in => listener.onReceiveMessage(in))

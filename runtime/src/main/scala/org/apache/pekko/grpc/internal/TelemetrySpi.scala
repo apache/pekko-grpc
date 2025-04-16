@@ -13,16 +13,29 @@
 
 package org.apache.pekko.grpc.internal
 
+import io.grpc.{ Metadata, MethodDescriptor, Status }
 import org.apache.pekko.NotUsed
-import org.apache.pekko.actor.{ActorSystem, ClassicActorSystemProvider, ExtendedActorSystem, Extension, ExtensionId, ExtensionIdProvider}
-import org.apache.pekko.annotation.{InternalApi, InternalStableApi}
+import org.apache.pekko.actor.{
+  ActorSystem,
+  ClassicActorSystemProvider,
+  ExtendedActorSystem,
+  Extension,
+  ExtensionId,
+  ExtensionIdProvider
+}
+import org.apache.pekko.annotation.{ InternalApi, InternalStableApi }
 import org.apache.pekko.grpc.Trailers
-import org.apache.pekko.http.javadsl.model.{HttpRequest, HttpResponse}
+import org.apache.pekko.grpc.internal.TelemetryListener.{ httpMessageToMetadata, trailersToMetadata }
+import org.apache.pekko.grpc.javadsl.{ BytesEntry, StringEntry }
+import org.apache.pekko.grpc.scaladsl.headers
+import org.apache.pekko.http.javadsl.model.{ HttpMessage, HttpRequest, HttpResponse }
 import org.apache.pekko.japi.Function
 import org.apache.pekko.stream.scaladsl.Source
 
 import scala.annotation.nowarn
-import scala.concurrent.{ExecutionContext, Future}
+import scala.collection.JavaConverters
+import scala.concurrent.{ ExecutionContext, Future }
+import scala.util.Try
 
 /** INTERNAL API */
 @InternalStableApi
@@ -93,10 +106,50 @@ object TelemetryListenerExtension extends ExtensionId[TelemetryListenerExtension
   override def get(system: ClassicActorSystemProvider): TelemetryListenerExtensionImpl = super.get(system)
 }
 
-object TelemetryListener {}
+object TelemetryListener {
+  def trailersToMetadata(metadata: org.apache.pekko.grpc.scaladsl.Metadata): Metadata = {
+    val m = new Metadata
+    metadata.asMap.foreach {
+      case (key, values) if key.endsWith(Metadata.BINARY_HEADER_SUFFIX) =>
+        val mKey = Metadata.Key.of(key, Metadata.BINARY_BYTE_MARSHALLER)
+        values.foreach {
+          case value: BytesEntry =>
+            m.put(mKey, value.getValue().asByteBuffer.array())
+          case _: StringEntry =>
+          // todo invalid
+          case _ =>
+          // todo unknown
+        }
+      case (key, values) =>
+        val mKey = Metadata.Key.of(key, Metadata.ASCII_STRING_MARSHALLER)
+        values.foreach {
+          case value: StringEntry =>
+            m.put(mKey, value.getValue())
+          case _: BytesEntry =>
+          // todo invalid
+          case _ =>
+          // todo unknown
+        }
+    }
+    m
+  }
+
+  def httpMessageToMetadata(message: HttpMessage): Metadata = {
+    val m = new Metadata
+    JavaConverters.iterableAsScalaIterable(message.getHeaders).groupBy(_.lowercaseName()).foreach {
+      case (key, values) =>
+        val mkey = Metadata.Key.of(key, Metadata.ASCII_STRING_MARSHALLER)
+        values.foreach(v => m.put(mkey, v.value()))
+    }
+    m
+  }
+}
 
 trait TelemetryListener {
-  def onStart(request: HttpRequest): request.type = request
+  def onStart[R <: HttpRequest](request: R): request.type = request
+
+  @nowarn
+  def onResolve(descriptor: MethodDescriptor[_, _]): Unit = {}
 
   def onSendMessage[T](sent: T): T = sent
   def onSendMessage[T](source: Source[T, NotUsed]): Source[T, NotUsed] = source.map((m: T) => onSendMessage(m))
@@ -106,16 +159,34 @@ trait TelemetryListener {
     future.map((m: T) => onReceiveMessage(m))(ec)
   def onReceiveMessage[T](source: Source[T, NotUsed]): Source[T, NotUsed] = source.map((m: T) => onReceiveMessage(m))
 
-  def onClose(trailers: Trailers): trailers.type = trailers
+  def onClose(trailers: Trailers): trailers.type = {
+    onClose(trailers.status, trailersToMetadata(trailers.metadata))
+    trailers
+  }
+
+  @nowarn
+  def onClose(status: Status, metadata: Metadata): Unit = {}
 
   def handleError[T](fn: T => PartialFunction[Throwable, Trailers]): T => PartialFunction[Throwable, Trailers] =
     in => fn(in).andThen(t => onClose(t))
 
-  def handleError[T](fn: Function[T, Function[Throwable, Trailers]]): Function[T, Function[Throwable, Trailers]] = in => { throwable =>
-    onClose(fn.apply(in).apply(throwable))
-  }
+  def handleError[T](fn: Function[T, Function[Throwable, Trailers]]): Function[T, Function[Throwable, Trailers]] =
+    in => { throwable =>
+      onClose(fn.apply(in).apply(throwable))
+    }
 
-  def onComplete(response: HttpResponse): response.type = response
+  def onComplete[R <: HttpResponse](response: R): response.type = {
+    val status = Try {
+      Option.apply(response.getHeader(headers.`Status`.lowercaseName).orElse(null))
+        .map(_.value().toInt).map(Status.fromCodeValue).get
+    }.getOrElse(Status.UNKNOWN)
+
+    onClose(
+      status,
+      httpMessageToMetadata(response)
+    )
+    response
+  }
 }
 
 object NoOpTelemetryListener extends TelemetryListener
