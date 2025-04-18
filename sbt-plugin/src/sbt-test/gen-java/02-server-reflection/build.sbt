@@ -1,3 +1,4 @@
+ThisBuild / resolvers += Resolver.ApacheMavenSnapshotsRepo
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * license agreements; and to You under the Apache License, version 2.0:

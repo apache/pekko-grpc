@@ -19,6 +19,14 @@
   <artifactId>grpc-plugin-tester-scala</artifactId>
   <version>0.1-SNAPSHOT</version>
 
+  <repositories>
+    <repository>
+        <id>snapshots-repo</id>
+        <name>Apache snapshots</name>
+        <url>https://repository.apache.org/content/groups/snapshots</url>
+    </repository>
+  </repositories>
+
   <properties>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
