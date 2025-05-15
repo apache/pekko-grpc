@@ -104,7 +104,7 @@ object GrpcMarshalling {
       eHandler: ActorSystem => PartialFunction[Throwable, Trailers] = GrpcExceptionHandler.defaultMapper)(
       implicit m: ProtobufSerializer[T],
       writer: GrpcProtocolWriter,
-      system: ClassicActorSystemProvider): HttpResponse = {
+      system: ClassicActorSystemProvider): Future[HttpResponse] = {
     GrpcResponseHelpers(e, eHandler)
   }
 
@@ -127,5 +127,4 @@ object GrpcMarshalling {
       writer: GrpcProtocolWriter,
       system: ClassicActorSystemProvider): HttpRequest =
     GrpcRequestHelpers(uri, List.empty, e, eHandler)
-
 }

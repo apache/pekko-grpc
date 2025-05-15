@@ -16,6 +16,7 @@ package org.apache.pekko.grpc.javadsl
 import java.util.concurrent.{ CompletableFuture, CompletionStage }
 import java.util.Optional
 import org.apache.pekko
+import org.apache.pekko.util.FutureConverters.FutureOps
 import pekko.NotUsed
 import pekko.actor.ActorSystem
 import pekko.actor.ClassicActorSystemProvider
@@ -27,6 +28,7 @@ import pekko.japi.{ Function => JFunction }
 import pekko.stream.Materializer
 import pekko.stream.javadsl.Source
 import pekko.util.ByteString
+
 import scala.annotation.nowarn
 
 object GrpcMarshalling {
@@ -93,8 +95,10 @@ object GrpcMarshalling {
       writer: GrpcProtocolWriter,
       system: ClassicActorSystemProvider,
       eHandler: JFunction[ActorSystem, JFunction[Throwable, Trailers]] = GrpcExceptionHandler.defaultMapper)
-      : HttpResponse =
-    GrpcResponseHelpers(e.asScala, scalaAnonymousPartialFunction(eHandler))(m, writer, system)
+      : CompletionStage[HttpResponse] =
+    GrpcResponseHelpers.apply(e.asScala, scalaAnonymousPartialFunction(eHandler))(m, writer, system)
+      .map(identity[HttpResponse])(system.classicSystem.dispatcher)
+      .asJava
 
   private def failure[R](error: Throwable): CompletableFuture[R] = {
     val future: CompletableFuture[R] = new CompletableFuture()

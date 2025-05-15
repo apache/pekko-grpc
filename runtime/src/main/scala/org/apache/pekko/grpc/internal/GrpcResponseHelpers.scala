@@ -43,13 +43,13 @@ object GrpcResponseHelpers {
   def apply[T](e: Source[T, NotUsed])(
       implicit m: ProtobufSerializer[T],
       writer: GrpcProtocolWriter,
-      system: ClassicActorSystemProvider): HttpResponse =
+      system: ClassicActorSystemProvider): Future[HttpResponse] =
     GrpcResponseHelpers(e, Source.single(TrailerOk))
 
   def apply[T](e: Source[T, NotUsed], eHandler: ActorSystem => PartialFunction[Throwable, Trailers])(
       implicit m: ProtobufSerializer[T],
       writer: GrpcProtocolWriter,
-      system: ClassicActorSystemProvider): HttpResponse =
+      system: ClassicActorSystemProvider): Future[HttpResponse] =
     GrpcResponseHelpers(e, Source.single(TrailerOk), eHandler)
 
   def responseForSingleElement[T](e: T, eHandler: ActorSystem => PartialFunction[Throwable, Trailers])(
@@ -67,7 +67,7 @@ object GrpcResponseHelpers {
       implicit m: ProtobufSerializer[T],
       mat: Materializer,
       writer: GrpcProtocolWriter,
-      system: ClassicActorSystemProvider): HttpResponse =
+      system: ClassicActorSystemProvider): Future[HttpResponse] =
     GrpcResponseHelpers(e, status, GrpcExceptionHandler.defaultMapper _)
 
   def apply[T](
@@ -77,7 +77,7 @@ object GrpcResponseHelpers {
       implicit m: ProtobufSerializer[T],
       mat: Materializer,
       writer: GrpcProtocolWriter,
-      system: ClassicActorSystemProvider): HttpResponse = {
+      system: ClassicActorSystemProvider): Future[HttpResponse] = {
     implicit val ec: ExecutionContext = mat.executionContext
     GrpcResponseHelpers(
       e,
@@ -91,8 +91,9 @@ object GrpcResponseHelpers {
       eHandler: ActorSystem => PartialFunction[Throwable, Trailers] = GrpcExceptionHandler.defaultMapper)(
       implicit m: ProtobufSerializer[T],
       writer: GrpcProtocolWriter,
-      system: ClassicActorSystemProvider): HttpResponse = {
-    response(GrpcEntityHelpers(e, trail, eHandler))
+      system: ClassicActorSystemProvider): Future[HttpResponse] = {
+    GrpcEntityHelpers.atLeastOneElement(e, trail, eHandler)
+      .map(_.fold(status, response))(system.classicSystem.dispatcher)
   }
 
   private def response(entity: Source[ChunkStreamPart, NotUsed])(implicit writer: GrpcProtocolWriter) = {
