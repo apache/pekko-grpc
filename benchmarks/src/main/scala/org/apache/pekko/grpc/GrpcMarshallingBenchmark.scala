@@ -22,6 +22,9 @@ import pekko.stream.scaladsl.Source
 import grpc.reflection.v1alpha.reflection._
 import org.openjdk.jmh.annotations._
 
+import scala.concurrent.Await
+import scala.concurrent.duration.DurationInt
+
 // Microbenchmarks for GrpcMarshalling.
 // Does not actually benchmarks the actual marshalling because we dont consume the HttpResponse
 class GrpcMarshallingBenchmark extends CommonBenchmark {
@@ -38,7 +41,7 @@ class GrpcMarshallingBenchmark extends CommonBenchmark {
 
   @Benchmark
   def marshallStream(): HttpResponse = {
-    GrpcMarshalling.marshalStream(Source.repeat(ServerReflectionRequest()).take(10000))
+    Await.result(GrpcMarshalling.marshalStream(Source.repeat(ServerReflectionRequest()).take(10000)), 1.second)
   }
 
   @TearDown

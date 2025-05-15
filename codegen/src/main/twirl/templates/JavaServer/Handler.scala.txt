@@ -171,7 +171,7 @@ public class @{serviceName}HandlerFactory {
           case "@method.grpcName":
             response = @{method.unmarshal}(request.entity(), @method.deserializer.name, mat, reader)
               .@{if(method.outputStreaming) { "thenApply" } else { "thenCompose" }}(e -> implementation.@{method.name}(e@{if(powerApis) { ", metadata" } else { "" }}))
-              .thenApply(e -> @{method.marshal}(e, @method.serializer.name, writer, system, eHandler));
+              .@{if(method.outputStreaming) { "thenCompose" } else { "thenApply" }}(e -> @{method.marshal}(e, @method.serializer.name, writer, system, eHandler));
             break;
           }
           default:

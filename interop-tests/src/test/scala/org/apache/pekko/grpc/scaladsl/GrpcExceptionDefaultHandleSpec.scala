@@ -172,14 +172,14 @@ class GrpcExceptionDefaultHandleSpec
 
       val reply = GreeterServiceHandler(ExampleImpl).apply(request).futureValue
 
-      val lastChunk = reply.entity.asInstanceOf[Chunked].chunks.runWith(Sink.last).futureValue.asInstanceOf[LastChunk]
+      val trailer = reply.headers
       // Invalid argument is '3' https://github.com/grpc/grpc/blob/master/doc/statuscodes.md
-      val statusHeader = lastChunk.trailer.find { _.name == "grpc-status" }
+      val statusHeader = trailer.find { _.name == "grpc-status" }
       statusHeader.map(_.value()) should be(Some("3"))
-      val statusMessageHeader = lastChunk.trailer.find { _.name == "grpc-message" }
+      val statusMessageHeader = trailer.find { _.name == "grpc-message" }
       statusMessageHeader.map(_.value()) should be(Some("No name found"))
 
-      val metadata = MetadataBuilder.fromHeaders(lastChunk.trailer)
+      val metadata = MetadataBuilder.fromHeaders(trailer)
       metadata.getText("test-text") should be(Some("test-text-data"))
       metadata.getBinary("test-binary-bin") should be(Some(ByteString("test-binary-data")))
     }

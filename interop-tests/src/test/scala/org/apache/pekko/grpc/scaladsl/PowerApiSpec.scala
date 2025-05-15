@@ -106,8 +106,10 @@ abstract class PowerApiSpec(backend: String)
             complete(
               GrpcResponseHelpers(
                 Source.single(HelloReply("Hello there!")),
-                trail = Source.single(GrpcEntityHelpers.trailer(Status.OK, trailingMetadata)))
-                .addHeader(RawHeader("baz", "qux")))
+                trail = Source.single(GrpcEntityHelpers.trailer(Status.OK, trailingMetadata))
+              )
+                .map(_.addHeader(RawHeader("baz", "qux")))(system.dispatcher)
+            )
           })
           .futureValue
 
@@ -163,7 +165,7 @@ abstract class PowerApiSpec(backend: String)
             implicit val writer: GrpcProtocol.GrpcProtocolWriter = GrpcProtocolNative.newWriter(Identity)
             complete(
               GrpcResponseHelpers(Source.single(HelloReply("Hello there!")), trail = Source.future(trailer.future))
-                .addHeader(RawHeader("foo", "bar")))
+                .map(_.addHeader(RawHeader("foo", "bar")))(system.dispatcher))
           })
           .futureValue
 

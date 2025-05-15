@@ -23,8 +23,11 @@ import pekko.grpc.scaladsl.{ headers, BytesEntry, Metadata, MetadataEntry, Strin
 import pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
 import pekko.http.scaladsl.model.HttpHeader
 import pekko.http.scaladsl.model.headers.RawHeader
-import pekko.stream.scaladsl.Source
+import pekko.stream.scaladsl.{ Sink, Source }
 import io.grpc.Status
+
+import scala.concurrent.Future
+import scala.util._
 
 /** INTERNAL API */
 @InternalApi
@@ -41,6 +44,34 @@ object GrpcEntityHelpers {
         val e = handleException(t, eHandler)
         writer.encodeFrame(trailer(e.status, e.metadata))
     }
+  }
+
+  def atLeastOneElement[T](
+      source: Source[T, NotUsed],
+      trail: Source[TrailerFrame, NotUsed],
+      errorHandler: ActorSystem => PartialFunction[Throwable, Trailers])(
+      implicit m: ProtobufSerializer[T],
+      writer: GrpcProtocolWriter,
+      system: ClassicActorSystemProvider
+  ): Future[Either[Trailers, Source[ChunkStreamPart, NotUsed]]] = {
+    chunks(source, trail)
+      .prefixAndTail(1)
+      .runWith(Sink.head)
+      .transformWith {
+        case Failure(exception) => Future.successful(Left(handleException(exception, errorHandler)))
+        case Success((head, tail)) =>
+          Future.successful {
+            Right(
+              Source(head)
+                .concat(tail)
+                .recover {
+                  case exception =>
+                    val trailers = handleException(exception, errorHandler)
+                    writer.encodeFrame(trailer(trailers.status, trailers.metadata))
+                }
+            )
+          }
+      }(system.classicSystem.dispatcher)
   }
 
   def handleException(t: Throwable, eHandler: ActorSystem => PartialFunction[Throwable, Trailers])(
