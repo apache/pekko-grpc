@@ -100,6 +100,7 @@ object GrpcResponseHelpers {
       headers = immutable.Seq(
         headers.`Message-Encoding`(writer.messageEncoding.name),
         // Pre-announcing trailers: See https://www.rfc-editor.org/rfc/rfc7230 #Section 4.4
+        // Only relevant for Chunked transfer encoding.
         headers.`Trailer`(headers.`Status`.name)
       ),
       entity = HttpEntity.Chunked(writer.contentType, entity))
