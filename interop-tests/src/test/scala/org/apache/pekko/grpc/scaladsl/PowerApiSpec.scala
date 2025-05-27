@@ -182,6 +182,37 @@ abstract class PowerApiSpec(backend: String)
 
       metadataServer.terminate(3.seconds)
     }
+
+    "pre-announce trailers in the headers" in {
+      val binding = Http()
+        .newServerAt("localhost", 0)
+        .bind(path(GreeterService.name / "SayHello") {
+          implicit val serializer: ScalapbProtobufSerializer[HelloReply] =
+            GreeterService.Serializers.HelloReplySerializer
+          implicit val writer: GrpcProtocol.GrpcProtocolWriter = GrpcProtocolNative.newWriter(Identity)
+          complete(
+            GrpcResponseHelpers[HelloReply](
+              e = Source.single(HelloReply("Hello there!")),
+              trail = Source.single(GrpcEntityHelpers.trailer(Status.OK))
+            )
+          )
+        })
+        .futureValue
+
+      client = GreeterServiceClient(
+        GrpcClientSettings.connectToServiceAt("localhost", binding.localAddress.getPort).withTls(false)
+      )
+
+      val metadata = client
+        .sayHello()
+        .invokeWithMetadata(HelloRequest("Alice"))
+        .futureValue
+        .headers
+
+      val preAnnouncedTrailers = metadata.getText(headers.`Trailer`.name)
+
+      preAnnouncedTrailers shouldBe Some(headers.`Status`.name)
+    }
   }
 
 }

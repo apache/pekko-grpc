@@ -113,7 +113,7 @@ object `Status-Message` extends ModeledCustomHeaderCompanion[`Status-Message`] {
     headers.collectFirst { case h if h.is(name) => h.value() }
 }
 
-final class `Trailer` private (values: immutable.Seq[String]) extends ModeledCustomHeader[`Trailer`] {
+private[scaladsl] final class `Trailer` private (values: immutable.Seq[String]) extends ModeledCustomHeader[`Trailer`] {
 
   override def companion: ModeledCustomHeaderCompanion[`Trailer`] = `Trailer`
 
@@ -124,7 +124,7 @@ final class `Trailer` private (values: immutable.Seq[String]) extends ModeledCus
   override def renderInResponses(): Boolean = true
 }
 
-object `Trailer` extends ModeledCustomHeaderCompanion[`Trailer`] {
+private[scaladsl] object `Trailer` extends ModeledCustomHeaderCompanion[`Trailer`] {
   def apply(values: immutable.Seq[String]): `Trailer` = new `Trailer`(values.map(_.trim))
 
   override val name = "Trailer"
