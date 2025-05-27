@@ -97,7 +97,10 @@ object GrpcResponseHelpers {
 
   private def response(entity: Source[ChunkStreamPart, NotUsed])(implicit writer: GrpcProtocolWriter) = {
     HttpResponse(
-      headers = immutable.Seq(headers.`Message-Encoding`(writer.messageEncoding.name)),
+      headers = immutable.Seq(
+        headers.`Message-Encoding`(writer.messageEncoding.name),
+        headers.`Trailer`(headers.`Status`.name)
+      ),
       entity = HttpEntity.Chunked(writer.contentType, entity))
   }
 

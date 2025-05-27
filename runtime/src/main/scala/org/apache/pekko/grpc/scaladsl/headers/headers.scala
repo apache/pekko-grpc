@@ -111,3 +111,27 @@ object `Status-Message` extends ModeledCustomHeaderCompanion[`Status-Message`] {
   def findIn(headers: immutable.Seq[HttpHeader]): Option[String] =
     headers.collectFirst { case h if h.is(name) => h.value() }
 }
+
+final class `Trailer` private (values: Seq[String]) extends ModeledCustomHeader[`Trailer`] {
+
+  override def companion: ModeledCustomHeaderCompanion[`Trailer`] = `Trailer`
+
+  override def value(): String = values.mkString(", ")
+
+  override def renderInRequests(): Boolean = true
+
+  override def renderInResponses(): Boolean = true
+}
+
+object `Trailer` extends ModeledCustomHeaderCompanion[`Trailer`] {
+  def apply(values: Seq[String]): `Trailer` = new `Trailer`(values.map(_.trim))
+
+  override val name = "Trailer"
+
+  override val lowercaseName: String = super.lowercaseName
+
+  override def parse(value: String): Try[`Trailer`] = Try(`Trailer`(value.split(',')))
+
+  def findIn(headers: immutable.Seq[HttpHeader]): Option[Seq[String]] =
+    headers.collectFirst { case header if header.is(name) => header.value().split(',').map(_.trim).toSeq }
+}
