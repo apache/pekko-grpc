@@ -183,35 +183,27 @@ abstract class PowerApiSpec(backend: String)
       metadataServer.terminate(3.seconds)
     }
 
+    /**
+     * Pre-announcing trailers: See https://www.rfc-editor.org/rfc/rfc7230 #Section 4.4
+     * Only relevant for Chunked transfer encoding.
+     * Certain reverse proxies (e.g. tyk) will not behave correctly if trailers are not pre-announced and
+     * errors are not reported with trailer-only optimization.
+     */
     "pre-announce trailers in the headers" in {
-      val binding = Http()
-        .newServerAt("localhost", 0)
-        .bind(path(GreeterService.name / "SayHello") {
-          implicit val serializer: ScalapbProtobufSerializer[HelloReply] =
-            GreeterService.Serializers.HelloReplySerializer
-          implicit val writer: GrpcProtocol.GrpcProtocolWriter = GrpcProtocolNative.newWriter(Identity)
-          complete(
-            GrpcResponseHelpers[HelloReply](
-              e = Source.single(HelloReply("Hello there!")),
-              trail = Source.single(GrpcEntityHelpers.trailer(Status.OK))
-            )
-          )
-        })
-        .futureValue
+      implicit val serializer: ScalapbProtobufSerializer[HelloReply] =
+        GreeterService.Serializers.HelloReplySerializer
+      implicit val writer: GrpcProtocol.GrpcProtocolWriter = GrpcProtocolNative.newWriter(Identity)
+      val response =
+        GrpcResponseHelpers(
+          e = Source.single(HelloReply("Hello there!")),
+          trail = Source.single(GrpcEntityHelpers.trailer(Status.OK))
+        )
 
-      client = GreeterServiceClient(
-        GrpcClientSettings.connectToServiceAt("localhost", binding.localAddress.getPort).withTls(false)
-      )
+      println(response.headers)
 
-      val metadata = client
-        .sayHello()
-        .invokeWithMetadata(HelloRequest("Alice"))
-        .futureValue
-        .headers
+      val preAnnouncedTrailers = headers.`Trailer`.findIn(response.headers)
 
-      val preAnnouncedTrailers = metadata.getText(headers.`Trailer`.name)
-
-      preAnnouncedTrailers shouldBe Some(headers.`Status`.name)
+      preAnnouncedTrailers shouldBe Some(Seq(headers.`Status`.name))
     }
   }
 
