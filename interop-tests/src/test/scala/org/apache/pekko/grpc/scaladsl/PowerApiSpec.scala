@@ -183,5 +183,4 @@ abstract class PowerApiSpec(backend: String)
       metadataServer.terminate(3.seconds)
     }
   }
-
 }

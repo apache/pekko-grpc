@@ -97,7 +97,11 @@ object GrpcResponseHelpers {
 
   private def response(entity: Source[ChunkStreamPart, NotUsed])(implicit writer: GrpcProtocolWriter) = {
     HttpResponse(
-      headers = immutable.Seq(headers.`Message-Encoding`(writer.messageEncoding.name)),
+      headers = immutable.Seq(
+        headers.`Message-Encoding`(writer.messageEncoding.name),
+        // Pre-announcing trailers: See https://www.rfc-editor.org/rfc/rfc7230 #Section 4.4
+        headers.`Trailer`(headers.`Status`.name)
+      ),
       entity = HttpEntity.Chunked(writer.contentType, entity))
   }
 
