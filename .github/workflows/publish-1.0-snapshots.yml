@@ -6,11 +6,11 @@
 # This file is part of the Apache Pekko project, which was derived from Akka.
 #
 
-name: Publish 1.0 Nightly
+name: Publish 1.0 Snapshots
 
 on:
   schedule:
-    - cron: "0 2 * * *"
+    - cron: "0 2 * * 0"
   workflow_dispatch:
 
 jobs:
