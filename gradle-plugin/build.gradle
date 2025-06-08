@@ -12,7 +12,7 @@ plugins {
   id 'java-gradle-plugin'
   id 'maven-publish'
   id 'signing'
-  id 'io.github.gradle-nexus.publish-plugin' version '1.3.0'
+  id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
 }
 
 group = "org.apache.pekko"
@@ -125,7 +125,7 @@ repositories {
 }
 
 dependencies {
-  implementation 'com.google.protobuf:protobuf-gradle-plugin:0.9.4'
+  implementation 'com.google.protobuf:protobuf-gradle-plugin:0.9.5'
   implementation 'commons-lang:commons-lang:2.6'
   testImplementation 'junit:junit:4.13.2'
   testImplementation 'org.spockframework:spock-core:2.3-groovy-3.0'
