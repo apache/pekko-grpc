@@ -20,7 +20,7 @@ package org.apache.pekko.grpc.internal
 import grpc.reflection.v1alpha.reflection.{ ServerReflection, ServerReflectionResponse }
 import io.grpc.Status
 import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.grpc.scaladsl.{ headers, ScalapbProtobufSerializer }
+import org.apache.pekko.grpc.scaladsl.{ headers, ScalapbProtobufSerializer, StringEntry }
 import org.apache.pekko.grpc.{ GrpcProtocol, Trailers }
 import org.apache.pekko.http.scaladsl.model.AttributeKeys
 import org.apache.pekko.stream.scaladsl.Source
@@ -52,9 +52,12 @@ final class GrpcResponseHelpersSpec extends TestKit(ActorSystem("GrpcResponseHel
     }
 
     "set trailer attribute for trailer-only responses" in {
-      val trailer = Trailers.apply(Status.NOT_FOUND)
+      val trailer = Trailers(Status.NOT_FOUND, new EntryMetadataImpl(("foo", StringEntry("bar")) :: Nil))
       val response = GrpcResponseHelpers.status(trailer)(GrpcProtocolNative.newWriter(Identity))
-      response.attribute(AttributeKeys.trailer) shouldBe Some(trailer)
+      response.attribute(AttributeKeys.trailer).isDefined shouldBe true
+      val attribute = response.attribute(AttributeKeys.trailer).get
+      attribute.headers should contain theSameElementsAs GrpcEntityHelpers.trailers(trailer.status,
+        trailer.metadata).map(header => (header.name(), header.value()))
     }
   }
 }

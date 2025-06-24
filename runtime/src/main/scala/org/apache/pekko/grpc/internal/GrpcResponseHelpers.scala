@@ -106,11 +106,11 @@ object GrpcResponseHelpers {
   }
 
   def status(trailer: Trailers)(implicit writer: GrpcProtocolWriter): HttpResponse = {
+    val trailerHeaders = GrpcEntityHelpers.trailers(trailer.status, trailer.metadata)
     HttpResponse(
       headers =
-        headers.`Message-Encoding`(writer.messageEncoding.name) ::
-        GrpcEntityHelpers.trailers(trailer.status, trailer.metadata),
+        headers.`Message-Encoding`(writer.messageEncoding.name) :: trailerHeaders,
       entity = HttpEntity.empty(writer.contentType)
-    ).withAttributes(Map(AttributeKeys.trailer -> trailer))
+    ).withAttributes(Map(AttributeKeys.trailer -> Trailer(trailerHeaders)))
   }
 }

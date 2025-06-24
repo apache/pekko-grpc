@@ -147,7 +147,11 @@ class GrpcExceptionDefaultHandleSpec
         case strict: Strict =>
           strict.contentType.mediaType.toString shouldBe "application/grpc+proto"
           strict.data.isEmpty shouldBe true
-          reply.attribute(AttributeKeys.trailer) shouldBe None
+
+          val trailerAttribute = reply.attribute(AttributeKeys.trailer)
+          trailerAttribute.isDefined shouldBe true
+          val headers = reply.headers.map(header => (header.name(), header.value()))
+          headers should contain allElementsOf trailerAttribute.get.headers
 
           reply.headers
 
