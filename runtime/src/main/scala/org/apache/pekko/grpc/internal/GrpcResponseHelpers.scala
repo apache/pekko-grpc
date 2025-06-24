@@ -21,7 +21,7 @@ import pekko.grpc.GrpcProtocol.{ GrpcProtocolWriter, TrailerFrame }
 import pekko.grpc.scaladsl.{ headers, GrpcExceptionHandler }
 import pekko.grpc.{ ProtobufSerializer, Trailers }
 import pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
-import pekko.http.scaladsl.model.{ HttpEntity, HttpResponse, Trailer }
+import pekko.http.scaladsl.model.{ AttributeKeys, HttpEntity, HttpResponse, Trailer }
 import pekko.stream.Materializer
 import pekko.stream.scaladsl.Source
 import io.grpc.Status
@@ -111,6 +111,6 @@ object GrpcResponseHelpers {
         headers.`Message-Encoding`(writer.messageEncoding.name) ::
         GrpcEntityHelpers.trailers(trailer.status, trailer.metadata),
       entity = HttpEntity.empty(writer.contentType)
-    )
+    ).withAttributes(Map(AttributeKeys.trailer -> trailer))
   }
 }
