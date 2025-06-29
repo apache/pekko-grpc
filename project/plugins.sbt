@@ -25,7 +25,7 @@ addSbtPlugin("com.typesafe" % "sbt-mima-plugin" % "1.1.4")
 addSbtPlugin("net.bzzt" % "sbt-reproducible-builds" % "0.32")
 addSbtPlugin("pl.project13.scala" % "sbt-jmh" % "0.4.7")
 addSbtPlugin("com.github.sbt" % "sbt-dynver" % "5.1.1")
-addSbtPlugin("com.github.pjfanning" % "sbt-pekko-build" % "0.4.2")
+addSbtPlugin("com.github.pjfanning" % "sbt-pekko-build" % "0.4.4")
 addSbtPlugin("com.github.pjfanning" % "sbt-source-dist" % "0.1.12")
 addSbtPlugin("com.github.sbt" % "sbt-license-report" % "1.7.0")
 
@@ -41,4 +41,4 @@ libraryDependencies += "org.eclipse.jgit" % "org.eclipse.jgit" % "5.13.3.2024011
 // scripted testing
 libraryDependencies += "org.scala-sbt" %% "scripted-plugin" % sbtVersion.value
 
-libraryDependencies += "com.thesamet.scalapb" %% "compilerplugin" % "0.11.18"
+libraryDependencies += "com.thesamet.scalapb" %% "compilerplugin" % "0.11.19"
