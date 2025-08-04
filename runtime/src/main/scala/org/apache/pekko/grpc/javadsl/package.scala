@@ -21,7 +21,7 @@ package object javadsl {
 
   /**
    * Helper for creating org.apache.pekko.japi.function.Function instances from Scala
-   * functions as Scala 2.11 does not know about SAMs.
+   * functions.
    */
   @deprecated("no longer needed since support for Scala 2.11 has been dropped", "1.2.0")
   def japiFunction[A, B](f: A => B): pekko.japi.function.Function[A, B] =
@@ -31,7 +31,7 @@ package object javadsl {
 
   /**
    * Helper for creating java.util.function.Function instances from Scala
-   * functions as Scala 2.11 does not know about SAMs.
+   * functions.
    */
   @deprecated("no longer needed since support for Scala 2.11 has been dropped", "1.2.0")
   def javaFunction[A, B](f: A => B): java.util.function.Function[A, B] =
@@ -40,20 +40,20 @@ package object javadsl {
     }
 
   /**
-   * Helper for creating Scala partial functions from [[pekko.japi.Function]]
-   * instances as Scala 2.11 does not know about SAMs.
+   * Helper for creating Scala partial functions from [[pekko.japi.function.Function]]
+   * instances.
    */
   @deprecated("no longer needed since support for Scala 2.11 has been dropped", "1.2.0")
-  def scalaPartialFunction[A, B](f: pekko.japi.Function[A, B]): PartialFunction[A, B] = {
+  def scalaPartialFunction[A, B](f: pekko.japi.function.Function[A, B]): PartialFunction[A, B] = {
     case a => f(a)
   }
 
   /**
-   * Helper for creating Scala anonymous partial functions from [[pekko.japi.Function]]
+   * Helper for creating Scala anonymous partial functions from [[pekko.japi.function.Function]]
    * instances.
    */
   @nowarn("msg=deprecated")
   def scalaAnonymousPartialFunction[A, B, C](
-      f: pekko.japi.Function[A, pekko.japi.Function[B, C]]): A => PartialFunction[B, C] =
+      f: pekko.japi.function.Function[A, pekko.japi.function.Function[B, C]]): A => PartialFunction[B, C] =
     a => scalaPartialFunction(f(a))
 }
