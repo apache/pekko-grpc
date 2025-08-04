@@ -23,7 +23,7 @@ import pekko.grpc._
 import pekko.grpc.internal._
 import pekko.grpc.GrpcProtocol.{ GrpcProtocolReader, GrpcProtocolWriter }
 import pekko.http.javadsl.model.{ HttpEntity, HttpRequest, HttpResponse }
-import pekko.japi.{ Function => JFunction }
+import pekko.japi.function.{ Function => JFunction }
 import pekko.stream.Materializer
 import pekko.stream.javadsl.Source
 import pekko.util.ByteString
