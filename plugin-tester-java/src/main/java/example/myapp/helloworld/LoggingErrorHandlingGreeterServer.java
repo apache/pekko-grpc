@@ -34,7 +34,7 @@ import org.apache.pekko.http.javadsl.model.HttpRequest;
 import org.apache.pekko.http.javadsl.model.HttpResponse;
 import org.apache.pekko.http.javadsl.server.RequestContext;
 import org.apache.pekko.http.javadsl.server.Route;
-import org.apache.pekko.japi.Function;
+import org.apache.pekko.japi.function.Function;
 import org.apache.pekko.stream.Materializer;
 import org.apache.pekko.stream.SystemMaterializer;
 
