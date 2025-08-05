@@ -65,11 +65,11 @@ object GrpcMarshalling {
       data
         .mapMaterializedValue(_ => NotUsed)
         .via(reader.dataFrameDecoder)
-        .map(japiFunction(u.deserialize))
+        .map(u.deserialize)
         // In gRPC we signal failure by returning an error code, so we
         // don't want the cancellation bubbled out
         .via(new CancellationBarrierGraphStage)
-        .mapMaterializedValue(japiFunction(_ => NotUsed)))
+        .mapMaterializedValue(_ => NotUsed))
   }
   def unmarshalStream[T](
       entity: HttpEntity,
