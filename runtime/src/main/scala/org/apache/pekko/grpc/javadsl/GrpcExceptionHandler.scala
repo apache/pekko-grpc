@@ -23,7 +23,7 @@ import pekko.grpc.{ GrpcServiceException, Trailers }
 import pekko.grpc.GrpcProtocol.GrpcProtocolWriter
 import pekko.grpc.internal.{ GrpcMetadataImpl, GrpcResponseHelpers, MissingParameterException }
 import pekko.http.javadsl.model.HttpResponse
-import pekko.japi.{ Function => jFunction }
+import pekko.japi.function.{ Function => jFunction }
 import io.grpc.{ Status, StatusRuntimeException }
 
 import org.apache.pekko.http.scaladsl.model.http2.PeerClosedStreamException

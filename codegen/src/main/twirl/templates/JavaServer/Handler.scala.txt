@@ -75,7 +75,7 @@ public class @{serviceName}HandlerFactory {
      * Use {@@link org.apache.pekko.grpc.javadsl.ServiceHandler#concatOrNotFound} with {@@link @{service.name}HandlerFactory#partial} when combining
      * several services.
      */
-    public static Function<org.apache.pekko.http.javadsl.model.HttpRequest, CompletionStage<org.apache.pekko.http.javadsl.model.HttpResponse>> create(@serviceName implementation, org.apache.pekko.japi.Function<ActorSystem, org.apache.pekko.japi.Function<Throwable, Trailers>> eHandler, ClassicActorSystemProvider system) {
+    public static Function<org.apache.pekko.http.javadsl.model.HttpRequest, CompletionStage<org.apache.pekko.http.javadsl.model.HttpResponse>> create(@serviceName implementation, org.apache.pekko.japi.function.Function<ActorSystem, org.apache.pekko.japi.function.Function<Throwable, Trailers>> eHandler, ClassicActorSystemProvider system) {
       return create(implementation, @{service.name}.name, eHandler, system);
     }
 
@@ -101,7 +101,7 @@ public class @{serviceName}HandlerFactory {
      *
      * Registering a gRPC service under a custom prefix is not widely supported and strongly discouraged by the specification.
      */
-    public static Function<org.apache.pekko.http.javadsl.model.HttpRequest, CompletionStage<org.apache.pekko.http.javadsl.model.HttpResponse>> create(@serviceName implementation, String prefix, org.apache.pekko.japi.Function<ActorSystem, org.apache.pekko.japi.Function<Throwable, Trailers>> eHandler, ClassicActorSystemProvider system) {
+    public static Function<org.apache.pekko.http.javadsl.model.HttpRequest, CompletionStage<org.apache.pekko.http.javadsl.model.HttpResponse>> create(@serviceName implementation, String prefix, org.apache.pekko.japi.function.Function<ActorSystem, org.apache.pekko.japi.function.Function<Throwable, Trailers>> eHandler, ClassicActorSystemProvider system) {
       return partial(implementation, prefix, SystemMaterializer.get(system).materializer(), eHandler, system);
     }
 
@@ -142,7 +142,7 @@ public class @{serviceName}HandlerFactory {
      *
      * Use {@@link org.apache.pekko.grpc.javadsl.ServiceHandler#concatOrNotFound} when combining several services.
      */
-    public static Function<org.apache.pekko.http.javadsl.model.HttpRequest, CompletionStage<org.apache.pekko.http.javadsl.model.HttpResponse>> partial(@serviceName implementation, String prefix, Materializer mat, org.apache.pekko.japi.Function<ActorSystem, org.apache.pekko.japi.Function<Throwable, Trailers>> eHandler, ClassicActorSystemProvider system) {
+    public static Function<org.apache.pekko.http.javadsl.model.HttpRequest, CompletionStage<org.apache.pekko.http.javadsl.model.HttpResponse>> partial(@serviceName implementation, String prefix, Materializer mat, org.apache.pekko.japi.function.Function<ActorSystem, org.apache.pekko.japi.function.Function<Throwable, Trailers>> eHandler, ClassicActorSystemProvider system) {
       TelemetrySpi spi = TelemetryExtension.get(system).spi();
       return (req -> {
         Iterator<String> segments = req.getUri().pathSegments().iterator();
@@ -162,7 +162,7 @@ public class @{serviceName}HandlerFactory {
       return @{service.name}.name;
     }
 
-    private static CompletionStage<org.apache.pekko.http.javadsl.model.HttpResponse> handle(org.apache.pekko.http.javadsl.model.HttpRequest request, String method, @serviceName implementation, Materializer mat, org.apache.pekko.japi.Function<ActorSystem, org.apache.pekko.japi.Function<Throwable, Trailers>> eHandler, ClassicActorSystemProvider system) {
+    private static CompletionStage<org.apache.pekko.http.javadsl.model.HttpResponse> handle(org.apache.pekko.http.javadsl.model.HttpRequest request, String method, @serviceName implementation, Materializer mat, org.apache.pekko.japi.function.Function<ActorSystem, org.apache.pekko.japi.function.Function<Throwable, Trailers>> eHandler, ClassicActorSystemProvider system) {
       return GrpcMarshalling.negotiated(request, (reader, writer) -> {
         final CompletionStage<org.apache.pekko.http.javadsl.model.HttpResponse> response;
         @{if(powerApis) { "Metadata metadata = MetadataBuilder.fromHeaders(request.getHeaders());" } else { "" }}
