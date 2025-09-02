@@ -26,6 +26,8 @@ def scalaBinaryVersion = "${scalaVersion.major}.${scalaVersion.minor}"
 dependencies {
   implementation "org.apache.pekko:pekko-http-cors_${scalaBinaryVersion}:1.1.0"
   implementation "org.scala-lang:scala-library:${scalaFullVersion}"
+  implementation 'com.google.protobuf:protobuf-java:4.32.0'
+  testImplementation "org.apache.pekko:pekko-discovery_${scalaBinaryVersion}:1.1.5"
   testImplementation "org.apache.pekko:pekko-stream-testkit_${scalaBinaryVersion}:1.1.5"
   testImplementation "org.scalatest:scalatest_${scalaBinaryVersion}:3.2.19"
   testImplementation "org.scalatestplus:junit-4-13_${scalaBinaryVersion}:3.2.19.0"
