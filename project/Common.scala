@@ -78,7 +78,6 @@ object Common extends AutoPlugin {
                                      "-Wconf:msg=Use `scala.jdk.CollectionConverters` instead:silent",
                                      "-Wconf:msg=instead of Stream:silent",
                                      "-Wconf:msg=unused import:silent",
-                                     "-Wconf:cat=unused-nowarn:silent",
                                      "-Wconf:cat=feature:silent")),
     Compile / console / scalacOptions ~= (_.filterNot(consoleDisabledOptions.contains)),
     javacOptions ++= List("-Xlint:unchecked", "-Xlint:deprecation"),
