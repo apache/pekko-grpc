@@ -15,6 +15,7 @@ package org.apache.pekko.grpc.javadsl
 
 import java.util.concurrent.{ CompletableFuture, CompletionStage }
 import java.util.Optional
+
 import org.apache.pekko
 import pekko.NotUsed
 import pekko.actor.ActorSystem
@@ -27,7 +28,6 @@ import pekko.japi.function.{ Function => JFunction }
 import pekko.stream.Materializer
 import pekko.stream.javadsl.Source
 import pekko.util.ByteString
-import scala.annotation.nowarn
 
 object GrpcMarshalling {
 
@@ -78,7 +78,6 @@ object GrpcMarshalling {
       reader: GrpcProtocolReader): CompletionStage[Source[T, NotUsed]] =
     unmarshalStream(entity.getDataBytes, u, mat, reader)
 
-  @nowarn("msg=deprecated")
   def marshal[T](
       e: T,
       m: ProtobufSerializer[T],
@@ -88,7 +87,6 @@ object GrpcMarshalling {
       : HttpResponse =
     GrpcResponseHelpers.responseForSingleElement(e, scalaAnonymousPartialFunction(eHandler))(m, writer, system)
 
-  @nowarn("msg=deprecated")
   def marshalStream[T](
       e: Source[T, NotUsed],
       m: ProtobufSerializer[T],

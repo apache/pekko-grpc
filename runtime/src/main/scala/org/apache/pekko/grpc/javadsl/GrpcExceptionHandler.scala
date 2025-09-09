@@ -29,7 +29,6 @@ import pekko.http.scaladsl.model.http2.PeerClosedStreamException
 import pekko.japi.{ Function => jFunction }
 import io.grpc.{ Status, StatusRuntimeException }
 
-import scala.annotation.nowarn
 import scala.concurrent.ExecutionException
 
 @ApiMayChange
@@ -47,7 +46,6 @@ object GrpcExceptionHandler {
   private def log(system: ActorSystem) = Logging(system, "org.apache.pekko.grpc.javadsl.GrpcExceptionHandler")
 
   /** INTERNAL API */
-  @nowarn("msg=deprecated")
   @InternalApi
   private def default(system: ActorSystem): jFunction[Throwable, Trailers] =
     new jFunction[Throwable, Trailers] {
@@ -76,7 +74,6 @@ object GrpcExceptionHandler {
   def standard(t: Throwable, writer: GrpcProtocolWriter, system: ClassicActorSystemProvider): HttpResponse =
     standard(t, default, writer, system)
 
-  @nowarn("msg=deprecated")
   def standard(
       t: Throwable,
       mapper: jFunction[ActorSystem, jFunction[Throwable, Trailers]],
