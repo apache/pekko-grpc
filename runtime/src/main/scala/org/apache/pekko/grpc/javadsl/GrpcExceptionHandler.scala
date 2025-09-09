@@ -14,28 +14,30 @@
 package org.apache.pekko.grpc.javadsl
 
 import java.util.concurrent.CompletionException
+
 import org.apache.pekko
 import pekko.actor.ActorSystem
 import pekko.actor.ClassicActorSystemProvider
 import pekko.annotation.ApiMayChange
 import pekko.annotation.InternalApi
+import pekko.event.Logging
 import pekko.grpc.{ GrpcServiceException, Trailers }
 import pekko.grpc.GrpcProtocol.GrpcProtocolWriter
 import pekko.grpc.internal.{ GrpcMetadataImpl, GrpcResponseHelpers, MissingParameterException }
 import pekko.http.javadsl.model.HttpResponse
+import pekko.http.scaladsl.model.http2.PeerClosedStreamException
 import pekko.japi.function.{ Function => jFunction }
 import io.grpc.{ Status, StatusRuntimeException }
 
-import org.apache.pekko.http.scaladsl.model.http2.PeerClosedStreamException
-
+import scala.annotation.nowarn
 import scala.concurrent.ExecutionException
-import pekko.event.Logging
 
 @ApiMayChange
 object GrpcExceptionHandler {
   private val INTERNAL = Trailers(Status.INTERNAL)
   private val INVALID_ARGUMENT = Trailers(Status.INVALID_ARGUMENT)
 
+  @nowarn("msg=deprecated")
   def defaultMapper: jFunction[ActorSystem, jFunction[Throwable, Trailers]] =
     new jFunction[ActorSystem, jFunction[Throwable, Trailers]] {
       override def apply(system: ActorSystem): jFunction[Throwable, Trailers] =
@@ -45,6 +47,7 @@ object GrpcExceptionHandler {
   private def log(system: ActorSystem) = Logging(system, "org.apache.pekko.grpc.javadsl.GrpcExceptionHandler")
 
   /** INTERNAL API */
+  @nowarn("msg=deprecated")
   @InternalApi
   private def default(system: ActorSystem): jFunction[Throwable, Trailers] =
     new jFunction[Throwable, Trailers] {
@@ -73,6 +76,7 @@ object GrpcExceptionHandler {
   def standard(t: Throwable, writer: GrpcProtocolWriter, system: ClassicActorSystemProvider): HttpResponse =
     standard(t, default, writer, system)
 
+  @nowarn("msg=deprecated")
   def standard(
       t: Throwable,
       mapper: jFunction[ActorSystem, jFunction[Throwable, Trailers]],

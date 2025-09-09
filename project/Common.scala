@@ -68,7 +68,8 @@ object Common extends AutoPlugin {
                                      "-Wconf:msg=Use `scala.jdk.CollectionConverters` instead:silent",
                                      "-Wconf:msg=Use LazyList instead of Stream:silent",
                                      // ignore imports in templates (FIXME why is that trailing .* needed?)
-                                     "-Wconf:src=.*.txt.*:silent")
+                                     "-Wconf:src=.*.txt.*:silent",
+                                     "-Wconf:cat=unused-nowarn:silent")
                                  else
                                    Seq(
                                      // Generated code for methods/fields marked 'deprecated'

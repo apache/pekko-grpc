@@ -78,6 +78,7 @@ object GrpcMarshalling {
       reader: GrpcProtocolReader): CompletionStage[Source[T, NotUsed]] =
     unmarshalStream(entity.getDataBytes, u, mat, reader)
 
+  @nowarn("msg=deprecated")
   def marshal[T](
       e: T,
       m: ProtobufSerializer[T],
@@ -87,6 +88,7 @@ object GrpcMarshalling {
       : HttpResponse =
     GrpcResponseHelpers.responseForSingleElement(e, scalaAnonymousPartialFunction(eHandler))(m, writer, system)
 
+  @nowarn("msg=deprecated")
   def marshalStream[T](
       e: Source[T, NotUsed],
       m: ProtobufSerializer[T],
