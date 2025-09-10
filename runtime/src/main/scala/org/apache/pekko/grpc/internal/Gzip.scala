@@ -30,7 +30,7 @@ object Gzip extends Codec {
   }
 
   override def uncompress(compressed: ByteString): ByteString = {
-    val gzis = new GZIPInputStream(ByteStringInputStream(compressed))
+    val gzis = new GZIPInputStream(compressed.asInputStream)
 
     val baos = new ByteArrayOutputStream(compressed.size)
     val buffer = new Array[Byte](32 * 1024)
