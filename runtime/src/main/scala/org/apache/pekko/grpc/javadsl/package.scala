@@ -20,26 +20,6 @@ import org.apache.pekko
 package object javadsl {
 
   /**
-   * Helper for creating org.apache.pekko.japi.function.Function instances from Scala
-   * functions.
-   */
-  @deprecated("no longer needed since support for Scala 2.11 has been dropped", "1.2.0")
-  def japiFunction[A, B](f: A => B): pekko.japi.function.Function[A, B] =
-    new pekko.japi.function.Function[A, B]() {
-      override def apply(a: A): B = f(a)
-    }
-
-  /**
-   * Helper for creating java.util.function.Function instances from Scala
-   * functions.
-   */
-  @deprecated("no longer needed since support for Scala 2.11 has been dropped", "1.2.0")
-  def javaFunction[A, B](f: A => B): java.util.function.Function[A, B] =
-    new java.util.function.Function[A, B]() {
-      override def apply(a: A): B = f(a)
-    }
-
-  /**
    * Helper for creating Scala partial functions from [[pekko.japi.function.Function]]
    * instances.
    */
