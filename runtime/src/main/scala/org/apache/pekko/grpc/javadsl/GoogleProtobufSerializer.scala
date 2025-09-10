@@ -16,7 +16,7 @@ package org.apache.pekko.grpc.javadsl
 import org.apache.pekko
 import pekko.annotation.ApiMayChange
 import pekko.grpc.ProtobufSerializer
-import org.apache.pekko.grpc.internal.ByteStringInputStream
+import pekko.grpc.internal.ByteStringInputStream
 import pekko.util.ByteString
 import com.google.protobuf.Parser
 
