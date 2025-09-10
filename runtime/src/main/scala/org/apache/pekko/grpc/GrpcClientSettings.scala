@@ -269,10 +269,6 @@ final class GrpcClientSettings private (
   def withLoadBalancingPolicy(loadBalancingPolicy: String): GrpcClientSettings =
     copy(loadBalancingPolicy = Some(loadBalancingPolicy))
 
-  @deprecated("use withLoadBalancingPolicy", since = "akka-grpc 1.0.0")
-  def withGrpcLoadBalancingType(loadBalancingType: String): GrpcClientSettings =
-    withLoadBalancingPolicy(loadBalancingType)
-
   /**
    * How many times to retry establishing a connection before failing the client
    * Failure can be monitored using client.stopped and monitoring the Future/CompletionStage.

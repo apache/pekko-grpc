@@ -83,13 +83,6 @@ object AbstractGrpcProtocol {
       })
       .toContentType
 
-  @deprecated("In favor of overload that takes Booleans to specify flags", "akka-grpc 2.1.0")
-  def encodeFrameData(frameType: ByteString, data: ByteString): ByteString = {
-    val length = data.length
-    val encodedLength = ByteString.fromArrayUnsafe(
-      Array((length >> 24).toByte, (length >> 16).toByte, (length >> 8).toByte, length.toByte))
-    frameType ++ encodedLength ++ data
-  }
   def encodeFrameData(data: ByteString, isCompressed: Boolean, isTrailer: Boolean): ByteString = {
     implicit val byteOrder = ByteOrder.BIG_ENDIAN
     val length = data.length

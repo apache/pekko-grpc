@@ -116,16 +116,6 @@ final class ScalaClientStreamingRequestBuilder[I, O](
       settings: GrpcClientSettings)(implicit mat: Materializer, ec: ExecutionContext) =
     this(descriptor, channel, defaultOptions, settings, MetadataImpl.empty)
 
-  @deprecated("fqMethodName was removed since it can be derived from the descriptor", "akka-grpc 1.1.0")
-  @InternalStableApi
-  def this(
-      descriptor: MethodDescriptor[I, O],
-      fqMethodName: String,
-      channel: InternalChannel,
-      defaultOptions: CallOptions,
-      settings: GrpcClientSettings)(implicit mat: Materializer, ec: ExecutionContext) =
-    this(descriptor, channel, defaultOptions, settings, MetadataImpl.empty)
-
   private def callOptionsWithDeadline(): CallOptions =
     NettyClientUtils.callOptionsWithDeadline(defaultOptions, settings)
 
@@ -182,16 +172,6 @@ final class JavaClientStreamingRequestBuilder[I, O](
       settings: GrpcClientSettings)(implicit mat: Materializer, ec: ExecutionContext) =
     this(descriptor, channel, defaultOptions, settings, MetadataImpl.empty)
 
-  @deprecated("fqMethodName was removed since it can be derived from the descriptor", "akka-grpc 1.1.0")
-  @InternalStableApi
-  def this(
-      descriptor: MethodDescriptor[I, O],
-      fqMethodName: String,
-      channel: InternalChannel,
-      defaultOptions: CallOptions,
-      settings: GrpcClientSettings)(implicit mat: Materializer, ec: ExecutionContext) =
-    this(descriptor, channel, defaultOptions, settings, MetadataImpl.empty)
-
   private val delegate =
     new ScalaClientStreamingRequestBuilder[I, O](descriptor, channel, defaultOptions, settings, headers)
 
@@ -225,16 +205,6 @@ final class ScalaServerStreamingRequestBuilder[I, O](
       settings: GrpcClientSettings)(implicit ec: ExecutionContext) =
     this(descriptor, channel, defaultOptions, settings, MetadataImpl.empty)
 
-  @deprecated("fqMethodName was removed since it can be derived from the descriptor", "akka-grpc 1.1.0")
-  @InternalStableApi
-  def this(
-      descriptor: MethodDescriptor[I, O],
-      fqMethodName: String,
-      channel: InternalChannel,
-      defaultOptions: CallOptions,
-      settings: GrpcClientSettings)(implicit ec: ExecutionContext) =
-    this(descriptor, channel, defaultOptions, settings, MetadataImpl.empty)
-
   private def callOptionsWithDeadline(): CallOptions =
     NettyClientUtils.callOptionsWithDeadline(defaultOptions, settings)
 
@@ -263,16 +233,6 @@ final class JavaServerStreamingRequestBuilder[I, O](
   @InternalStableApi
   def this(
       descriptor: MethodDescriptor[I, O],
-      channel: InternalChannel,
-      defaultOptions: CallOptions,
-      settings: GrpcClientSettings)(implicit ec: ExecutionContext) =
-    this(descriptor, channel, defaultOptions, settings, MetadataImpl.empty)
-
-  @deprecated("fqMethodName was removed since it can be derived from the descriptor", "akka-grpc 1.1.0")
-  @InternalStableApi
-  def this(
-      descriptor: MethodDescriptor[I, O],
-      fqMethodName: String,
       channel: InternalChannel,
       defaultOptions: CallOptions,
       settings: GrpcClientSettings)(implicit ec: ExecutionContext) =
@@ -312,16 +272,6 @@ final class ScalaBidirectionalStreamingRequestBuilder[I, O](
       settings: GrpcClientSettings)(implicit ec: ExecutionContext) =
     this(descriptor, channel, defaultOptions, settings, MetadataImpl.empty)
 
-  @deprecated("fqMethodName was removed since it can be derived from the descriptor", "akka-grpc 1.1.0")
-  @InternalStableApi
-  def this(
-      descriptor: MethodDescriptor[I, O],
-      fqMethodName: String,
-      channel: InternalChannel,
-      defaultOptions: CallOptions,
-      settings: GrpcClientSettings)(implicit ec: ExecutionContext) =
-    this(descriptor, channel, defaultOptions, settings, MetadataImpl.empty)
-
   private def callOptionsWithDeadline(): CallOptions =
     NettyClientUtils.callOptionsWithDeadline(defaultOptions, settings)
 
@@ -350,16 +300,6 @@ final class JavaBidirectionalStreamingRequestBuilder[I, O](
   @InternalStableApi
   def this(
       descriptor: MethodDescriptor[I, O],
-      channel: InternalChannel,
-      defaultOptions: CallOptions,
-      settings: GrpcClientSettings)(implicit ec: ExecutionContext) =
-    this(descriptor, channel, defaultOptions, settings, MetadataImpl.empty)
-
-  @deprecated("fqMethodName was removed since it can be derived from the descriptor", "akka-grpc 1.1.0")
-  @InternalStableApi
-  def this(
-      descriptor: MethodDescriptor[I, O],
-      fqMethodName: String,
       channel: InternalChannel,
       defaultOptions: CallOptions,
       settings: GrpcClientSettings)(implicit ec: ExecutionContext) =

@@ -111,15 +111,6 @@ abstract class AbstractGenerateMojo @Inject() (buildContext: BuildContext) exten
   @BeanProperty
   var generateServer: Boolean = _
 
-  // Add the 'org.apache.pekko.grpc.gen.javadsl.play.PlayJavaClientCodeGenerator' or 'org.apache.pekko.grpc.gen.scaladsl.play.PlayScalaClientCodeGenerator' extra generator instead
-  @Deprecated
-  @BeanProperty
-  var generatePlayClient: Boolean = _
-  // Add the 'org.apache.pekko.grpc.gen.javadsl.play.PlayJavaServerCodeGenerator' or 'org.apache.pekko.grpc.gen.scaladsl.play.PlayScalaServerCodeGenerator' extra generator instead
-  @Deprecated
-  @BeanProperty
-  var generatePlayServer: Boolean = _
-
   @BeanProperty
   var generatorSettings: java.util.Map[String, String] = _
 
