@@ -23,7 +23,7 @@ import pekko.util.ccompat.JavaConverters._
 
 /** INTERNAL API */
 @InternalApi
-private[internal] object ByteStringInputStream {
+private[grpc] object ByteStringInputStream {
 
   def apply(bs: ByteString): InputStream = bs match {
     case bss: ByteStrings =>
