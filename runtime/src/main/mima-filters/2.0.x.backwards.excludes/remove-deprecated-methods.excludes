@@ -28,3 +28,4 @@ ProblemFilters.exclude[DirectMissingMethodProblem]("org.apache.pekko.grpc.intern
 ProblemFilters.exclude[DirectMissingMethodProblem]("org.apache.pekko.grpc.javadsl.GoogleProtobufSerializer.this")
 ProblemFilters.exclude[DirectMissingMethodProblem]("org.apache.pekko.grpc.javadsl.package.javaFunction")
 ProblemFilters.exclude[DirectMissingMethodProblem]("org.apache.pekko.grpc.javadsl.package.japiFunction")
+ProblemFilters.exclude[DirectMissingMethodProblem]("org.apache.pekko.grpc.internal.ScalaServerStreamingRequestBuilder.this")
