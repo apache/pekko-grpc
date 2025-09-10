@@ -15,7 +15,8 @@ package org.apache.pekko.grpc.internal
 
 import java.util
 
-import org.apache.pekko.grpc.GrpcServiceException
+import org.apache.pekko
+import pekko.grpc.GrpcServiceException
 import io.grpc.{ Attributes, EquivalentAddressGroup, NameResolver, Status }
 
 import scala.concurrent.Promise
@@ -24,7 +25,7 @@ class NameResolverListenerProbe extends NameResolver.Listener {
   private val promise = Promise[Seq[EquivalentAddressGroup]]()
 
   override def onAddresses(servers: util.List[EquivalentAddressGroup], attributes: Attributes): Unit = {
-    import scala.collection.JavaConverters._
+    import pekko.util.ccompat.JavaConverters._
     promise.trySuccess(servers.asScala.toSeq)
   }
 
