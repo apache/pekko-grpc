@@ -8,8 +8,6 @@ Remember that the cleartext HTTP/2 "h2c with prior knowledge" protocol is not co
 
 To deploy your gRPC service over a HTTPS connection you will have to use an @apidoc[HttpsConnectionContext] as described in the @extref[Pekko-HTTP documentation](pekko-http:server-side/server-https-support.html).
 
-When using HTTPS and running your application on a JDK 8 prior to version 1.8.0_251 you also need to provide an external ALPN implementation. Follow the @extref[section on ALPN](pekko-http:server-side/http2.html#application-layer-protocol-negotiation-alpn-) in the Pekko-HTTP docs for more details.
-
 ## Example: Kubernetes
 
 As an example, [pekko-grpc-sample-kubernetes-scala](https://pekko.apache.org/docs/pekko-samples/current/pekko-sample-grpc-kubernetes-scala/) is a complete project consisting of two applications (a gRPC service and an HTTP service that consumes the gRPC service) that can be deployed together in Kubernetes.

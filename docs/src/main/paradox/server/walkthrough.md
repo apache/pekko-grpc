@@ -56,8 +56,8 @@ Maven
       <artifactId>my-grpc-app</artifactId>
       <version>0.1-SNAPSHOT</version>
       <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <pekko.grpc.version>$project.version$</pekko.grpc.version>
         <grpc.version>$grpc.version$</grpc.version>
         <project.encoding>UTF-8</project.encoding>
@@ -221,9 +221,6 @@ Java
 methods to create partial functions that are combined by `concatOrNotFound`.]
 
 ## Running the server
-
-To run the server with HTTP/2 using HTTPS on a JVM prior to version 1.8.0_251, you will likely have to configure the Jetty ALPN
-agent as described @extref[in the Pekko HTTP documentation](pekko-http:server-side/http2.html#application-layer-protocol-negotiation-alpn-). Later JVM versions have this support built-in.
 
 See the detailed chapters on @ref[sbt](../buildtools/sbt.md#starting-your-pekko-grpc-server-from-sbt), @ref[Gradle](../buildtools/gradle.md#starting-your-pekko-grpc-server-from-gradle)
 and @ref[Maven](../buildtools/maven.md#starting-your-pekko-grpc-server-from-maven) for details on adding the agent.

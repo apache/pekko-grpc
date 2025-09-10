@@ -49,8 +49,8 @@ Maven
   <artifactId>my-grpc-app</artifactId>
   <version>0.1-SNAPSHOT</version>
   <properties>
-      <maven.compiler.source>1.8</maven.compiler.source>
-      <maven.compiler.target>1.8</maven.compiler.target>
+      <maven.compiler.source>17</maven.compiler.source>
+      <maven.compiler.target>17</maven.compiler.target>
       <pekko.grpc.version>$project.version$</pekko.grpc.version>
       <grpc.version>$grpc.version$</grpc.version>
       <project.encoding>UTF-8</project.encoding>

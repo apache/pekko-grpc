@@ -20,8 +20,8 @@
   <version>0.1-SNAPSHOT</version>
 
   <properties>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
     <maven-dependency-plugin.version>3.8.1</maven-dependency-plugin.version>
     <maven-exec-plugin.version>3.5.1</maven-exec-plugin.version>
     <pekko.http.version>1.2.0</pekko.http.version>
