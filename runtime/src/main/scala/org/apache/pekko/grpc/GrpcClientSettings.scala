@@ -225,8 +225,7 @@ final class GrpcClientSettings private (
     Option(sslProvider).fold(this)(sslProvider => copy(useTls = true, sslProvider = Some(sslProvider)))
 
   /**
-   * Prefer using `withContextManager`: withSslContext forces the ssl-provider 'jdk', which is known
-   * not to work on JDK 1.8.0_252.
+   * Prefer using `withContextManager`: withSslContext forces the ssl-provider 'jdk'.
    */
   def withSslContext(sslContext: SSLContext): GrpcClientSettings =
     Option(sslContext).fold(this)(sslContext => copy(useTls = true, sslContext = Option(sslContext)))

@@ -187,8 +187,7 @@ object NettyClientUtils {
     import java.lang.reflect.Field
 
     // This is a hack for situations where the SSLContext is given.
-    // This approach forces using SslProvider.JDK, which is known not to work
-    // on JDK 1.8.0_252
+    // This approach forces using SslProvider.JDK.
 
     // Create a Netty JdkSslContext object with all the correct ciphers, protocol settings, etc initialized.
     val nettySslContext: JdkSslContext =

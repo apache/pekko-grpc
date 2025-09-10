@@ -50,11 +50,6 @@ The project is split up in a number of subprojects:
 Additionally, 'plugin-tester-java' and 'plugin-tester-scala' contain an example
 project in Java and Scala respectively, with both sbt and Gradle configurations.
 
-## Compatibility & support
-
-If used with JDK 8 prior to version 1.8.0_251 you must add an ALPN agent.
-See the note in the [Akka HTTP docs](https://doc.akka.io/docs/akka-http/10.1/server-side/http2.html#application-layer-protocol-negotiation-alpn-).
-
 ## Building from Source
 
 ### Prerequisites
