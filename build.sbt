@@ -105,7 +105,7 @@ lazy val runtime = Project(id = "runtime", base = file("runtime"))
   .settings(MetaInfLicenseNoticeCopy.runtimeSettings)
   .settings(
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
-    scalaVersion := Dependencies.Versions.CrossScalaForLib.head)
+    scalaVersion := scala213)
   .settings(
     name := pekkoGrpcRuntimeName,
     mimaFailOnNoPrevious := true,
@@ -147,7 +147,7 @@ lazy val scalapbProtocPlugin = Project(id = "scalapb-protoc-plugin", base = file
     })
   .settings(
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
-    scalaVersion := Dependencies.Versions.CrossScalaForLib.head)
+    scalaVersion := scala212)
   .settings(addArtifact(Compile / assembly / artifact, assembly))
   .settings(addArtifact(sbt.Artifact(pekkoGrpcProtocPluginId, "bat", "bat", "bat"), mkBatAssemblyTask))
   .enablePlugins(ReproducibleBuildsPlugin)
@@ -161,7 +161,7 @@ lazy val mavenPlugin = Project(id = "maven-plugin", base = file("maven-plugin"))
     name := s"$pekkoPrefix-maven-plugin",
     crossPaths := false,
     crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
-    scalaVersion := Dependencies.Versions.CrossScalaForPlugin.head)
+    scalaVersion := scala213)
   .dependsOn(codegen)
 
 lazy val sbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
@@ -184,7 +184,7 @@ lazy val sbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
     scriptedBufferLog := false)
   .settings(
     crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
-    scalaVersion := Dependencies.Versions.CrossScalaForPlugin.head)
+    scalaVersion := scala212)
   .dependsOn(codegen)
 
 lazy val interopTests = Project(id = "interop-tests", base = file("interop-tests"))
@@ -196,7 +196,7 @@ lazy val interopTests = Project(id = "interop-tests", base = file("interop-tests
   .settings(Dependencies.interopTests)
   .settings(
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
-    scalaVersion := Dependencies.Versions.CrossScalaForLib.head)
+    scalaVersion := scala213)
   .pluginTestingSettings
   .settings(
     name := s"$pekkoPrefix-interop-tests",
@@ -238,7 +238,7 @@ lazy val benchmarks = Project(id = "benchmarks", base = file("benchmarks"))
   .settings(
     name := s"$pekkoPrefix-benchmarks",
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
-    scalaVersion := Dependencies.Versions.CrossScalaForLib.head)
+    scalaVersion := scala213)
   .enablePlugins(NoPublish)
 
 lazy val docs = Project(id = "docs", base = file("docs"))
@@ -288,7 +288,7 @@ lazy val docs = Project(id = "docs", base = file("docs"))
     }.taskValue)
   .settings(
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
-    scalaVersion := Dependencies.Versions.CrossScalaForLib.head)
+    scalaVersion := scala213)
   .enablePlugins(NoPublish)
 
 lazy val pluginTesterScala = Project(id = "plugin-tester-scala", base = file("plugin-tester-scala"))
@@ -301,7 +301,7 @@ lazy val pluginTesterScala = Project(id = "plugin-tester-scala", base = file("pl
     fork := true,
     PB.protocVersion := Dependencies.Versions.googleProtoc,
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
-    scalaVersion := scala212,
+    scalaVersion := scala213,
     ReflectiveCodeGen.codeGeneratorSettings ++= Seq("flat_package", "server_power_apis"))
   .pluginTestingSettings
   .enablePlugins(NoPublish)
@@ -315,7 +315,7 @@ lazy val pluginTesterJava = Project(id = "plugin-tester-java", base = file("plug
     PB.protocVersion := Dependencies.Versions.googleProtoc,
     ReflectiveCodeGen.generatedLanguages := Seq("Java"),
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
-    scalaVersion := scala212,
+    scalaVersion := scala213,
     ReflectiveCodeGen.codeGeneratorSettings ++= Seq("server_power_apis"))
   .pluginTestingSettings
   .enablePlugins(NoPublish)
@@ -347,7 +347,7 @@ lazy val root = Project(id = "pekko-grpc", base = file("."))
     // https://github.com/sbt/sbt/issues/3465
     // Libs and plugins must share a version. The root project must use that
     // version (and set the crossScalaVersions as empty list) so each sub-project
-    // can then decide which scalaVersion and crossCalaVersions they use.
+    // can then decide which scalaVersion and crossScalaVersions they use.
     crossScalaVersions := Nil,
     scalaVersion := scala212)
   .enablePlugins(NoPublish)
