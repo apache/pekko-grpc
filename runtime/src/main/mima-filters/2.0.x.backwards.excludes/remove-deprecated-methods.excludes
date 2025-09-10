@@ -18,7 +18,7 @@
 # Remove deprecated methods
 ProblemFilters.exclude[DirectMissingMethodProblem]("org.apache.pekko.grpc.GrpcClientSettings.withGrpcLoadBalancingType")
 ProblemFilters.exclude[DirectMissingMethodProblem]("org.apache.pekko.grpc.internal.AbstractGrpcProtocol.encodeFrameData")
-ProblemFilters.exclude[MissingClassProblem]("org.apache.pekko.grpc.internal.ClientClosedException"
+ProblemFilters.exclude[MissingClassProblem]("org.apache.pekko.grpc.internal.ClientClosedException")
 ProblemFilters.exclude[MissingClassProblem]("org.apache.pekko.grpc.internal.ClientState")
 ProblemFilters.exclude[DirectMissingMethodProblem]("org.apache.pekko.grpc.internal.JavaBidirectionalStreamingRequestBuilder.this")
 ProblemFilters.exclude[DirectMissingMethodProblem]("org.apache.pekko.grpc.internal.JavaClientStreamingRequestBuilder.this")
