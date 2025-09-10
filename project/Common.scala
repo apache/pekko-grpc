@@ -81,6 +81,8 @@ object Common extends AutoPlugin {
                                      "-Wconf:cat=feature:silent")),
     Compile / console / scalacOptions ~= (_.filterNot(consoleDisabledOptions.contains)),
     javacOptions ++= List("-Xlint:unchecked", "-Xlint:deprecation"),
+    Compile / compile / javacOptions ++= Seq("--release", "17"),
+    Compile / compile / scalacOptions ++= Seq("-release", "17"),
     Compile / doc / scalacOptions := scalacOptions.value ++ Seq(
       "-doc-title",
       "Apache Pekko gRPC",
