@@ -29,6 +29,8 @@ import pekko.stream.Materializer
 import pekko.stream.javadsl.Source
 import pekko.util.ByteString
 
+import scala.annotation.nowarn
+
 object GrpcMarshalling {
 
   def negotiated[T](

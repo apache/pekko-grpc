@@ -26,7 +26,7 @@ import pekko.grpc.GrpcProtocol.GrpcProtocolWriter
 import pekko.grpc.internal.{ GrpcMetadataImpl, GrpcResponseHelpers, MissingParameterException }
 import pekko.http.javadsl.model.HttpResponse
 import pekko.http.scaladsl.model.http2.PeerClosedStreamException
-import pekko.japi.{ Function => jFunction }
+import pekko.japi.function.{ Function => jFunction }
 import io.grpc.{ Status, StatusRuntimeException }
 
 import scala.concurrent.ExecutionException
@@ -36,7 +36,6 @@ object GrpcExceptionHandler {
   private val INTERNAL = Trailers(Status.INTERNAL)
   private val INVALID_ARGUMENT = Trailers(Status.INVALID_ARGUMENT)
 
-  @nowarn("msg=deprecated")
   def defaultMapper: jFunction[ActorSystem, jFunction[Throwable, Trailers]] =
     new jFunction[ActorSystem, jFunction[Throwable, Trailers]] {
       override def apply(system: ActorSystem): jFunction[Throwable, Trailers] =
