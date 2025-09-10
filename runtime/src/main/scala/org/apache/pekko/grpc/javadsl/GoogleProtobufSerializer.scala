@@ -16,6 +16,7 @@ package org.apache.pekko.grpc.javadsl
 import org.apache.pekko
 import pekko.annotation.ApiMayChange
 import pekko.grpc.ProtobufSerializer
+import pekko.grpc.internal.ByteStringInputStream
 import pekko.util.ByteString
 import com.google.protobuf.Parser
 
@@ -31,7 +32,7 @@ class GoogleProtobufSerializer[T <: com.google.protobuf.Message](parser: Parser[
   override def serialize(t: T): ByteString =
     ByteString.fromArrayUnsafe(t.toByteArray)
   override def deserialize(bytes: ByteString): T =
-    parser.parseFrom(bytes.toArray)
+    parser.parseFrom(ByteStringInputStream(bytes))
   override def deserialize(data: InputStream): T =
     parser.parseFrom(data)
 }
