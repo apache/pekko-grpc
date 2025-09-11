@@ -22,7 +22,7 @@ object Dependencies {
 
     // the order in the list is important because the head will be considered the default.
     val CrossScalaForLib = Seq(scala213, scala3)
-    val CrossScalaForPlugin = Seq(scala212)
+    val CrossScalaForPlugin = Seq(scala212, scala213)
 
     // We don't force Pekko updates because downstream projects can upgrade
     // themselves. For more information see
