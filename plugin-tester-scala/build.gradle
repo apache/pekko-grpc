@@ -19,7 +19,7 @@ repositories {
   mavenLocal()
 }
 
-def scalaFullVersion = "2.12.20"
+def scalaFullVersion = "2.13.16"
 def scalaVersion = org.gradle.util.VersionNumber.parse(scalaFullVersion)
 def scalaBinaryVersion = "${scalaVersion.major}.${scalaVersion.minor}"
 
