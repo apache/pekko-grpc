@@ -77,7 +77,7 @@ lazy val codegen = Project(id = "codegen", base = file("codegen"))
       case "LICENSE" | "LICENSE.txt" | "NOTICE"                     => MergeStrategy.discard
       case _                                                        => MergeStrategy.deduplicate
     },
-    crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
+    crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
     scalaVersion := scala212,
     Compile / unmanagedSourceDirectories ++= {
       if (scalaBinaryVersion.value == "2.12") {
