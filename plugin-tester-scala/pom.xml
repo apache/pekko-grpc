@@ -31,25 +31,25 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.pekko</groupId>
-      <artifactId>pekko-grpc-runtime_2.12</artifactId>
+      <artifactId>pekko-grpc-runtime_2.13</artifactId>
       <version>${pekko.grpc.project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.pekko</groupId>
-      <artifactId>pekko-http-cors_2.12</artifactId>
+      <artifactId>pekko-http-cors_2.13</artifactId>
       <version>${pekko.http.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.apache.pekko</groupId>
-      <artifactId>pekko-stream-testkit_2.12</artifactId>
+      <artifactId>pekko-stream-testkit_2.13</artifactId>
       <version>${pekko.version}</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.scalatest</groupId>
-      <artifactId>scalatest_2.12</artifactId>
+      <artifactId>scalatest_2.13</artifactId>
       <version>3.2.19</version>
       <scope>test</scope>
     </dependency>
