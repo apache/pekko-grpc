@@ -105,7 +105,7 @@ lazy val runtime = Project(id = "runtime", base = file("runtime"))
   .settings(MetaInfLicenseNoticeCopy.runtimeSettings)
   .settings(
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
-    scalaVersion := scala213)
+    scalaVersion := Dependencies.Versions.CrossScalaForLib.head)
   .settings(
     name := pekkoGrpcRuntimeName,
     mimaFailOnNoPrevious := true,
@@ -146,8 +146,8 @@ lazy val scalapbProtocPlugin = Project(id = "scalapb-protoc-plugin", base = file
       case _                                                        => MergeStrategy.deduplicate
     })
   .settings(
-    crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
-    scalaVersion := scala212)
+    crossScalaVersions := Dependencies.Versions.CrossScalaAll,
+    scalaVersion := Dependencies.Versions.CrossScalaAll.head)
   .settings(addArtifact(Compile / assembly / artifact, assembly))
   .settings(addArtifact(sbt.Artifact(pekkoGrpcProtocPluginId, "bat", "bat", "bat"), mkBatAssemblyTask))
   .enablePlugins(ReproducibleBuildsPlugin)
@@ -161,7 +161,7 @@ lazy val mavenPlugin = Project(id = "maven-plugin", base = file("maven-plugin"))
     name := s"$pekkoPrefix-maven-plugin",
     crossPaths := false,
     crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
-    scalaVersion := scala212)
+    scalaVersion := CrossScalaForPlugin.head)
   .dependsOn(codegen)
 
 lazy val sbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
@@ -184,7 +184,7 @@ lazy val sbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
     scriptedBufferLog := false)
   .settings(
     crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
-    scalaVersion := scala212)
+    scalaVersion := Dependencies.Versions.CrossScalaForPlugin.head)
   .dependsOn(codegen)
 
 lazy val interopTests = Project(id = "interop-tests", base = file("interop-tests"))
@@ -196,7 +196,7 @@ lazy val interopTests = Project(id = "interop-tests", base = file("interop-tests
   .settings(Dependencies.interopTests)
   .settings(
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
-    scalaVersion := scala213)
+    scalaVersion := Dependencies.Versions.CrossScalaForLib.head)
   .pluginTestingSettings
   .settings(
     name := s"$pekkoPrefix-interop-tests",
@@ -238,7 +238,7 @@ lazy val benchmarks = Project(id = "benchmarks", base = file("benchmarks"))
   .settings(
     name := s"$pekkoPrefix-benchmarks",
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
-    scalaVersion := scala213)
+    scalaVersion := Dependencies.Versions.CrossScalaForLib.head)
   .enablePlugins(NoPublish)
 
 lazy val docs = Project(id = "docs", base = file("docs"))
@@ -288,7 +288,7 @@ lazy val docs = Project(id = "docs", base = file("docs"))
     }.taskValue)
   .settings(
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
-    scalaVersion := scala213)
+    scalaVersion := Dependencies.Versions.CrossScalaForLib.head)
   .enablePlugins(NoPublish)
 
 lazy val pluginTesterScala = Project(id = "plugin-tester-scala", base = file("plugin-tester-scala"))
@@ -301,7 +301,7 @@ lazy val pluginTesterScala = Project(id = "plugin-tester-scala", base = file("pl
     fork := true,
     PB.protocVersion := Dependencies.Versions.googleProtoc,
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
-    scalaVersion := scala213,
+    scalaVersion := Dependencies.Versions.CrossScalaForLib.head,
     ReflectiveCodeGen.codeGeneratorSettings ++= Seq("flat_package", "server_power_apis"))
   .pluginTestingSettings
   .enablePlugins(NoPublish)
@@ -315,7 +315,7 @@ lazy val pluginTesterJava = Project(id = "plugin-tester-java", base = file("plug
     PB.protocVersion := Dependencies.Versions.googleProtoc,
     ReflectiveCodeGen.generatedLanguages := Seq("Java"),
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
-    scalaVersion := scala213,
+    scalaVersion := Dependencies.Versions.CrossScalaForLib.head,
     ReflectiveCodeGen.codeGeneratorSettings ++= Seq("server_power_apis"))
   .pluginTestingSettings
   .enablePlugins(NoPublish)
