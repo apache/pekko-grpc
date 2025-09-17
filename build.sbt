@@ -161,7 +161,7 @@ lazy val mavenPlugin = Project(id = "maven-plugin", base = file("maven-plugin"))
     name := s"$pekkoPrefix-maven-plugin",
     crossPaths := false,
     crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
-    scalaVersion := CrossScalaForPlugin.head)
+    scalaVersion := Dependencies.Versions.CrossScalaForPlugin.head)
   .dependsOn(codegen)
 
 lazy val sbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
