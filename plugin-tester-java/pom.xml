@@ -32,12 +32,12 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.pekko</groupId>
-      <artifactId>pekko-grpc-runtime_2.12</artifactId>
+      <artifactId>pekko-grpc-runtime_2.13</artifactId>
       <version>${pekko.grpc.project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.pekko</groupId>
-      <artifactId>pekko-http-cors_2.12</artifactId>
+      <artifactId>pekko-http-cors_2.13</artifactId>
       <version>${pekko.http.version}</version>
     </dependency>
 
