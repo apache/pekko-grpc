@@ -77,7 +77,7 @@ object SingleParameterSink {
     Sink.fromGraph(new SingleParameterStage[T]).withAttributes(Attributes.name("singleParameterSink"))
 
   def create[T](): javadsl.Sink[T, CompletionStage[T]] = {
-    import pekko.util.FutureConverters._
+    import scala.jdk.FutureConverters._
     new javadsl.Sink(SingleParameterSink().mapMaterializedValue(_.asJava))
   }
 }

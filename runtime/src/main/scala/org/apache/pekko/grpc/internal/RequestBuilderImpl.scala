@@ -19,16 +19,15 @@ import org.apache.pekko
 import pekko.NotUsed
 import pekko.annotation.{ InternalApi, InternalStableApi }
 import pekko.dispatch.ExecutionContexts
-import pekko.grpc.{ GrpcResponseMetadata, GrpcSingleResponse }
+import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, GrpcSingleResponse }
 import pekko.stream.Materializer
 import pekko.stream.javadsl.{ Source => JavaSource }
 import pekko.stream.scaladsl.{ Keep, Sink, Source }
 import pekko.util.ByteString
-import pekko.util.FutureConverters._
 import io.grpc._
 
 import scala.concurrent.{ ExecutionContext, Future }
-import pekko.grpc.GrpcClientSettings
+import scala.jdk.FutureConverters._
 
 /**
  * INTERNAL API

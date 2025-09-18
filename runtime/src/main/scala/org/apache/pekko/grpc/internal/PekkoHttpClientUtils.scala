@@ -16,7 +16,7 @@ package org.apache.pekko.grpc.internal
 import java.net.InetSocketAddress
 import java.security.SecureRandom
 import java.util.concurrent.CompletionStage
-import scala.concurrent.duration._
+
 import org.apache.pekko
 import pekko.{ Done, NotUsed }
 import pekko.actor.ClassicActorSystemProvider
@@ -32,14 +32,14 @@ import pekko.http.scaladsl.settings.ClientConnectionSettings
 import pekko.stream.{ Materializer, OverflowStrategy }
 import pekko.stream.scaladsl.{ Keep, Sink, Source }
 import pekko.util.ByteString
-import pekko.util.FutureConverters._
 import io.grpc.{ CallOptions, MethodDescriptor, Status, StatusRuntimeException }
 
 import javax.net.ssl.{ KeyManager, SSLContext, TrustManager }
 import scala.collection.immutable
 import scala.concurrent.{ ExecutionContext, Future, Promise }
+import scala.concurrent.duration._
+import scala.jdk.FutureConverters._
 import scala.util.{ Failure, Success }
-import pekko.http.scaladsl.model.StatusCodes
 
 /**
  * INTERNAL API

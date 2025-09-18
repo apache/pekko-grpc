@@ -19,11 +19,11 @@ import org.apache.pekko
 import pekko.annotation.InternalApi
 import pekko.dispatch.ExecutionContexts
 import pekko.grpc.GrpcSingleResponse
-import pekko.util.FutureConverters._
 import pekko.util.OptionVal
 import io.grpc._
 
 import scala.concurrent.{ Future, Promise }
+import scala.jdk.FutureConverters._
 
 /**
  * gRPC Netty based client listener transforming callbacks into a future response

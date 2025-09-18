@@ -20,7 +20,6 @@ import pekko.discovery.{ Discovery, ServiceDiscovery }
 import pekko.discovery.ServiceDiscovery.{ Resolved, ResolvedTarget }
 import pekko.grpc.internal.HardcodedServiceDiscovery
 import pekko.util.Helpers
-import pekko.util.JavaDurationConverters._
 import com.typesafe.config.{ Config, ConfigValueFactory }
 import io.grpc.CallCredentials
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder
@@ -29,6 +28,7 @@ import javax.net.ssl.{ SSLContext, TrustManager }
 
 import scala.collection.immutable
 import scala.concurrent.duration.{ Duration, _ }
+import scala.jdk.DurationConverters._
 
 object GrpcClientSettings {
 
@@ -82,7 +82,7 @@ object GrpcClientSettings {
       implicit actorSystem: ClassicActorSystemProvider): GrpcClientSettings = {
     val clientConfiguration: Config =
       actorSystem.classicSystem.settings.config.getConfig("pekko.grpc.client").getConfig("\"*\"")
-    val resolveTimeout = clientConfiguration.getDuration("service-discovery.resolve-timeout").asScala
+    val resolveTimeout = clientConfiguration.getDuration("service-discovery.resolve-timeout").toScala
     val discovery = Discovery.get(actorSystem).discovery
     withConfigDefaults(serviceName, discovery, -1, resolveTimeout, clientConfiguration)
   }
@@ -99,7 +99,7 @@ object GrpcClientSettings {
       implicit actorSystem: ClassicActorSystemProvider): GrpcClientSettings = {
     val clientConfiguration: Config =
       actorSystem.classicSystem.settings.config.getConfig("pekko.grpc.client").getConfig("\"*\"")
-    val resolveTimeout = clientConfiguration.getDuration("service-discovery.resolve-timeout").asScala
+    val resolveTimeout = clientConfiguration.getDuration("service-discovery.resolve-timeout").toScala
     withConfigDefaults(serviceName, discovery, -1, resolveTimeout, clientConfiguration)
   }
 
