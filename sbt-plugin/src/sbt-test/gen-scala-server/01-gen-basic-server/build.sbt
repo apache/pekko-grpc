@@ -9,6 +9,8 @@
 
 scalacOptions += "-Xfatal-warnings"
 
+scalaVersion := "2.13.16"
+
 enablePlugins(PekkoGrpcPlugin)
 
 assembly / assemblyMergeStrategy := {
