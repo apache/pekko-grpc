@@ -11,6 +11,8 @@ scalaVersion := "3.3.0"
 
 scalacOptions += "-Xfatal-warnings"
 
+scalaVersion := "2.13.16"
+
 enablePlugins(PekkoGrpcPlugin)
 
 libraryDependencies ++= Seq(

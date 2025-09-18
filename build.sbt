@@ -146,8 +146,8 @@ lazy val scalapbProtocPlugin = Project(id = "scalapb-protoc-plugin", base = file
       case _                                                        => MergeStrategy.deduplicate
     })
   .settings(
-    crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
-    scalaVersion := Dependencies.Versions.CrossScalaForLib.head)
+    crossScalaVersions := Dependencies.Versions.CrossScalaAll,
+    scalaVersion := Dependencies.Versions.CrossScalaAll.head)
   .settings(addArtifact(Compile / assembly / artifact, assembly))
   .settings(addArtifact(sbt.Artifact(pekkoGrpcProtocPluginId, "bat", "bat", "bat"), mkBatAssemblyTask))
   .enablePlugins(ReproducibleBuildsPlugin)
@@ -301,7 +301,7 @@ lazy val pluginTesterScala = Project(id = "plugin-tester-scala", base = file("pl
     fork := true,
     PB.protocVersion := Dependencies.Versions.googleProtoc,
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
-    scalaVersion := scala212,
+    scalaVersion := Dependencies.Versions.CrossScalaForLib.head,
     ReflectiveCodeGen.codeGeneratorSettings ++= Seq("flat_package", "server_power_apis"))
   .pluginTestingSettings
   .enablePlugins(NoPublish)
@@ -315,7 +315,7 @@ lazy val pluginTesterJava = Project(id = "plugin-tester-java", base = file("plug
     PB.protocVersion := Dependencies.Versions.googleProtoc,
     ReflectiveCodeGen.generatedLanguages := Seq("Java"),
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
-    scalaVersion := scala212,
+    scalaVersion := Dependencies.Versions.CrossScalaForLib.head,
     ReflectiveCodeGen.codeGeneratorSettings ++= Seq("server_power_apis"))
   .pluginTestingSettings
   .enablePlugins(NoPublish)
@@ -347,9 +347,9 @@ lazy val root = Project(id = "pekko-grpc", base = file("."))
     // https://github.com/sbt/sbt/issues/3465
     // Libs and plugins must share a version. The root project must use that
     // version (and set the crossScalaVersions as empty list) so each sub-project
-    // can then decide which scalaVersion and crossCalaVersions they use.
+    // can then decide which scalaVersion and crossScalaVersions they use.
     crossScalaVersions := Nil,
-    scalaVersion := scala212)
+    scalaVersion := Dependencies.Versions.CrossScalaForLib.head)
   .enablePlugins(NoPublish)
 
 Global / onLoad := (Global / onLoad).value.andThen { s =>

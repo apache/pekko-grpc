@@ -295,7 +295,7 @@ abstract class AbstractGenerateMojo @Inject() (buildContext: BuildContext) exten
       def error(text: String): Unit = getLog.error(text)
     }
     // scala binary version is not used from here, as gradle protoc plugin does not use suggested dependencies
-    val adapted = new ProtocBridgeCodeGenerator(generator, CodeGenerator.ScalaBinaryVersion("2.12"), logger)
+    val adapted = new ProtocBridgeCodeGenerator(generator, CodeGenerator.ScalaBinaryVersion("2.13"), logger)
     val jvmGenerator = JvmGenerator(generator.name, adapted)
     (jvmGenerator, settings) -> targetPath
   }

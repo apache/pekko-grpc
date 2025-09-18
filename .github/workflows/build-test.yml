@@ -45,7 +45,7 @@ jobs:
       - name: Binary-compatibility check
         run: |-
           cp .jvmopts-ci .jvmopts
-          sbt grpcVersionSyncCheck googleProtobufVersionSyncCheck +mimaReportBinaryIssues
+          sbt grpcVersionSyncCheck googleProtobufVersionSyncCheck mimaReportBinaryIssues
 
   compile-benchmarks:
     name: Compile Benchmarks
@@ -80,7 +80,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        SCALA_VERSION: [2.12.20, 2.13.16, 3.3.6]
+        SCALA_VERSION: [2.13.16, 3.3.6]
         JAVA_VERSION: [17, 21]
     steps:
       - name: Checkout
@@ -117,9 +117,9 @@ jobs:
       matrix:
         include:
           - test-set: gen-scala-server
-            scala-version: 2.12
+            scala-version: 2.13
           - test-set: gen-java
-            scala-version: 2.12
+            scala-version: 2.13
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
