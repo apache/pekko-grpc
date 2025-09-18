@@ -34,7 +34,7 @@ object ServerReflection {
     import scala.collection.JavaConverters._
     val delegate = ServerReflectionHandler.apply(
       ServerReflectionImpl(objects.asScala.map(_.descriptor).toSeq, objects.asScala.map(_.name).toList))(sys)
-    import pekko.util.FutureConverters._
+    import scala.jdk.FutureConverters._
     implicit val ec = sys.classicSystem.dispatcher
     request =>
       delegate

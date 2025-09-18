@@ -17,13 +17,12 @@ import java.util.concurrent.CompletionStage
 
 import org.apache.pekko
 import pekko.annotation.InternalApi
-import pekko.dispatch.ExecutionContexts
 import pekko.grpc.GrpcSingleResponse
-import pekko.util.FutureConverters._
 import pekko.util.OptionVal
 import io.grpc._
 
-import scala.concurrent.{ Future, Promise }
+import scala.concurrent.{ ExecutionContext, Future, Promise }
+import scala.jdk.FutureConverters._
 
 /**
  * gRPC Netty based client listener transforming callbacks into a future response
@@ -90,9 +89,9 @@ private[pekko] final class UnaryCallWithMetadataAdapter[Res] extends ClientCall.
       override def getHeaders() = jMetadata
 
       private lazy val sTrailer =
-        trailerPromise.future.map(MetadataImpl.scalaMetadataFromGoogleGrpcMetadata)(ExecutionContexts.parasitic)
+        trailerPromise.future.map(MetadataImpl.scalaMetadataFromGoogleGrpcMetadata)(ExecutionContext.parasitic)
       private lazy val jTrailer =
-        trailerPromise.future.map(MetadataImpl.javaMetadataFromGoogleGrpcMetadata)(ExecutionContexts.parasitic).asJava
+        trailerPromise.future.map(MetadataImpl.javaMetadataFromGoogleGrpcMetadata)(ExecutionContext.parasitic).asJava
 
       def trailers = sTrailer
       def getTrailers() = jTrailer

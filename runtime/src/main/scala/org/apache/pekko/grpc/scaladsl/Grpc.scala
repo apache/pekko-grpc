@@ -15,6 +15,7 @@ package org.apache.pekko.grpc.scaladsl
 
 import java.util.concurrent.ConcurrentHashMap
 import scala.concurrent.{ ExecutionContext, Future }
+import scala.jdk.CollectionConverters._
 
 import org.apache.pekko
 import pekko.Done
@@ -22,7 +23,6 @@ import pekko.actor.{ CoordinatedShutdown, ExtendedActorSystem, Extension, Extens
 import pekko.annotation.InternalApi
 import pekko.event.{ LogSource, Logging }
 import pekko.grpc.GrpcChannel
-import pekko.util.ccompat.JavaConverters._
 
 /** INTERNAL API */
 @InternalApi

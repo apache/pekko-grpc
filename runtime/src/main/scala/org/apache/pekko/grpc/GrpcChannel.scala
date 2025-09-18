@@ -16,6 +16,7 @@ package org.apache.pekko.grpc
 import java.util.concurrent.CompletionStage
 
 import scala.concurrent.Future
+import scala.jdk.FutureConverters._
 
 import org.apache.pekko
 import pekko.Done
@@ -23,7 +24,6 @@ import pekko.actor.ClassicActorSystemProvider
 import pekko.annotation.InternalStableApi
 import pekko.grpc.internal.{ ChannelUtils, InternalChannel }
 import pekko.grpc.scaladsl.Grpc
-import pekko.util.FutureConverters._
 
 final class GrpcChannel private (
     @InternalStableApi val settings: GrpcClientSettings,

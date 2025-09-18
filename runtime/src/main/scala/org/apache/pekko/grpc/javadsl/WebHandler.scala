@@ -54,7 +54,7 @@ object WebHandler {
 
   // Adapt Marshaller.futureMarshaller(fromResponse) to javadsl
   private implicit val csResponseMarshaller: ToResponseMarshaller[CompletionStage[HttpResponse]] = {
-    import pekko.util.FutureConverters._
+    import scala.jdk.FutureConverters._
     // HACK: Only known way to lift this to the scaladsl.model types required for MarshallingDirectives.handleWith
     Marshaller.asScalaToResponseMarshaller(
       Marshaller
