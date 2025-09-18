@@ -349,7 +349,7 @@ lazy val root = Project(id = "pekko-grpc", base = file("."))
     // version (and set the crossScalaVersions as empty list) so each sub-project
     // can then decide which scalaVersion and crossScalaVersions they use.
     crossScalaVersions := Nil,
-    scalaVersion := scala212)
+    scalaVersion := Dependencies.Versions.CrossScalaForLib.head)
   .enablePlugins(NoPublish)
 
 Global / onLoad := (Global / onLoad).value.andThen { s =>

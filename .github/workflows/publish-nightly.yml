@@ -59,7 +59,7 @@ jobs:
         run: |-
           mkdir -p target/nightly-docs/docs/pekko-grpc/${{ github.ref_name }}-snapshot/
           mv docs/target/paradox/site/main/ target/nightly-docs/docs/pekko-grpc/${{ github.ref_name }}-snapshot/docs
-          mv target/scala-2.12/unidoc target/nightly-docs/docs/pekko-grpc/${{ github.ref_name }}-snapshot/api
+          mv target/scala-2.13/unidoc target/nightly-docs/docs/pekko-grpc/${{ github.ref_name }}-snapshot/api
 
       - name: Upload nightly docs
         uses: ./.github/actions/sync-nightlies
