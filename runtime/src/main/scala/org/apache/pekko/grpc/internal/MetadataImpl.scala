@@ -16,7 +16,7 @@ package org.apache.pekko.grpc.internal
 import java.util.{ List => jList, Locale, Map => jMap, Optional }
 
 import scala.jdk.CollectionConverters._
-import scala.jdk.FutureConverters._
+import scala.jdk.OptionConverters._
 import scala.collection.immutable
 
 import org.apache.pekko

@@ -110,7 +110,7 @@ object GrpcClientSettings {
     val serviceDiscoveryMechanism = clientConfiguration.getString("service-discovery.mechanism")
     var serviceName = clientConfiguration.getString("service-discovery.service-name")
     val port = clientConfiguration.getInt("port")
-    val resolveTimeout = clientConfiguration.getDuration("service-discovery.resolve-timeout").asScala
+    val resolveTimeout = clientConfiguration.getDuration("service-discovery.resolve-timeout").toScala
     val sd = serviceDiscoveryMechanism match {
       case "static" | "grpc-dns" =>
         val host = clientConfiguration.getString("host")
