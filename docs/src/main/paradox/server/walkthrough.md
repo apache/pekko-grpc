@@ -65,7 +65,7 @@ Maven
       <dependencies>
         <dependency>
           <groupId>org.apache.pekko</groupId>
-          <artifactId>pekko-grpc-runtime_2.12</artifactId>
+          <artifactId>pekko-grpc-runtime_2.13</artifactId>
           <version>${pekko.grpc.version}</version>
         </dependency>
       </dependencies>
@@ -130,10 +130,10 @@ mvn pekko-grpc:generate
 From the above definition, Pekko gRPC generates interfaces that look like this:
 
 Scala
-:  @@snip [helloworld.proto](/plugin-tester-scala/target/scala-2.12/src_managed/main/example/myapp/helloworld/grpc/GreeterService.scala)
+:  @@snip [helloworld.proto](/plugin-tester-scala/target/scala-2.13/src_managed/main/example/myapp/helloworld/grpc/GreeterService.scala)
 
 Java
-:  @@snip [helloworld.proto](/plugin-tester-java/target/scala-2.12/src_managed/main/example/myapp/helloworld/grpc/GreeterService.java)
+:  @@snip [helloworld.proto](/plugin-tester-java/target/scala-2.13/src_managed/main/example/myapp/helloworld/grpc/GreeterService.java)
 
 and model @scala[case ]classes for `HelloRequest` and `HelloResponse`.
 
