@@ -117,9 +117,9 @@ jobs:
       matrix:
         include:
           - test-set: gen-scala-server
-            scala-version: 2.12
+            scala-version: 2.13
           - test-set: gen-java
-            scala-version: 2.12
+            scala-version: 2.13
     steps:
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
