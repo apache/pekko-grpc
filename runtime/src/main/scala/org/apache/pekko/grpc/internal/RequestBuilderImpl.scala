@@ -18,7 +18,6 @@ import java.util.concurrent.CompletionStage
 import org.apache.pekko
 import pekko.NotUsed
 import pekko.annotation.{ InternalApi, InternalStableApi }
-import pekko.dispatch.ExecutionContexts
 import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, GrpcSingleResponse }
 import pekko.stream.Materializer
 import pekko.stream.javadsl.{ Source => JavaSource }
@@ -119,7 +118,7 @@ final class ScalaClientStreamingRequestBuilder[I, O](
     NettyClientUtils.callOptionsWithDeadline(defaultOptions, settings)
 
   override def invoke(request: Source[I, NotUsed]): Future[O] =
-    invokeWithMetadata(request).map(_.value)(ExecutionContexts.parasitic)
+    invokeWithMetadata(request).map(_.value)(ExecutionContext.parasitic)
 
   override def invokeWithMetadata(source: Source[I, NotUsed]): Future[GrpcSingleResponse[O]] = {
     // a bit much overhead here because we are using the flow to represent a single response
@@ -144,7 +143,7 @@ final class ScalaClientStreamingRequestBuilder[I, O](
             def trailers = metadata.trailers
             def getTrailers() = metadata.getTrailers()
           }
-      }(ExecutionContexts.parasitic)
+      }(ExecutionContext.parasitic)
   }
 
   override def withHeaders(headers: MetadataImpl): ScalaClientStreamingRequestBuilder[I, O] =
