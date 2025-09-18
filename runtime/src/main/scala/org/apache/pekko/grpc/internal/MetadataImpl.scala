@@ -42,20 +42,8 @@ import pekko.grpc.scaladsl.{ BytesEntry, Metadata, MetadataEntry, StringEntry }
 
   def decodeBinaryHeader(value: String): ByteString = ByteString(value).decodeBase64
 
-  def toMap(list: List[(String, MetadataEntry)]): Map[String, List[MetadataEntry]] = {
-    // This method is complicated by the changes to mapValues in scala 2.13.
-
-    // For Scala 2.12, this should be:
-    // list.groupBy(_._1).mapValues(_.map(_._2)).toMap
-
-    // For scala 2.13, Map.mapValues is deprecated. The suggested migration is:
-    // list.groupBy(_._1).view.mapValues(_.map(_._2)).toMap
-
-    // Even better would be:
-    // list.groupMap(_._1)(_._2)
-
-    list.groupBy(_._1).view.mapValues(_.map(_._2)).toMap
-  }
+  def toMap(list: List[(String, MetadataEntry)]): Map[String, List[MetadataEntry]] =
+    list.groupMap(_._1)(_._2)
 
   def niceStringRep(metadata: Map[String, List[MetadataEntry]]) = {
     val data = metadata.map { case (key, values) => key + " -> " + values.mkString("[", ", ", "]") }.mkString(", ")
