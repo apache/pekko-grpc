@@ -106,8 +106,7 @@ jobs:
       - name: Compile and test for JDK ${{ matrix.JAVA_VERSION }}, Scala ${{ matrix.SCALA_VERSION }}
         run: |-
           cp .jvmopts-ci .jvmopts
-          sbt ++${{ matrix.SCALA_VERSION }} test
-          sbt ++${{ matrix.SCALA_VERSION }}! codegen/test
+          sbt ++${{ matrix.SCALA_VERSION }} test codegen/test
 
   test-sbt:
     name: sbt scripted tests
