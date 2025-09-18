@@ -39,7 +39,7 @@ plugins {
   id '$PLUGIN_CODE'
 }
 project.dependencies {
-    implementation "com.typesafe.scala-logging:scala-logging_2.12:3.9.2"
+    implementation "com.typesafe.scala-logging:scala-logging_2.13:3.9.2"
 }
 """
     }
@@ -48,7 +48,7 @@ project.dependencies {
         this.project.configurations.pekkoGrpcRuntime.allDependencies.find { it.name.contains("pekko-grpc-runtime") }
     }
 
-    PekkoGrpcPluginExtension sampleSetup(def plugin = "scala", String scala = "2.12") {
+    PekkoGrpcPluginExtension sampleSetup(def plugin = "scala", String scala = "2.13") {
         if (plugin == "scala" || plugin == ScalaWrapperPlugin) {
             def scalaDir = projectDir.newFolder('src', 'main', 'scala')
             new File(scalaDir, "test.scala").text = "object PekkoGrpc"

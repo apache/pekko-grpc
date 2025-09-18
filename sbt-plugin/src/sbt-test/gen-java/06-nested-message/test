@@ -1,5 +1,5 @@
 > compile
 
-$ exists target/scala-2.12/pekko-grpc
-$ exists target/scala-2.12/pekko-grpc/main/org/example/service/v1/TestGrpcsServiceClient.java
-$ exists target/scala-2.12/classes/org/example/service/v1/impl/TestGrpcsServiceImpl.class
+$ exists target/scala-2.13/pekko-grpc
+$ exists target/scala-2.13/pekko-grpc/main/org/example/service/v1/TestGrpcsServiceClient.java
+$ exists target/scala-2.13/classes/org/example/service/v1/impl/TestGrpcsServiceImpl.class

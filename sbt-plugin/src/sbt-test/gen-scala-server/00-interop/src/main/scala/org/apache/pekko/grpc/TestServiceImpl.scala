@@ -79,7 +79,7 @@ class TestServiceImpl(implicit sys: ActorSystem) extends TestService {
           Status.fromCodeValue(reqStatus.code).withDescription(reqStatus.message)))
       req
     }).mapConcat(
-      _.responseParameters.to[immutable.Seq]).via(parametersToResponseFlow)
+      _.responseParameters.toList).via(parametersToResponseFlow)
 
   override def halfDuplexCall(
       in: Source[StreamingOutputCallRequest, NotUsed]): Source[StreamingOutputCallResponse, NotUsed] = ???

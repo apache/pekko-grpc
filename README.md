@@ -63,13 +63,13 @@ project in Java and Scala respectively, with both sbt and Gradle configurations.
 - Open a command window and change directory to your preferred base directory
 - Use git to clone the [repo](https://github.com/apache/pekko-grpc) or download a source release from https://pekko.apache.org (and unzip or untar it, as appropriate)
 - Change directory to the directory where you installed the source (you should have a file called `build.sbt` in this directory)
-- `sbt compile` compiles the main source for project default version of Scala (2.12)
+- `sbt compile` compiles the main source for project default version of Scala (2.13)
     - `sbt +compile` will compile for all supported versions of Scala
 - `sbt test` will compile the code and run the unit tests
 - `sbt testQuick` similar to `test` but when repeated in shell mode will only run failing tests
 - `sbt package` will build the jars
     - the jars will built into target dirs of the various modules
-    - for the the 'runtime' module, the jar will be built to `runtime/target/scala-2.12/`
+    - for the the 'runtime' module, the jar will be built to `runtime/target/scala-2.13/`
 - `sbt publishLocal` will push the jars to your local Apache Ivy repository
 - `sbt publishM2` will push the jars to your local Apache Maven repository
 - `sbt docs/paradox` will build the docs (the ones describing the module features)

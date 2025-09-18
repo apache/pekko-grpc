@@ -53,8 +53,7 @@ import pekko.util.OptionConverters._
     // Even better would be:
     // list.groupMap(_._1)(_._2)
 
-    // For now, drop back to map() to deal with the incompatibility between versions.
-    list.groupBy(_._1).map(t => (t._1, t._2.map(_._2))).toMap
+    list.groupBy(_._1).view.mapValues(_.map(_._2)).toMap
   }
 
   def niceStringRep(metadata: Map[String, List[MetadataEntry]]) = {

@@ -168,7 +168,7 @@ class ApplySpec extends BaseSpec {
         project.pluginManager.apply PLUGIN_CODE
         project.dependencies {
             constraints {
-                implementation "org.scala-lang:scala-library:2.12.0"
+                implementation "org.scala-lang:scala-library:2.13.0"
             }
             implementation "com.typesafe.scala-logging:scala-logging_2.13:3.9.2"
         }
