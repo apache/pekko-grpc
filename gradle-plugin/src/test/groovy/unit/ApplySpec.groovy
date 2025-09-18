@@ -170,7 +170,7 @@ class ApplySpec extends BaseSpec {
             constraints {
                 implementation "org.scala-lang:scala-library:2.12.0"
             }
-            implementation "com.typesafe.scala-logging:scala-logging_2.12:3.9.2"
+            implementation "com.typesafe.scala-logging:scala-logging_2.13:3.9.2"
         }
         when:
         project.evaluate()
