@@ -102,9 +102,8 @@ public class ClientConfiguration implements Configuration {
         }
 
         /*
-        if (config.testca && config.address instanceof InetSocketAddress) {
+        if (config.testca && config.address instanceof InetSocketAddress address) {
           // Override the socket address with the host from the testca.
-          InetSocketAddress address = (InetSocketAddress) config.address;
           config.address = TestUtils.testServerAddress(address.getHostName(),
                   address.getPort());
         }
