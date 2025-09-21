@@ -128,8 +128,7 @@ class ServerConfiguration implements Configuration {
       @Override
       protected void setServerValue(ServerConfiguration config, String value) {
         SocketAddress address = Utils.parseSocketAddress(value);
-        if (address instanceof InetSocketAddress) {
-          InetSocketAddress addr = (InetSocketAddress) address;
+        if (address instanceof InetSocketAddress addr) {
           int port = addr.getPort() == 0 ? Utils.pickUnusedPort() : addr.getPort();
           // Re-create the address so that the server is available on all local addresses.
           address = new InetSocketAddress(port);
