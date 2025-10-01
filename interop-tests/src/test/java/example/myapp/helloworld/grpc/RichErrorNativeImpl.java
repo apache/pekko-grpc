@@ -34,7 +34,7 @@ public class RichErrorNativeImpl implements GreeterService {
 
     GrpcServiceException exception =
         GrpcServiceException.apply(
-            Code.INVALID_ARGUMENT, "What is wrong?", CollectionConverters.asScalaBuffer(ar).toSeq());
+            Code.INVALID_ARGUMENT, "What is wrong?", CollectionConverters.asScala(ar).toSeq());
 
     CompletableFuture<HelloReply> future = new CompletableFuture<>();
     future.completeExceptionally(exception);
