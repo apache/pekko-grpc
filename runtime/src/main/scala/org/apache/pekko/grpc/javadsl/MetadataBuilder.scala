@@ -18,7 +18,7 @@ import java.lang.{ Iterable => jIterable }
 import org.apache.pekko
 import pekko.annotation.ApiMayChange
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import pekko.http.javadsl.model.HttpHeader
 import pekko.http.scaladsl.model.{ HttpHeader => sHttpHeader }
 import pekko.http.scaladsl.model.headers.RawHeader

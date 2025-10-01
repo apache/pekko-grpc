@@ -67,7 +67,7 @@ class PekkoDiscoveryNameResolver(
 
   @throws[UnknownHostException]
   private def addresses(addresses: Seq[ResolvedTarget]) = {
-    import scala.collection.JavaConverters._
+    import scala.jdk.CollectionConverters._
     addresses
       .map(target => {
         val port = target.port.getOrElse(defaultPort)

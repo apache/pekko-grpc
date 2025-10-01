@@ -87,7 +87,7 @@ object AbstractGenerateMojo {
    * e.g. { "flatPackage": "true", "serverPowerApis": "false" } -> ["flat_package"]
    */
   def parseGeneratorSettings(generatorSettings: java.util.Map[String, String]): Seq[String] = {
-    import scala.collection.JavaConverters._
+    import scala.jdk.CollectionConverters._
     generatorSettings.asScala.filter(_._2.toLowerCase() != "false").keys.toSeq.map { params =>
       "[A-Z]".r.replaceAllIn(params, s => s"_${s.group(0).toLowerCase()}")
     }
@@ -169,7 +169,7 @@ abstract class AbstractGenerateMojo @Inject() (buildContext: BuildContext) exten
     if (schemas.isEmpty) {
       getLog.info("No changed or new .proto-files found in [%s], skipping code generation".format(generatedSourcesDir))
     } else {
-      import scala.collection.JavaConverters._
+      import scala.jdk.CollectionConverters._
       val loadedExtraGenerators =
         extraGenerators.asScala.map(cls =>
           Class.forName(cls).getDeclaredConstructor().newInstance().asInstanceOf[CodeGenerator])

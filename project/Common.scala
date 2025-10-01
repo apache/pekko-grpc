@@ -64,9 +64,6 @@ object Common extends AutoPlugin {
                                    Seq(
                                      // Generated code for methods/fields marked 'deprecated'
                                      "-Wconf:msg=Marked as deprecated in proto file:silent",
-                                     // deprecated in 2.13, but used as long as we support 2.12
-                                     "-Wconf:msg=Use `scala.jdk.CollectionConverters` instead:silent",
-                                     "-Wconf:msg=Use LazyList instead of Stream:silent",
                                      // ignore imports in templates (FIXME why is that trailing .* needed?)
                                      "-Wconf:src=.*.txt.*:silent",
                                      "-Wconf:cat=unused-nowarn:silent")
@@ -74,9 +71,6 @@ object Common extends AutoPlugin {
                                    Seq(
                                      // Generated code for methods/fields marked 'deprecated'
                                      "-Wconf:msg=Marked as deprecated in proto file:silent",
-                                     // deprecated in 2.13, but used as long as we support 2.12
-                                     "-Wconf:msg=Use `scala.jdk.CollectionConverters` instead:silent",
-                                     "-Wconf:msg=instead of Stream:silent",
                                      "-Wconf:msg=unused import:silent",
                                      "-Wconf:cat=feature:silent")),
     Compile / console / scalacOptions ~= (_.filterNot(consoleDisabledOptions.contains)),

@@ -29,7 +29,7 @@ import scala.concurrent.Promise
 import scala.util.Failure
 
 object ChannelUtilsSpec {
-  class FakeChannel(stateResponses: Stream[ConnectivityState]) extends ManagedChannel {
+  class FakeChannel(stateResponses: LazyList[ConnectivityState]) extends ManagedChannel {
     var closed = false
     var nextResponse = stateResponses
     var currentCallBack: Runnable = null
@@ -71,7 +71,7 @@ class ChannelUtilsSpec extends AnyWordSpec with Matchers with ScalaFutures {
       val promiseReady = Promise[Unit]()
       val promiseDone = Promise[Done]()
       val fakeChannel = new FakeChannel(
-        Stream(IDLE, CONNECTING, TRANSIENT_FAILURE, CONNECTING, TRANSIENT_FAILURE, CONNECTING, TRANSIENT_FAILURE))
+        LazyList(IDLE, CONNECTING, TRANSIENT_FAILURE, CONNECTING, TRANSIENT_FAILURE, CONNECTING, TRANSIENT_FAILURE))
 
       ChannelUtils.monitorChannel(promiseReady, promiseDone, fakeChannel, Some(2), log)
       // IDLE => CONNECTING
@@ -98,7 +98,7 @@ class ChannelUtilsSpec extends AnyWordSpec with Matchers with ScalaFutures {
       val promiseDone = Promise[Done]()
       val fakeChannel =
         new FakeChannel(
-          Stream(
+          LazyList(
             IDLE,
             CONNECTING,
             TRANSIENT_FAILURE,
@@ -147,7 +147,7 @@ class ChannelUtilsSpec extends AnyWordSpec with Matchers with ScalaFutures {
     "should stop monitoring if SHUTDOWN" in {
       val promiseReady = Promise[Unit]()
       val promiseDone = Promise[Done]()
-      val fakeChannel = new FakeChannel(Stream(IDLE, CONNECTING, READY) ++ Stream.continually(SHUTDOWN))
+      val fakeChannel = new FakeChannel(LazyList(IDLE, CONNECTING, READY) ++ LazyList.continually(SHUTDOWN))
       ChannelUtils.monitorChannel(promiseReady, promiseDone, fakeChannel, Some(2), log)
       // IDLE => CONNECTING
       fakeChannel.runCallBack()
