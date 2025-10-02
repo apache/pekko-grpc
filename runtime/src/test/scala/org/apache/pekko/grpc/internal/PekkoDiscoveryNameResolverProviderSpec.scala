@@ -71,7 +71,7 @@ class PekkoDiscoveryNameResolverProviderSpec
       val addressGroupsPromise = Promise[List[EquivalentAddressGroup]]()
       val listener = new Listener() {
         override def onAddresses(addresses: JList[EquivalentAddressGroup], attributes: Attributes): Unit = {
-          import scala.collection.JavaConverters._
+          import scala.jdk.CollectionConverters._
           addressGroupsPromise.success(addresses.asScala.toList)
         }
         override def onError(error: io.grpc.Status): Unit = ???

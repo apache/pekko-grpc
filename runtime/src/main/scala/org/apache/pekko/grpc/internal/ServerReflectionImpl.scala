@@ -13,17 +13,17 @@
 
 package org.apache.pekko.grpc.internal
 
+import com.google.protobuf.ByteString
 import com.google.protobuf.Descriptors.FileDescriptor
 import org.apache.pekko
 import pekko.NotUsed
 import pekko.annotation.InternalApi
 import pekko.stream.scaladsl._
 import _root_.grpc.reflection.v1alpha.reflection._
-import com.google.protobuf.ByteString
 
 import java.util.concurrent.ConcurrentHashMap
 import scala.collection.concurrent
-import collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 
 /**
  * INTERNAL API
@@ -77,7 +77,7 @@ final class ServerReflectionImpl private (fileDescriptors: Map[String, FileDescr
  */
 @InternalApi
 object ServerReflectionImpl {
-  import scala.collection.JavaConverters._
+  import scala.jdk.CollectionConverters._
 
   def apply(fileDescriptors: Seq[FileDescriptor], services: List[String]): ServerReflectionImpl = {
     val fileDescriptorsWithDeps = (ReflectionProto.javaDescriptor +: fileDescriptors).toSet.flatMap(flattenDependencies)

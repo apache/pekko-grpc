@@ -21,7 +21,7 @@ import java.util.concurrent.CompletionStage;
 import org.apache.pekko.NotUsed;
 import org.apache.pekko.grpc.GrpcServiceException;
 import org.apache.pekko.stream.javadsl.Source;
-import scala.collection.JavaConverters;
+import scala.jdk.javaapi.CollectionConverters;
 
 public class RichErrorNativeImpl implements GreeterService {
 
@@ -34,7 +34,7 @@ public class RichErrorNativeImpl implements GreeterService {
 
     GrpcServiceException exception =
         GrpcServiceException.apply(
-            Code.INVALID_ARGUMENT, "What is wrong?", JavaConverters.asScalaBuffer(ar).toSeq());
+            Code.INVALID_ARGUMENT, "What is wrong?", CollectionConverters.asScala(ar).toSeq());
 
     CompletableFuture<HelloReply> future = new CompletableFuture<>();
     future.completeExceptionally(exception);

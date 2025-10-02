@@ -14,7 +14,7 @@
 package org.apache.pekko.grpc.gen.scaladsl
 
 import scala.annotation.nowarn
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.collection.immutable
 import org.apache.pekko.grpc.gen.{ BuildInfo, CodeGenerator, Logger }
 import com.google.protobuf.compiler.PluginProtos.{ CodeGeneratorRequest, CodeGeneratorResponse }

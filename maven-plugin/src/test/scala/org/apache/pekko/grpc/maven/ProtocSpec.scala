@@ -31,7 +31,7 @@ class ProtocSpec extends AnyWordSpec with Matchers {
     }
   }
 
-  import scala.collection.JavaConverters._
+  import scala.jdk.CollectionConverters._
 
   "Parsing generator settings" should {
     "filter out the false values" in {

@@ -14,7 +14,7 @@
 package org.apache.pekko.grpc.gen.scaladsl
 
 import scala.collection.immutable
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import com.google.protobuf.Descriptors._
 import protocgen.CodeGenRequest
 import scalapb.compiler.{ DescriptorImplicits, GeneratorParams }

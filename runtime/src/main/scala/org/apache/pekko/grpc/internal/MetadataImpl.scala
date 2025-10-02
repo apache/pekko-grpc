@@ -203,13 +203,8 @@ class JavaMetadataImpl(delegate: Metadata) extends javadsl.Metadata {
   override def getBinary(key: String): Optional[ByteString] =
     delegate.getBinary(key).toJava
 
-  override def asMap(): jMap[String, jList[javadsl.MetadataEntry]] = {
-    // This method is also affected by incompatible changes between scala 2.12 and 2.13. (See comment in
-    // MetadataImp.toMap for more details.)
-
-    // For now, as a workaround, implement the conversion in terms of map instead of mapValues.
-    delegate.asMap.map(t => t._1 -> t._2.map(_.asInstanceOf[javadsl.MetadataEntry]).asJava).toMap.asJava
-  }
+  override def asMap(): jMap[String, jList[javadsl.MetadataEntry]] =
+    delegate.asMap.view.mapValues(_.map(_.asInstanceOf[javadsl.MetadataEntry]).asJava).toMap.asJava
 
   override def asList(): jList[Pair[String, javadsl.MetadataEntry]] =
     delegate.asList.map(t => Pair[String, javadsl.MetadataEntry](t._1, t._2)).asJava

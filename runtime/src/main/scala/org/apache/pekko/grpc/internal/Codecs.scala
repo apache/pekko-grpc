@@ -32,7 +32,7 @@ object Codecs {
       case sReq: sm.HttpMessage =>
         sReq.headers
       case _ =>
-        import scala.collection.JavaConverters._
+        import scala.jdk.CollectionConverters._
         request.getHeaders.asScala
     }
   }
