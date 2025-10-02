@@ -14,6 +14,7 @@
 package org.apache.pekko.grpc.internal
 
 import org.apache.pekko
+import pekko.grpc.javadsl
 import pekko.grpc.scaladsl.{ BytesEntry, Metadata, StringEntry }
 import pekko.http.scaladsl.model.headers.RawHeader
 import pekko.util.ByteString
@@ -116,6 +117,26 @@ class MetadataImplSpec extends AnyWordSpec with Matchers with ScalaFutures {
       val map = m.asMap
       map(DUPE_TEXT_KEY) shouldEqual DUPE_TEXT_VALUES.map(StringEntry.apply)
       map(DUPE_BINARY_KEY) shouldEqual DUPE_BINARY_VALUES.map(BytesEntry.apply)
+    }
+
+    "return a list with repeated entries in correct order (Java DSL)" in {
+      val javaMetadata = new JavaMetadataImpl(m)
+      val jlist = javaMetadata.asList()
+      val slist = m.asList
+      jlist.size() shouldEqual slist.size
+      for (i <- 0 until jlist.size()) {
+        val pair: pekko.japi.Pair[String, javadsl.MetadataEntry] = jlist.get(i)
+        pair.first shouldEqual slist(i)._1
+        pair.second shouldEqual slist(i)._2
+      }
+    }
+
+    "return a map repeated entries in correct order (Java DSL)" in {
+      val javaMetadata = new JavaMetadataImpl(m)
+      val map = javaMetadata.asMap()
+      import scala.jdk.CollectionConverters._
+      map.get(DUPE_TEXT_KEY) shouldEqual DUPE_TEXT_VALUES.map(StringEntry.apply).asJava
+      map.get(DUPE_BINARY_KEY) shouldEqual DUPE_BINARY_VALUES.map(BytesEntry.apply).asJava
     }
   }
 
