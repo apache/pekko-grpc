@@ -35,11 +35,10 @@ object ServerReflection {
     val delegate = ServerReflectionHandler.apply(
       ServerReflectionImpl(objects.asScala.map(_.descriptor).toSeq, objects.asScala.map(_.name).toList))(sys)
     import scala.jdk.FutureConverters._
-    implicit val ec = sys.classicSystem.dispatcher
     request =>
       delegate
         .apply(request.asInstanceOf[pekko.http.scaladsl.model.HttpRequest])
-        .map(_.asInstanceOf[HttpResponse])
         .asJava
+        .asInstanceOf[CompletionStage[HttpResponse]]
   }
 }
