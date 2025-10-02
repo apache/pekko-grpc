@@ -204,7 +204,7 @@ class JavaMetadataImpl(delegate: Metadata) extends javadsl.Metadata {
     delegate.getBinary(key).toJava
 
   override def asMap(): jMap[String, jList[javadsl.MetadataEntry]] =
-    delegate.asMap.view.mapValues(_.map(_.asInstanceOf[javadsl.MetadataEntry]).asJava).toMap.asJava
+    delegate.asMap.view.mapValues(_.asJava.asInstanceOf[jList[javadsl.MetadataEntry]]).toMap.asJava
 
   override def asList(): jList[Pair[String, javadsl.MetadataEntry]] =
     delegate.asList.map(t => Pair[String, javadsl.MetadataEntry](t._1, t._2)).asJava
