@@ -37,7 +37,7 @@ addSbtPlugin("com.lightbend.paradox" % "sbt-paradox" % "0.10.7")
 addSbtPlugin("com.github.sbt" % "sbt-unidoc" % "0.6.0")
 
 // For RawText
-libraryDependencies += "org.eclipse.jgit" % "org.eclipse.jgit" % "5.13.3.202401111512-r"
+libraryDependencies += "org.eclipse.jgit" % "org.eclipse.jgit" % "5.13.5.202508271544-r"
 
 // scripted testing
 libraryDependencies += "org.scala-sbt" %% "scripted-plugin" % sbtVersion.value
