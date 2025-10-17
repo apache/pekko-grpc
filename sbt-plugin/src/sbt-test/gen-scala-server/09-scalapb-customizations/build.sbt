@@ -7,7 +7,7 @@
  * This file is part of the Apache Pekko project, which was derived from Akka.
  */
 
-scalaVersion := "2.13.16"
+scalaVersion := "2.13.17"
 
 enablePlugins(PekkoGrpcPlugin)
 
