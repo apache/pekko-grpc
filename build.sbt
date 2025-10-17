@@ -72,6 +72,7 @@ lazy val codegen = Project(id = "codegen", base = file("codegen"))
     (assembly / assemblyOption) := (assembly / assemblyOption).value.withPrependShellScript(
       Some(sbtassembly.AssemblyPlugin.defaultUniversalScript(shebang = true))),
     (assembly / assemblyMergeStrategy) := {
+      case PathList("META-INF", "LICENSE")                          => MergeStrategy.discard
       case PathList("META-INF", "MANIFEST.MF")                      => MergeStrategy.discard
       case PathList("META-INF", "versions", _, "module-info.class") => MergeStrategy.discard
       case "LICENSE" | "LICENSE.txt" | "NOTICE"                     => MergeStrategy.discard
@@ -83,8 +84,7 @@ lazy val codegen = Project(id = "codegen", base = file("codegen"))
       if (scalaBinaryVersion.value == "2.12") {
         Seq.empty
       } else {
-        Seq(
-          project.base / "src" / "main" / "scala-2.13+")
+        Seq(project.base / "src" / "main" / "scala-2.13+")
       }
     })
   .settings(addArtifact(Compile / assembly / artifact, assembly))
