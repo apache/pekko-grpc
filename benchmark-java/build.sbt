@@ -9,7 +9,7 @@
 
 enablePlugins(PekkoGrpcPlugin)
 
-scalaVersion := "2.13.16"
+scalaVersion := "2.13.17"
 
 run / javaOptions ++= List("-Xms1g", "-Xmx1g", "-XX:+PrintGCDetails", "-XX:+PrintGCTimeStamps")
 
