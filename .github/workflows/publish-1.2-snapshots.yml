@@ -6,9 +6,11 @@
 # This file is part of the Apache Pekko project, which was derived from Akka.
 #
 
-name: Publish 1.0 Snapshots
+name: Publish 1.2 Snapshots
 
 on:
+  schedule:
+    - cron: "0 4 * * 0"
   workflow_dispatch:
 
 jobs:
@@ -22,7 +24,7 @@ jobs:
         with:
           # we don't know what commit the last tag was it's safer to get entire repo so previousStableVersion resolves
           fetch-depth: 0
-          ref: 1.0.x
+          ref: 1.2.x
           
       - name: Setup Java 8
         uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
@@ -37,8 +39,8 @@ jobs:
         run: |-
           cp .jvmopts-ci .jvmopts
           sbt +publish
-          sbt ++2.13.13! codegen/publish
-          sbt ++3.3.3! codegen/publish
+          sbt ++2.13.16! codegen/publish
+          sbt ++3.3.6! codegen/publish
         env:
           NEXUS_USER: ${{ secrets.NEXUS_USER }}
           NEXUS_PW: ${{ secrets.NEXUS_PW }}
