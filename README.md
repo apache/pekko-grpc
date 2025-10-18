@@ -86,7 +86,7 @@ project in Java and Scala respectively, with both sbt and Gradle configurations.
      
 #### Maven plugin
 - the Maven plugin is built using sbt
-- Build the Maven plugin and not its version number because the tests need the version number
+- Build the Maven plugin and note its version number because the tests need the version number
 - You can test the Maven plugin by changing directory into the `plugin-tester-java` dir
     - `mvn -Dpekko.grpc.project.version=<version> pekko-grpc:generate compile`
 - You can run the equivalent Scala tests by changing directory into the `plugin-tester-scala` dir
