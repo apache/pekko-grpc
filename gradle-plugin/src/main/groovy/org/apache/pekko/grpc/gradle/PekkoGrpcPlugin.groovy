@@ -84,13 +84,13 @@ class PekkoGrpcPlugin implements Plugin<Project> {
             main {
                 if (pekkoGrpcExt.scala) {
                     scala {
-                        srcDir 'build/generated/source/proto/main/pekkoGrpc'
-                        srcDir 'build/generated/source/proto/main/scalapb'
+                        srcDir 'build/generated/sources/proto/main/pekkoGrpc'
+                        srcDir 'build/generated/sources/proto/main/scalapb'
                     }
                 } else {
                     java {
-                        srcDir 'build/generated/source/proto/main/pekkoGrpc'
-                        srcDir 'build/generated/source/proto/main/java'
+                        srcDir 'build/generated/sources/proto/main/pekkoGrpc'
+                        srcDir 'build/generated/sources/proto/main/java'
                     }
                 }
             }
