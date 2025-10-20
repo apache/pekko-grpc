@@ -131,7 +131,7 @@ repositories {
 
 dependencies {
   implementation 'com.google.protobuf:protobuf-gradle-plugin:0.9.5'
-  implementation 'commons-lang:commons-lang:2.6'
+  implementation 'org.apache.commons:commons-lang3:3.19.0'
   testImplementation 'junit:junit:4.13.2'
   testImplementation 'org.spockframework:spock-core:2.3-groovy-3.0'
 }

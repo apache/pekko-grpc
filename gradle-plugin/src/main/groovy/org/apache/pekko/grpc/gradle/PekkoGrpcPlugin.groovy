@@ -10,7 +10,7 @@
 package org.apache.pekko.grpc.gradle
 
 import com.google.protobuf.gradle.ProtobufPlugin
-import org.apache.commons.lang.SystemUtils
+import org.apache.commons.lang3.SystemUtils
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
