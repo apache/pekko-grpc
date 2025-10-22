@@ -34,7 +34,7 @@ Release notes for Apache Pekko gRPC 1.1.0. See [GitHub Milestone for 1.1.0-M1](h
 
 Most of the dependency changes are small patch level upgrades. Some exceptions include:
 
-* grpc-java 1.68.0 (this grpc-java release has since been stated marked as a mistake)
+* grpc-java 1.68.0 (this grpc-java release has since been marked as a mistake)
 * protobuf-java 3.25.5
 * scalapb 0.11.17
 * Twirl 2.0.7
