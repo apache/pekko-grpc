@@ -16,3 +16,7 @@ Release notes for Apache Pekko gRPC 1.2.0. See [GitHub Milestone for 1.2.0](http
 * scalapb 0.11.20
 * Twirl 2.0.9
 * sbt-protoc 1.0.8
+
+### Known Issues
+
+* pekko-grpc-sbt-plugin 1.2.0 doesn't work with sbt versions older than 1.9.0 ([#540](https://github.com/apache/pekko-grpc/issues/540)). We hope to fix this in a future release.
