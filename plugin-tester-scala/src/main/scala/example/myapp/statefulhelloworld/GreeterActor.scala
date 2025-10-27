@@ -33,7 +33,7 @@ class GreeterActor(initialGreeting: String) extends Actor {
   var greeting = Greeting(initialGreeting)
 
   def receive = {
-    case GetGreeting => sender() ! greeting
+    case GetGreeting                 => sender() ! greeting
     case ChangeGreeting(newGreeting) =>
       greeting = Greeting(newGreeting)
   }

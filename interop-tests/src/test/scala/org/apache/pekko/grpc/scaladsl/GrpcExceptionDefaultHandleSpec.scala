@@ -55,7 +55,8 @@ class GrpcExceptionDefaultHandleSpec
       response.entity match {
         case Chunked(_, chunks) =>
           chunks.runWith(Sink.seq).futureValue match {
-            case Seq(LastChunk("", List(`Status`("3")))) => // ok
+            case Seq(LastChunk("",
+                  List(`Status`("3")))) => // ok
           }
         case _: Strict =>
           response.headers.find(_.is("grpc-status")).map(_.value()) shouldBe Some("3")

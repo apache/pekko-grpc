@@ -113,7 +113,7 @@ object Settings {
         case "default_service_account"  => settings.copy(defaultServiceAccount = value)
         case "service_account_key_file" => settings.copy(serviceAccountKeyFile = value)
         case "oauth_scope"              => settings.copy(oauthScope = value)
-        case _ =>
+        case _                          =>
           System.err.println("Unknown argument: " + key)
           showUsageAndExit()
           settings // not really returning it because exiting, we need it for compile check

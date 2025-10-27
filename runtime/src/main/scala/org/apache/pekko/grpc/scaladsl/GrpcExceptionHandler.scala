@@ -42,7 +42,7 @@ object GrpcExceptionHandler {
     case e: NotImplementedError              => Trailers(Status.UNIMPLEMENTED.withDescription(e.getMessage))
     case e: UnsupportedOperationException    => Trailers(Status.UNIMPLEMENTED.withDescription(e.getMessage))
     case _: MissingParameterException        => INVALID_ARGUMENT
-    case e: StatusRuntimeException =>
+    case e: StatusRuntimeException           =>
       val meta = Option(e.getTrailers).getOrElse(new io.grpc.Metadata())
       Trailers(e.getStatus, new GrpcMetadataImpl(meta))
     case e: PeerClosedStreamException =>

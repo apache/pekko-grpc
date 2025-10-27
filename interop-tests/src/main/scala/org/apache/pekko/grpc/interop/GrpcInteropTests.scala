@@ -107,7 +107,7 @@ class GrpcInteropTests(serverProvider: GrpcServerProvider, clientProvider: GrpcC
         Succeeded
       } catch {
         case NonFatal(_) if expectedToFail => pending
-        case NonFatal(e) =>
+        case NonFatal(e)                   =>
           e.printStackTrace()
           throw e
       }

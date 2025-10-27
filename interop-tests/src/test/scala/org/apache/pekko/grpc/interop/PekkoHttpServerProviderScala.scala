@@ -113,7 +113,7 @@ object PekkoHttpServerProviderScala extends PekkoHttpServerProvider with Directi
             HttpEntity.Chunked(
               contentType,
               data.map {
-                case chunk: HttpEntity.Chunk => chunk
+                case chunk: HttpEntity.Chunk    => chunk
                 case last: HttpEntity.LastChunk =>
                   HttpEntity.LastChunk(last.extension, f(last.trailer))
               }))

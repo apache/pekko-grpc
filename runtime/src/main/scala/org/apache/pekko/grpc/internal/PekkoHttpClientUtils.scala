@@ -98,7 +98,7 @@ object PekkoHttpClientUtils {
           ConnectionContext.httpsClient {
             settings.sslContext.getOrElse {
               settings.trustManager match {
-                case None => SSLContext.getDefault
+                case None               => SSLContext.getDefault
                 case Some(trustManager) =>
                   val sslContext: SSLContext = SSLContext.getInstance("TLS")
                   sslContext.init(Array[KeyManager](), Array[TrustManager](trustManager), new SecureRandom)
