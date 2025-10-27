@@ -171,6 +171,7 @@ lazy val sbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
   .settings(Dependencies.sbtPlugin)
   .settings(
     name := s"$pekkoPrefix-sbt-plugin",
+    sbtPluginPublishLegacyMavenStyle := true,
     /** And for scripted tests: */
     scriptedLaunchOpts += ("-Dproject.version=" + version.value),
     scriptedLaunchOpts ++= sys.props.collect { case (k @ "sbt.ivy.home", v) => s"-D$k=$v" }.toSeq,
