@@ -61,7 +61,7 @@ object GrpcExceptionHandler {
           case e: NotImplementedError              => Trailers(Status.UNIMPLEMENTED.withDescription(e.getMessage))
           case e: UnsupportedOperationException    => Trailers(Status.UNIMPLEMENTED.withDescription(e.getMessage))
           case e: StatusRuntimeException           => Trailers(e.getStatus, new GrpcMetadataImpl(e.getTrailers))
-          case e: PeerClosedStreamException =>
+          case e: PeerClosedStreamException        =>
             log(system).warning(e, "Peer closed the stream: [{}]", e.getMessage)
             INTERNAL
           case other =>

@@ -148,7 +148,7 @@ object GrpcClientSettings {
         case "jdk"            => SslProvider.JDK
         case "openssl"        => SslProvider.OPENSSL
         case "openssl_refcnt" => SslProvider.OPENSSL_REFCNT
-        case other =>
+        case other            =>
           throw new IllegalArgumentException(
             s"ssl-provider: expected empty, 'jdk', 'openssl' or 'openssl_refcnt', but got [$other]")
       },
