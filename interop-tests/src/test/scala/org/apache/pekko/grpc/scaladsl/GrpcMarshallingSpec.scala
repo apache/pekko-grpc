@@ -61,8 +61,7 @@ class GrpcMarshallingSpec extends AnyWordSpec with Matchers {
         headers = immutable.Seq(`Message-Encoding`("gzip")),
         entity = HttpEntity.Chunked(
           GrpcProtocolNative.contentType,
-          TestSource
-            .probe[ChunkStreamPart]
+          TestSource[ChunkStreamPart]()
             .mapMaterializedValue((p: TestPublisher.Probe[ChunkStreamPart]) => {
               sourceProbe.success(p)
               NotUsed
