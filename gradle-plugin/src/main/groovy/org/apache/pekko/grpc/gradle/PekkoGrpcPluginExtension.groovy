@@ -18,7 +18,7 @@ class PekkoGrpcPluginExtension {
 
     static final String PROTOC_PLUGIN_SCALA_VERSION = "2.12"
 
-    static final String GRPC_VERSION = "1.76.1" // checked synced by VersionSyncCheckPlugin
+    static final String GRPC_VERSION = "1.77.0" // checked synced by VersionSyncCheckPlugin
 
     static final String PLUGIN_CODE = 'org.apache.pekko.grpc.gradle'
 
