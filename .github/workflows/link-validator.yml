@@ -8,15 +8,17 @@
 
 name: Link Validator
 
+permissions: {}
+
 on:
-  pull_request:
   workflow_dispatch:
   schedule:
-    - cron:  '0 6 * * 1'
+    - cron: '0 6 * * 1'
 
 jobs:
   validate-links:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
+    if: github.repository == 'apache/pekko-grpc'
     steps:
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
