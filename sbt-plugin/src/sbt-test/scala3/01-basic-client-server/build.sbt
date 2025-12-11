@@ -7,7 +7,7 @@
  * This file is part of the Apache Pekko project, which was derived from Akka.
  */
 
-scalaVersion := "3.3.0"
+scalaVersion := "3.3.7"
 
 scalacOptions += "-Xfatal-warnings"
 
