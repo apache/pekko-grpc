@@ -38,7 +38,7 @@ jobs:
         run: |-
           cp .jvmopts-ci .jvmopts
           sbt +publish
-          sbt ++2.13.17! codegen/publish
+          sbt ++2.13.18! codegen/publish
           sbt ++3.3.7! codegen/publish
         env:
           NEXUS_USER: ${{ secrets.NEXUS_USER }}
