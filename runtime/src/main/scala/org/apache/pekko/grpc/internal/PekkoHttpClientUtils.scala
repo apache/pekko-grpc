@@ -223,7 +223,7 @@ object PekkoHttpClientUtils {
                             trailerPromise.success(trailer)
                             ByteString.empty
                         }
-                        .watchTermination()((_, done) =>
+                        .watchTermination((_, done) =>
                           done.onComplete(_ => trailerPromise.trySuccess(immutable.Seq.empty)))
                     case Strict(_, data) =>
                       val rawTrailers =
