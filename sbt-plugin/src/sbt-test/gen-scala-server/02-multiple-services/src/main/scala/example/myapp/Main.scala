@@ -25,7 +25,7 @@ import example.myapp.helloworld.GreeterServiceImpl
 import example.myapp.helloworld.grpc.GreeterServiceHandler
 
 object Main extends App {
-  implicit val system = ActorSystem()
+  implicit val system: ActorSystem = ActorSystem()
 
   val echoHandler = EchoServiceHandler.partial(new EchoServiceImpl)
   val greeterHandler = GreeterServiceHandler.partial(new GreeterServiceImpl)
@@ -48,6 +48,6 @@ object Main extends App {
     val context = SSLContext.getInstance("TLS")
     context.init(keyManagerFactory.getKeyManagers, null, new SecureRandom)
 
-    new HttpsConnectionContext(context)
+    HttpsConnectionContext.httpsServer(context)
   }
 }

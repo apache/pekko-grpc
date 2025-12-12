@@ -33,7 +33,7 @@ object Main extends App {
   val conf = ConfigFactory
     .parseString("pekko.http.server.preview.enable-http2 = on")
     .withFallback(ConfigFactory.defaultApplication())
-  implicit val sys = ActorSystem("HelloWorld", conf)
+  implicit val sys: ActorSystem = ActorSystem("HelloWorld", conf)
 
   implicit val ec: ExecutionContext = sys.dispatcher
 
@@ -46,7 +46,7 @@ object Main extends App {
     GreeterServiceHandler.withServerReflection(new GreeterServiceImpl())
 
   // Bind service handler servers to localhost:8080
-  val binding = Http().bindAndHandleAsync(
+  val binding = Http().bind(
     greeter,
     interface = "127.0.0.1",
     port = 8080,
