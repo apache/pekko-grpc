@@ -16,7 +16,7 @@ import javax.net.ssl.{ KeyManagerFactory, SSLContext }
 import org.apache.pekko
 import pekko.actor.ActorSystem
 import pekko.grpc.scaladsl.ServiceHandler
-import pekko.http.scaladsl.{ Http, HttpsConnectionContext }
+import pekko.http.scaladsl.{ ConnectionContext, Http }
 
 import example.myapp.echo.EchoServiceImpl
 import example.myapp.echo.grpc.EchoServiceHandler
@@ -48,6 +48,6 @@ object Main extends App {
     val context = SSLContext.getInstance("TLS")
     context.init(keyManagerFactory.getKeyManagers, null, new SecureRandom)
 
-    HttpsConnectionContext.httpsServer(context)
+    ConnectionContext.httpsServer(context)
   }
 }

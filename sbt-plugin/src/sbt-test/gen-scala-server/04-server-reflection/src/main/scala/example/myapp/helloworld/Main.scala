@@ -46,11 +46,8 @@ object Main extends App {
     GreeterServiceHandler.withServerReflection(new GreeterServiceImpl())
 
   // Bind service handler servers to localhost:8080
-  val binding = Http().bind(
-    greeter,
-    interface = "127.0.0.1",
-    port = 8080,
-    connectionContext = HttpConnectionContext())
+  val binding = Http().newServerAt("127.0.0.1", 8080)
+    .bind(greeter)
   // #server-reflection
 
   // report successful binding
