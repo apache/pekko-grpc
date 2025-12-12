@@ -11,5 +11,7 @@ scalaVersion := "2.13.18"
 
 enablePlugins(PekkoGrpcPlugin)
 
+resolvers += Resolver.ApacheMavenSnapshotsRepo
+
 // Don't enable it flat_package globally, but via a package-level option instead (see package.proto)
 pekkoGrpcCodeGeneratorSettings -= "flat_package"

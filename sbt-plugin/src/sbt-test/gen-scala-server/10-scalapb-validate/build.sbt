@@ -14,6 +14,8 @@ scalaVersion := "2.13.18"
 
 enablePlugins(PekkoGrpcPlugin)
 
+resolvers += Resolver.ApacheMavenSnapshotsRepo
+
 libraryDependencies +=
   "com.thesamet.scalapb" %% "scalapb-validate-core" % scalapb.validate.compiler.BuildInfo.version % "protobuf"
 Compile / PB.targets +=
