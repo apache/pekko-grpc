@@ -11,6 +11,8 @@ scalaVersion := "2.13.18"
 
 enablePlugins(PekkoGrpcPlugin)
 
+resolvers += Resolver.ApacheMavenSnapshotsRepo
+
 Compile / pekkoGrpcGeneratedSources := Seq(PekkoGrpc.Server)
 
 //#test

@@ -12,3 +12,5 @@ enablePlugins(ProtocGoPlugin) // enable it first to test possibility of getting 
 scalaVersion := "2.13.18"
 
 enablePlugins(PekkoGrpcPlugin)
+
+resolvers += Resolver.ApacheMavenSnapshotsRepo

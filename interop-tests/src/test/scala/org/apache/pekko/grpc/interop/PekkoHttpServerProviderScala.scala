@@ -94,7 +94,7 @@ object PekkoHttpServerProviderScala extends PekkoHttpServerProvider with Directi
             }
             requestElement
           }
-          .watchTermination()((NotUsed, f) => {
+          .watchTermination((NotUsed, f) => {
             f.foreach(_ => status.trySuccess(Status.OK))
             NotUsed
           })

@@ -40,6 +40,7 @@ import org.apache.commons.math3.distribution.ExponentialDistribution;
 import java.lang.management.ManagementFactory;
 import java.net.InetSocketAddress;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -307,7 +308,11 @@ class LoadClient {
           lastCall.set(System.nanoTime());
           final AtomicReference<ActorRef> requestIngress = new AtomicReference<>();
           Source<Messages.SimpleRequest, NotUsed> requestSource =
-              Source.<Messages.SimpleRequest>actorRef(2, OverflowStrategy.fail())
+              Source.<Messages.SimpleRequest>actorRef(
+		  elem -> Optional.empty(),
+		  elem -> Optional.empty(),
+		  2,
+		  OverflowStrategy.fail())
                   .mapMaterializedValue(ref -> {
                     requestIngress.set(ref);
                     requestIngress.get().tell(simpleRequest, ActorRef.noSender());

@@ -41,6 +41,7 @@ import org.HdrHistogram.HistogramIterationValue;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -207,7 +208,11 @@ public class AsyncClient {
     lastCall.set(System.nanoTime());
     final AtomicReference<ActorRef> requestIngress = new AtomicReference<>();
     Source<SimpleRequest, NotUsed> requestSource =
-        Source.<SimpleRequest> actorRef(2, OverflowStrategy.fail())
+        Source.<SimpleRequest> actorRef(
+	    elem -> Optional.empty(),
+	    elem -> Optional.empty(),
+	    2,
+	    OverflowStrategy.fail())
         .mapMaterializedValue(ref -> {
           requestIngress.set(ref);
           requestIngress.get().tell(request, ActorRef.noSender());
