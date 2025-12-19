@@ -38,4 +38,4 @@ jobs:
       - name: Test
         run: |-
           cp .jvmopts-ci .jvmopts
-          sbt -Dpekko.build.pekko.version=1.5.x -Dpekko.build.pekko.http.version=main test
+          sbt -Dpekko.build.pekko.version=1.x -Dpekko.build.pekko.http.version=1.x test
