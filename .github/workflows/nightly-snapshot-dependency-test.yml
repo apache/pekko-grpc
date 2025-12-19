@@ -6,7 +6,7 @@
 # This file is part of the Apache Pekko project, which was derived from Akka.
 #
 
-name: Nightly Snapshot Dependency Test
+name: Nightly Snapshot Dependency Test (1.x)
 
 on:
   schedule:
@@ -24,12 +24,13 @@ jobs:
         with:
           # we don't know what commit the last tag was it's safer to get entire repo so previousStableVersion resolves
           fetch-depth: 0
+          ref: 1.2.x
           
-      - name: Setup Java 17
+      - name: Setup Java 8
         uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e # v5.1.0
         with:
           distribution: temurin
-          java-version: 17    
+          java-version: 8    
 
       - name: Install sbt
         uses: sbt/setup-sbt@3e125ece5c3e5248e18da9ed8d2cce3d335ec8dd # v1.1.14
@@ -37,4 +38,4 @@ jobs:
       - name: Test
         run: |-
           cp .jvmopts-ci .jvmopts
-          sbt -Dpekko.build.pekko.version=1.3.x -Dpekko.build.pekko.http.version=main test
+          sbt -Dpekko.build.pekko.version=1.5.x -Dpekko.build.pekko.http.version=main test
