@@ -16,7 +16,7 @@ package org.apache.pekko.grpc
 import sbt._
 import Keys._
 import sbtheader.{ CommentCreator, HeaderPlugin, NewLine }
-import org.apache.commons.lang3.StringUtils
+import org.apache.commons.lang3.Strings
 
 object CopyrightHeader extends AutoPlugin {
   import HeaderPlugin.autoImport._
@@ -120,15 +120,15 @@ object CopyrightHeader extends AutoPlugin {
   })
 
   private def isGenerated(text: String): Boolean =
-    StringUtils.contains(text, "DO NOT EDIT DIRECTLY")
+    Strings.CS.contains(text, "DO NOT EDIT DIRECTLY")
 
   private def isApacheCopyrighted(text: String): Boolean =
-    StringUtils.containsIgnoreCase(text, "licensed to the apache software foundation (asf)") ||
-    StringUtils.containsIgnoreCase(text, "www.apache.org/licenses/license-2.0") ||
-    StringUtils.contains(text, "Apache-2.0")
+    Strings.CI.contains(text, "licensed to the apache software foundation (asf)") ||
+    Strings.CI.contains(text, "www.apache.org/licenses/license-2.0") ||
+    Strings.CS.contains(text, "Apache-2.0")
 
   private def isLightbendCopyrighted(text: String): Boolean =
-    StringUtils.containsIgnoreCase(text, "lightbend inc.")
+    Strings.CI.contains(text, "lightbend inc.")
 
   private def isOnlyLightbendCopyrightAnnotated(text: String): Boolean =
     isLightbendCopyrighted(text) && !isApacheCopyrighted(text)
