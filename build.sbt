@@ -182,7 +182,7 @@ lazy val sbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
       val p3 = (runtime / publishLocal).value
       val p4 = (interopTests / publishLocal).value
     },
-    scriptedSbt := "1.11.7",
+    scriptedSbt := "1.12.0",
     scriptedBufferLog := false)
   .settings(
     crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
