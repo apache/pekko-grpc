@@ -17,14 +17,7 @@ import org.apache.pekko
 import pekko.grpc.GrpcProtocol._
 import pekko.http.scaladsl.model.HttpEntity.{ Chunk, ChunkStreamPart, LastChunk }
 import pekko.http.scaladsl.model.{
-  AttributeKey,
-  AttributeKeys,
-  HttpEntity,
-  HttpHeader,
-  HttpProtocols,
-  HttpResponse,
-  StatusCodes,
-  Trailer
+  AttributeKey, AttributeKeys, HttpEntity, HttpHeader, HttpProtocols, HttpResponse, StatusCodes, Trailer
 }
 import pekko.util.ByteString
 

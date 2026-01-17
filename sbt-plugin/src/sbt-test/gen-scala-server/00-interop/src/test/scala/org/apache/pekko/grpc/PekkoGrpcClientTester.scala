@@ -18,12 +18,7 @@ import pekko.actor.ActorSystem
 import pekko.stream.scaladsl.{ Keep, Sink, Source }
 import com.google.protobuf.ByteString
 import io.grpc.testing.integration.messages.{
-  Payload,
-  ResponseParameters,
-  SimpleRequest,
-  StreamingOutputCallRequest,
-  StreamingOutputCallResponse,
-  _
+  Payload, ResponseParameters, SimpleRequest, StreamingOutputCallRequest, StreamingOutputCallResponse, _
 }
 import io.grpc.testing.integration.empty.Empty
 import io.grpc.testing.integration2.{ ChannelBuilder, ClientTester, Settings }

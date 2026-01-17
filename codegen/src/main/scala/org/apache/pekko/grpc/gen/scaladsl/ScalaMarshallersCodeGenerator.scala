@@ -31,7 +31,8 @@ trait ScalaMarshallersCodeGenerator extends ScalaCodeGenerator {
 
   override def suggestedDependencies =
     (scalaBinaryVersion: CodeGenerator.ScalaBinaryVersion) =>
-      Artifact("org.apache.pekko", s"pekko-http_${scalaBinaryVersion.prefix}", BuildInfo.pekkoHttpVersion) +: super
+      Artifact("org.apache.pekko", s"pekko-http_${scalaBinaryVersion.prefix}", BuildInfo.pekkoHttpVersion) +:
+      super
         .suggestedDependencies(scalaBinaryVersion)
 
   def generateMarshalling(
