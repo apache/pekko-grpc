@@ -17,5 +17,6 @@ javacOptions += "-Xdoclint:all"
 
 pekkoGrpcGeneratedLanguages := Seq(PekkoGrpc.Java)
 
-libraryDependencies += "com.google.protobuf" % "protobuf-java" % org.apache.pekko.grpc.gen.BuildInfo
+libraryDependencies += "com.google.protobuf" % "protobuf-java" %
+org.apache.pekko.grpc.gen.BuildInfo
   .googleProtobufJavaVersion % "protobuf"

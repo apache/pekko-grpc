@@ -181,7 +181,8 @@ object PekkoHttpClientUtils {
         val scheme = if (settings.useTls) "https" else "http"
         val httpRequest = GrpcRequestHelpers(
           Uri(
-            s"${scheme}://${settings.overrideAuthority.getOrElse(settings.serviceName)}/" + descriptor.getFullMethodName),
+            s"${scheme}://${settings.overrideAuthority.getOrElse(settings.serviceName)}/" +
+            descriptor.getFullMethodName),
           GrpcEntityHelpers.metadataHeaders(headers.entries),
           source)
         responseToSource(singleRequest(httpRequest), deserializer)

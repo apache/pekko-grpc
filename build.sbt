@@ -217,20 +217,21 @@ lazy val interopTests = Project(id = "interop-tests", base = file("interop-tests
   .settings(inConfig(Test)(Seq(
     reStart / mainClass := (Test / run / mainClass).value, {
       import spray.revolver.Actions._
-      reStart := Def
-        .inputTask {
-          restartApp(
-            streams.value,
-            reLogTag.value,
-            thisProjectRef.value,
-            reForkOptions.value,
-            (reStart / mainClass).value,
-            (reStart / fullClasspath).value,
-            reStartArgs.value,
-            startArgsParser.parsed)
-        }
-        .dependsOn(Compile / products)
-        .evaluated
+      reStart :=
+        Def
+          .inputTask {
+            restartApp(
+              streams.value,
+              reLogTag.value,
+              thisProjectRef.value,
+              reForkOptions.value,
+              (reStart / mainClass).value,
+              (reStart / fullClasspath).value,
+              reStartArgs.value,
+              startArgsParser.parsed)
+          }
+          .dependsOn(Compile / products)
+          .evaluated
     }))).enablePlugins(NoPublish)
 
 lazy val benchmarks = Project(id = "benchmarks", base = file("benchmarks"))
@@ -270,12 +271,17 @@ lazy val docs = Project(id = "docs", base = file("docs"))
       "scaladoc.scala.base_url" -> "https://www.scala-lang.org/api/current/",
       // Apache Pekko
       "extref.pekko.base_url" -> s"https://pekko.apache.org/docs/pekko/${Dependencies.Versions.pekkoBinary}/%s",
-      "scaladoc.org.apache.pekko.base_url" -> s"https://pekko.apache.org/api/pekko/${Dependencies.Versions.pekkoBinary}/",
-      "javadoc.org.apache.pekko.base_url" -> s"https://pekko.apache.org/japi/pekko/${Dependencies.Versions.pekkoBinary}/",
+      "scaladoc.org.apache.pekko.base_url" ->
+      s"https://pekko.apache.org/api/pekko/${Dependencies.Versions.pekkoBinary}/",
+      "javadoc.org.apache.pekko.base_url" ->
+      s"https://pekko.apache.org/japi/pekko/${Dependencies.Versions.pekkoBinary}/",
       // Apache Pekko HTTP
-      "extref.pekko-http.base_url" -> s"https://pekko.apache.org/docs/pekko-http/${Dependencies.Versions.pekkoHttpBinary}/%s",
-      "scaladoc.org.apache.pekko.http.base_url" -> s"https://pekko.apache.org/api/pekko-http/${Dependencies.Versions.pekkoHttpBinary}/",
-      "javadoc.org.apache.pekko.http.base_url" -> s"https://pekko.apache.org/japi/pekko-http/${Dependencies.Versions.pekkoHttpBinary}/",
+      "extref.pekko-http.base_url" ->
+      s"https://pekko.apache.org/docs/pekko-http/${Dependencies.Versions.pekkoHttpBinary}/%s",
+      "scaladoc.org.apache.pekko.http.base_url" ->
+      s"https://pekko.apache.org/api/pekko-http/${Dependencies.Versions.pekkoHttpBinary}/",
+      "javadoc.org.apache.pekko.http.base_url" ->
+      s"https://pekko.apache.org/japi/pekko-http/${Dependencies.Versions.pekkoHttpBinary}/",
       // Apache Pekko gRPC
       "scaladoc.org.apache.pekko.grpc.base_url" -> s"/${(Preprocess / siteSubdirName).value}/",
       "javadoc.org.apache.pekko.grpc.base_url" -> "" // @apidoc links to Scaladoc

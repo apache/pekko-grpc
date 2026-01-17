@@ -46,7 +46,8 @@ object WebHandler {
         `Accept-Encoding`.name))
 
   private[grpc] def isCorsPreflightRequest(r: jmodel.HttpRequest): Boolean =
-    r.method == HttpMethods.OPTIONS && r.getHeader(classOf[Origin]).isPresent && r
+    r.method == HttpMethods.OPTIONS && r.getHeader(classOf[Origin]).isPresent &&
+    r
       .getHeader(classOf[`Access-Control-Request-Method`])
       .isPresent
 
