@@ -11,8 +11,6 @@ scalacOptions += "-Xfatal-warnings"
 
 scalaVersion := "2.13.18"
 
-resolvers += Resolver.ApacheMavenSnapshotsRepo
-
 enablePlugins(PekkoGrpcPlugin)
 
 assembly / assemblyMergeStrategy := {

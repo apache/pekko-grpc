@@ -11,8 +11,6 @@ organization := "org.apache.pekko"
 
 scalaVersion := "2.13.18"
 
-resolvers += Resolver.ApacheMavenSnapshotsRepo
-
 val grpcVersion = "1.77.1" // checked synced by VersionSyncCheckPlugin
 
 libraryDependencies ++= Seq(
