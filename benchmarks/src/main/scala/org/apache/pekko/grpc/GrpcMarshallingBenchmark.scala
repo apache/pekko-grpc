@@ -19,7 +19,7 @@ import pekko.grpc.internal.{ GrpcProtocolNative, Identity }
 import pekko.grpc.scaladsl.{ GrpcMarshalling, ScalapbProtobufSerializer }
 import pekko.http.scaladsl.model.HttpResponse
 import pekko.stream.scaladsl.Source
-import grpc.reflection.v1alpha.reflection._
+import grpc.reflection.v1.reflection._
 import org.openjdk.jmh.annotations._
 
 // Microbenchmarks for GrpcMarshalling.

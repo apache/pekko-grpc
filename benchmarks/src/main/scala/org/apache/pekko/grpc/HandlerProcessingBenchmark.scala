@@ -36,7 +36,7 @@ import pekko.stream.scaladsl.Source
 
 import org.openjdk.jmh.annotations._
 
-import grpc.reflection.v1alpha.reflection._
+import grpc.reflection.v1.reflection._
 
 class HandlerProcessingBenchmark extends CommonBenchmark {
   implicit val system: ActorSystem = ActorSystem("bench")

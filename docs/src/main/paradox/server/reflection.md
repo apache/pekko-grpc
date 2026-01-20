@@ -4,7 +4,7 @@
 
 This feature is **experimental** [Issue #850](https://github.com/akka/akka-grpc/issues/850).
 
-It implements version v1alpha of the [upstream standard](https://github.com/grpc/grpc/blob/master/src/proto/grpc/reflection/v1alpha/reflection.proto),
+It implements version v1 of the [upstream standard](https://github.com/grpc/grpc/blob/master/src/proto/grpc/reflection/v1/reflection.proto),
 so we might expect subsequent versions of the service to emerge. Also,
 the Java/Scala API's to enable this feature may still change in further
 versions of Pekko gRPC, and future versions of this feature may not work with

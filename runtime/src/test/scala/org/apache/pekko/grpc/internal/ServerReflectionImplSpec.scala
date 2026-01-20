@@ -17,8 +17,8 @@ import org.apache.pekko
 import pekko.actor.ActorSystem
 import pekko.stream.scaladsl.{ Sink, Source }
 import pekko.testkit.TestKit
-import grpc.reflection.v1alpha.reflection.ServerReflectionRequest.MessageRequest
-import grpc.reflection.v1alpha.reflection.{ ServerReflection, ServerReflectionRequest }
+import grpc.reflection.v1.reflection.ServerReflectionRequest.MessageRequest
+import grpc.reflection.v1.reflection.{ ServerReflection, ServerReflectionRequest }
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
@@ -37,8 +37,8 @@ class ServerReflectionImplSpec
       splitNext("foo.bar.baz") should be(("foo", "bar.baz"))
     }
     "find a symbol" in {
-      containsSymbol("grpc.reflection.v1alpha.ServerReflection", ServerReflection.descriptor) should be(true)
-      containsSymbol("grpc.reflection.v1alpha.Foo", ServerReflection.descriptor) should be(false)
+      containsSymbol("grpc.reflection.v1.ServerReflection", ServerReflection.descriptor) should be(true)
+      containsSymbol("grpc.reflection.v1.Foo", ServerReflection.descriptor) should be(false)
       containsSymbol("foo.Foo", ServerReflection.descriptor) should be(false)
     }
   }
@@ -46,7 +46,7 @@ class ServerReflectionImplSpec
   "The Server Reflection implementation" should {
     "retrieve server reflection info" in {
       val serverReflectionRequest = ServerReflectionRequest(messageRequest =
-        MessageRequest.FileByFilename("grpc/reflection/v1alpha/reflection.proto"))
+        MessageRequest.FileByFilename("grpc/reflection/v1/reflection.proto"))
 
       val serverReflectionResponse = ServerReflectionImpl(Seq(ServerReflection.descriptor), List.empty[String])
         .serverReflectionInfo(Source.single(serverReflectionRequest))
@@ -61,7 +61,7 @@ class ServerReflectionImplSpec
 
     "not retrieve reflection info for an unknown proto file name" in {
       val serverReflectionRequest =
-        ServerReflectionRequest(messageRequest = MessageRequest.FileByFilename("grpc/reflection/v1alpha/unknown.proto"))
+        ServerReflectionRequest(messageRequest = MessageRequest.FileByFilename("grpc/reflection/v1/unknown.proto"))
 
       val serverReflectionResponse = ServerReflectionImpl(Seq(ServerReflection.descriptor), List.empty[String])
         .serverReflectionInfo(Source.single(serverReflectionRequest))
