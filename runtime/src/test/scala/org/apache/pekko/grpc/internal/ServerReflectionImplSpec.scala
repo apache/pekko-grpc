@@ -17,8 +17,8 @@ import org.apache.pekko
 import pekko.actor.ActorSystem
 import pekko.stream.scaladsl.{ Sink, Source }
 import pekko.testkit.TestKit
-import grpc.reflection.v1.reflection.ServerReflectionRequest.MessageRequest
-import grpc.reflection.v1.reflection.{ ServerReflection, ServerReflectionRequest }
+import io.grpc.reflection.v1.reflection.ServerReflectionRequest.MessageRequest
+import io.grpc.reflection.v1.reflection.{ ServerReflection, ServerReflectionRequest }
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
