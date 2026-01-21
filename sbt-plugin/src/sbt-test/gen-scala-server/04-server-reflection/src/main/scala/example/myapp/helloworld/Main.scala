@@ -31,7 +31,7 @@ import example.myapp.helloworld.grpc._
 
 object Main extends App {
   val conf = ConfigFactory
-    .parseString("pekko.http.server.preview.enable-http2 = on")
+    .parseString("pekko.http.server.enable-http2 = on")
     .withFallback(ConfigFactory.defaultApplication())
   implicit val sys: ActorSystem = ActorSystem("HelloWorld", conf)
 

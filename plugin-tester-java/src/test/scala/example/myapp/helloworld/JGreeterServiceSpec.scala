@@ -38,7 +38,7 @@ class JGreeterServiceSpec extends Matchers with AnyWordSpecLike with BeforeAndAf
   implicit val serverSystem: ActorSystem = {
     // important to enable HTTP/2 in server ActorSystem's config
     val conf = ConfigFactory
-      .parseString("pekko.http.server.preview.enable-http2 = on")
+      .parseString("pekko.http.server.enable-http2 = on")
       .withFallback(ConfigFactory.defaultApplication())
     val sys = ActorSystem("GreeterServer", conf)
     // make sure servers are bound before using client

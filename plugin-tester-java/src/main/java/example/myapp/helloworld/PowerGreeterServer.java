@@ -29,7 +29,7 @@ class PowerGreeterServer {
   public static void main(String[] args) throws Exception {
     // important to enable HTTP/2 in ActorSystem's config
     Config conf =
-        ConfigFactory.parseString("pekko.http.server.preview.enable-http2 = on")
+        ConfigFactory.parseString("pekko.http.server.enable-http2 = on")
             .withFallback(ConfigFactory.defaultApplication());
 
     // ActorSystem Boot
