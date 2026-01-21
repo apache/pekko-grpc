@@ -19,7 +19,7 @@ import org.apache.pekko
 import pekko.NotUsed
 import pekko.annotation.InternalApi
 import pekko.stream.scaladsl._
-import _root_.grpc.reflection.v1alpha.reflection._
+import io.grpc.reflection.v1.reflection._
 
 import java.util.concurrent.ConcurrentHashMap
 import scala.collection.concurrent

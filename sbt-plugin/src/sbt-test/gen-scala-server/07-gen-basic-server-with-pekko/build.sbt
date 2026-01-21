@@ -11,8 +11,6 @@ scalaVersion := "2.13.18"
 
 enablePlugins(PekkoGrpcPlugin)
 
-resolvers += Resolver.ApacheMavenSnapshotsRepo
-
 assembly / assemblyMergeStrategy := {
   // https://github.com/akka/akka/issues/29456
   case PathList("google", "protobuf", _*) => MergeStrategy.discard
