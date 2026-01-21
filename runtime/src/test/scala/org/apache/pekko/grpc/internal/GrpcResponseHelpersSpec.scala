@@ -17,7 +17,7 @@
 
 package org.apache.pekko.grpc.internal
 
-import grpc.reflection.v1alpha.reflection.{ ServerReflection, ServerReflectionResponse }
+import io.grpc.reflection.v1.reflection.{ ServerReflection, ServerReflectionResponse }
 import io.grpc.Status
 import org.apache.pekko.actor.ActorSystem
 import org.apache.pekko.grpc.GrpcProtocol

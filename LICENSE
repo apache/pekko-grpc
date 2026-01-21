@@ -235,7 +235,7 @@ Copyright (C) Lightbend Inc. <https://www.lightbend.com>
 Pekko gRPC contains code from grpc-java <https://github.com/grpc/grpc-java>
 distributed under the Apache 2.0 license.
 
-- runtime/src/main/protobuf/grpc/reflection/v1alpha/reflection.proto
+- runtime/src/main/protobuf/grpc/reflection/v1/reflection.proto
 - runtime/src/main/scala/org/apache/pekko/grpc/scaladsl/headers/PercentEncoding.scala
 - runtime/src/test/scala/org/apache/pekko/grpc/scaladsl/headers/HeadersSpec.scala
 - interop-tests/src/main/java/io/grpc/testing/integration2/TestServiceClient.java
