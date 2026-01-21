@@ -78,14 +78,7 @@ lazy val codegen = Project(id = "codegen", base = file("codegen"))
       case _                                                        => MergeStrategy.deduplicate
     },
     crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
-    scalaVersion := scala212,
-    Compile / unmanagedSourceDirectories ++= {
-      if (scalaBinaryVersion.value == "2.12") {
-        Seq.empty
-      } else {
-        Seq(project.base / "src" / "main" / "scala-2.13+")
-      }
-    })
+    scalaVersion := scala212)
   .settings(addArtifact(Compile / assembly / artifact, assembly))
   .settings(addArtifact(sbt.Artifact(pekkoGrpcCodegenId, "bat", "bat", "bat"), mkBatAssemblyTask))
 
