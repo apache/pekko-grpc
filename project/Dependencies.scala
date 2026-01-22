@@ -60,6 +60,7 @@ object Dependencies {
     val grpcInteropTesting = ("io.grpc" % "grpc-interop-testing" % Versions.grpc)
       .exclude("io.grpc", "grpc-alts")
       .exclude("io.grpc", "grpc-xds")
+      .exclude("io.opentelemetry", "opentelemetry-exporter-prometheus")
 
     val slf4jApi = "org.slf4j" % "slf4j-api" % "2.0.17"
     val mavenPluginApi = "org.apache.maven" % "maven-plugin-api" % Versions.maven
