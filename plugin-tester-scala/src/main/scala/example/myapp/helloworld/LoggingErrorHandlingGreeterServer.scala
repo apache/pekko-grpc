@@ -34,7 +34,7 @@ import scala.util.control.NonFatal
 object LoggingErrorHandlingGreeterServer {
   def main(args: Array[String]): Unit = {
     val conf = ConfigFactory
-      .parseString("pekko.http.server.preview.enable-http2 = on")
+      .parseString("pekko.http.server.enable-http2 = on")
       .withFallback(ConfigFactory.defaultApplication())
     val system = ActorSystem("Server", conf)
     new LoggingErrorHandlingGreeterServer(system).run()

@@ -64,7 +64,7 @@ public class PekkoGrpcServerJava extends GrpcServer<Tuple2<ActorSystem, ServerBi
     ActorSystem sys =
         ActorSystem.create(
             "pekko-grpc-server-java",
-            ConfigFactory.parseString("pekko.http.server.preview.enable-http2 = on"));
+            ConfigFactory.parseString("pekko.http.server.enable-http2 = on"));
     Materializer mat = SystemMaterializer.get(sys).materializer();
 
     Function<HttpRequest, CompletionStage<HttpResponse>> testService =

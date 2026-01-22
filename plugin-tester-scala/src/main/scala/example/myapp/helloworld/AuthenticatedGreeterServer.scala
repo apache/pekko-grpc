@@ -29,7 +29,7 @@ object AuthenticatedGreeterServer {
     // Important: enable HTTP/2 in ActorSystem's config
     // We do it here programmatically, but you can also set it in the application.conf
     val conf = ConfigFactory
-      .parseString("pekko.http.server.preview.enable-http2 = on")
+      .parseString("pekko.http.server.enable-http2 = on")
       .withFallback(ConfigFactory.defaultApplication())
     val system = ActorSystem("HelloWorld", conf)
     new AuthenticatedGreeterServer(system).run()

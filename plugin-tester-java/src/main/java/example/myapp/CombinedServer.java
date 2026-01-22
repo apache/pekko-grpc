@@ -44,7 +44,7 @@ import example.myapp.echo.grpc.*;
 class CombinedServer {
   public static void main(String[] args) {
       // important to enable HTTP/2 in ActorSystem's config
-      Config conf = ConfigFactory.parseString("pekko.http.server.preview.enable-http2 = on")
+      Config conf = ConfigFactory.parseString("pekko.http.server.enable-http2 = on")
         .withFallback(ConfigFactory.defaultApplication());
       ActorSystem sys = ActorSystem.create("HelloWorld", conf);
       Materializer mat = SystemMaterializer.get(sys).materializer();

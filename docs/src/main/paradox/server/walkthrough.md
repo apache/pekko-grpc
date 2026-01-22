@@ -196,7 +196,7 @@ Java
 It's important to enable HTTP/2 in Pekko HTTP in the configuration of the `ActorSystem` by setting
 
 ```
-pekko.http.server.preview.enable-http2 = on
+pekko.http.server.enable-http2 = on
 ```
 
 In the example this was done from the `main` method, but you could also do this from within your `application.conf`.
