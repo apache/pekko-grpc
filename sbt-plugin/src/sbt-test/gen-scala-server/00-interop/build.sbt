@@ -11,7 +11,7 @@ organization := "org.apache.pekko"
 
 scalaVersion := "2.13.18"
 
-val grpcVersion = "1.77.1" // checked synced by VersionSyncCheckPlugin
+val grpcVersion = "1.78.0" // checked synced by VersionSyncCheckPlugin
 
 libraryDependencies ++= Seq(
   "io.grpc" % "grpc-interop-testing" % grpcVersion % "protobuf-src",
