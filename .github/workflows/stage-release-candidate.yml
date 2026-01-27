@@ -214,7 +214,7 @@ jobs:
       - name: Install sbt
         uses: sbt/setup-sbt@a627500d27445f8c5021755a439829b6e78e3358 # v1.1.15
 
-      # We intentionally do not use the Coursier cache for release candiates,
+      # We intentionally do not use the Coursier cache for release candidates,
       # to reduce attack surface
 
       # Need to check the Scala 2.13 and Scala 3.3 versions used below
