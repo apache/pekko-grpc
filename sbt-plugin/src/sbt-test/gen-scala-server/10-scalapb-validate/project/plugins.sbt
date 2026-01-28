@@ -9,4 +9,4 @@
 
 addSbtPlugin("org.apache.pekko" % "pekko-grpc-sbt-plugin" % sys.props("project.version"))
 
-libraryDependencies ++= Seq("com.thesamet.scalapb" %% "scalapb-validate-codegen" % "0.3.0")
+libraryDependencies ++= Seq("com.thesamet.scalapb" %% "scalapb-validate-codegen" % "0.3.6")

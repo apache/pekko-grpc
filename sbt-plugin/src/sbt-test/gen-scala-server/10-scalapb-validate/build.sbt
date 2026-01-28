@@ -14,6 +14,9 @@ scalaVersion := "2.13.18"
 
 enablePlugins(PekkoGrpcPlugin)
 
+// ScalaPB Validate sbt plugin does not have a release that supports ScalaPB 1.0.0
+evictionErrorLevel := Level.Info
+
 libraryDependencies +=
   "com.thesamet.scalapb" %% "scalapb-validate-core" % scalapb.validate.compiler.BuildInfo.version % "protobuf"
 Compile / PB.targets +=
