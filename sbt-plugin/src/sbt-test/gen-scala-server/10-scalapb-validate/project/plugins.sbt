@@ -9,4 +9,7 @@
 
 addSbtPlugin("org.apache.pekko" % "pekko-grpc-sbt-plugin" % sys.props("project.version"))
 
+// ScalaPB Validate sbt plugin does not have a release that supports ScalaPB 1.0.0
+Global / evictionErrorLevel := Level.Info
+
 libraryDependencies ++= Seq("com.thesamet.scalapb" %% "scalapb-validate-codegen" % "0.3.6")
