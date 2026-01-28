@@ -50,7 +50,7 @@ object Service {
 
     Service(
       fileDesc.fileDescriptorObject.fullName + ".javaDescriptor",
-      fileDesc.scalaPackage.fullName,
+      trimRootPackage(fileDesc.scalaPackage.fullName),
       serviceClassName,
       (if (fileDesc.getPackage.isEmpty) "" else fileDesc.getPackage + ".") + serviceDescriptor.getName,
       serviceDescriptor.getMethods.asScala.map(method => Method(method)).toList,
@@ -59,5 +59,11 @@ object Service {
       serviceDescriptor.getOptions,
       serviceDescriptor.comment,
       new ScalaCompatConstants(fileDesc.emitScala3Sources))
+  }
+
+  private def trimRootPackage(packageName: String): String = {
+    val prefix = "_root_."
+    if (packageName.startsWith(prefix)) packageName.substring(prefix.length)
+    else packageName
   }
 }
