@@ -77,7 +77,7 @@ object Dependencies {
   }
 
   object Runtime {
-    val logback = "ch.qos.logback" % "logback-classic" % "1.5.25" % "runtime"
+    val logback = "ch.qos.logback" % "logback-classic" % "1.5.26" % "runtime"
   }
 
   object Protobuf {
