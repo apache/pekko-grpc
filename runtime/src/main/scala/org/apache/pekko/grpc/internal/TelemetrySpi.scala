@@ -15,7 +15,12 @@ package org.apache.pekko.grpc.internal
 
 import org.apache.pekko
 import pekko.actor.{
-  ActorSystem, ClassicActorSystemProvider, ExtendedActorSystem, Extension, ExtensionId, ExtensionIdProvider
+  ActorSystem,
+  ClassicActorSystemProvider,
+  ExtendedActorSystem,
+  Extension,
+  ExtensionId,
+  ExtensionIdProvider
 }
 import pekko.annotation.{ InternalApi, InternalStableApi }
 import pekko.http.javadsl.model.HttpRequest
