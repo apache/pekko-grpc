@@ -22,11 +22,19 @@ import pekko.http.javadsl.server.Route
 
 import java.util.function.Supplier
 
+/**
+ * Provides directives to support serving of gRPC services.
+ */
 object GrpcDirectives {
 
   import pekko.grpc.scaladsl.{ GrpcDirectives => G }
   import pekko.http.javadsl.server.directives.RouteAdapter
 
+  /**
+   * Wraps the inner route, passing only standard gRPC (i.e. not grpc-web) requests.
+   *
+   * @since 2.0.0
+   */
   def grpc(inner: Supplier[Route]): Route =
     RouteAdapter {
       G.grpc {
@@ -36,6 +44,11 @@ object GrpcDirectives {
       }
     }
 
+  /**
+   * Wraps the inner route, passing only gRPC-Web requests.
+   *
+   * @since 2.0.0
+   */
   def grpcWeb(inner: Supplier[Route]): Route =
     RouteAdapter {
       G.grpcWeb {
@@ -45,6 +58,13 @@ object GrpcDirectives {
       }
     }
 
+  /**
+   * Wraps the inner route, passing requests for all gRPC protocols.
+   *
+   * Unlike a combined grpc | grpcWeb directive, this will provide a single rejection specifying all supported protocols.
+   *
+   * @since 2.0.0
+   */
   def grpcAll(inner: Supplier[Route]): Route =
     RouteAdapter {
       G.grpcAll {

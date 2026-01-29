@@ -31,11 +31,15 @@ object GrpcDirectives {
 
   /**
    * Wraps the inner route, passing only standard gRPC (i.e. not grpc-web) requests.
+   *
+   * @since 2.0.0
    */
   def grpc: Directive0 = grpc(GrpcProtocolNative)
 
   /**
    * Wraps the inner route, passing only gRPC-Web requests.
+   *
+   * @since 2.0.0
    */
   def grpcWeb: Directive0 = grpc(GrpcProtocolWeb, GrpcProtocolWebText)
 
@@ -43,6 +47,8 @@ object GrpcDirectives {
    * Wraps the inner route, passing requests for all gRPC protocols.
    *
    * Unlike a combined grpc | grpcWeb directive, this will provide a single rejection specifying all supported protocols.
+   *
+   * @since 2.0.0
    */
   def grpcAll: Directive0 = grpc(GrpcProtocolNative, GrpcProtocolWeb, GrpcProtocolWebText)
 
