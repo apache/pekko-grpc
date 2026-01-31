@@ -32,11 +32,11 @@ jobs:
           # we don't know what commit the last tag was it's safer to get entire repo so previousStableVersion resolves
           fetch-depth: 0
           
-      - name: Setup Java 8
+      - name: Setup Java 17
         uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e # v5.1.0
         with:
           distribution: temurin
-          java-version: 8    
+          java-version: 17
 
       - name: Install sbt
         uses: sbt/setup-sbt@a627500d27445f8c5021755a439829b6e78e3358 # v1.1.15
