@@ -54,9 +54,9 @@ jobs:
           cp -r docs/target/paradox/site/main/ target/nightly-docs/docs/pekko-grpc/2.0.0-M1/docs
           cp -r docs/target/paradox/site/main/ target/nightly-docs/docs/pekko-grpc/2.0/docs
           rm -r docs/target/paradox/site/main/
-          cp -r target/scala-2.12/unidoc target/nightly-docs/docs/pekko-grpc/2.0.0-M1/api
-          cp -r target/scala-2.12/unidoc target/nightly-docs/docs/pekko-grpc/2.0/api
-          rm -r target/scala-2.12/unidoc
+          cp -r target/scala-2.13/unidoc target/nightly-docs/docs/pekko-grpc/2.0.0-M1/api
+          cp -r target/scala-2.13/unidoc target/nightly-docs/docs/pekko-grpc/2.0/api
+          rm -r target/scala-2.13/unidoc
 
       - name: Upload 2.0.0-M1 docs
         uses: ./.github/actions/sync-nightlies
