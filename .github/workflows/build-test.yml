@@ -40,7 +40,7 @@ jobs:
         uses: sbt/setup-sbt@06192244f17880c9bf69ccd8de5b2e8785822be5 # v1.1.17
 
       - name: Cache Coursier cache
-        uses: coursier/cache-action@c5ca79321d170b8a18c288d9cadc2a6037166d0f # v6.4.8.0.0
+        uses: coursier/cache-action@e47d7d35a0d3a2c7f649ca5c63dfc2bbfaa002e7 # v6.4.8.0.1
 
       - name: Binary-compatibility check
         run: |-
@@ -67,7 +67,7 @@ jobs:
         uses: sbt/setup-sbt@06192244f17880c9bf69ccd8de5b2e8785822be5 # v1.1.17
 
       - name: Cache Coursier cache
-        uses: coursier/cache-action@c5ca79321d170b8a18c288d9cadc2a6037166d0f # v6.4.8.0.0
+        uses: coursier/cache-action@e47d7d35a0d3a2c7f649ca5c63dfc2bbfaa002e7 # v6.4.8.0.1
 
       - name: Compile benchmarks
         run: |-
@@ -101,7 +101,7 @@ jobs:
         uses: sbt/setup-sbt@06192244f17880c9bf69ccd8de5b2e8785822be5 # v1.1.17
 
       - name: Cache Coursier cache
-        uses: coursier/cache-action@c5ca79321d170b8a18c288d9cadc2a6037166d0f # v6.4.8.0.0
+        uses: coursier/cache-action@e47d7d35a0d3a2c7f649ca5c63dfc2bbfaa002e7 # v6.4.8.0.1
 
       - name: Compile and test for JDK ${{ matrix.JAVA_VERSION }}, Scala ${{ matrix.SCALA_VERSION }}
         run: |-
@@ -146,7 +146,7 @@ jobs:
         run: go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.32.0
 
       - name: Cache Coursier cache
-        uses: coursier/cache-action@c5ca79321d170b8a18c288d9cadc2a6037166d0f # v6.4.8.0.0
+        uses: coursier/cache-action@e47d7d35a0d3a2c7f649ca5c63dfc2bbfaa002e7 # v6.4.8.0.1
 
       - name: Scripted ${{ matrix.test-set }}
         run: cp .jvmopts-ci .jvmopts && sbt ++${{ matrix.scala-version }}.* "sbt-plugin/scripted ${{ matrix.test-set }}/*"
@@ -170,7 +170,7 @@ jobs:
         uses: sbt/setup-sbt@06192244f17880c9bf69ccd8de5b2e8785822be5 # v1.1.17
 
       - name: Cache Coursier cache
-        uses: coursier/cache-action@c5ca79321d170b8a18c288d9cadc2a6037166d0f # v6.4.8.0.0
+        uses: coursier/cache-action@e47d7d35a0d3a2c7f649ca5c63dfc2bbfaa002e7 # v6.4.8.0.1
 
       - name: Gather version
         run: |-
@@ -229,7 +229,7 @@ jobs:
         uses: sbt/setup-sbt@06192244f17880c9bf69ccd8de5b2e8785822be5 # v1.1.17
 
       - name: Cache Coursier cache
-        uses: coursier/cache-action@c5ca79321d170b8a18c288d9cadc2a6037166d0f # v6.4.8.0.0
+        uses: coursier/cache-action@e47d7d35a0d3a2c7f649ca5c63dfc2bbfaa002e7 # v6.4.8.0.1
 
       - name: Gather version
         run: |-
@@ -278,7 +278,7 @@ jobs:
         uses: sbt/setup-sbt@06192244f17880c9bf69ccd8de5b2e8785822be5 # v1.1.17
 
       - name: Cache Coursier cache
-        uses: coursier/cache-action@c5ca79321d170b8a18c288d9cadc2a6037166d0f # v6.4.8.0.0
+        uses: coursier/cache-action@e47d7d35a0d3a2c7f649ca5c63dfc2bbfaa002e7 # v6.4.8.0.1
 
       - name: Build Paradox Docs
         run: |-
