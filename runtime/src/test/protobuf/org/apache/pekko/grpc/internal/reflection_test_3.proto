@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package org.apache.pekko.grpc.internal;
+
+import "org/apache/pekko/grpc/internal/reflection_test_4.proto";
+
+message MyMessage3 {
+  MyMessage4 field1 = 1;
+}
