@@ -15,15 +15,15 @@ package org.apache.pekko.grpc.internal
 
 import org.apache.pekko
 import pekko.actor.ActorSystem
+import pekko.grpc.internal.reflection_test_1.ReflectionTest1Proto
+import pekko.grpc.internal.reflection_test_2.ReflectionTest2Proto
+import pekko.grpc.internal.reflection_test_3.ReflectionTest3Proto
+import pekko.grpc.internal.reflection_test_4.ReflectionTest4Proto
 import pekko.stream.scaladsl.{ Sink, Source }
 import pekko.testkit.TestKit
 import com.google.protobuf.descriptor.FileDescriptorProto
 import io.grpc.reflection.v1.reflection.ServerReflectionRequest.MessageRequest
 import io.grpc.reflection.v1.reflection.{ ServerReflection, ServerReflectionRequest, ServerReflectionResponse }
-import org.apache.pekko.grpc.internal.reflection_test_1.ReflectionTest1Proto
-import org.apache.pekko.grpc.internal.reflection_test_2.ReflectionTest2Proto
-import org.apache.pekko.grpc.internal.reflection_test_3.ReflectionTest3Proto
-import org.apache.pekko.grpc.internal.reflection_test_4.ReflectionTest4Proto
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.ScalaFutures

@@ -92,7 +92,7 @@ final class ServerReflectionImpl private (fileDescriptors: Map[String, FileDescr
         toAdd: List[FileDescriptor]): (Set[String], List[FileDescriptor]) = {
       toAdd match {
         case Nil => (sent, results)
-        case _ =>
+        case _   =>
           // Need to compute the new set of files sent before working out which dependencies to send, to ensure
           // we don't send any dependencies that are being sent in this iteration
           val nowSent = sent ++ toAdd.map(_.getName)
