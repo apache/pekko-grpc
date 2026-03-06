@@ -58,7 +58,7 @@ import com.google.protobuf.any
 }
 
 /**
- * Provides access to details to more rich error details using the logical gRPC com.google.rpc.Status message, see
+ * Provides access to richer error details using the logical gRPC com.google.rpc.Status message, see
  * [API Design Guide](https://cloud.google.com/apis/design/errors) for more details.
  *
  * Not for user extension
