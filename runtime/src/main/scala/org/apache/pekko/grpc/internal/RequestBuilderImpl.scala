@@ -18,8 +18,8 @@ import java.util.concurrent.CompletionStage
 import org.apache.pekko
 import pekko.NotUsed
 import pekko.annotation.{ InternalApi, InternalStableApi }
-import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, GrpcSingleResponse }
-import pekko.stream.Materializer
+import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, GrpcServiceException, GrpcSingleResponse }
+import pekko.stream.{ Graph, Materializer, SourceShape }
 import pekko.stream.javadsl.{ Source => JavaSource }
 import pekko.stream.scaladsl.{ Keep, Sink, Source }
 import pekko.util.ByteString
@@ -52,10 +52,12 @@ final class ScalaUnaryRequestBuilder[I, O](
     NettyClientUtils.callOptionsWithDeadline(defaultOptions, settings)
 
   override def invoke(request: I): Future[O] =
-    channel.invoke(request, headers, descriptor, defaultOptions)
+    channel.invoke(request, headers, descriptor, defaultOptions).recoverWith(RequestBuilderImpl.richError)
 
   override def invokeWithMetadata(request: I): Future[GrpcSingleResponse[O]] =
-    channel.invokeWithMetadata(request, headers, descriptor, callOptionsWithDeadline())
+    channel
+      .invokeWithMetadata(request, headers, descriptor, callOptionsWithDeadline())
+      .recoverWith(RequestBuilderImpl.richError)
 
   override def withHeaders(headers: MetadataImpl): ScalaUnaryRequestBuilder[I, O] =
     new ScalaUnaryRequestBuilder[I, O](descriptor, channel, defaultOptions, settings, headers)
@@ -118,7 +120,7 @@ final class ScalaClientStreamingRequestBuilder[I, O](
     NettyClientUtils.callOptionsWithDeadline(defaultOptions, settings)
 
   override def invoke(request: Source[I, NotUsed]): Future[O] =
-    invokeWithMetadata(request).map(_.value)(ExecutionContext.parasitic)
+    invokeWithMetadata(request).map(_.value)(ExecutionContext.parasitic).recoverWith(RequestBuilderImpl.richError)
 
   override def invokeWithMetadata(source: Source[I, NotUsed]): Future[GrpcSingleResponse[O]] = {
     // a bit much overhead here because we are using the flow to represent a single response
@@ -144,6 +146,7 @@ final class ScalaClientStreamingRequestBuilder[I, O](
             def getTrailers() = metadata.getTrailers()
           }
       }(ExecutionContext.parasitic)
+      .recoverWith(RequestBuilderImpl.richError)
   }
 
   override def withHeaders(headers: MetadataImpl): ScalaClientStreamingRequestBuilder[I, O] =
@@ -207,10 +210,14 @@ final class ScalaServerStreamingRequestBuilder[I, O](
     NettyClientUtils.callOptionsWithDeadline(defaultOptions, settings)
 
   override def invoke(request: I): Source[O, NotUsed] =
-    invokeWithMetadata(request).mapMaterializedValue(_ => NotUsed)
+    invokeWithMetadata(request)
+      .mapMaterializedValue(_ => NotUsed)
+      .recoverWithRetries(1, RequestBuilderImpl.richErrorStream)
 
   override def invokeWithMetadata(request: I): Source[O, Future[GrpcResponseMetadata]] =
-    channel.invokeWithMetadata(Source.single(request), headers, descriptor, true, callOptionsWithDeadline())
+    channel
+      .invokeWithMetadata(Source.single(request), headers, descriptor, true, callOptionsWithDeadline())
+      .recoverWithRetries(1, RequestBuilderImpl.richErrorStream)
 
   override def withHeaders(headers: MetadataImpl): ScalaServerStreamingRequestBuilder[I, O] =
     new ScalaServerStreamingRequestBuilder[I, O](descriptor, channel, defaultOptions, settings, headers)
@@ -274,10 +281,14 @@ final class ScalaBidirectionalStreamingRequestBuilder[I, O](
     NettyClientUtils.callOptionsWithDeadline(defaultOptions, settings)
 
   override def invoke(request: Source[I, NotUsed]): Source[O, NotUsed] =
-    invokeWithMetadata(request).mapMaterializedValue(_ => NotUsed)
+    invokeWithMetadata(request)
+      .mapMaterializedValue(_ => NotUsed)
+      .recoverWithRetries(1, RequestBuilderImpl.richErrorStream)
 
   override def invokeWithMetadata(source: Source[I, NotUsed]): Source[O, Future[GrpcResponseMetadata]] =
-    channel.invokeWithMetadata(source, headers, descriptor, true, callOptionsWithDeadline())
+    channel
+      .invokeWithMetadata(source, headers, descriptor, true, callOptionsWithDeadline())
+      .recoverWithRetries(1, RequestBuilderImpl.richErrorStream)
 
   override def withHeaders(headers: MetadataImpl): ScalaBidirectionalStreamingRequestBuilder[I, O] =
     new ScalaBidirectionalStreamingRequestBuilder[I, O](descriptor, channel, defaultOptions, settings, headers)
@@ -330,4 +341,19 @@ trait MetadataOperations[T <: MetadataOperations[T]] {
 
   def addHeader(key: String, value: ByteString): T =
     withHeaders(headers = headers.addEntry(key, value))
+}
+
+object RequestBuilderImpl {
+  def richErrorStream[U]: PartialFunction[Throwable, Graph[SourceShape[U], NotUsed]] = {
+    case item => Source.failed(RequestBuilderImpl.lift(item))
+  }
+
+  def richError[U]: PartialFunction[Throwable, Future[U]] = {
+    case item => Future.failed(RequestBuilderImpl.lift(item))
+  }
+
+  def lift(item: Throwable): scala.Throwable = item match {
+    case ex: StatusRuntimeException => GrpcServiceException(ex)
+    case other                      => other
+  }
 }

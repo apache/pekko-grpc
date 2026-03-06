@@ -16,6 +16,7 @@ package org.apache.pekko.grpc.scaladsl
 import org.apache.pekko
 import pekko.annotation.{ ApiMayChange, DoNotInherit, InternalApi }
 import pekko.util.ByteString
+import com.google.protobuf.any
 
 /**
  * Immutable representation of the metadata in a call
@@ -54,4 +55,20 @@ import pekko.util.ByteString
    */
   @ApiMayChange
   def asList: List[(String, MetadataEntry)]
+}
+
+/**
+ * Provides access to details to more rich error details using the logical gRPC com.google.rpc.Status message, see
+ * [API Design Guide](https://cloud.google.com/apis/design/errors) for more details.
+ *
+ * Not for user extension
+ */
+@ApiMayChange
+@DoNotInherit
+trait MetadataStatus extends Metadata {
+  def status: com.google.rpc.Status
+  def code: Int
+  def message: String
+  def details: Seq[any.Any]
+  def getParsedDetails[K <: scalapb.GeneratedMessage](implicit msg: scalapb.GeneratedMessageCompanion[K]): Seq[K]
 }

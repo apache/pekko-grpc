@@ -17,12 +17,26 @@ import io.grpc.{ Status, StatusRuntimeException }
 import org.apache.pekko
 import pekko.annotation.ApiMayChange
 import pekko.grpc.scaladsl.{ Metadata, MetadataBuilder }
-import pekko.grpc.internal.{ GrpcMetadataImpl, JavaMetadataImpl }
+import pekko.grpc.internal.{ GrpcMetadataImpl, RichGrpcMetadataImpl, JavaMetadataImpl }
 import com.google.protobuf.any.Any
 import io.grpc.protobuf.StatusProto
+import scala.jdk.CollectionConverters._
 
 object GrpcServiceException {
 
+  /**
+   * Java API
+   */
+  def create(
+      code: com.google.rpc.Code,
+      message: String,
+      details: java.util.List[scalapb.GeneratedMessage]): GrpcServiceException = {
+    apply(code, message, details.asScala.toVector)
+  }
+
+  /**
+   * Scala API
+   */
   def apply(
       code: com.google.rpc.Code,
       message: String,
@@ -45,7 +59,7 @@ object GrpcServiceException {
   }
 
   def apply(ex: StatusRuntimeException): GrpcServiceException = {
-    new GrpcServiceException(ex.getStatus, new GrpcMetadataImpl(ex.getTrailers))
+    new GrpcServiceException(ex.getStatus, new RichGrpcMetadataImpl(ex.getStatus, ex.getTrailers))
   }
 }
 
