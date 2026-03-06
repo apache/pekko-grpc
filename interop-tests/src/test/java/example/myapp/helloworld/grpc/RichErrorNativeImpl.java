@@ -21,7 +21,6 @@ import java.util.concurrent.CompletionStage;
 import org.apache.pekko.NotUsed;
 import org.apache.pekko.grpc.GrpcServiceException;
 import org.apache.pekko.stream.javadsl.Source;
-import scala.jdk.javaapi.CollectionConverters;
 
 public class RichErrorNativeImpl implements GreeterService {
 
@@ -33,13 +32,13 @@ public class RichErrorNativeImpl implements GreeterService {
     ar.add(LocalizedMessage.of("EN", "The password!"));
 
     GrpcServiceException exception =
-        GrpcServiceException.apply(
-            Code.INVALID_ARGUMENT, "What is wrong?", CollectionConverters.asScala(ar).toSeq());
+        GrpcServiceException.create(Code.INVALID_ARGUMENT, "What is wrong?", ar);
 
     CompletableFuture<HelloReply> future = new CompletableFuture<>();
     future.completeExceptionally(exception);
     return future;
   }
+
   // #rich_error_model_unary
 
   @Override

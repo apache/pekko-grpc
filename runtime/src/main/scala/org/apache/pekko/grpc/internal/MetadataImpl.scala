@@ -25,7 +25,10 @@ import pekko.http.scaladsl.model.HttpHeader
 import pekko.japi.Pair
 import pekko.util.ByteString
 import pekko.grpc.javadsl
-import pekko.grpc.scaladsl.{ BytesEntry, Metadata, MetadataEntry, StringEntry }
+import pekko.grpc.scaladsl.{ BytesEntry, Metadata, MetadataEntry, MetadataStatus, StringEntry }
+import com.google.protobuf.any
+import com.google.rpc.Status
+import scalapb.{ GeneratedMessage, GeneratedMessageCompanion }
 
 @InternalApi private[pekko] object MetadataImpl {
   val BINARY_SUFFIX: String = io.grpc.Metadata.BINARY_HEADER_SUFFIX
@@ -196,7 +199,7 @@ class HeaderMetadataImpl(headers: immutable.Seq[HttpHeader] = immutable.Seq.empt
  * @param delegate The underlying Scala metadata instance.
  */
 @InternalApi
-class JavaMetadataImpl(delegate: Metadata) extends javadsl.Metadata {
+class JavaMetadataImpl(val delegate: Metadata) extends javadsl.Metadata with javadsl.MetadataStatus {
   override def getText(key: String): Optional[String] =
     delegate.getText(key).toJava
 
@@ -214,4 +217,46 @@ class JavaMetadataImpl(delegate: Metadata) extends javadsl.Metadata {
 
   override def toString: String =
     delegate.toString
+
+  private def richDelegate =
+    delegate match {
+      case r: MetadataStatus => r
+      case other             => throw new IllegalArgumentException(s"Delegate metadata is not MetadataStatus but ${other.getClass}")
+    }
+
+  override def getStatus(): Status = richDelegate.status
+
+  override def getCode(): Int = richDelegate.code
+
+  override def getMessage(): String = richDelegate.message
+
+  private lazy val javaDetails: jList[com.google.protobuf.any.Any] = richDelegate.details.asJava
+  def getDetails(): jList[com.google.protobuf.any.Any] = javaDetails
+
+  def getParsedDetails[K <: GeneratedMessage](companion: GeneratedMessageCompanion[K]): jList[K] =
+    richDelegate.getParsedDetails(companion).asJava
+}
+
+class RichGrpcMetadataImpl(delegate: io.grpc.Status, meta: io.grpc.Metadata)
+    extends GrpcMetadataImpl(meta)
+    with MetadataStatus {
+  override val raw: Option[io.grpc.Metadata] = Some(meta)
+  override lazy val status: com.google.rpc.Status =
+    io.grpc.protobuf.StatusProto.fromStatusAndTrailers(delegate, meta)
+
+  override def code: Int = status.getCode
+  override def message: String = status.getMessage
+
+  override lazy val details: Seq[any.Any] = status.getDetailsList.asScala.map { item =>
+    fromJavaProto(item)
+  }.toVector
+
+  def getParsedDetails[K <: scalapb.GeneratedMessage](
+      implicit companion: scalapb.GeneratedMessageCompanion[K]): Seq[K] = {
+    val typeUrl = "type.googleapis.com/" + companion.scalaDescriptor.fullName
+    details.filter(_.typeUrl == typeUrl).map(_.unpack)
+  }
+
+  private def fromJavaProto(javaPbSource: com.google.protobuf.Any): com.google.protobuf.any.Any =
+    com.google.protobuf.any.Any(typeUrl = javaPbSource.getTypeUrl, value = javaPbSource.getValue)
 }
