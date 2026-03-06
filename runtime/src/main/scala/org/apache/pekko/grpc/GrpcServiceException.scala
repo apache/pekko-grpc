@@ -17,7 +17,7 @@ import io.grpc.{ Status, StatusRuntimeException }
 import org.apache.pekko
 import pekko.annotation.ApiMayChange
 import pekko.grpc.scaladsl.{ Metadata, MetadataBuilder }
-import pekko.grpc.internal.{ GrpcMetadataImpl, RichGrpcMetadataImpl, JavaMetadataImpl }
+import pekko.grpc.internal.{ GrpcMetadataImpl, JavaMetadataImpl, RichGrpcMetadataImpl }
 import com.google.protobuf.any.Any
 import io.grpc.protobuf.StatusProto
 import scala.jdk.CollectionConverters._

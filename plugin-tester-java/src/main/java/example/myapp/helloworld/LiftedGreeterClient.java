@@ -61,6 +61,7 @@ class LiftedGreeterClient {
     CompletionStage<HelloReply> reply = client.sayHello().addHeader("key", "value").invoke(request);
     System.out.println("got single reply: " + reply.toCompletableFuture().get(5, TimeUnit.SECONDS));
   }
+
   // #with-metadata
 
   private static void streamingRequest(GreeterServiceClient client) throws Exception {

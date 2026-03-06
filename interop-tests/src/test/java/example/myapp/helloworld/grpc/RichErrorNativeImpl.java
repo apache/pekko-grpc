@@ -32,13 +32,13 @@ public class RichErrorNativeImpl implements GreeterService {
     ar.add(LocalizedMessage.of("EN", "The password!"));
 
     GrpcServiceException exception =
-        GrpcServiceException.create(
-            Code.INVALID_ARGUMENT, "What is wrong?", ar);
+        GrpcServiceException.create(Code.INVALID_ARGUMENT, "What is wrong?", ar);
 
     CompletableFuture<HelloReply> future = new CompletableFuture<>();
     future.completeExceptionally(exception);
     return future;
   }
+
   // #rich_error_model_unary
 
   @Override

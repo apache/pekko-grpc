@@ -73,6 +73,7 @@ public class LoggingErrorHandlingGreeterServer {
       }
     }
   }
+
   // #implementation
 
   // #method
@@ -121,6 +122,7 @@ public class LoggingErrorHandlingGreeterServer {
                   }
                 }));
   }
+
   // #method
 
   // #custom-error-mapping
@@ -132,6 +134,7 @@ public class LoggingErrorHandlingGreeterServer {
           return null;
         }
       };
+
   // #custom-error-mapping
 
   public static CompletionStage<ServerBinding> run(ActorSystem sys) throws Exception {
