@@ -67,15 +67,18 @@ class PekkoHttpClientUtilsSpec extends TestKit(ActorSystem()) with AnyWordSpecLi
   }
 
   "The conversion from HttpResponse to Source" should {
+    val requestUri = Uri("https://example.com/ServiceName/MethodName")
+
     "map a strict 404 response to a failed stream" in {
       val response =
         Future.successful(HttpResponse(NotFound, entity = Strict(GrpcProtocolNative.contentType, ByteString.empty)))
-      val source = PekkoHttpClientUtils.responseToSource(response, null)
+      val source = PekkoHttpClientUtils.responseToSource(requestUri, response, null)
 
       val failure = source.run().failed.futureValue
       failure shouldBe a[StatusRuntimeException]
       // https://github.com/grpc/grpc/blob/master/doc/http-grpc-status-mapping.md
       failure.asInstanceOf[StatusRuntimeException].getStatus.getCode should be(Status.Code.UNIMPLEMENTED)
+      failure.asInstanceOf[StatusRuntimeException].getStatus.getDescription should include(requestUri.toString())
     }
 
     "map a strict 200 response with non-0 gRPC error code to a failed stream" in {
@@ -85,11 +88,12 @@ class PekkoHttpClientUtilsSpec extends TestKit(ActorSystem()) with AnyWordSpecLi
         Nil
       val response =
         Future.successful(HttpResponse(OK, responseHeaders, Strict(GrpcProtocolNative.contentType, ByteString.empty)))
-      val source = PekkoHttpClientUtils.responseToSource(response, null)
+      val source = PekkoHttpClientUtils.responseToSource(requestUri, response, null)
 
       val failure = source.run().failed.futureValue
       failure shouldBe a[StatusRuntimeException]
       failure.asInstanceOf[StatusRuntimeException].getStatus.getCode should be(Status.Code.FAILED_PRECONDITION)
+      failure.asInstanceOf[StatusRuntimeException].getStatus.getDescription should include(requestUri.toString())
       failure.asInstanceOf[StatusRuntimeException].getTrailers.get(key) should be("custom-value-in-header")
     }
 
@@ -104,9 +108,10 @@ class PekkoHttpClientUtilsSpec extends TestKit(ActorSystem()) with AnyWordSpecLi
       val response =
         Future.successful(HttpResponse(OK, responseHeaders, Strict(GrpcProtocolNative.contentType, ByteString.empty)))
 
-      val failure = PekkoHttpClientUtils.responseToSource(response, null).run().failed.futureValue
+      val failure = PekkoHttpClientUtils.responseToSource(requestUri, response, null).run().failed.futureValue
 
-      failure.asInstanceOf[StatusRuntimeException].getStatus.getDescription should be(message)
+      failure.asInstanceOf[StatusRuntimeException].getStatus.getDescription should
+      be(s"$message\nWhen calling rpc service: $requestUri")
     }
 
     "leave an unencoded grpc-message alone" in {
@@ -115,9 +120,10 @@ class PekkoHttpClientUtilsSpec extends TestKit(ActorSystem()) with AnyWordSpecLi
       val response =
         Future.successful(HttpResponse(OK, responseHeaders, Strict(GrpcProtocolNative.contentType, ByteString.empty)))
 
-      val failure = PekkoHttpClientUtils.responseToSource(response, null).run().failed.futureValue
+      val failure = PekkoHttpClientUtils.responseToSource(requestUri, response, null).run().failed.futureValue
 
-      failure.asInstanceOf[StatusRuntimeException].getStatus.getDescription should be(message)
+      failure.asInstanceOf[StatusRuntimeException].getStatus.getDescription should
+      be(s"$message\nWhen calling rpc service: $requestUri")
     }
 
     "not throw away a grpc-message with a broken escape" in {
@@ -126,9 +132,10 @@ class PekkoHttpClientUtilsSpec extends TestKit(ActorSystem()) with AnyWordSpecLi
       val response =
         Future.successful(HttpResponse(OK, responseHeaders, Strict(GrpcProtocolNative.contentType, ByteString.empty)))
 
-      val failure = PekkoHttpClientUtils.responseToSource(response, null).run().failed.futureValue
+      val failure = PekkoHttpClientUtils.responseToSource(requestUri, response, null).run().failed.futureValue
 
-      failure.asInstanceOf[StatusRuntimeException].getStatus.getDescription should be("broken %ZZ escape")
+      failure.asInstanceOf[StatusRuntimeException].getStatus.getDescription should
+      be(s"broken %ZZ escape\nWhen calling rpc service: $requestUri")
     }
 
     "report a non-numeric grpc-status as INTERNAL rather than throwing" in {
@@ -137,7 +144,7 @@ class PekkoHttpClientUtilsSpec extends TestKit(ActorSystem()) with AnyWordSpecLi
       val response =
         Future.successful(HttpResponse(OK, responseHeaders, Strict(GrpcProtocolNative.contentType, ByteString.empty)))
 
-      val failure = PekkoHttpClientUtils.responseToSource(response, null).run().failed.futureValue
+      val failure = PekkoHttpClientUtils.responseToSource(requestUri, response, null).run().failed.futureValue
 
       failure shouldBe a[StatusRuntimeException]
       val status = failure.asInstanceOf[StatusRuntimeException].getStatus
@@ -155,12 +162,12 @@ class PekkoHttpClientUtilsSpec extends TestKit(ActorSystem()) with AnyWordSpecLi
       val response =
         Future.successful(HttpResponse(OK, responseHeaders, Strict(GrpcProtocolNative.contentType, ByteString.empty)))
 
-      val failure = PekkoHttpClientUtils.responseToSource(response, null).run().failed.futureValue
+      val failure = PekkoHttpClientUtils.responseToSource(requestUri, response, null).run().failed.futureValue
 
       failure shouldBe a[StatusRuntimeException]
       val status = failure.asInstanceOf[StatusRuntimeException].getStatus
       status.getCode should be(Status.Code.FAILED_PRECONDITION)
-      status.getDescription should be("the real failure")
+      status.getDescription should be(s"the real failure\nWhen calling rpc service: $requestUri")
     }
 
     "map a strict 200 response with non-0 gRPC error code with a trailer to a failed stream with trailer metadata" in {
@@ -176,7 +183,7 @@ class PekkoHttpClientUtilsSpec extends TestKit(ActorSystem()) with AnyWordSpecLi
           Map.empty[AttributeKey[?], Any].updated(AttributeKeys.trailer, responseTrailers),
           Strict(GrpcProtocolNative.contentType, ByteString.empty),
           HttpProtocols.`HTTP/1.1`))
-      val source = PekkoHttpClientUtils.responseToSource(response, null)
+      val source = PekkoHttpClientUtils.responseToSource(requestUri, response, null)
 
       val failure = source.run().failed.futureValue
       failure.asInstanceOf[StatusRuntimeException].getStatus.getCode should be(Status.Code.FAILED_PRECONDITION)
