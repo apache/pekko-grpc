@@ -67,6 +67,9 @@ object Common extends AutoPlugin {
          Seq(
            // Generated code for methods/fields marked 'deprecated'
            "-Wconf:msg=Marked as deprecated in proto file:silent",
+           // Suppress "parameter X is never used" in CodeGenerator's registerExtensions
+           // default trait impl. Uses precise path+msg filter to avoid masking real warnings.
+           "-Wconf:src=.*/grpc/gen/CodeGenerator\\.scala:msg=is never used:silent",
            // ignore imports in templates (FIXME why is that trailing .* needed?)
            "-Wconf:src=.*.txt.*:silent",
            "-Wconf:cat=unused-nowarn:silent")

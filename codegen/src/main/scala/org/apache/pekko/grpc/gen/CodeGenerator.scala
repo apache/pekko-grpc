@@ -13,7 +13,6 @@
 
 package org.apache.pekko.grpc.gen
 
-import scala.annotation.nowarn
 import com.google.protobuf.ExtensionRegistry
 import com.google.protobuf.compiler.PluginProtos.CodeGeneratorRequest
 import com.google.protobuf.compiler.PluginProtos.CodeGeneratorResponse
@@ -33,7 +32,7 @@ trait CodeGenerator {
   /** Takes Scala binary version and returns suggested dependency Seq */
   def suggestedDependencies: ScalaBinaryVersion => Seq[Artifact]
 
-  def registerExtensions(@nowarn("msg=is never used") registry: ExtensionRegistry): Unit = {}
+  def registerExtensions(registry: ExtensionRegistry): Unit = {}
 
   final def run(request: Array[Byte], logger: Logger): Array[Byte] = {
     val registry = ExtensionRegistry.newInstance
