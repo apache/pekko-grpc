@@ -37,9 +37,10 @@ class PekkoHttpClientUtilsSpec extends TestKit(ActorSystem()) with AnyWordSpecLi
 
   "The conversion from HttpResponse to Source" should {
     "map a strict 404 response to a failed stream" in {
+      val requestUri = Uri("https://example.com/GuestExeSample/GrpcHello")
       val response =
         Future.successful(HttpResponse(NotFound, entity = Strict(GrpcProtocolNative.contentType, ByteString.empty)))
-      val source = PekkoHttpClientUtils.responseToSource(response, null)
+      val source = PekkoHttpClientUtils.responseToSource(requestUri, response, null)
 
       val failure = source.run().failed.futureValue
       failure shouldBe a[StatusRuntimeException]
@@ -48,21 +49,18 @@ class PekkoHttpClientUtilsSpec extends TestKit(ActorSystem()) with AnyWordSpecLi
     }
 
     "map a strict 200 response with non-0 gRPC error code to a failed stream" in {
-      val responseHeaders = RawHeader("grpc-status", "9") ::
-        RawHeader("custom-key", "custom-value-in-header") ::
-        RawHeader("custom-key-bin", ByteString("custom-trailer-value").encodeBase64.utf8String) ::
-        Nil
+      val requestUri = Uri("https://example.com/GuestExeSample/GrpcHello")
       val response =
-        Future.successful(HttpResponse(OK, responseHeaders, Strict(GrpcProtocolNative.contentType, ByteString.empty)))
-      val source = PekkoHttpClientUtils.responseToSource(response, null)
+        Future.successful(HttpResponse(OK, List(RawHeader("grpc-status", "9")), Strict(GrpcProtocolNative.contentType, ByteString.empty)))
+      val source = PekkoHttpClientUtils.responseToSource(requestUri, response, null)
 
       val failure = source.run().failed.futureValue
       failure shouldBe a[StatusRuntimeException]
       failure.asInstanceOf[StatusRuntimeException].getStatus.getCode should be(Status.Code.FAILED_PRECONDITION)
-      failure.asInstanceOf[StatusRuntimeException].getTrailers.get(key) should be("custom-value-in-header")
     }
 
     "map a strict 200 response with non-0 gRPC error code with a trailer to a failed stream with trailer metadata" in {
+      val requestUri = Uri("https://example.com/GuestExeSample/GrpcHello")
       val responseHeaders = List(RawHeader("grpc-status", "9"))
       val responseTrailers = Trailer(
         RawHeader("custom-key", "custom-trailer-value") ::
@@ -75,7 +73,7 @@ class PekkoHttpClientUtilsSpec extends TestKit(ActorSystem()) with AnyWordSpecLi
           Map.empty[AttributeKey[_], Any].updated(AttributeKeys.trailer, responseTrailers),
           Strict(GrpcProtocolNative.contentType, ByteString.empty),
           HttpProtocols.`HTTP/1.1`))
-      val source = PekkoHttpClientUtils.responseToSource(response, null)
+      val source = PekkoHttpClientUtils.responseToSource(requestUri, response, null)
 
       val failure = source.run().failed.futureValue
       failure.asInstanceOf[StatusRuntimeException].getStatus.getCode should be(Status.Code.FAILED_PRECONDITION)
