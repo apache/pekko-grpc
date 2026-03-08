@@ -7,7 +7,12 @@
  * This file is part of the Apache Pekko project, which was derived from Akka.
  */
 
+scalaVersion := "2.13.16"
+
+scalacOptions += "-Xfatal-warnings"
+
 enablePlugins(PekkoGrpcPlugin)
 
-// Don't enable it flat_package globally, but via a package-level option instead (see package.proto)
-pekkoGrpcCodeGeneratorSettings -= "flat_package"
+libraryDependencies ++= Seq(
+  "org.scalatest" %% "scalatest" % "3.2.19" % "test"
+)

@@ -7,7 +7,4 @@
  * This file is part of the Apache Pekko project, which was derived from Akka.
  */
 
-enablePlugins(PekkoGrpcPlugin)
-
-// Don't enable it flat_package globally, but via a package-level option instead (see package.proto)
-pekkoGrpcCodeGeneratorSettings -= "flat_package"
+addSbtPlugin("org.apache.pekko" % "pekko-grpc-sbt-plugin" % sys.props("project.version"))
