@@ -67,6 +67,10 @@ class PekkoGrpcPlugin implements Plugin<Project> {
         String assemblyClassifier = SystemUtils.IS_OS_WINDOWS ? "bat" : "assembly"
 
         Path logFile = project.buildDir.toPath().resolve("pekko-grpc-gradle-plugin.log")
+        // Use a relative path for the protoc plugin option so it does not break Gradle build cache relocatability.
+        // The protobuf-gradle-plugin registers plugin options as task inputs; an absolute path causes cache misses
+        // when the same build is run from different checkout directories.
+        String logFileRelative = project.projectDir.toPath().relativize(logFile).toString()
 
         project.sourceSets {
             main {
@@ -129,7 +133,7 @@ class PekkoGrpcPlugin implements Plugin<Project> {
                             option "server_power_apis=${pekkoGrpcExt.serverPowerApis}"
                             option "use_play_actions=${pekkoGrpcExt.usePlayActions}"
                             option "extra_generators=${pekkoGrpcExt.extraGenerators.join(';')}"
-                            option "logfile_enc=${URLEncoder.encode(logFile.toString(), "utf-8")}"
+                            option "logfile_enc=${URLEncoder.encode(logFileRelative, "utf-8")}"
                             if (pekkoGrpcExt.includeStdTypes) {
                                 option "include_std_types=true"
                             }
