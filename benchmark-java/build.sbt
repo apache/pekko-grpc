@@ -36,7 +36,7 @@ val root = project
       "io.grpc" % "grpc-testing" % grpcVersion,
       "org.hdrhistogram" % "HdrHistogram" % "2.1.12",
       "org.apache.commons" % "commons-math3" % "3.6.1",
-      "org.scalatest" %% "scalatest" % "3.2.19" % Test,
+      "org.scalatest" %% "scalatest" % "3.2.20" % Test,
       "org.scalatestplus" %% "junit-4-13" % "3.2.19.1" % Test),
     PB.artifactResolver := PB.artifactResolver.dependsOn(codeGenProject / Compile / publishLocal).value)
 

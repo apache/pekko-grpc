@@ -40,7 +40,7 @@ object Dependencies {
     val googleProtoc = "3.25.8" // checked synced by VersionSyncCheckPlugin
     val googleProtobufJava = "3.25.8"
 
-    val scalaTest = "3.2.19"
+    val scalaTest = "3.2.20"
 
     val maven = "3.9.14"
   }
