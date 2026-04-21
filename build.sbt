@@ -8,6 +8,7 @@
  */
 
 import com.github.pjfanning.pekkobuild._
+import com.github.sbt.JavaFormatterPlugin.autoImport.javafmtSortImports
 import net.bzzt.reproduciblebuilds.ReproducibleBuildsPlugin.reproducibleBuildsCheckResolver
 import org.apache.pekko.grpc.{ Dependencies, NoPublish, PekkoCoreDependency, PekkoHttpDependency }
 import org.apache.pekko.grpc.Dependencies.Versions.{ scala212, scala213 }
@@ -40,6 +41,8 @@ lazy val mkBatAssemblyTask = taskKey[File]("Create a Windows bat assembly")
 
 // gradle plugin compatibility (avoid `+` in snapshot versions)
 (ThisBuild / dynverSeparator) := "-"
+
+ThisBuild / javafmtFormatterCompatibleJavaVersion := 17
 
 val pekkoGrpcCodegenId = s"$pekkoPrefix-codegen"
 lazy val codegen = Project(id = "codegen", base = file("codegen"))
@@ -194,6 +197,7 @@ lazy val interopTests = Project(id = "interop-tests", base = file("interop-tests
   .pluginTestingSettings
   .settings(
     name := s"$pekkoPrefix-interop-tests",
+    javafmtSortImports := false,
     // All io.grpc servers want to bind to port :8080
     parallelExecution := false,
     ReflectiveCodeGen.generatedLanguages := Seq("Scala", "Java"),
@@ -311,6 +315,7 @@ lazy val pluginTesterJava = Project(id = "plugin-tester-java", base = file("plug
   .settings(Dependencies.pluginTester)
   .settings(
     name := s"$pekkoPrefix-plugin-tester-java",
+    javafmtSortImports := false,
     fork := true,
     PB.protocVersion := Dependencies.Versions.googleProtoc,
     ReflectiveCodeGen.generatedLanguages := Seq("Java"),
