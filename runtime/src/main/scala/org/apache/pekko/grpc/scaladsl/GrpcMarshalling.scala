@@ -127,65 +127,63 @@ object GrpcMarshalling {
       case HttpEntity.Strict(_, data) =>
         try {
           val in = u.deserialize(reader.decodeSingleFrame(data))
-          val responseFuture = implementation(in)
-          responseFuture.value match {
-            case Some(Success(out)) =>
-              try Future.successful(marshal[Out](out, eHandler)(m, writer, system))
-              catch {
-                case NonFatal(ex) => exceptionHandler(ex)
-              }
-            case Some(Failure(ex)) => exceptionHandler(ex)
-            case None              =>
-              responseFuture.map(out => marshal[Out](out, eHandler)(m, writer, system)).recoverWith(exceptionHandler)
-          }
+          invokeUnary(in, implementation, eHandler, exceptionHandler)
         } catch {
           case NonFatal(ex) => exceptionHandler(ex)
         }
       case _ =>
         val requestFuture = unmarshal[In](entity)(u, mat, reader)
         requestFuture.value match {
-          case Some(Success(in)) =>
-            try {
-              val responseFuture = implementation(in)
-              responseFuture.value match {
-                case Some(Success(out)) =>
-                  try Future.successful(marshal[Out](out, eHandler)(m, writer, system))
-                  catch {
-                    case NonFatal(ex) => exceptionHandler(ex)
-                  }
-                case Some(Failure(ex)) => exceptionHandler(ex)
-                case None              =>
-                  responseFuture.map(out => marshal[Out](out, eHandler)(m, writer, system)).recoverWith(
-                    exceptionHandler)
-              }
-            } catch {
-              case NonFatal(ex) => exceptionHandler(ex)
-            }
+          case Some(Success(in)) => invokeUnary(in, implementation, eHandler, exceptionHandler)
           case Some(Failure(ex)) => exceptionHandler(ex)
           case None              =>
             requestFuture
-              .flatMap { in =>
-                try {
-                  val responseFuture = implementation(in)
-                  responseFuture.value match {
-                    case Some(Success(out)) =>
-                      try Future.successful(marshal[Out](out, eHandler)(m, writer, system))
-                      catch {
-                        case NonFatal(ex) => exceptionHandler(ex)
-                      }
-                    case Some(Failure(ex)) => exceptionHandler(ex)
-                    case None              =>
-                      responseFuture.map(out => marshal[Out](out, eHandler)(m, writer, system)).recoverWith(
-                        exceptionHandler)
-                  }
-                } catch {
-                  case NonFatal(ex) => exceptionHandler(ex)
-                }
-              }
+              .flatMap(in => invokeUnary(in, implementation, eHandler, exceptionHandler))
               .recoverWith(exceptionHandler)
         }
     }
   }
+
+  @inline private def invokeUnary[In, Out](
+      in: In,
+      implementation: In => Future[Out],
+      eHandler: ActorSystem => PartialFunction[Throwable, Trailers],
+      exceptionHandler: PartialFunction[Throwable, Future[HttpResponse]])(
+      implicit m: ProtobufSerializer[Out],
+      writer: GrpcProtocolWriter,
+      system: ClassicActorSystemProvider,
+      ec: ExecutionContext): Future[HttpResponse] =
+    try handleUnaryResponse(implementation(in), eHandler, exceptionHandler)
+    catch {
+      case NonFatal(ex) => exceptionHandler(ex)
+    }
+
+  @inline private def handleUnaryResponse[Out](
+      responseFuture: Future[Out],
+      eHandler: ActorSystem => PartialFunction[Throwable, Trailers],
+      exceptionHandler: PartialFunction[Throwable, Future[HttpResponse]])(
+      implicit m: ProtobufSerializer[Out],
+      writer: GrpcProtocolWriter,
+      system: ClassicActorSystemProvider,
+      ec: ExecutionContext): Future[HttpResponse] =
+    responseFuture.value match {
+      case Some(Success(out)) => marshalUnaryResponse(out, eHandler, exceptionHandler)
+      case Some(Failure(ex))  => exceptionHandler(ex)
+      case None               =>
+        responseFuture.map(out => marshal[Out](out, eHandler)(m, writer, system)).recoverWith(exceptionHandler)
+    }
+
+  @inline private def marshalUnaryResponse[Out](
+      out: Out,
+      eHandler: ActorSystem => PartialFunction[Throwable, Trailers],
+      exceptionHandler: PartialFunction[Throwable, Future[HttpResponse]])(
+      implicit m: ProtobufSerializer[Out],
+      writer: GrpcProtocolWriter,
+      system: ClassicActorSystemProvider): Future[HttpResponse] =
+    try Future.successful(marshal[Out](out, eHandler)(m, writer, system))
+    catch {
+      case NonFatal(ex) => exceptionHandler(ex)
+    }
 
   @InternalApi
   def marshalRequest[T](
