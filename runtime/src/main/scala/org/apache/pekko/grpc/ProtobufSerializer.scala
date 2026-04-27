@@ -24,3 +24,7 @@ trait ProtobufSerializer[T] {
   def deserialize(bytes: ByteString): T
   def deserialize(stream: InputStream): T = deserialize(ByteStringUtils.fromInputStream(stream))
 }
+
+private[grpc] trait ProtobufFrameSerializer[T] extends ProtobufSerializer[T] {
+  private[grpc] def serializeDataFrame(t: T): ByteString
+}
