@@ -115,21 +115,35 @@ object GrpcMarshalling {
     try {
       response match {
         case future: CompletableFuture[_] if future.isDone =>
-          try CompletableFuture.completedFuture(marshal(completedValue[Out](future), m, writer, system, eHandler))
+          try completedResponse(marshal(completedValue[Out](future), m, writer, system, eHandler))
           catch {
-            case NonFatal(error) => failure(error)
+            case NonFatal(error) => handleUnaryFailure(error, writer, system, eHandler)
           }
         case _ =>
-          response.thenApply(out => marshal(out, m, writer, system, eHandler))
+          response
+            .thenApply(out => marshal(out, m, writer, system, eHandler))
+            .exceptionally(error => GrpcExceptionHandler.standard(error, eHandler, writer, system))
       }
     } catch {
-      case NonFatal(error) => failure(error)
+      case NonFatal(error) => handleUnaryFailure(error, writer, system, eHandler)
     }
 
   @InternalApi
   def handleUnaryFailure(error: Throwable): CompletionStage[HttpResponse] =
     if (NonFatal(error)) failure(error)
     else throw error
+
+  @InternalApi
+  def handleUnaryFailure(
+      error: Throwable,
+      writer: GrpcProtocolWriter,
+      system: ClassicActorSystemProvider,
+      eHandler: JFunction[ActorSystem, JFunction[Throwable, Trailers]]): CompletionStage[HttpResponse] =
+    if (NonFatal(error)) completedResponse(GrpcExceptionHandler.standard(error, eHandler, writer, system))
+    else throw error
+
+  private def completedResponse(response: HttpResponse): CompletableFuture[HttpResponse] =
+    CompletableFuture.completedFuture(response)
 
   private def failure[R](error: Throwable): CompletableFuture[R] = {
     val future: CompletableFuture[R] = new CompletableFuture()

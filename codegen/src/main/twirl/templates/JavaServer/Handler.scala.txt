@@ -175,26 +175,30 @@ public class @{serviceName}HandlerFactory {
               final org.apache.pekko.http.scaladsl.model.HttpEntity.Strict strictEntity =
                 (org.apache.pekko.http.scaladsl.model.HttpEntity.Strict) entity;
               try {
-                response = GrpcMarshalling.handleUnaryResponse(
+                return GrpcMarshalling.handleUnaryResponse(
                   implementation.@{method.name}(@{method.deserializer.name}.deserialize(reader.decodeSingleFrame().apply(strictEntity.data()))@{if(powerApis) { ", metadata" } else { "" }}),
                   @method.serializer.name,
                   writer,
                   system,
                   eHandler);
               } catch (Throwable e) {
-                response = GrpcMarshalling.handleUnaryFailure(e);
+                return GrpcMarshalling.handleUnaryFailure(e, writer, system, eHandler);
               }
             } else {
-              response = GrpcMarshalling.unmarshal(request.entity(), @method.deserializer.name, mat, reader)
-                .thenCompose(e -> implementation.@{method.name}(e@{if(powerApis) { ", metadata" } else { "" }}))
-                .thenApply(e -> GrpcMarshalling.marshal(e, @method.serializer.name, writer, system, eHandler));
+              return GrpcMarshalling.handleUnaryResponse(
+                GrpcMarshalling.unmarshal(request.entity(), @method.deserializer.name, mat, reader)
+                  .thenCompose(e -> implementation.@{method.name}(e@{if(powerApis) { ", metadata" } else { "" }})),
+                @method.serializer.name,
+                writer,
+                system,
+                eHandler);
             }
             } else {
             response = @{method.unmarshal}(request.entity(), @method.deserializer.name, mat, reader)
               .@{if(method.outputStreaming) { "thenApply" } else { "thenCompose" }}(e -> implementation.@{method.name}(e@{if(powerApis) { ", metadata" } else { "" }}))
               .thenApply(e -> @{method.marshal}(e, @method.serializer.name, writer, system, eHandler));
-            }
             break;
+            }
           }
           }
           default:

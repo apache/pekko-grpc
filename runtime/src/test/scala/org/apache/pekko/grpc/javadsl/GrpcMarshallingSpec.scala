@@ -17,7 +17,7 @@
 
 package org.apache.pekko.grpc.javadsl
 
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.{ CompletableFuture, TimeUnit }
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
@@ -54,6 +54,30 @@ class GrpcMarshallingSpec extends AnyWordSpec with Matchers {
             .get(10, TimeUnit.SECONDS)
 
         result should be(message)
+      } finally {
+        Await.result(system.terminate(), 10.seconds)
+      }
+    }
+
+    "recover a failed unary response stage" in {
+      val system = ActorSystem("GrpcMarshallingSpec")
+      try {
+        val serializer = new GoogleProtobufSerializer(ProtobufAny.parser())
+        val responseFuture = new CompletableFuture[ProtobufAny]()
+        responseFuture.completeExceptionally(new RuntimeException("boom"))
+
+        val response =
+          GrpcMarshalling
+            .handleUnaryResponse(
+              responseFuture,
+              serializer,
+              GrpcProtocolNative.newWriter(Identity),
+              system,
+              GrpcExceptionHandler.defaultMapper)
+            .toCompletableFuture
+            .get(10, TimeUnit.SECONDS)
+
+        response.getHeader("grpc-status").get().value() should be("13")
       } finally {
         Await.result(system.terminate(), 10.seconds)
       }

@@ -96,26 +96,28 @@ class JavaUnaryHandlerBenchmark extends CommonBenchmark {
         .negotiated[JHttpResponse](
           request,
           (reader, writer) => {
-            val response: CompletionStage[JHttpResponse] =
-              request.entity() match {
-                case strict: pekko.http.scaladsl.model.HttpEntity.Strict =>
-                  try {
-                    JGrpcMarshalling.handleUnaryResponse(
-                      invoke(serializer.deserialize(reader.decodeSingleFrame(strict.data))),
-                      serializer,
-                      writer,
-                      system,
-                      eHandler)
-                  } catch {
-                    case error: Throwable => JGrpcMarshalling.handleUnaryFailure(error)
-                  }
-                case _ =>
+            request.entity() match {
+              case strict: pekko.http.scaladsl.model.HttpEntity.Strict =>
+                try {
+                  JGrpcMarshalling.handleUnaryResponse(
+                    invoke(serializer.deserialize(reader.decodeSingleFrame(strict.data))),
+                    serializer,
+                    writer,
+                    system,
+                    eHandler)
+                } catch {
+                  case error: Throwable => JGrpcMarshalling.handleUnaryFailure(error, writer, system, eHandler)
+                }
+              case _ =>
+                JGrpcMarshalling.handleUnaryResponse(
                   JGrpcMarshalling
                     .unmarshal(request.entity(), serializer, mat, reader)
-                    .thenCompose(in => invoke(in))
-                    .thenApply(out => JGrpcMarshalling.marshal(out, serializer, writer, system, eHandler))
-              }
-            response.exceptionally(error => JGrpcExceptionHandler.standard(error, eHandler, writer, system))
+                    .thenCompose(in => invoke(in)),
+                  serializer,
+                  writer,
+                  system,
+                  eHandler)
+            }
           })
         .orElseGet(() => unsupportedMediaType)
 
