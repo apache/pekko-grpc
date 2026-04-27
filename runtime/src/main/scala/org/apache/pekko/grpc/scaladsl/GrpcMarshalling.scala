@@ -16,8 +16,9 @@ package org.apache.pekko.grpc.scaladsl
 import io.grpc.Status
 
 import scala.annotation.nowarn
-import scala.concurrent.Future
+import scala.concurrent.{ ExecutionContext, Future }
 import scala.util.{ Failure, Success, Try }
+import scala.util.control.NonFatal
 
 import org.apache.pekko
 import pekko.NotUsed
@@ -106,6 +107,84 @@ object GrpcMarshalling {
       writer: GrpcProtocolWriter,
       system: ClassicActorSystemProvider): HttpResponse = {
     GrpcResponseHelpers(e, eHandler)
+  }
+
+  @InternalApi
+  def handleUnary[In, Out](
+      entity: HttpEntity,
+      implementation: In => Future[Out],
+      eHandler: ActorSystem => PartialFunction[Throwable, Trailers])(
+      implicit u: ProtobufSerializer[In],
+      m: ProtobufSerializer[Out],
+      mat: Materializer,
+      reader: GrpcProtocolReader,
+      writer: GrpcProtocolWriter,
+      system: ClassicActorSystemProvider,
+      ec: ExecutionContext): Future[HttpResponse] = {
+    val exceptionHandler = GrpcExceptionHandler.from(eHandler(system.classicSystem))
+
+    entity match {
+      case HttpEntity.Strict(_, data) =>
+        try {
+          val in = u.deserialize(reader.decodeSingleFrame(data))
+          val responseFuture = implementation(in)
+          responseFuture.value match {
+            case Some(Success(out)) =>
+              try Future.successful(marshal[Out](out, eHandler)(m, writer, system))
+              catch {
+                case NonFatal(ex) => exceptionHandler(ex)
+              }
+            case Some(Failure(ex)) => exceptionHandler(ex)
+            case None              =>
+              responseFuture.map(out => marshal[Out](out, eHandler)(m, writer, system)).recoverWith(exceptionHandler)
+          }
+        } catch {
+          case NonFatal(ex) => exceptionHandler(ex)
+        }
+      case _ =>
+        val requestFuture = unmarshal[In](entity)(u, mat, reader)
+        requestFuture.value match {
+          case Some(Success(in)) =>
+            try {
+              val responseFuture = implementation(in)
+              responseFuture.value match {
+                case Some(Success(out)) =>
+                  try Future.successful(marshal[Out](out, eHandler)(m, writer, system))
+                  catch {
+                    case NonFatal(ex) => exceptionHandler(ex)
+                  }
+                case Some(Failure(ex)) => exceptionHandler(ex)
+                case None              =>
+                  responseFuture.map(out => marshal[Out](out, eHandler)(m, writer, system)).recoverWith(
+                    exceptionHandler)
+              }
+            } catch {
+              case NonFatal(ex) => exceptionHandler(ex)
+            }
+          case Some(Failure(ex)) => exceptionHandler(ex)
+          case None              =>
+            requestFuture
+              .flatMap { in =>
+                try {
+                  val responseFuture = implementation(in)
+                  responseFuture.value match {
+                    case Some(Success(out)) =>
+                      try Future.successful(marshal[Out](out, eHandler)(m, writer, system))
+                      catch {
+                        case NonFatal(ex) => exceptionHandler(ex)
+                      }
+                    case Some(Failure(ex)) => exceptionHandler(ex)
+                    case None              =>
+                      responseFuture.map(out => marshal[Out](out, eHandler)(m, writer, system)).recoverWith(
+                        exceptionHandler)
+                  }
+                } catch {
+                  case NonFatal(ex) => exceptionHandler(ex)
+                }
+              }
+              .recoverWith(exceptionHandler)
+        }
+    }
   }
 
   @InternalApi

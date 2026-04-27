@@ -164,15 +164,38 @@ public class @{serviceName}HandlerFactory {
 
     private static CompletionStage<org.apache.pekko.http.javadsl.model.HttpResponse> handle(org.apache.pekko.http.javadsl.model.HttpRequest request, String method, @serviceName implementation, Materializer mat, org.apache.pekko.japi.function.Function<ActorSystem, org.apache.pekko.japi.function.Function<Throwable, Trailers>> eHandler, ClassicActorSystemProvider system) {
       return GrpcMarshalling.negotiated(request, (reader, writer) -> {
-        final CompletionStage<org.apache.pekko.http.javadsl.model.HttpResponse> response;
+        CompletionStage<org.apache.pekko.http.javadsl.model.HttpResponse> response;
         @{if(powerApis) { "Metadata metadata = MetadataBuilder.fromHeaders(request.getHeaders());" } else { "" }}
         switch(method) {
           @for(method <- service.methods) {
-          case "@method.grpcName":
+          case "@method.grpcName": {
+            @if(method.methodType == org.apache.pekko.grpc.gen.Unary) {
+            final org.apache.pekko.http.javadsl.model.HttpEntity entity = request.entity();
+            if (entity instanceof org.apache.pekko.http.scaladsl.model.HttpEntity.Strict) {
+              final org.apache.pekko.http.scaladsl.model.HttpEntity.Strict strictEntity =
+                (org.apache.pekko.http.scaladsl.model.HttpEntity.Strict) entity;
+              try {
+                response = GrpcMarshalling.handleUnaryResponse(
+                  implementation.@{method.name}(@{method.deserializer.name}.deserialize(reader.decodeSingleFrame().apply(strictEntity.data()))@{if(powerApis) { ", metadata" } else { "" }}),
+                  @method.serializer.name,
+                  writer,
+                  system,
+                  eHandler);
+              } catch (Throwable e) {
+                response = GrpcMarshalling.handleUnaryFailure(e);
+              }
+            } else {
+              response = GrpcMarshalling.unmarshal(request.entity(), @method.deserializer.name, mat, reader)
+                .thenCompose(e -> implementation.@{method.name}(e@{if(powerApis) { ", metadata" } else { "" }}))
+                .thenApply(e -> GrpcMarshalling.marshal(e, @method.serializer.name, writer, system, eHandler));
+            }
+            } else {
             response = @{method.unmarshal}(request.entity(), @method.deserializer.name, mat, reader)
               .@{if(method.outputStreaming) { "thenApply" } else { "thenCompose" }}(e -> implementation.@{method.name}(e@{if(powerApis) { ", metadata" } else { "" }}))
               .thenApply(e -> @{method.marshal}(e, @method.serializer.name, writer, system, eHandler));
+            }
             break;
+          }
           }
           default:
             CompletableFuture<org.apache.pekko.http.javadsl.model.HttpResponse> result = new CompletableFuture<>();
