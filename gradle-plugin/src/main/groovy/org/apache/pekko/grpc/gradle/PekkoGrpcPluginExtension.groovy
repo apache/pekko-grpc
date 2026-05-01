@@ -14,11 +14,11 @@ import org.gradle.api.Project
 
 class PekkoGrpcPluginExtension {
 
-    static final String PROTOC_VERSION = "3.25.8" // checked synced by VersionSyncCheckPlugin
+    static final String PROTOC_VERSION = "3.25.9" // checked synced by VersionSyncCheckPlugin
 
     static final String PROTOC_PLUGIN_SCALA_VERSION = "2.12"
 
-    static final String GRPC_VERSION = "1.80.0" // checked synced by VersionSyncCheckPlugin
+    static final String GRPC_VERSION = "1.81.0" // checked synced by VersionSyncCheckPlugin
 
     static final String PLUGIN_CODE = 'org.apache.pekko.grpc.gradle'
 
