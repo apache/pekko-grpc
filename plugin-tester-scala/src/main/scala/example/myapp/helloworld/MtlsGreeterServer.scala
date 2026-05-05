@@ -7,6 +7,10 @@
  * This file is part of the Apache Pekko project, which was derived from Akka.
  */
 
+/*
+ * Copyright (C) 2018-2023 Lightbend Inc. <https://www.lightbend.com>
+ */
+
 //#full-server
 package example.myapp.helloworld
 

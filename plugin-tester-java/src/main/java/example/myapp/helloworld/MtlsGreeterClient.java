@@ -7,7 +7,11 @@
  * This file is part of the Apache Pekko project, which was derived from Akka.
  */
 
-//#full-client
+/*
+ * Copyright (C) 2018-2023 Lightbend Inc. <https://www.lightbend.com>
+ */
+
+// #full-client
 package example.myapp.helloworld;
 
 import org.apache.pekko.actor.ActorSystem;
@@ -35,40 +39,44 @@ public class MtlsGreeterClient {
     ActorSystem system = ActorSystem.create("MtlsHelloWorldClient");
 
     GrpcClientSettings clientSettings =
-      GrpcClientSettings.connectToServiceAt("localhost", 8443, system)
-        .withSslContext(sslContext());
+        GrpcClientSettings.connectToServiceAt("localhost", 8443, system)
+            .withSslContext(sslContext());
 
     GreeterServiceClient client = GreeterServiceClient.create(clientSettings, system);
 
-    CompletionStage<HelloReply> reply = client.sayHello(HelloRequest.newBuilder().setName("Jonas").build());
+    CompletionStage<HelloReply> reply =
+        client.sayHello(HelloRequest.newBuilder().setName("Jonas").build());
 
-    reply.whenComplete((response, error) -> {
-      if (error == null) {
-        System.out.println("Successful reply: " + response);
-      } else {
-        System.out.println("Request failed");
-        error.printStackTrace();
-      }
-      system.terminate();
-    });
+    reply.whenComplete(
+        (response, error) -> {
+          if (error == null) {
+            System.out.println("Successful reply: " + response);
+          } else {
+            System.out.println("Request failed");
+            error.printStackTrace();
+          }
+          system.terminate();
+        });
   }
 
   private static SSLContext sslContext() {
     try {
       PrivateKey clientPrivateKey =
-        DERPrivateKeyLoader.load(PEMDecoder.decode(classPathFileAsString("/certs/client1.key")));
+          DERPrivateKeyLoader.load(PEMDecoder.decode(classPathFileAsString("/certs/client1.key")));
       CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
 
       // keyStore is for the client cert and private key
       KeyStore keyStore = KeyStore.getInstance("PKCS12");
       keyStore.load(null);
-      Certificate clientCertificate = certFactory.generateCertificate(MtlsGreeterClient.class.getResourceAsStream("/certs/client1.crt"));
+      Certificate clientCertificate =
+          certFactory.generateCertificate(
+              MtlsGreeterClient.class.getResourceAsStream("/certs/client1.crt"));
       keyStore.setKeyEntry(
-        "private",
-        clientPrivateKey,
-        // No password for our private client key
-        new char[0],
-        new Certificate[]{clientCertificate});
+          "private",
+          clientPrivateKey,
+          // No password for our private client key
+          new char[0],
+          new Certificate[] {clientCertificate});
       KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
       keyManagerFactory.init(keyStore, null);
       KeyManager[] keyManagers = keyManagerFactory.getKeyManagers();
@@ -78,10 +86,11 @@ public class MtlsGreeterClient {
       trustStore.load(null);
       // accept any server cert signed by this CA
       trustStore.setEntry(
-        "rootCA",
-        new KeyStore.TrustedCertificateEntry(
-          certFactory.generateCertificate(MtlsGreeterClient.class.getResourceAsStream("/certs/rootCA.crt"))),
-        null);
+          "rootCA",
+          new KeyStore.TrustedCertificateEntry(
+              certFactory.generateCertificate(
+                  MtlsGreeterClient.class.getResourceAsStream("/certs/rootCA.crt"))),
+          null);
       TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
       tmf.init(trustStore);
       TrustManager[] trustManagers = tmf.getTrustManagers();
@@ -96,14 +105,14 @@ public class MtlsGreeterClient {
 
   private static String classPathFileAsString(String path) {
     try (InputStream inputStream = MtlsGreeterClient.class.getResourceAsStream(path)) {
-      if (inputStream == null) throw new IllegalArgumentException("'" + path + "' is not present on the classpath");
-      return new BufferedReader(
-        new InputStreamReader(inputStream, StandardCharsets.UTF_8))
-        .lines()
-        .collect(Collectors.joining("\n"));
+      if (inputStream == null)
+        throw new IllegalArgumentException("'" + path + "' is not present on the classpath");
+      return new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
+          .lines()
+          .collect(Collectors.joining("\n"));
     } catch (Exception ex) {
       throw new RuntimeException("Failed reading server key from classpath", ex);
     }
   }
 }
-//#full-client
+// #full-client

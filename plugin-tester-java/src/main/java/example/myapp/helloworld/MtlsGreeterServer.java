@@ -7,7 +7,11 @@
  * This file is part of the Apache Pekko project, which was derived from Akka.
  */
 
-//#full-server
+/*
+ * Copyright (C) 2018-2023 Lightbend Inc. <https://www.lightbend.com>
+ */
+
+// #full-server
 package example.myapp.helloworld;
 
 import org.apache.pekko.actor.ActorSystem;
@@ -45,9 +49,11 @@ class MtlsGreeterServer {
   public static void main(String[] args) throws Exception {
     ActorSystem sys = ActorSystem.create("MtlsHelloWorldServer");
 
-    run(sys).thenAccept(binding -> {
-      log.info("gRPC server bound to {}", binding.localAddress());
-    });
+    run(sys)
+        .thenAccept(
+            binding -> {
+              log.info("gRPC server bound to {}", binding.localAddress());
+            });
 
     // ActorSystem threads will keep the app alive until `system.terminate()` is called
   }
@@ -59,13 +65,12 @@ class MtlsGreeterServer {
     GreeterService impl = new GreeterServiceImpl(mat);
 
     Function<HttpRequest, CompletionStage<HttpResponse>> service =
-      GreeterServiceHandlerFactory.create(impl, sys);
+        GreeterServiceHandlerFactory.create(impl, sys);
 
-    return Http
-      .get(sys)
-      .newServerAt("127.0.0.1", 8443)
-      .enableHttps(serverHttpContext())
-      .bind(service);
+    return Http.get(sys)
+        .newServerAt("127.0.0.1", 8443)
+        .enableHttps(serverHttpContext())
+        .bind(service);
   }
 
   private static HttpsConnectionContext serverHttpContext() {
@@ -76,15 +81,17 @@ class MtlsGreeterServer {
       KeyStore keyStore = KeyStore.getInstance("PKCS12");
       keyStore.load(null);
       PrivateKey serverPrivateKey =
-        DERPrivateKeyLoader.load(PEMDecoder.decode(classPathFileAsString("/certs/localhost-server.key")));
-      Certificate serverCert = certFactory.generateCertificate(
-        MtlsGreeterServer.class.getResourceAsStream("/certs/localhost-server.crt"));
+          DERPrivateKeyLoader.load(
+              PEMDecoder.decode(classPathFileAsString("/certs/localhost-server.key")));
+      Certificate serverCert =
+          certFactory.generateCertificate(
+              MtlsGreeterServer.class.getResourceAsStream("/certs/localhost-server.crt"));
       keyStore.setKeyEntry(
-        "private",
-        serverPrivateKey,
-        // No password for our private key
-        new char[0],
-        new Certificate[]{ serverCert });
+          "private",
+          serverPrivateKey,
+          // No password for our private key
+          new char[0],
+          new Certificate[] {serverCert});
       KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
       keyManagerFactory.init(keyStore, null);
       final KeyManager[] keyManagers = keyManagerFactory.getKeyManagers();
@@ -94,10 +101,11 @@ class MtlsGreeterServer {
       trustStore.load(null);
       // any client cert signed by this CA is allowed to connect
       trustStore.setEntry(
-        "rootCA",
-        new KeyStore.TrustedCertificateEntry(
-          certFactory.generateCertificate(MtlsGreeterServer.class.getResourceAsStream("/certs/rootCA.crt"))),
-        null);
+          "rootCA",
+          new KeyStore.TrustedCertificateEntry(
+              certFactory.generateCertificate(
+                  MtlsGreeterServer.class.getResourceAsStream("/certs/rootCA.crt"))),
+          null);
       /*
       // or specific client certs (less likely to be useful)
       trustStore.setEntry(
@@ -110,18 +118,20 @@ class MtlsGreeterServer {
       tmf.init(trustStore);
       final TrustManager[] trustManagers = tmf.getTrustManagers();
 
-      HttpsConnectionContext httpsContext = ConnectionContext.httpsServer(() -> {
-        SSLContext context = SSLContext.getInstance("TLS");
-        context.init(keyManagers, trustManagers, new SecureRandom());
+      HttpsConnectionContext httpsContext =
+          ConnectionContext.httpsServer(
+              () -> {
+                SSLContext context = SSLContext.getInstance("TLS");
+                context.init(keyManagers, trustManagers, new SecureRandom());
 
-        SSLEngine engine = context.createSSLEngine();
-        engine.setUseClientMode(false);
+                SSLEngine engine = context.createSSLEngine();
+                engine.setUseClientMode(false);
 
-        // require client certs
-        engine.setNeedClientAuth(true);
+                // require client certs
+                engine.setNeedClientAuth(true);
 
-        return engine;
-      });
+                return engine;
+              });
       return httpsContext;
 
     } catch (Exception ex) {
@@ -131,15 +141,14 @@ class MtlsGreeterServer {
 
   private static String classPathFileAsString(String path) {
     try (InputStream inputStream = MtlsGreeterServer.class.getResourceAsStream(path)) {
-      if (inputStream == null) throw new IllegalArgumentException("'" + path + "' is not present on the classpath");
-      return new BufferedReader(
-        new InputStreamReader(inputStream, StandardCharsets.UTF_8))
-        .lines()
-        .collect(Collectors.joining("\n"));
+      if (inputStream == null)
+        throw new IllegalArgumentException("'" + path + "' is not present on the classpath");
+      return new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
+          .lines()
+          .collect(Collectors.joining("\n"));
     } catch (Exception ex) {
       throw new RuntimeException("Failed reading server key from classpath", ex);
     }
   }
-
 }
-//#full-server
+// #full-server
