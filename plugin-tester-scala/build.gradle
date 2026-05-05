@@ -22,13 +22,17 @@ repositories {
 def scalaFullVersion = "2.13.18"
 def scalaVersion = org.gradle.util.VersionNumber.parse(scalaFullVersion)
 def scalaBinaryVersion = "${scalaVersion.major}.${scalaVersion.minor}"
+def pekkoVersion = "2.0.0-M1"
+def pekkoHttpVersion = "2.0.0-M1"
 
 dependencies {
-  implementation "org.apache.pekko:pekko-http-cors_${scalaBinaryVersion}:1.3.0"
+  implementation "org.apache.pekko:pekko-http-cors_${scalaBinaryVersion}:${pekkoVersion}"
+  implementation "org.apache.pekko:pekko-pki_${scalaBinaryVersion}:${pekkoVersion}"
   implementation "org.scala-lang:scala-library:${scalaFullVersion}"
-  testImplementation "org.apache.pekko:pekko-stream-testkit_${scalaBinaryVersion}:2.0.0-M1"
-  testImplementation "org.scalatest:scalatest_${scalaBinaryVersion}:3.2.19"
-  testImplementation "org.scalatestplus:junit-4-13_${scalaBinaryVersion}:3.2.19.0"
+  testImplementation "org.apache.pekko:pekko-actor-testkit-typed_${scalaBinaryVersion}:${pekkoVersion}"
+  testImplementation "org.apache.pekko:pekko-stream-testkit_${scalaBinaryVersion}:${pekkoVersion}"
+  testImplementation "org.scalatest:scalatest_${scalaBinaryVersion}:3.2.20"
+  testImplementation "org.scalatestplus:junit-4-13_${scalaBinaryVersion}:3.2.20.0"
 }
 
 tasks.withType(Copy).configureEach {
