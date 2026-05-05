@@ -10,7 +10,7 @@
 /*
  * Copyright (C) 2023 Lightbend Inc. <https://www.lightbend.com>
  */
- 
+
 package example.myapp.helloworld
 
 import org.apache.pekko.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
