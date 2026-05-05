@@ -130,6 +130,7 @@ object Dependencies {
   lazy val pluginTester = l ++= Seq(
     // usually automatically added by `suggestedDependencies`, which doesn't work with ReflectiveCodeGen
     Compile.grpcStub,
+    Runtime.logback,
     Test.scalaTest,
     Test.scalaTestPlusJunit,
     Protobuf.googleCommonProtos)
