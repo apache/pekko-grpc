@@ -103,7 +103,7 @@ class MtlsGreeterServer {
       trustStore.setEntry(
         "client1",
         new KeyStore.TrustedCertificateEntry(
-          certFactory.generateCertificate(getClass().getResourceAsStream("/certs/localhost-client.crt"))),
+          certFactory.generateCertificate(getClass().getResourceAsStream("/certs/client1.crt"))),
         null)
        */
       TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");

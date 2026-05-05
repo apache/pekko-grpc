@@ -2,7 +2,7 @@
 
 Self-signing sample CA in rootCA.*, CA cert secret: "secret"
 Server cert for localhost signed by rootCA in localhost-server.*, no password for private key
-Client cert for a client to connect in localhost-client.*, no password for private key
+Client cert for a client to connect in client1.*, no password for private key
 
 Certs used by `MtlsGreeterServer`.
 
@@ -43,7 +43,7 @@ openssl x509 -req -CA rootCA.crt -CAkey rootCA.key -in localhost-server.csr -out
 
 We now have localhost-server.crt and localhost-server.key for the server, and rootCA.crt for verifying that keypair.
 
-Same for client, no password, set a commmon name, but value isn't really important:
+Same for client, no password, set a common name, but value isn't really important:
 
 ```shell
 openssl req -newkey rsa:2048 -nodes -keyout client1.key -out client1.csr

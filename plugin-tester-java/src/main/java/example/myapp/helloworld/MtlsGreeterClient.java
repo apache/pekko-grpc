@@ -44,7 +44,7 @@ public class MtlsGreeterClient {
 
     reply.whenComplete((response, error) -> {
       if (error == null) {
-        System.out.println("Successful reply: " + reply);
+        System.out.println("Successful reply: " + response);
       } else {
         System.out.println("Request failed");
         error.printStackTrace();
@@ -95,7 +95,7 @@ public class MtlsGreeterClient {
   }
 
   private static String classPathFileAsString(String path) {
-    try (InputStream inputStream = MtlsGreeterServer.class.getResourceAsStream(path)) {
+    try (InputStream inputStream = MtlsGreeterClient.class.getResourceAsStream(path)) {
       if (inputStream == null) throw new IllegalArgumentException("'" + path + "' is not present on the classpath");
       return new BufferedReader(
         new InputStreamReader(inputStream, StandardCharsets.UTF_8))

@@ -14,7 +14,7 @@ than a normal public one like what you use for a public web server.
 
 ## Setting the server up
 
-A JSK store can be prepared with the right contents, or created on the fly from cert files in some location the server can access for reading, 
+A JKS store can be prepared with the right contents, or created on the fly from cert files in some location the server can access for reading, 
 in this sample we use cert files available on the classpath. The server is set up with its own private key and cert as well as a trust 
 store with a CA to trust client certificates from:
 
