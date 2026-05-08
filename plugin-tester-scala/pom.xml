@@ -23,7 +23,7 @@
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
     <pekko.version>2.0.0-M1</pekko.version>
-    <pekko.http.version>1.3.0</pekko.http.version>
+    <pekko.http.version>2.0.0-M1</pekko.http.version>
     <grpc.version>1.81.0</grpc.version> <!-- checked synced by VersionSyncCheckPlugin -->
     <project.encoding>UTF-8</project.encoding>
   </properties>
@@ -58,7 +58,18 @@
       <artifactId>pekko-http-cors_2.13</artifactId>
       <version>${pekko.http.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.pekko</groupId>
+      <artifactId>pekko-pki_2.13</artifactId>
+      <version>${pekko.version}</version>
+    </dependency>
 
+    <dependency>
+      <groupId>org.apache.pekko</groupId>
+      <artifactId>pekko-actor-testkit-typed_2.13</artifactId>
+      <version>${pekko.version}</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.apache.pekko</groupId>
       <artifactId>pekko-stream-testkit_2.13</artifactId>
