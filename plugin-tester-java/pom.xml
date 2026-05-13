@@ -24,7 +24,7 @@
     <maven.compiler.target>17</maven.compiler.target>
     <maven-dependency-plugin.version>3.8.1</maven-dependency-plugin.version>
     <maven-exec-plugin.version>3.5.1</maven-exec-plugin.version>
-    <pekko.version>2.0.0-M1</pekko.version>
+    <pekko.version>2.0.0-M2</pekko.version>
     <pekko.http.version>2.0.0-M1</pekko.http.version>
     <grpc.version>1.81.0</grpc.version> <!-- checked synced by VersionSyncCheckPlugin -->
     <project.encoding>UTF-8</project.encoding>
