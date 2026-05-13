@@ -62,7 +62,7 @@ object Dependencies {
       .exclude("io.grpc", "grpc-xds")
       .exclude("io.opentelemetry", "opentelemetry-exporter-prometheus")
 
-    val slf4jApi = "org.slf4j" % "slf4j-api" % "2.0.17"
+    val slf4jApi = "org.slf4j" % "slf4j-api" % "2.0.18"
     val mavenPluginApi = "org.apache.maven" % "maven-plugin-api" % Versions.maven
     val mavenCore = "org.apache.maven" % "maven-core" % Versions.maven
     val protocJar = "com.github.os72" % "protoc-jar" % "3.11.4"
