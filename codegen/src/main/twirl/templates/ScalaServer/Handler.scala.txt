@@ -55,7 +55,7 @@ object @{serviceName}Handler {
      * several services.
      */
     def apply(implementation: @serviceName)(implicit system: ClassicActorSystemProvider): model.HttpRequest => scala.concurrent.Future[model.HttpResponse] =
-      partial(implementation).orElse { case _ => notFound }
+      handler(implementation, @{service.name}.name, GrpcExceptionHandler.defaultMapper)
 
     /**
      * Creates a `HttpRequest` to `HttpResponse` handler that can be used in for example `Http().bindAndHandleAsync`
@@ -65,7 +65,7 @@ object @{serviceName}Handler {
      * several services.
      */
     def apply(implementation: @serviceName, eHandler: ActorSystem => PartialFunction[Throwable, Trailers])(implicit system: ClassicActorSystemProvider): model.HttpRequest => scala.concurrent.Future[model.HttpResponse] =
-      partial(implementation, @{service.name}.name, eHandler).orElse { case _ => notFound }
+      handler(implementation, @{service.name}.name, eHandler)
 
     /**
      * Creates a `HttpRequest` to `HttpResponse` handler that can be used in for example `Http().bindAndHandleAsync`
@@ -77,7 +77,7 @@ object @{serviceName}Handler {
      * Registering a gRPC service under a custom prefix is not widely supported and strongly discouraged by the specification.
      */
     def apply(implementation: @serviceName, prefix: String)(implicit system: ClassicActorSystemProvider): model.HttpRequest => scala.concurrent.Future[model.HttpResponse] =
-      partial(implementation, prefix).orElse { case _ => notFound }
+      handler(implementation, prefix, GrpcExceptionHandler.defaultMapper)
 
     /**
      * Creates a `HttpRequest` to `HttpResponse` handler that can be used in for example `Http().bindAndHandleAsync`
@@ -89,7 +89,7 @@ object @{serviceName}Handler {
      * Registering a gRPC service under a custom prefix is not widely supported and strongly discouraged by the specification.
      */
     def apply(implementation: @serviceName, prefix: String, eHandler: ActorSystem => PartialFunction[Throwable, Trailers])(implicit system: ClassicActorSystemProvider): model.HttpRequest => scala.concurrent.Future[model.HttpResponse] =
-      partial(implementation, prefix, eHandler).orElse { case _ => notFound }
+      handler(implementation, prefix, eHandler)
 
 @if(serviceName != "ServerReflection") {
 
@@ -106,6 +106,48 @@ object @{serviceName}Handler {
           @{serviceName}Handler.partial(implementation),
           pekko.grpc.scaladsl.ServerReflection.partial(List(@{service.name})))
 }
+
+    private def methodName(request: model.HttpRequest, prefix: String): String =
+      request.uri.path match {
+        case model.Uri.Path.Slash(model.Uri.Path.Segment(`prefix`, model.Uri.Path.Slash(model.Uri.Path.Segment(method, model.Uri.Path.Empty)))) =>
+          method
+        case _ =>
+          null
+      }
+
+    private def handler(implementation: @serviceName, prefix: String, eHandler: ActorSystem => PartialFunction[Throwable, Trailers])(implicit system: ClassicActorSystemProvider): model.HttpRequest => scala.concurrent.Future[model.HttpResponse] = {
+      implicit val mat: Materializer = SystemMaterializer(system).materializer
+      implicit val ec: ExecutionContext = mat.executionContext
+      val spi = TelemetryExtension(system).spi
+
+      import @{service.name}.Serializers.@{service.scalaCompatConstants.WildcardImport}
+
+      def handle(request: model.HttpRequest, method: String): scala.concurrent.Future[model.HttpResponse] =
+        GrpcMarshalling.negotiated(request, (reader, writer) =>
+          method match {
+            @for(method <- service.methods) {
+            case "@method.grpcName" =>
+                @{if(powerApis) { "val metadata = MetadataBuilder.fromHeaders(request.headers)" } else { "" }}
+                @if(method.methodType == org.apache.pekko.grpc.gen.Unary) {
+                GrpcMarshalling.handleUnary(request.entity, (e: @method.parameterType) => implementation.@{method.nameSafe}(e@{if(powerApis) { ", metadata" } else { "" }}), eHandler)(
+                  @{service.scalaCompatConstants.ImplicitUsing}@method.deserializer.name, @method.serializer.name, mat, reader, writer, system, ec)
+                } else {
+                @{method.unmarshal}(request.entity)(@{service.scalaCompatConstants.ImplicitUsing}@method.deserializer.name, mat, reader)
+                  .@{if(method.outputStreaming) { "map" } else { "flatMap" }}(implementation.@{method.nameSafe}(_@{if(powerApis) { ", metadata" } else { "" }}))
+                  .map(e => @{method.marshal}(e, eHandler)(@{service.scalaCompatConstants.ImplicitUsing}@method.serializer.name, writer, system))
+                  .recoverWith(GrpcExceptionHandler.from(eHandler(system.classicSystem))(system, writer))
+                }
+            }
+            case m => GrpcExceptionHandler.from(eHandler(system.classicSystem))(system, writer)(new NotImplementedError(s"Not implemented: $m"))
+          }
+      ).getOrElse(unsupportedMediaType)
+
+      request => {
+        val method = methodName(request, prefix)
+        if (method eq null) notFound
+        else handle(spi.onRequest(prefix, method, request), method)
+      }
+    }
 
     /**
      * Creates a partial `HttpRequest` to `HttpResponse` handler that can be combined with handlers of other
@@ -125,24 +167,28 @@ object @{serviceName}Handler {
 
       def handle(request: model.HttpRequest, method: String): scala.concurrent.Future[model.HttpResponse] =
         GrpcMarshalling.negotiated(request, (reader, writer) =>
-          (method match {
+          method match {
             @for(method <- service.methods) {
             case "@method.grpcName" =>
                 @{if(powerApis) { "val metadata = MetadataBuilder.fromHeaders(request.headers)" } else { "" }}
+                @if(method.methodType == org.apache.pekko.grpc.gen.Unary) {
+                GrpcMarshalling.handleUnary(request.entity, (e: @method.parameterType) => implementation.@{method.nameSafe}(e@{if(powerApis) { ", metadata" } else { "" }}), eHandler)(
+                  @{service.scalaCompatConstants.ImplicitUsing}@method.deserializer.name, @method.serializer.name, mat, reader, writer, system, ec)
+                } else {
                 @{method.unmarshal}(request.entity)(@{service.scalaCompatConstants.ImplicitUsing}@method.deserializer.name, mat, reader)
                   .@{if(method.outputStreaming) { "map" } else { "flatMap" }}(implementation.@{method.nameSafe}(_@{if(powerApis) { ", metadata" } else { "" }}))
                   .map(e => @{method.marshal}(e, eHandler)(@{service.scalaCompatConstants.ImplicitUsing}@method.serializer.name, writer, system))
+                  .recoverWith(GrpcExceptionHandler.from(eHandler(system.classicSystem))(system, writer))
+                }
             }
-            case m => scala.concurrent.Future.failed(new NotImplementedError(s"Not implemented: $m"))
-          })
-          .recoverWith(GrpcExceptionHandler.from(eHandler(system.classicSystem))(system, writer))
+            case m => GrpcExceptionHandler.from(eHandler(system.classicSystem))(system, writer)(new NotImplementedError(s"Not implemented: $m"))
+          }
       ).getOrElse(unsupportedMediaType)
 
-      Function.unlift((req: model.HttpRequest) => req.uri.path match {
-        case model.Uri.Path.Slash(model.Uri.Path.Segment(`prefix`, model.Uri.Path.Slash(model.Uri.Path.Segment(method, model.Uri.Path.Empty)))) =>
-          Some(handle(spi.onRequest(prefix, method, req), method))
-        case _ =>
-          None
+      Function.unlift((req: model.HttpRequest) => {
+        val method = methodName(req, prefix)
+        if (method eq null) None
+        else Some(handle(spi.onRequest(prefix, method, req), method))
       })
     }
   }

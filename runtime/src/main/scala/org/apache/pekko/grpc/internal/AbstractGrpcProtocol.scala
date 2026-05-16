@@ -24,10 +24,9 @@ import pekko.stream.impl.io.ByteStringParser
 import pekko.stream.impl.io.ByteStringParser.{ ByteReader, ParseResult, ParseStep }
 import pekko.stream.scaladsl.Flow
 import pekko.stream.stage.GraphStageLogic
-import pekko.util.{ ByteString, ByteStringBuilder }
+import pekko.util.ByteString
 import io.grpc.StatusException
 
-import java.nio.ByteOrder
 import scala.collection.immutable
 
 abstract class AbstractGrpcProtocol(subType: String) extends GrpcProtocol {
@@ -69,6 +68,24 @@ object AbstractGrpcProtocol {
 
   def fieldType(codec: Codec) = if (codec == Identity) notCompressed else compressed
 
+  private[grpc] final val FrameHeaderSize = 5
+
+  private[grpc] def writeFrameHeader(
+      frame: Array[Byte],
+      offset: Int,
+      dataLength: Int,
+      isCompressed: Boolean,
+      isTrailer: Boolean): Unit = {
+    val flags =
+      (if (isCompressed) 1 else 0) | (if (isTrailer) 0x80 else 0)
+
+    frame(offset) = flags.toByte
+    frame(offset + 1) = (dataLength >>> 24).toByte
+    frame(offset + 2) = (dataLength >>> 16).toByte
+    frame(offset + 3) = (dataLength >>> 8).toByte
+    frame(offset + 4) = dataLength.toByte
+  }
+
   /**
    * Adjusts the compressibility of a content type to suit a message encoding.
    * @param contentType the content type for the gRPC protocol.
@@ -84,18 +101,9 @@ object AbstractGrpcProtocol {
       .toContentType
 
   def encodeFrameData(data: ByteString, isCompressed: Boolean, isTrailer: Boolean): ByteString = {
-    implicit val byteOrder = ByteOrder.BIG_ENDIAN
-    val length = data.length
-    val builder = new ByteStringBuilder()
-    builder.sizeHint(5)
-    val flags =
-      (if (isCompressed) 1 else 0) | (if (isTrailer) 0x80 else 0)
-
-    builder // ...
-      .putByte(flags.toByte)
-      .putInt(length)
-      .++=(data)
-      .result()
+    val header = new Array[Byte](FrameHeaderSize)
+    writeFrameHeader(header, 0, data.length, isCompressed, isTrailer)
+    ByteString.fromArrayUnsafe(header, 0, FrameHeaderSize) ++ data
   }
 
   def writer(

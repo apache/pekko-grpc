@@ -20,6 +20,7 @@ import org.apache.pekko
 import pekko.NotUsed
 import pekko.actor.ActorSystem
 import pekko.actor.ClassicActorSystemProvider
+import pekko.annotation.InternalApi
 import pekko.grpc._
 import pekko.grpc.internal._
 import pekko.grpc.GrpcProtocol.{ GrpcProtocolReader, GrpcProtocolWriter }
@@ -30,6 +31,7 @@ import pekko.stream.javadsl.Source
 import pekko.util.ByteString
 
 import scala.annotation.nowarn
+import scala.util.control.NonFatal
 
 object GrpcMarshalling {
 
@@ -56,7 +58,12 @@ object GrpcMarshalling {
       u: ProtobufSerializer[T],
       mat: Materializer,
       reader: GrpcProtocolReader): CompletionStage[T] =
-    unmarshal(entity.getDataBytes, u, mat, reader)
+    entity match {
+      case strict: pekko.http.scaladsl.model.HttpEntity.Strict =>
+        completedOrFailed(u.deserialize(reader.decodeSingleFrame(strict.data)))
+      case _ =>
+        unmarshal(entity.getDataBytes, u, mat, reader)
+    }
 
   def unmarshalStream[T](
       data: Source[ByteString, AnyRef],
@@ -98,9 +105,58 @@ object GrpcMarshalling {
       : HttpResponse =
     GrpcResponseHelpers(e.asScala, scalaAnonymousPartialFunction(eHandler))(m, writer, system)
 
+  @InternalApi
+  def handleUnaryResponse[Out](
+      response: CompletionStage[Out],
+      m: ProtobufSerializer[Out],
+      writer: GrpcProtocolWriter,
+      system: ClassicActorSystemProvider,
+      eHandler: JFunction[ActorSystem, JFunction[Throwable, Trailers]]): CompletionStage[HttpResponse] =
+    try {
+      response match {
+        case future: CompletableFuture[_] if future.isDone =>
+          try completedResponse(marshal(completedValue[Out](future), m, writer, system, eHandler))
+          catch {
+            case NonFatal(error) => handleUnaryFailure(error, writer, system, eHandler)
+          }
+        case _ =>
+          response
+            .thenApply(out => marshal(out, m, writer, system, eHandler))
+            .exceptionally(error => GrpcExceptionHandler.standard(error, eHandler, writer, system))
+      }
+    } catch {
+      case NonFatal(error) => handleUnaryFailure(error, writer, system, eHandler)
+    }
+
+  @InternalApi
+  def handleUnaryFailure(error: Throwable): CompletionStage[HttpResponse] =
+    if (NonFatal(error)) failure(error)
+    else throw error
+
+  @InternalApi
+  def handleUnaryFailure(
+      error: Throwable,
+      writer: GrpcProtocolWriter,
+      system: ClassicActorSystemProvider,
+      eHandler: JFunction[ActorSystem, JFunction[Throwable, Trailers]]): CompletionStage[HttpResponse] =
+    if (NonFatal(error)) completedResponse(GrpcExceptionHandler.standard(error, eHandler, writer, system))
+    else throw error
+
+  private def completedResponse(response: HttpResponse): CompletableFuture[HttpResponse] =
+    CompletableFuture.completedFuture(response)
+
   private def failure[R](error: Throwable): CompletableFuture[R] = {
     val future: CompletableFuture[R] = new CompletableFuture()
     future.completeExceptionally(error)
     future
   }
+
+  private def completedOrFailed[R](value: => R): CompletionStage[R] =
+    try CompletableFuture.completedFuture(value)
+    catch {
+      case NonFatal(error) => failure(error)
+    }
+
+  private def completedValue[T](future: CompletableFuture[_]): T =
+    future.asInstanceOf[CompletableFuture[T]].getNow(null.asInstanceOf[T])
 }

@@ -232,6 +232,7 @@ lazy val interopTests = Project(id = "interop-tests", base = file("interop-tests
 
 lazy val benchmarks = Project(id = "benchmarks", base = file("benchmarks"))
   .dependsOn(runtime)
+  .dependsOn(pluginTesterScala)
   .enablePlugins(JmhPlugin)
   .disablePlugins(MimaPlugin)
   .settings(

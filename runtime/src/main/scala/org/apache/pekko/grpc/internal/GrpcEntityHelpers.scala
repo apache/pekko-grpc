@@ -17,10 +17,10 @@ import org.apache.pekko
 import pekko.NotUsed
 import pekko.actor.{ ActorSystem, ClassicActorSystemProvider }
 import pekko.annotation.InternalApi
-import pekko.grpc.{ GrpcServiceException, ProtobufSerializer, Trailers }
+import pekko.grpc.{ GrpcServiceException, ProtobufFrameSerializer, ProtobufSerializer, Trailers }
 import pekko.grpc.GrpcProtocol.{ DataFrame, Frame, GrpcProtocolWriter, TrailerFrame }
 import pekko.grpc.scaladsl.{ headers, BytesEntry, Metadata, MetadataEntry, StringEntry }
-import pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
+import pekko.http.scaladsl.model.HttpEntity.{ Chunk, ChunkStreamPart }
 import pekko.http.scaladsl.model.HttpHeader
 import pekko.http.scaladsl.model.headers.RawHeader
 import pekko.stream.scaladsl.Source
@@ -66,6 +66,20 @@ object GrpcEntityHelpers {
     }
 
   private def chunks[T](e: Source[T, NotUsed], trail: Source[Frame, NotUsed])(
+      implicit m: ProtobufSerializer[T],
+      writer: GrpcProtocolWriter): Source[ChunkStreamPart, NotUsed] =
+    if ((writer.messageEncoding eq Identity) && writer.contentType == GrpcProtocolNative.contentType) {
+      m match {
+        case frameSerializer: ProtobufFrameSerializer[T @unchecked] =>
+          e.map { msg => Chunk(frameSerializer.serializeDataFrame(msg)): ChunkStreamPart }
+            .via(concatCheap(trail.map(writer.encodeFrame)))
+        case _ => frameEncodedChunks(e, trail)
+      }
+    } else {
+      frameEncodedChunks(e, trail)
+    }
+
+  private def frameEncodedChunks[T](e: Source[T, NotUsed], trail: Source[Frame, NotUsed])(
       implicit m: ProtobufSerializer[T],
       writer: GrpcProtocolWriter): Source[ChunkStreamPart, NotUsed] =
     e.map { msg => DataFrame(m.serialize(msg)) }.via(concatCheap(trail)).via(writer.frameEncoder)
