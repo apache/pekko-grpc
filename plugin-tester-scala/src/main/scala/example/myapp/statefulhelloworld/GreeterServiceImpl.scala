@@ -16,24 +16,20 @@ package example.myapp.statefulhelloworld
 import example.myapp.statefulhelloworld.grpc.GreeterService
 import example.myapp.statefulhelloworld.grpc.{ ChangeRequest, ChangeResponse, HelloReply, HelloRequest }
 import org.apache.pekko
-import pekko.actor.ActorSystem
-import pekko.pattern.ask
+import pekko.actor.typed.{ ActorRef, ActorSystem }
+import pekko.actor.typed.scaladsl.AskPattern._
 import pekko.util.Timeout
+
+import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
 
-import scala.concurrent.Future
-
 // #stateful-service
-class GreeterServiceImpl(system: ActorSystem) extends GreeterService {
-  val greeterActor = system.actorOf(GreeterActor.props("Hello"), "greeter")
+class GreeterServiceImpl(greeterActor: ActorRef[GreeterActor.GreetingCommand])(implicit system: ActorSystem[_]) extends GreeterService {
+  private implicit val timeout: Timeout = 3.seconds
+  private implicit val ec: ExecutionContext = system.executionContext
 
   def sayHello(in: HelloRequest): Future[HelloReply] = {
-    // timeout and execution context for ask
-    implicit val timeout: Timeout = 3.seconds
-    import system.dispatcher
-
-    (greeterActor ? GreeterActor.GetGreeting)
-      .mapTo[GreeterActor.Greeting]
+    greeterActor.ask((replyTo: ActorRef[GreeterActor.Greeting]) => GreeterActor.GetGreeting(replyTo))
       .map(message => HelloReply(s"${message.greeting}, ${in.name}"))
   }
 

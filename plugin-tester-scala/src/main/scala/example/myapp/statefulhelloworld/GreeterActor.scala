@@ -14,28 +14,31 @@
 package example.myapp.statefulhelloworld
 
 import org.apache.pekko
-import pekko.actor.Actor
-import pekko.actor.Props
+import pekko.actor.typed.scaladsl.Behaviors
+import pekko.actor.typed.{ ActorRef, Behavior }
 
 // #actor
 object GreeterActor {
-  case class ChangeGreeting(newGreeting: String)
-
-  case object GetGreeting
+  sealed trait GreetingCommand
+  case class ChangeGreeting(newGreeting: String) extends GreetingCommand
+  case class GetGreeting(replyTo: ActorRef[Greeting]) extends GreetingCommand
   case class Greeting(greeting: String)
 
-  def props(initialGreeting: String) = Props(new GreeterActor(initialGreeting))
+  def apply(initialGreeting: String): Behavior[GreetingCommand] = {
+    new GreeterActor(initialGreeting).createBehavior()
+  }
 }
 
-class GreeterActor(initialGreeting: String) extends Actor {
+class GreeterActor(initialGreeting: String){
   import GreeterActor._
-
   var greeting = Greeting(initialGreeting)
-
-  def receive = {
-    case GetGreeting                 => sender() ! greeting
+  def createBehavior(): Behavior[GreetingCommand] = Behaviors.receiveMessage {
     case ChangeGreeting(newGreeting) =>
       greeting = Greeting(newGreeting)
+      createBehavior()
+    case GetGreeting(replyTo) =>
+      replyTo ! greeting
+      Behaviors.same
   }
 }
 // #actor
