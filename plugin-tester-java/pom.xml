@@ -65,6 +65,12 @@
       <artifactId>pekko-pki_2.13</artifactId>
       <version>${pekko.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.pekko</groupId>
+      <artifactId>pekko-actor-typed_2.13</artifactId>
+      <version>${pekko.version}</version>
+    </dependency>
+
 
     <!-- Needed for the generated client -->
     <dependency>
