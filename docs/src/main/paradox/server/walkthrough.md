@@ -257,7 +257,7 @@ It is often a good practice to use typed actor APIs. In the following example,
 we can make it sure that Hello World actor receives commands that are only
 derived from `GreeterActor.GreetingCommand`.
 
-To learn more about difference between typed actor and classic, please refer to [Learning Pekko Typed from Classic](https://pekko.apache.org/docs/pekko/1.1/typed/from-classic.html).
+To learn more about difference between typed actor and classic, please refer to @extref:[Learning Pekko Typed from Classic](pekko:typed/from-classic.html).
 
 Scala
 :  @@snip [GreeterServiceImpl.scala](/plugin-tester-scala/src/main/scala/example/myapp/typedhelloworld/GreeterServiceImpl.scala) { #stateful-service }
