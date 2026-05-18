@@ -13,7 +13,6 @@
 
 package example.myapp.typedhelloworld;
 
-
 import example.myapp.statefulhelloworld.grpc.*;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
