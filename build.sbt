@@ -301,6 +301,7 @@ lazy val pluginTesterScala = Project(id = "plugin-tester-scala", base = file("pl
   .addPekkoModuleDependency("pekko-http-cors", "", PekkoHttpDependency.default)
   .addPekkoModuleDependency("pekko-http", "", PekkoHttpDependency.default)
   .addPekkoModuleDependency("pekko-pki", "", PekkoCoreDependency.default)
+  .addPekkoModuleDependency("pekko-actor-typed", "", PekkoCoreDependency.default)
   .addPekkoModuleDependency("pekko-actor-testkit-typed", "test", PekkoCoreDependency.default)
   .settings(Dependencies.pluginTester)
   .settings(
