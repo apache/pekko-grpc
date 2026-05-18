@@ -253,7 +253,7 @@ Scala
 Java
 :  @@snip [GreeterActor.java](/plugin-tester-java/src/main/java/example/myapp/statefulhelloworld/GreeterActor.java) { #actor }
 
-It is often a good practice to use typed actor APIs. In the following example,
+We now recommend using typed actors. In the following example,
 we can make it sure that Hello World actor receives commands that are only
 derived from `GreeterActor.GreetingCommand`.
 
