@@ -317,6 +317,7 @@ lazy val pluginTesterScala = Project(id = "plugin-tester-scala", base = file("pl
 lazy val pluginTesterJava = Project(id = "plugin-tester-java", base = file("plugin-tester-java"))
   .disablePlugins(MimaPlugin)
   .addPekkoModuleDependency("pekko-pki", "", PekkoCoreDependency.default)
+  .addPekkoModuleDependency("pekko-actor-typed", "", PekkoCoreDependency.default)
   .settings(Dependencies.pluginTester)
   .settings(
     name := s"$pekkoPrefix-plugin-tester-java",
