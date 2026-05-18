@@ -37,7 +37,7 @@ val root = project
       "org.hdrhistogram" % "HdrHistogram" % "2.1.12",
       "org.apache.commons" % "commons-math3" % "3.6.1",
       "org.scalatest" %% "scalatest" % "3.2.20" % Test,
-      "org.scalatestplus" %% "junit-4-13" % "3.2.19.1" % Test),
+      "org.scalatestplus" %% "junit-4-13" % "3.2.20.0" % Test),
     PB.artifactResolver := PB.artifactResolver.dependsOn(codeGenProject / Compile / publishLocal).value)
 
 compile / javacOptions += "-Xlint:deprecation"
