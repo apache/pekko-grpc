@@ -33,6 +33,7 @@ def pekkoHttpVersion = "2.0.0-M1"
 dependencies {
   implementation "org.apache.pekko:pekko-http-cors_${scalaBinaryVersion}:${pekkoHttpVersion}"
   implementation "org.apache.pekko:pekko-pki_${scalaBinaryVersion}:${pekkoVersion}"
+  implementation "org.apache.pekko:pekko-actor-typed_${scalaBinaryVersion}:${pekkoVersion}"
   implementation "org.scala-lang:scala-library:${scalaFullVersion}"
   testImplementation "org.scalatest:scalatest_${scalaBinaryVersion}:3.2.20"
   testImplementation "org.scalatestplus:junit-4-13_${scalaBinaryVersion}:3.2.20.0"

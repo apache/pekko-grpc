@@ -16,17 +16,15 @@ package example.myapp.typedhelloworld
 import example.myapp.statefulhelloworld.grpc.GreeterService
 import example.myapp.statefulhelloworld.grpc.{ ChangeRequest, ChangeResponse, HelloReply, HelloRequest }
 import org.apache.pekko
-import pekko.actor.typed.{ActorRef, ActorSystem}
+import pekko.actor.typed.{ ActorRef, ActorSystem }
 import pekko.actor.typed.scaladsl.AskPattern._
 import pekko.util.Timeout
 import scala.concurrent.duration._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 // #stateful-service
-class GreeterServiceImpl
-  (greeterActor: ActorRef[GreeterActor.GreetingCommand])
-  (implicit system: ActorSystem[_])
+class GreeterServiceImpl(greeterActor: ActorRef[GreeterActor.GreetingCommand])(implicit system: ActorSystem[_])
     extends GreeterService {
 
   def sayHello(in: HelloRequest): Future[HelloReply] = {
