@@ -44,8 +44,8 @@ import pekko.grpc.PekkoGrpcGenerated
 @@ApiMayChange
 @@PekkoGrpcGenerated
 object @{serviceName}Handler {
-    private val notFound = scala.concurrent.Future.successful(model.HttpResponse(model.StatusCodes.NotFound))
-    private val unsupportedMediaType = scala.concurrent.Future.successful(model.HttpResponse(model.StatusCodes.UnsupportedMediaType))
+    private val notFound = org.apache.pekko.http.scaladsl.util.FastFuture.successful(model.HttpResponse(model.StatusCodes.NotFound))
+    private val unsupportedMediaType = org.apache.pekko.http.scaladsl.util.FastFuture.successful(model.HttpResponse(model.StatusCodes.UnsupportedMediaType))
 
     /**
      * Creates a `HttpRequest` to `HttpResponse` handler that can be used in for example `Http().bindAndHandleAsync`
