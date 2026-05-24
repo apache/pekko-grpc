@@ -183,22 +183,25 @@ object NettyClientUtils {
    */
   @InternalApi
   private def createNettySslContext(javaSslContext: SSLContext): SslContext = {
-    import io.grpc.netty.shaded.io.netty.handler.ssl.{ JdkSslContext, SslProvider }
-    import java.lang.reflect.Field
-
-    // This is a hack for situations where the SSLContext is given.
-    // This approach forces using SslProvider.JDK.
-
-    // Create a Netty JdkSslContext object with all the correct ciphers, protocol settings, etc initialized.
-    val nettySslContext: JdkSslContext =
-      GrpcSslContexts.configure(GrpcSslContexts.forClient, SslProvider.JDK).build.asInstanceOf[JdkSslContext]
-
-    // Patch the SSLContext value inside the JdkSslContext object
-    val nettySslContextField: Field = classOf[JdkSslContext].getDeclaredField("sslContext")
-    nettySslContextField.setAccessible(true)
-    nettySslContextField.set(nettySslContext, javaSslContext)
-
-    nettySslContext
+    import io.grpc.netty.shaded.io.netty.handler.ssl.{ ApplicationProtocolConfig, ClientAuth, JdkSslContext }
+    import io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2SecurityUtil
+    import io.grpc.netty.shaded.io.netty.handler.ssl.SupportedCipherSuiteFilter
+    // See
+    // https://github.com/netty/netty/blob/4.1/handler/src/main/java/io/netty/handler/ssl/JdkSslContext.java#L229-L309
+    new JdkSslContext(
+      javaSslContext,
+      /* boolean isClient */ true,
+      // Keep HTTP/2 ciphers and ALPN so Java SSLContext-backed clients negotiate h2.
+      /* Iterable<String> ciphers */ Http2SecurityUtil.CIPHERS,
+      SupportedCipherSuiteFilter.INSTANCE,
+      /* ApplicationProtocolConfig apn */ new ApplicationProtocolConfig(
+        ApplicationProtocolConfig.Protocol.ALPN,
+        ApplicationProtocolConfig.SelectorFailureBehavior.NO_ADVERTISE,
+        ApplicationProtocolConfig.SelectedListenerFailureBehavior.ACCEPT,
+        "h2"),
+      ClientAuth.NONE, // server-only option, which is ignored as isClient=true (as indicated in constructor Javadoc)
+      /* String[] protocols */ null, // use JDK defaults (null is accepted as indicated in constructor Javadoc)
+      /* boolean startTls */ false)
   }
 
   /**
