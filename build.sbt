@@ -209,6 +209,11 @@ lazy val interopTests = Project(id = "interop-tests", base = file("interop-tests
     // We need to be able to publish locally in order for sbt interopt tests to work
     // however this sbt project should not be published to an actual repository
     publishLocal / skip := false,
+    // the following is needed to exclude the gRPC generated sources for protobuf-java from the sources,
+    // they cause tests to fail - https://github.com/apache/pekko-grpc/pull/610
+    Compile / sources := (Compile / sources).value.filterNot { f =>
+      f.getPath.replace('\\', '/').contains("/src_managed/main/com/google/protobuf")
+    },
     Compile / doc := (Compile / doc / target).value)
   .settings(inConfig(Test)(Seq(
     reStart / mainClass := (Test / run / mainClass).value, {
