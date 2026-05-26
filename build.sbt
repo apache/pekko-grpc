@@ -177,7 +177,7 @@ lazy val sbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
       val p3 = (runtime / publishLocal).value
       val p4 = (interopTests / publishLocal).value
     },
-    scriptedSbt := "1.12.9",
+    scriptedSbt := "1.12.11",
     scriptedBufferLog := false)
   .settings(
     crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
@@ -315,7 +315,12 @@ lazy val pluginTesterScala = Project(id = "plugin-tester-scala", base = file("pl
     PB.protocVersion := Dependencies.Versions.googleProtoc,
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
     scalaVersion := Dependencies.Versions.CrossScalaForLib.head,
-    ReflectiveCodeGen.codeGeneratorSettings ++= Seq("flat_package", "server_power_apis"))
+    ReflectiveCodeGen.codeGeneratorSettings ++= Seq("flat_package", "server_power_apis"),
+    // the following is needed to exclude the gRPC generated sources for protobuf-java from the sources,
+    // they cause tests to fail - https://github.com/apache/pekko-grpc/pull/610
+    Compile / sources := (Compile / sources).value.filterNot { f =>
+      f.getPath.replace('\\', '/').contains("/src_managed/main/com/google/protobuf")
+    })
   .pluginTestingSettings
   .enablePlugins(NoPublish)
 
