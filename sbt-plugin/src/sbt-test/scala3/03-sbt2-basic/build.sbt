@@ -8,7 +8,7 @@
  */
 
 // Verify that the pekko-grpc sbt plugin cross-builds correctly for sbt 1.x and sbt 2.x.
-// When run in the Scala 3 build pass (+scripted), scriptedSbt is set to 2.0.0-RC13.
+// When run in the Scala 3 build pass (+scripted), scriptedSbt is set to 2.x.y.
 scalaVersion := "3.3.7"
 
 enablePlugins(PekkoGrpcPlugin)
