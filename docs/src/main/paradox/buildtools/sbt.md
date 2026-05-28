@@ -56,7 +56,7 @@ Pekko gRPC uses the `protoc` tool to pass `.proto` definitions
 to various code generation components,
 via [ScalaPB](https://scalapb.github.io)'s
 [sbt-protoc](https://github.com/thesamet/sbt-protoc) and
-[protoc-jar](https://github.com/os72/protoc-jar/). This will
+[protoc-jar](https://github.com/blackrock/protoc-jar-maven-plugin/). This will
 automatically download the right `protoc` for your system
 during the build.
 
