@@ -80,8 +80,8 @@ lazy val codegen = Project(id = "codegen", base = file("codegen"))
       case "LICENSE" | "LICENSE.txt" | "NOTICE"                     => MergeStrategy.discard
       case _                                                        => MergeStrategy.deduplicate
     },
-    crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
-    scalaVersion := scala212)
+    crossScalaVersions := Dependencies.Versions.CrossScalaAll,
+    scalaVersion := Dependencies.Versions.CrossScalaAll.head)
   .settings(addArtifact(Compile / assembly / artifact, assembly))
   .settings(addArtifact(sbt.Artifact(pekkoGrpcCodegenId, "bat", "bat", "bat"), mkBatAssemblyTask))
 
@@ -156,8 +156,8 @@ lazy val mavenPlugin = Project(id = "maven-plugin", base = file("maven-plugin"))
   .settings(
     name := s"$pekkoPrefix-maven-plugin",
     crossPaths := false,
-    crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
-    scalaVersion := Dependencies.Versions.CrossScalaForPlugin.head)
+    crossScalaVersions := Dependencies.Versions.CrossScalaAll,
+    scalaVersion := Dependencies.Versions.CrossScalaAll.head)
   .dependsOn(codegen)
 
 lazy val sbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
