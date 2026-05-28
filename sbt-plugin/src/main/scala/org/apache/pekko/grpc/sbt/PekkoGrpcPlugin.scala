@@ -21,6 +21,7 @@ import pekko.grpc.gen.{ BuildInfo, Logger => GenLogger, ProtocSettings }
 import protocbridge.Generator
 import sbt.Keys._
 import sbt._
+import sbtcompat.PluginCompat._
 import sbtprotoc.ProtocPlugin
 import scalapb.ScalaPbCodeGenerator
 
@@ -117,7 +118,9 @@ object PekkoGrpcPlugin extends AutoPlugin {
           configuration.value.name),
         managedSourceDirectories += (pekkoGrpcCodeGeneratorSettings / target).value,
         unmanagedResourceDirectories ++= (PB.recompile / resourceDirectories).value,
-        Defaults.ConfigZero / watchSources ++= (PB.recompile / sources).value,
+        Defaults.ConfigZero / watchSources := Def.uncached {
+          (Defaults.ConfigZero / watchSources).value ++ (PB.recompile / sources).value
+        },
         pekkoGrpcGenerators := {
           generatorsFor(
             pekkoGrpcGeneratedSources.value,
