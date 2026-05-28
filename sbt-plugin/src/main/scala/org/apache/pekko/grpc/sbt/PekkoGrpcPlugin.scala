@@ -86,7 +86,7 @@ object PekkoGrpcPlugin extends AutoPlugin {
   object autoImport extends Keys
   import autoImport._
 
-  override def projectSettings: Seq[sbt.Setting[_]] = defaultSettings ++ configSettings(Compile) ++ configSettings(Test)
+  override def projectSettings: Seq[sbt.Setting[?]] = defaultSettings ++ configSettings(Compile) ++ configSettings(Test)
 
   private def defaultSettings =
     Seq(
@@ -113,7 +113,7 @@ object PekkoGrpcPlugin extends AutoPlugin {
       },
       PB.protocVersion := BuildInfo.googleProtocVersion)
 
-  def configSettings(config: Configuration): Seq[Setting[_]] =
+  def configSettings(config: Configuration): Seq[Setting[?]] =
     inConfig(config)(
       (if (config == Compile || config == Test) Seq() // already supported by sbt-protoc by default
        else sbtprotoc.ProtocPlugin.protobufConfigSettings) ++
