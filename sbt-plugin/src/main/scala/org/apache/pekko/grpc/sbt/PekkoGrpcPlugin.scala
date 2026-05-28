@@ -24,8 +24,6 @@ import sbt._
 import sbtprotoc.ProtocPlugin
 import scalapb.ScalaPbCodeGenerator
 
-import language.implicitConversions
-
 object PekkoGrpcPlugin extends AutoPlugin {
   import sbtprotoc.ProtocPlugin.autoImport._
 
