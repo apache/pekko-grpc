@@ -35,25 +35,22 @@ object PekkoGrpcPlugin extends AutoPlugin {
 
   // hack because we cannot access sbt logger from streams unless inside taskKeys and
   // we need it in settingsKeys
-  private val generatorLogger = new GenLogger {
+  private class MutableLogger extends GenLogger {
     @volatile var logger: Logger = ConsoleLogger()
     def debug(text: String): Unit = logger.debug(text)
     def info(text: String): Unit = logger.info(text)
     def warn(text: String): Unit = logger.warn(text)
     def error(text: String): Unit = logger.error(text)
   }
+  private val generatorLogger = new MutableLogger
 
-  object GeneratorOption extends Enumeration {
-    protected case class Val(setting: String) extends super.Val
-    implicit def valueToGeneratorOptionVal(x: Value): Val = x.asInstanceOf[Val]
-
-    val ServerPowerApis = Val("server_power_apis")
-    val UsePlayActions = Val("use_play_actions")
-
-    val settings: Set[String] = values.map(_.setting)
+  object GeneratorOption {
+    val ServerPowerApis = "server_power_apis"
+    val UsePlayActions = "use_play_actions"
+    val settings: Set[String] = Set(ServerPowerApis, UsePlayActions)
   }
 
-  trait Keys { _: autoImport.type =>
+  trait Keys { self: autoImport.type =>
 
     object PekkoGrpc {
       sealed trait GeneratedSource
@@ -122,7 +119,7 @@ object PekkoGrpcPlugin extends AutoPlugin {
           configuration.value.name),
         managedSourceDirectories += (pekkoGrpcCodeGeneratorSettings / target).value,
         unmanagedResourceDirectories ++= (PB.recompile / resourceDirectories).value,
-        Defaults.ConfigGlobal / watchSources ++= (PB.recompile / sources).value,
+        Defaults.ConfigZero / watchSources ++= (PB.recompile / sources).value,
         pekkoGrpcGenerators := {
           generatorsFor(
             pekkoGrpcGeneratedSources.value,
