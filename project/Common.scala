@@ -57,7 +57,7 @@ object Common extends AutoPlugin {
          Seq(
            "-unchecked",
            "-deprecation",
-           "-Xfatal-warnings",
+           "-Werror",
            "-Wunused:imports",
            "-encoding",
            "UTF-8")),
