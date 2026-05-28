@@ -80,8 +80,8 @@ lazy val codegen = Project(id = "codegen", base = file("codegen"))
       case "LICENSE" | "LICENSE.txt" | "NOTICE"                     => MergeStrategy.discard
       case _                                                        => MergeStrategy.deduplicate
     },
-    crossScalaVersions := Dependencies.Versions.CrossScalaAll,
-    scalaVersion := Dependencies.Versions.CrossScalaAll.head)
+    crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
+    scalaVersion := Dependencies.Versions.CrossScalaForPlugin.head)
   .settings(addArtifact(Compile / assembly / artifact, assembly))
   .settings(addArtifact(sbt.Artifact(pekkoGrpcCodegenId, "bat", "bat", "bat"), mkBatAssemblyTask))
 
