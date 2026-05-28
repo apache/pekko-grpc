@@ -119,7 +119,8 @@ object PekkoGrpcPlugin extends AutoPlugin {
         managedSourceDirectories += (pekkoGrpcCodeGeneratorSettings / target).value,
         unmanagedResourceDirectories ++= (PB.recompile / resourceDirectories).value,
         Defaults.ConfigZero / watchSources := Def.uncached {
-          (Defaults.ConfigZero / watchSources).value ++ (PB.recompile / sources).value
+          (Defaults.ConfigZero / watchSources).value ++
+            (PB.recompile / sources).value.map(f => WatchSource(f))
         },
         pekkoGrpcGenerators := {
           generatorsFor(
