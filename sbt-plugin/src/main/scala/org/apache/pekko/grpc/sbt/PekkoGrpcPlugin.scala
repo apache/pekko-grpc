@@ -120,7 +120,7 @@ object PekkoGrpcPlugin extends AutoPlugin {
         unmanagedResourceDirectories ++= (PB.recompile / resourceDirectories).value,
         Defaults.ConfigZero / watchSources := Def.uncached {
           (Defaults.ConfigZero / watchSources).value ++
-            (PB.recompile / sources).value.map(f => WatchSource(f))
+          (PB.recompile / sources).value.map(f => WatchSource(f))
         },
         pekkoGrpcGenerators := {
           generatorsFor(
@@ -141,20 +141,25 @@ object PekkoGrpcPlugin extends AutoPlugin {
         PB.recompile / includeFilter := GlobFilter("*.proto"),
         PB.recompile / managedSourceDirectories := Nil,
         PB.recompile / unmanagedSourceDirectories := Seq(sourceDirectory.value),
-        PB.recompile / sourceDirectories := (PB.recompile / unmanagedSourceDirectories).value ++ (PB.recompile / managedSourceDirectories).value,
+        PB.recompile / sourceDirectories := (PB.recompile / unmanagedSourceDirectories).value ++
+        (PB.recompile / managedSourceDirectories).value,
         PB.recompile / managedSources := Nil,
         PB.recompile / unmanagedSources := {
-          Defaults.collectFiles(PB.recompile / unmanagedSourceDirectories, PB.recompile / includeFilter, PB.recompile / excludeFilter).value
+          Defaults.collectFiles(PB.recompile / unmanagedSourceDirectories, PB.recompile / includeFilter,
+            PB.recompile / excludeFilter).value
         },
         PB.recompile / sources := (PB.recompile / managedSources).value ++ (PB.recompile / unmanagedSources).value,
         PB.recompile / managedResourceDirectories := Nil,
         PB.recompile / unmanagedResourceDirectories := resourceDirectory.value +: PB.protoSources.value,
-        PB.recompile / resourceDirectories := (PB.recompile / unmanagedResourceDirectories).value ++ (PB.recompile / managedResourceDirectories).value,
+        PB.recompile / resourceDirectories := (PB.recompile / unmanagedResourceDirectories).value ++
+        (PB.recompile / managedResourceDirectories).value,
         PB.recompile / managedResources := Nil,
         PB.recompile / unmanagedResources := {
-          Defaults.collectFiles(PB.recompile / unmanagedResourceDirectories, PB.recompile / includeFilter, PB.recompile / excludeFilter).value
+          Defaults.collectFiles(PB.recompile / unmanagedResourceDirectories, PB.recompile / includeFilter,
+            PB.recompile / excludeFilter).value
         },
-        PB.recompile / resources := (PB.recompile / managedResources).value ++ (PB.recompile / unmanagedResources).value))
+        PB.recompile / resources := (PB.recompile / managedResources).value ++
+        (PB.recompile / unmanagedResources).value))
 
   def targetsFor(
       targetPath: File,
