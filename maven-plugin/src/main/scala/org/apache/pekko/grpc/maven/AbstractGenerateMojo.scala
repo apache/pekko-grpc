@@ -204,7 +204,7 @@ abstract class AbstractGenerateMojo @Inject() (buildContext: BuildContext) exten
       }
 
       val runProtoc: Seq[String] => Int = args =>
-        com.github.os72.protocjar.Protoc.runProtoc(protocVersion +: args.toArray)
+        io.github.blackrock.protocjar.Protoc.runProtoc(protocVersion +: args.toArray)
       val protocOptions = if (includeStdTypes) Seq("--include_std_types") else Seq.empty
 
       compile(runProtoc, schemas, protoDir, protocOptions, targets)

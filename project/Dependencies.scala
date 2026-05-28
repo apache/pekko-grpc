@@ -65,7 +65,7 @@ object Dependencies {
     val slf4jApi = "org.slf4j" % "slf4j-api" % "2.0.18"
     val mavenPluginApi = "org.apache.maven" % "maven-plugin-api" % Versions.maven
     val mavenCore = "org.apache.maven" % "maven-core" % Versions.maven
-    val protocJar = "com.github.os72" % "protoc-jar" % "3.11.4"
+    val protocJar = "io.github.blackrock" % "protoc-jar" % "3.0.0"
 
     val plexusBuildApi = "org.sonatype.plexus" % "plexus-build-api" % "0.0.7" % "optional"
   }
