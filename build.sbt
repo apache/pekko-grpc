@@ -142,8 +142,8 @@ lazy val scalapbProtocPlugin = Project(id = "scalapb-protoc-plugin", base = file
       case _                                                        => MergeStrategy.deduplicate
     })
   .settings(
-    crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
-    scalaVersion := Dependencies.Versions.CrossScalaForPlugin.head)
+    crossScalaVersions := Dependencies.Versions.CrossScalaAll,
+    scalaVersion := Dependencies.Versions.CrossScalaAll.head)
   .settings(addArtifact(Compile / assembly / artifact, assembly))
   .settings(addArtifact(sbt.Artifact(pekkoGrpcProtocPluginId, "bat", "bat", "bat"), mkBatAssemblyTask))
   .enablePlugins(ReproducibleBuildsPlugin)
@@ -156,8 +156,8 @@ lazy val mavenPlugin = Project(id = "maven-plugin", base = file("maven-plugin"))
   .settings(
     name := s"$pekkoPrefix-maven-plugin",
     crossPaths := false,
-    crossScalaVersions := Dependencies.Versions.CrossScalaAll,
-    scalaVersion := Dependencies.Versions.CrossScalaAll.head)
+    crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
+    scalaVersion := Dependencies.Versions.CrossScalaForPlugin.head)
   .dependsOn(codegen)
 
 lazy val sbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
