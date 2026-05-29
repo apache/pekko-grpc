@@ -16,12 +16,15 @@ package org.apache.pekko.grpc.gen
 import java.io.ByteArrayOutputStream
 import java.net.URLDecoder
 
+import scala.annotation.nowarn
+
 import com.google.protobuf.compiler.PluginProtos.CodeGeneratorRequest
 import org.apache.pekko
 import pekko.grpc.gen.javadsl.{ JavaClientCodeGenerator, JavaInterfaceCodeGenerator, JavaServerCodeGenerator }
 import pekko.grpc.gen.scaladsl.{ ScalaClientCodeGenerator, ScalaServerCodeGenerator, ScalaTraitCodeGenerator }
 
 // This is the protoc plugin that the gradle plugin uses
+@nowarn("msg=deprecated")
 object Main extends App {
   val inBytes: Array[Byte] = {
     val baos = new ByteArrayOutputStream(math.max(64, System.in.available()))

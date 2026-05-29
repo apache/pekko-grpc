@@ -88,6 +88,7 @@ object Dependencies {
 
   object Plugins {
     val sbtProtoc = "com.thesamet" % "sbt-protoc" % BuildInfo.sbtProtocVersion
+    val sbt2Compat = "com.github.sbt" % "sbt2-compat" % "0.1.0"
   }
 
   private lazy val l = libraryDependencies
@@ -119,7 +120,8 @@ object Dependencies {
   lazy val sbtPlugin = Seq(
     l += Compile.scalapbCompilerPlugin,
     // we depend on it in the settings of the plugin since we set keys of the sbt-protoc plugin
-    addSbtPlugin(Plugins.sbtProtoc))
+    addSbtPlugin(Plugins.sbtProtoc),
+    addSbtPlugin(Plugins.sbt2Compat))
 
   lazy val interopTests = l ++= Seq(
     Compile.grpcInteropTesting,

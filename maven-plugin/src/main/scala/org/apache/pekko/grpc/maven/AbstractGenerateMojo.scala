@@ -14,6 +14,7 @@
 package org.apache.pekko.grpc.maven
 
 import java.io.{ ByteArrayOutputStream, File, PrintStream }
+
 import org.apache.pekko
 import pekko.grpc.gen.{ CodeGenerator, Logger, ProtocSettings }
 import pekko.grpc.gen.javadsl.{ JavaClientCodeGenerator, JavaInterfaceCodeGenerator, JavaServerCodeGenerator }
@@ -26,9 +27,11 @@ import org.sonatype.plexus.build.incremental.BuildContext
 import protocbridge.{ JvmGenerator, ProtocRunner, Target }
 import scalapb.ScalaPbCodeGenerator
 
+import scala.annotation.nowarn
 import scala.beans.BeanProperty
 import scala.util.control.NoStackTrace
 
+@nowarn("msg=deprecated")
 object AbstractGenerateMojo {
   case class ProtocError(file: String, line: Int, pos: Int, message: String)
   private val ProtocErrorRegex = """(\w+\.\w+):(\d+):(\d+):\s(.*)""".r
@@ -94,6 +97,7 @@ object AbstractGenerateMojo {
   }
 }
 
+@nowarn("msg=deprecated")
 abstract class AbstractGenerateMojo @Inject() (buildContext: BuildContext) extends AbstractMojo {
   import AbstractGenerateMojo._
 

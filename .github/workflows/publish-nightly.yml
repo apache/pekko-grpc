@@ -38,6 +38,7 @@ jobs:
         run: |-
           cp .jvmopts-ci .jvmopts
           sbt +publish
+          sbt ++2.12.21! maven-plugin/publish
           sbt ++2.13.18! codegen/publish
           sbt ++3.3.7! codegen/publish
         env:
