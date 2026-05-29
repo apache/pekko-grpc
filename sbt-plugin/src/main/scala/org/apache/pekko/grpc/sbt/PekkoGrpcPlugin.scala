@@ -118,8 +118,7 @@ object PekkoGrpcPlugin extends AutoPlugin {
           configuration.value.name),
         managedSourceDirectories += (pekkoGrpcCodeGeneratorSettings / target).value,
         unmanagedResourceDirectories ++= (PB.recompile / resourceDirectories).value,
-        Defaults.ConfigZero / watchSources := Def.uncached {
-          (Defaults.ConfigZero / watchSources).value ++
+        Defaults.ConfigZero / watchSources ++= Def.uncached {
           (PB.recompile / sources).value.map(f => WatchSource(f))
         },
         pekkoGrpcGenerators := {
@@ -136,30 +135,30 @@ object PekkoGrpcPlugin extends AutoPlugin {
             (pekkoGrpcCodeGeneratorSettings / target).value,
             pekkoGrpcCodeGeneratorSettings.value,
             pekkoGrpcGenerators.value),
-        PB.protoSources += sourceDirectory.value / "proto") ++
-      Seq(
-        PB.recompile / includeFilter := GlobFilter("*.proto"),
-        PB.recompile / managedSourceDirectories := Nil,
-        PB.recompile / unmanagedSourceDirectories := Seq(sourceDirectory.value),
-        PB.recompile / sourceDirectories := (PB.recompile / unmanagedSourceDirectories).value ++
-        (PB.recompile / managedSourceDirectories).value,
-        PB.recompile / managedSources := Nil,
-        PB.recompile / unmanagedSources := {
-          Defaults.collectFiles(PB.recompile / unmanagedSourceDirectories, PB.recompile / includeFilter,
-            PB.recompile / excludeFilter).value
-        },
-        PB.recompile / sources := (PB.recompile / managedSources).value ++ (PB.recompile / unmanagedSources).value,
-        PB.recompile / managedResourceDirectories := Nil,
-        PB.recompile / unmanagedResourceDirectories := resourceDirectory.value +: PB.protoSources.value,
-        PB.recompile / resourceDirectories := (PB.recompile / unmanagedResourceDirectories).value ++
-        (PB.recompile / managedResourceDirectories).value,
-        PB.recompile / managedResources := Nil,
-        PB.recompile / unmanagedResources := {
-          Defaults.collectFiles(PB.recompile / unmanagedResourceDirectories, PB.recompile / includeFilter,
-            PB.recompile / excludeFilter).value
-        },
-        PB.recompile / resources := (PB.recompile / managedResources).value ++
-        (PB.recompile / unmanagedResources).value))
+        PB.protoSources += sourceDirectory.value / "proto")) ++
+    inConfig(config)(Seq(
+      PB.recompile / includeFilter := GlobFilter("*.proto"),
+      PB.recompile / managedSourceDirectories := Nil,
+      PB.recompile / unmanagedSourceDirectories := Seq(sourceDirectory.value),
+      PB.recompile / sourceDirectories := (PB.recompile / unmanagedSourceDirectories).value ++
+      (PB.recompile / managedSourceDirectories).value,
+      PB.recompile / managedSources := Nil,
+      PB.recompile / unmanagedSources := {
+        Defaults.collectFiles(PB.recompile / unmanagedSourceDirectories, PB.recompile / includeFilter,
+          PB.recompile / excludeFilter).value
+      },
+      PB.recompile / sources := (PB.recompile / managedSources).value ++ (PB.recompile / unmanagedSources).value,
+      PB.recompile / managedResourceDirectories := Nil,
+      PB.recompile / unmanagedResourceDirectories := resourceDirectory.value +: PB.protoSources.value,
+      PB.recompile / resourceDirectories := (PB.recompile / unmanagedResourceDirectories).value ++
+      (PB.recompile / managedResourceDirectories).value,
+      PB.recompile / managedResources := Nil,
+      PB.recompile / unmanagedResources := {
+        Defaults.collectFiles(PB.recompile / unmanagedResourceDirectories, PB.recompile / includeFilter,
+          PB.recompile / excludeFilter).value
+      },
+      PB.recompile / resources := (PB.recompile / managedResources).value ++
+      (PB.recompile / unmanagedResources).value))
 
   def targetsFor(
       targetPath: File,
