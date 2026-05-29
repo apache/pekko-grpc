@@ -81,7 +81,7 @@ lazy val codegen = Project(id = "codegen", base = file("codegen"))
       case _                                                        => MergeStrategy.deduplicate
     },
     crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
-    scalaVersion := scala212)
+    scalaVersion := Dependencies.Versions.CrossScalaForPlugin.head)
   .settings(addArtifact(Compile / assembly / artifact, assembly))
   .settings(addArtifact(sbt.Artifact(pekkoGrpcCodegenId, "bat", "bat", "bat"), mkBatAssemblyTask))
 
@@ -168,7 +168,15 @@ lazy val sbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
   .settings(
     name := s"$pekkoPrefix-sbt-plugin",
     sbtPluginPublishLegacyMavenStyle := true,
+    addSbtPlugin("com.github.sbt" % "sbt2-compat" % "0.1.0"),
+    pluginCrossBuild / sbtVersion := {
+      scalaBinaryVersion.value match {
+        case "2.12" => "1.12.11"
+        case _      => "2.0.0-RC13"
+      }
+    },
     /** And for scripted tests: */
+    scriptedSbt := (pluginCrossBuild / sbtVersion).value,
     scriptedLaunchOpts += ("-Dproject.version=" + version.value),
     scriptedLaunchOpts ++= sys.props.collect { case (k @ "sbt.ivy.home", v) => s"-D$k=$v" }.toSeq,
     scriptedDependencies := {
@@ -177,8 +185,13 @@ lazy val sbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
       val p3 = (runtime / publishLocal).value
       val p4 = (interopTests / publishLocal).value
     },
-    scriptedSbt := "1.12.11",
-    scriptedBufferLog := false)
+    scriptedBufferLog := false,
+    scalacOptions ++= {
+      scalaBinaryVersion.value match {
+        case "2.12" => Seq("-Xsource:3")
+        case _      => Seq.empty
+      }
+    })
   .settings(
     crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
     scalaVersion := Dependencies.Versions.CrossScalaForPlugin.head)

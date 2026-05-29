@@ -21,10 +21,9 @@ import pekko.grpc.gen.{ BuildInfo, Logger => GenLogger, ProtocSettings }
 import protocbridge.Generator
 import sbt.Keys._
 import sbt._
+import sbtcompat.PluginCompat._
 import sbtprotoc.ProtocPlugin
 import scalapb.ScalaPbCodeGenerator
-
-import language.implicitConversions
 
 object PekkoGrpcPlugin extends AutoPlugin {
   import sbtprotoc.ProtocPlugin.autoImport._
@@ -35,25 +34,22 @@ object PekkoGrpcPlugin extends AutoPlugin {
 
   // hack because we cannot access sbt logger from streams unless inside taskKeys and
   // we need it in settingsKeys
-  private val generatorLogger = new GenLogger {
+  private class MutableLogger extends GenLogger {
     @volatile var logger: Logger = ConsoleLogger()
     def debug(text: String): Unit = logger.debug(text)
     def info(text: String): Unit = logger.info(text)
     def warn(text: String): Unit = logger.warn(text)
     def error(text: String): Unit = logger.error(text)
   }
+  private val generatorLogger = new MutableLogger
 
-  object GeneratorOption extends Enumeration {
-    protected case class Val(setting: String) extends super.Val
-    implicit def valueToGeneratorOptionVal(x: Value): Val = x.asInstanceOf[Val]
-
-    val ServerPowerApis = Val("server_power_apis")
-    val UsePlayActions = Val("use_play_actions")
-
-    val settings: Set[String] = values.map(_.setting)
+  object GeneratorOption {
+    val ServerPowerApis = "server_power_apis"
+    val UsePlayActions = "use_play_actions"
+    val settings: Set[String] = Set(ServerPowerApis, UsePlayActions)
   }
 
-  trait Keys { _: autoImport.type =>
+  trait Keys { self: autoImport.type =>
 
     object PekkoGrpc {
       sealed trait GeneratedSource
@@ -86,7 +82,7 @@ object PekkoGrpcPlugin extends AutoPlugin {
   object autoImport extends Keys
   import autoImport._
 
-  override def projectSettings: Seq[sbt.Setting[_]] = defaultSettings ++ configSettings(Compile) ++ configSettings(Test)
+  override def projectSettings: Seq[sbt.Setting[?]] = defaultSettings ++ configSettings(Compile) ++ configSettings(Test)
 
   private def defaultSettings =
     Seq(
@@ -113,7 +109,7 @@ object PekkoGrpcPlugin extends AutoPlugin {
       },
       PB.protocVersion := BuildInfo.googleProtocVersion)
 
-  def configSettings(config: Configuration): Seq[Setting[_]] =
+  def configSettings(config: Configuration): Seq[Setting[?]] =
     inConfig(config)(
       (if (config == Compile || config == Test) Seq() // already supported by sbt-protoc by default
        else sbtprotoc.ProtocPlugin.protobufConfigSettings) ++
@@ -122,7 +118,9 @@ object PekkoGrpcPlugin extends AutoPlugin {
           configuration.value.name),
         managedSourceDirectories += (pekkoGrpcCodeGeneratorSettings / target).value,
         unmanagedResourceDirectories ++= (PB.recompile / resourceDirectories).value,
-        Defaults.ConfigGlobal / watchSources ++= (PB.recompile / sources).value,
+        Defaults.ConfigZero / watchSources ++= Def.uncached {
+          (PB.recompile / sources).value.map(f => WatchSource(f))
+        },
         pekkoGrpcGenerators := {
           generatorsFor(
             pekkoGrpcGeneratedSources.value,
@@ -137,23 +135,30 @@ object PekkoGrpcPlugin extends AutoPlugin {
             (pekkoGrpcCodeGeneratorSettings / target).value,
             pekkoGrpcCodeGeneratorSettings.value,
             pekkoGrpcGenerators.value),
-        PB.protoSources += sourceDirectory.value / "proto") ++
-      inTask(PB.recompile)(Seq(
-        includeFilter := GlobFilter("*.proto"),
-        managedSourceDirectories := Nil,
-        unmanagedSourceDirectories := Seq(sourceDirectory.value),
-        sourceDirectories := unmanagedSourceDirectories.value ++ managedSourceDirectories.value,
-        managedSources := Nil,
-        unmanagedSources := { Defaults.collectFiles(unmanagedSourceDirectories, includeFilter, excludeFilter).value },
-        sources := managedSources.value ++ unmanagedSources.value,
-        managedResourceDirectories := Nil,
-        unmanagedResourceDirectories := resourceDirectory.value +: PB.protoSources.value,
-        resourceDirectories := unmanagedResourceDirectories.value ++ managedResourceDirectories.value,
-        managedResources := Nil,
-        unmanagedResources := {
-          Defaults.collectFiles(unmanagedResourceDirectories, includeFilter, excludeFilter).value
-        },
-        resources := managedResources.value ++ unmanagedResources.value)))
+        PB.protoSources += sourceDirectory.value / "proto")) ++
+    inConfig(config)(Seq(
+      PB.recompile / includeFilter := GlobFilter("*.proto"),
+      PB.recompile / managedSourceDirectories := Nil,
+      PB.recompile / unmanagedSourceDirectories := Seq(sourceDirectory.value),
+      PB.recompile / sourceDirectories := (PB.recompile / unmanagedSourceDirectories).value ++
+      (PB.recompile / managedSourceDirectories).value,
+      PB.recompile / managedSources := Nil,
+      PB.recompile / unmanagedSources := {
+        Defaults.collectFiles(PB.recompile / unmanagedSourceDirectories, PB.recompile / includeFilter,
+          PB.recompile / excludeFilter).value
+      },
+      PB.recompile / sources := (PB.recompile / managedSources).value ++ (PB.recompile / unmanagedSources).value,
+      PB.recompile / managedResourceDirectories := Nil,
+      PB.recompile / unmanagedResourceDirectories := resourceDirectory.value +: PB.protoSources.value,
+      PB.recompile / resourceDirectories := (PB.recompile / unmanagedResourceDirectories).value ++
+      (PB.recompile / managedResourceDirectories).value,
+      PB.recompile / managedResources := Nil,
+      PB.recompile / unmanagedResources := {
+        Defaults.collectFiles(PB.recompile / unmanagedResourceDirectories, PB.recompile / includeFilter,
+          PB.recompile / excludeFilter).value
+      },
+      PB.recompile / resources := (PB.recompile / managedResources).value ++
+      (PB.recompile / unmanagedResources).value))
 
   def targetsFor(
       targetPath: File,

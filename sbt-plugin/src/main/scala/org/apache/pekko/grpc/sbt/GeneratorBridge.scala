@@ -26,7 +26,7 @@ object GeneratorBridge {
       logger: Logger): protocbridge.Generator = {
     // This matches the sbt binary version (2.12)
     val codegenScalaBinaryVersion = CrossVersion.binaryScalaVersion(BuildInfo.scalaVersion)
-    protocbridge.SandboxedJvmGenerator(
+    protocbridge.SandboxedJvmGenerator.forResolver(
       codeGenerator.name,
       protocbridge.Artifact(BuildInfo.organization, s"${BuildInfo.name}_$codegenScalaBinaryVersion", BuildInfo.version),
       codeGenerator.suggestedDependencies(scalaBinaryVersion),
