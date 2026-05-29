@@ -168,7 +168,6 @@ lazy val sbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
   .settings(
     name := s"$pekkoPrefix-sbt-plugin",
     sbtPluginPublishLegacyMavenStyle := true,
-    addSbtPlugin("com.github.sbt" % "sbt2-compat" % "0.1.0"),
     pluginCrossBuild / sbtVersion := {
       scalaBinaryVersion.value match {
         case "2.12" => "1.12.11"
