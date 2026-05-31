@@ -75,7 +75,7 @@ object ChannelUtils {
       maxConnectionAttempts: Option[Int],
       log: LoggingAdapter): Unit = {
     def monitor(currentState: ConnectivityState, connectionAttempts: Int): Unit = {
-      log.debug(s"monitoring with state $currentState and connectionAttempts $connectionAttempts")
+      log.debug("monitoring with state {} and connectionAttempts {}", currentState, connectionAttempts)
       val newAttemptOpt = currentState match {
         case ConnectivityState.TRANSIENT_FAILURE =>
           if (maxConnectionAttempts.contains(connectionAttempts + 1)) {
