@@ -253,11 +253,15 @@ abstract class AbstractGenerateMojo @Inject() (buildContext: BuildContext) exten
       .sortBy(_.outputPath.getAbsolutePath.length)
     generatedTargets.foreach(_.outputPath.mkdirs())
     if (schemas.nonEmpty && generatedTargets.nonEmpty) {
-      getLog.info(
-        "Compiling %d protobuf files to %s".format(schemas.size, generatedTargets.map(_.outputPath).mkString(",")))
+      if (getLog.isInfoEnabled) {
+        getLog.info(
+          "Compiling %d protobuf files to %s".format(schemas.size, generatedTargets.map(_.outputPath).mkString(",")))
+      }
       schemas.foreach { schema => buildContext.removeMessages(schema) }
-      getLog.debug("Compiling schemas [%s]".format(schemas.mkString(",")))
-      getLog.debug("protoc options: %s".format(protocOptions.mkString(",")))
+      if (getLog.isDebugEnabled) {
+        getLog.debug("Compiling schemas [%s]".format(schemas.mkString(",")))
+        getLog.debug("protoc options: %s".format(protocOptions.mkString(",")))
+      }
 
       getLog.info("Compiling protobuf")
       val (out, err, exitCode) = captureStdOutAndErr {
