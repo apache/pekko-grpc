@@ -27,7 +27,7 @@ repositories {
 def scalaFullVersion = "2.13.18"
 def scalaVersion = org.gradle.util.VersionNumber.parse(scalaFullVersion)
 def scalaBinaryVersion = "${scalaVersion.major}.${scalaVersion.minor}"
-def pekkoVersion = "2.0.0-M2"
+def pekkoVersion = "2.0.0-M3"
 def pekkoHttpVersion = "2.0.0-M1"
 
 dependencies {
