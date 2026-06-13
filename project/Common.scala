@@ -74,7 +74,8 @@ object Common extends AutoPlugin {
            // Generated code for methods/fields marked 'deprecated'
            "-Wconf:msg=Marked as deprecated in proto file:silent",
            "-Wconf:msg=unused import:silent",
-           "-Wconf:cat=feature:silent")),
+           "-Wconf:cat=feature:silent")) ++
+      (if (scalaVersion.value.startsWith("3.3")) Seq("-Yfuture-lazy-vals") else Seq.empty),
     Compile / console / scalacOptions ~= (_.filterNot(consoleDisabledOptions.contains)),
     javacOptions ++= List("-Xlint:unchecked", "-Xlint:deprecation"),
     Compile / compile / javacOptions ++= Seq("--release", "17"),
