@@ -60,7 +60,8 @@ object Common extends AutoPlugin {
            "-Werror",
            "-Wunused:imports",
            "-encoding",
-           "UTF-8")),
+           "UTF-8") ++
+         (if (scalaVersion.value.startsWith("3.3")) Seq("-Yfuture-lazy-vals") else Seq.empty)),
     Compile / scalacOptions ++=
       (if (!isScala3.value)
          Seq(
@@ -74,12 +75,13 @@ object Common extends AutoPlugin {
            // Generated code for methods/fields marked 'deprecated'
            "-Wconf:msg=Marked as deprecated in proto file:silent",
            "-Wconf:msg=unused import:silent",
-           "-Wconf:cat=feature:silent")) ++
-      (if (scalaVersion.value.startsWith("3.3")) Seq("-Yfuture-lazy-vals") else Seq.empty),
+           "-Wconf:cat=feature:silent")),
     Compile / console / scalacOptions ~= (_.filterNot(consoleDisabledOptions.contains)),
     javacOptions ++= List("-Xlint:unchecked", "-Xlint:deprecation"),
     Compile / compile / javacOptions ++= Seq("--release", "17"),
     Compile / compile / scalacOptions ++= Seq("-release", "17"),
+    Test / compile / scalacOptions ++=
+      (if (scalaVersion.value.startsWith("3.3")) Seq("-release", "17") else Seq.empty),
     Compile / doc / scalacOptions := scalacOptions.value ++ Seq(
       "-doc-title",
       "Apache Pekko gRPC",
