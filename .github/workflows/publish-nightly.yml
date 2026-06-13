@@ -40,7 +40,7 @@ jobs:
           sbt +publish
           sbt ++2.12.21! maven-plugin/publish
           sbt ++2.13.18! codegen/publish
-          sbt ++3.3.7! codegen/publish
+          sbt ++3.3.8! codegen/publish
         env:
           NEXUS_USER: ${{ secrets.NEXUS_USER }}
           NEXUS_PW: ${{ secrets.NEXUS_PW }}

@@ -59,6 +59,7 @@ object Common extends AutoPlugin {
            "-deprecation",
            "-Werror",
            "-Wunused:imports",
+           "-Yfuture-lazy-vals",
            "-encoding",
            "UTF-8")),
     Compile / scalacOptions ++=
@@ -79,6 +80,7 @@ object Common extends AutoPlugin {
     javacOptions ++= List("-Xlint:unchecked", "-Xlint:deprecation"),
     Compile / compile / javacOptions ++= Seq("--release", "17"),
     Compile / compile / scalacOptions ++= Seq("-release", "17"),
+    Test / compile / scalacOptions ++= Seq("-release", "17"),
     Compile / doc / scalacOptions := scalacOptions.value ++ Seq(
       "-doc-title",
       "Apache Pekko gRPC",
