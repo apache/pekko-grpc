@@ -53,7 +53,7 @@ project in Java and Scala respectively, with both sbt and Gradle configurations.
 ## Building from Source
 
 ### Prerequisites
-- Make sure you have installed a Java Development Kit (JDK) version 8 or later.
+- Make sure you have installed a Java Development Kit (JDK) version 17 or later.
 - Make sure you have [sbt](https://www.scala-sbt.org/) installed.
 - [Maven](https://www.baeldung.com/install-maven-on-windows-linux-mac) is needed for tasks related to building and testing Maven plugin support.
 - [Gradle](https://gradle.org/) is needed for tasks related to building and testing Gradle plugin support. We have `gradlew` scripts that will install the right version of Gradle and run the gradle tasks using it.
