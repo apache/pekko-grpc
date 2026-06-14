@@ -44,6 +44,9 @@ lazy val mkBatAssemblyTask = taskKey[File]("Create a Windows bat assembly")
 
 ThisBuild / javafmtFormatterCompatibleJavaVersion := 17
 
+addCommandAlias("checkCodeStyle", "scalafmtCheckAll; scalafmtSbtCheck; javafmtCheckAll; +headerCheckAll")
+addCommandAlias("applyCodeStyle", "+headerCreateAll; scalafmtAll; scalafmtSbt; javafmtAll")
+
 val pekkoGrpcCodegenId = s"$pekkoPrefix-codegen"
 lazy val codegen = Project(id = "codegen", base = file("codegen"))
   .enablePlugins(SbtTwirl, BuildInfoPlugin)

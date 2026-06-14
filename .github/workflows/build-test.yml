@@ -42,6 +42,11 @@ jobs:
       - name: Cache Coursier cache
         uses: coursier/cache-action@95e5b1029b6b86e7bac033ee44a0697d8a527d2d # v8.1.1
 
+      - name: Code style check
+        run: |-
+          cp .jvmopts-ci .jvmopts
+          sbt checkCodeStyle
+
       - name: Binary-compatibility check
         run: |-
           cp .jvmopts-ci .jvmopts
