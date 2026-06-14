@@ -18,7 +18,7 @@ object ProtocGoPlugin extends AutoPlugin {
 
   override def requires: Plugins = ProtocPlugin
 
-  override def projectSettings: Seq[Def.Setting[_]] =
+  override def projectSettings: Seq[Def.Setting[?]] =
     Seq(Compile, Test).flatMap(inConfig(_)(
       Seq(
         PB.targets += PB.gens.go -> resourceManaged.value / "go")))

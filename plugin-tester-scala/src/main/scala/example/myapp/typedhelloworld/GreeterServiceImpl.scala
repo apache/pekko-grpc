@@ -24,7 +24,7 @@ import scala.concurrent.duration._
 import scala.concurrent.{ ExecutionContext, Future }
 
 // #stateful-service
-class GreeterServiceImpl(greeterActor: ActorRef[GreeterActor.GreetingCommand])(implicit system: ActorSystem[_])
+class GreeterServiceImpl(greeterActor: ActorRef[GreeterActor.GreetingCommand])(implicit system: ActorSystem[?])
     extends GreeterService {
 
   def sayHello(in: HelloRequest): Future[HelloReply] = {

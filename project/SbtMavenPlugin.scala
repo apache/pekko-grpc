@@ -32,7 +32,7 @@ object SbtMavenPlugin extends AutoPlugin {
 
   import autoImport._
 
-  override lazy val projectSettings: Seq[Setting[_]] = inConfig(Compile)(unscopedSettings)
+  override lazy val projectSettings: Seq[Setting[?]] = inConfig(Compile)(unscopedSettings)
 
   lazy val unscopedSettings =
     Seq(

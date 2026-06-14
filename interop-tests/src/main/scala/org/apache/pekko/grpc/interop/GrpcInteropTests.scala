@@ -123,7 +123,7 @@ trait GrpcServerProvider {
   def label: String
   def pendingCases: Set[String]
 
-  def server: GrpcServer[_]
+  def server: GrpcServer[?]
 }
 
 trait GrpcClientProvider {

@@ -313,12 +313,12 @@ class PekkoGrpcClientTester(val settings: Settings)(implicit system: ActorSystem
     throw new RuntimeException("Not implemented!timeoutOnSleepingServer") with NoStackTrace
   }
 
-  def assertFailure(failure: Future[_], expectedStatus: Status): Unit = {
+  def assertFailure(failure: Future[?], expectedStatus: Status): Unit = {
     val e = Await.result(failure.failed, awaitTimeout).asInstanceOf[StatusRuntimeException]
     assertEquals(expectedStatus.getCode, e.getStatus.getCode)
   }
 
-  def assertFailure(failure: Future[_], expectedStatus: Status, expectedMessage: String): Unit = {
+  def assertFailure(failure: Future[?], expectedStatus: Status, expectedMessage: String): Unit = {
     val e = Await.result(failure.failed, awaitTimeout).asInstanceOf[StatusRuntimeException]
     assertEquals(expectedStatus.getCode, e.getStatus.getCode)
     assertEquals(expectedMessage, e.getStatus.getDescription)

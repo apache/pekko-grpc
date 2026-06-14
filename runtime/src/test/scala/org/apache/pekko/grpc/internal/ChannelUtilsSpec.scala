@@ -89,7 +89,7 @@ class ChannelUtilsSpec extends AnyWordSpec with Matchers with ScalaFutures {
       // CONNECTING => FAILURE
       fakeChannel.runCallBack()
       promiseReady.isCompleted shouldEqual true
-      promiseReady.future.value.get shouldBe a[Failure[_]]
+      promiseReady.future.value.get shouldBe a[Failure[?]]
       promiseReady.future.failed.value.get.get.getMessage should startWith("Unable to establish connection")
     }
 
@@ -140,7 +140,7 @@ class ChannelUtilsSpec extends AnyWordSpec with Matchers with ScalaFutures {
       promiseReady.isCompleted shouldEqual true
       promiseDone.isCompleted shouldEqual true
 
-      promiseDone.future.value.get shouldBe a[Failure[_]]
+      promiseDone.future.value.get shouldBe a[Failure[?]]
       promiseDone.future.failed.value.get.get.getMessage should startWith("Unable to establish connection")
     }
 

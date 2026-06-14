@@ -114,7 +114,7 @@ object GrpcMarshalling {
       eHandler: JFunction[ActorSystem, JFunction[Throwable, Trailers]]): CompletionStage[HttpResponse] =
     try {
       response match {
-        case future: CompletableFuture[_] if future.isDone =>
+        case future: CompletableFuture[?] if future.isDone =>
           try completedResponse(marshal(completedValue[Out](future), m, writer, system, eHandler))
           catch {
             case NonFatal(error) => handleUnaryFailure(error, writer, system, eHandler)
@@ -157,6 +157,6 @@ object GrpcMarshalling {
       case NonFatal(error) => failure(error)
     }
 
-  private def completedValue[T](future: CompletableFuture[_]): T =
+  private def completedValue[T](future: CompletableFuture[?]): T =
     future.asInstanceOf[CompletableFuture[T]].getNow(null.asInstanceOf[T])
 }
