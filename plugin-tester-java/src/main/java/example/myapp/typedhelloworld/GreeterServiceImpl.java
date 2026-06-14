@@ -27,24 +27,22 @@ public final class GreeterServiceImpl implements GreeterService {
   private final ActorSystem system;
   private final ActorRef<GreeterActor.GreetingCommand> greeterActor;
 
-  public GreeterServiceImpl(ActorSystem system, ActorRef<GreeterActor.GreetingCommand> greeterActor) {
+  public GreeterServiceImpl(
+      ActorSystem system, ActorRef<GreeterActor.GreetingCommand> greeterActor) {
     this.system = system;
     this.greeterActor = greeterActor;
   }
 
   public CompletionStage<HelloReply> sayHello(HelloRequest in) {
-    CompletionStage<GreeterActor.Greeting> response = AskPattern.ask(
-       greeterActor,
-       replyTo -> new GreeterActor.GetGreeting(replyTo),
-       Duration.ofSeconds(5),
-       system.scheduler()
-    );
+    CompletionStage<GreeterActor.Greeting> response =
+        AskPattern.ask(
+            greeterActor,
+            replyTo -> new GreeterActor.GetGreeting(replyTo),
+            Duration.ofSeconds(5),
+            system.scheduler());
     return response.thenApply(
-            message ->
-                HelloReply.newBuilder()
-                    .setMessage(((GreeterActor.Greeting) message).greeting)
-                    .build()
-    );
+        message ->
+            HelloReply.newBuilder().setMessage(((GreeterActor.Greeting) message).greeting).build());
   }
 
   public CompletionStage<ChangeResponse> changeGreeting(ChangeRequest in) {

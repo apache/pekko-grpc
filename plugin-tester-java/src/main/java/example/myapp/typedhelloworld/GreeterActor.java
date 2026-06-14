@@ -24,7 +24,8 @@ import org.apache.pekko.actor.typed.javadsl.Receive;
 public class GreeterActor extends AbstractBehavior<GreeterActor.GreetingCommand> {
 
   public static interface GreetingCommand {}
-  public static class ChangeGreeting implements GreetingCommand{
+
+  public static class ChangeGreeting implements GreetingCommand {
     public final String newGreeting;
 
     public ChangeGreeting(String newGreeting) {
@@ -51,6 +52,7 @@ public class GreeterActor extends AbstractBehavior<GreeterActor.GreetingCommand>
   public static Behavior<GreetingCommand> create(final String initialGreeting) {
     return Behaviors.setup(context -> new GreeterActor(context, initialGreeting));
   }
+
   private GreeterActor(ActorContext<GreetingCommand> context, String initialGreeting) {
     super(context);
   }
