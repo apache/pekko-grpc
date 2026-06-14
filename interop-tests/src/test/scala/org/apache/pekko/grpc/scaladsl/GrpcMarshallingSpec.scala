@@ -109,7 +109,7 @@ class GrpcMarshallingSpec extends AnyWordSpec with Matchers {
       assertFailure(GrpcMarshalling.unmarshal(request), Status.Code.INTERNAL, "encoding")
     }
 
-    def assertFailure(failure: Future[_], expectedStatusCode: Status.Code, expectedMessageFragment: String): Unit = {
+    def assertFailure(failure: Future[?], expectedStatusCode: Status.Code, expectedMessageFragment: String): Unit = {
       val e = Await.result(failure.failed, awaitTimeout).asInstanceOf[StatusException]
       e.getStatus.getCode should be(expectedStatusCode)
       e.getStatus.getDescription should include(expectedMessageFragment)

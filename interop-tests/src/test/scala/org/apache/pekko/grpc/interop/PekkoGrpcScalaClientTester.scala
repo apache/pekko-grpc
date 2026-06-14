@@ -276,13 +276,13 @@ class PekkoGrpcScalaClientTester(val settings: Settings, backend: String, testWi
   def timeoutOnSleepingServer(): Unit =
     throw new RuntimeException("Not implemented!timeoutOnSleepingServer") with NoStackTrace
 
-  def assertFailure(failure: Future[_], expectedStatus: Status): Unit = {
+  def assertFailure(failure: Future[?], expectedStatus: Status): Unit = {
     val throwable = Await.result(failure.failed, awaitTimeout)
     throwable shouldBe a[StatusRuntimeException]
     assertEquals(expectedStatus.getCode, throwable.asInstanceOf[StatusRuntimeException].getStatus.getCode)
   }
 
-  def assertFailure(failure: Future[_], expectedStatus: Status, expectedMessage: String): Unit = {
+  def assertFailure(failure: Future[?], expectedStatus: Status, expectedMessage: String): Unit = {
     val throwable = Await.result(failure.failed, awaitTimeout)
     throwable shouldBe a[StatusRuntimeException]
     val e = throwable.asInstanceOf[StatusRuntimeException]

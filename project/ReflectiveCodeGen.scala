@@ -33,7 +33,7 @@ object ReflectiveCodeGen extends AutoPlugin {
   // needed to be able to override the PB.generate task reliably
   override lazy val requires = ProtocPlugin
 
-  override lazy val projectSettings: Seq[Def.Setting[_]] =
+  override lazy val projectSettings: Seq[Def.Setting[?]] =
     inConfig(Compile)(
       Seq(
         PB.protocOptions := protocOptions.value,

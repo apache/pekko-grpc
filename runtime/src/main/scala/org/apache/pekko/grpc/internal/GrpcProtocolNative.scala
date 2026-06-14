@@ -63,7 +63,7 @@ object GrpcProtocolNative extends AbstractGrpcProtocol("grpc") {
       headers = headers,
       entity = HttpEntity(contentType, encodeDataToFrameBytes(codec, data)),
       protocol = HttpProtocols.`HTTP/1.1`,
-      attributes = Map.empty[AttributeKey[_], Any].updated(AttributeKeys.trailer, trailer))
+      attributes = Map.empty[AttributeKey[?], Any].updated(AttributeKeys.trailer, trailer))
 
   private def encodeDataToFrameBytes(codec: Codec, data: ByteString): ByteString =
     AbstractGrpcProtocol.encodeFrameData(codec.compress(data), codec.isCompressed, isTrailer = false)

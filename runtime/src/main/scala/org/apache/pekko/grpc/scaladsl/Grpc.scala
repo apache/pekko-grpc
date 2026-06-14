@@ -63,5 +63,5 @@ private[grpc] final class GrpcImpl(system: ExtendedActorSystem) extends Extensio
 private[grpc] object Grpc extends ExtensionId[GrpcImpl] with ExtensionIdProvider {
   override def createExtension(system: ExtendedActorSystem): GrpcImpl = new GrpcImpl(system)
 
-  override def lookup: ExtensionId[_ <: Extension] = Grpc
+  override def lookup: ExtensionId[? <: Extension] = Grpc
 }

@@ -72,7 +72,7 @@ class PekkoHttpClientUtilsSpec extends TestKit(ActorSystem()) with AnyWordSpecLi
         new HttpResponse(
           OK,
           responseHeaders,
-          Map.empty[AttributeKey[_], Any].updated(AttributeKeys.trailer, responseTrailers),
+          Map.empty[AttributeKey[?], Any].updated(AttributeKeys.trailer, responseTrailers),
           Strict(GrpcProtocolNative.contentType, ByteString.empty),
           HttpProtocols.`HTTP/1.1`))
       val source = PekkoHttpClientUtils.responseToSource(response, null)

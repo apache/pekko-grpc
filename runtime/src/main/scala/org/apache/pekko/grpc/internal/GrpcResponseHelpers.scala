@@ -50,7 +50,7 @@ object GrpcResponseHelpers {
   private val TrailerOk = GrpcEntityHelpers.trailer(Status.OK)
   private val TrailerOkAttribute = Trailer(TrailerOk.trailers)
   private val TrailerOkAttributes =
-    Map.empty[AttributeKey[_], Any].updated(AttributeKeys.trailer, TrailerOkAttribute)
+    Map.empty[AttributeKey[?], Any].updated(AttributeKeys.trailer, TrailerOkAttribute)
   private val IdentityResponseHeaders: immutable.Seq[HttpHeader] =
     headers.`Message-Encoding`(Identity.name) :: Nil
 
