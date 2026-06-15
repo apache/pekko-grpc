@@ -109,7 +109,6 @@ lazy val runtime = Project(id = "runtime", base = file("runtime"))
     mimaFailOnNoPrevious := true,
     mimaPreviousArtifacts := Set(
       organization.value %% "pekko-grpc-runtime" % mimaCompareVersion),
-    AutomaticModuleName.settings("pekko.grpc.runtime"),
     ReflectiveCodeGen.generatedLanguages := Seq("Scala"),
     ReflectiveCodeGen.extraGenerators := Seq("ScalaMarshallersCodeGenerator"),
     PB.protocVersion := Dependencies.Versions.googleProtoc,
