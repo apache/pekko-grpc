@@ -272,6 +272,7 @@ lazy val docs = Project(id = "docs", base = file("docs"))
     makeSite := makeSite.dependsOn(LocalRootProject / ScalaUnidoc / doc).value,
     pekkoParadoxGithub := Some("https://github.com/apache/pekko-grpc"),
     previewPath := (Paradox / siteSubdirName).value,
+    Global / excludeLintKeys += previewPath,
     Preprocess / siteSubdirName := s"api/pekko-grpc/${projectInfoVersion.value}",
     Preprocess / sourceDirectory := (LocalRootProject / ScalaUnidoc / unidoc / target).value,
     Paradox / siteSubdirName := s"docs/pekko-grpc/${projectInfoVersion.value}",
