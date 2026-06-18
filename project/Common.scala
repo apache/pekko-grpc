@@ -54,14 +54,9 @@ object Common extends AutoPlugin {
            "-encoding",
            "UTF-8")
        else
-         Seq(
-           "-unchecked",
-           "-deprecation",
-           "-Werror",
-           "-Wunused:imports",
-           "-Yfuture-lazy-vals",
-           "-encoding",
-           "UTF-8")),
+         Seq("-unchecked", "-deprecation", "-Werror", "-Wunused:imports", "-encoding", "UTF-8") ++
+         (if (CrossVersion.partialVersion(scalaVersion.value).exists(_._2 < 9)) Seq("-Yfuture-lazy-vals")
+          else Seq.empty)),
     Compile / scalacOptions ++=
       (if (!isScala3.value)
          Seq(
