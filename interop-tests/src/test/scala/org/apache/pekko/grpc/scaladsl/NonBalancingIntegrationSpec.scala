@@ -87,7 +87,7 @@ class NonBalancingIntegrationSpec(backend: String)
 
       Future.sequence(requestsOnFirstConnection).futureValue
       server1.terminate(5.seconds).futureValue
-      // Give it some time to complete unbind (suspected to cause test flakyness)
+      // Give it some time to complete unbind (suspected to cause test flakiness)
       Thread.sleep(250)
       // And restart
       Http().newServerAt("127.0.0.1", server1.localAddress.getPort).bind(GreeterServiceHandler(service1)).futureValue

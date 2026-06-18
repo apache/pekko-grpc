@@ -7,7 +7,7 @@
  * This file is part of the Apache Pekko project, which was derived from Akka.
  */
 
-enablePlugins(ProtocGoPlugin) // enable it first to test possibility of getting overriden
+enablePlugins(ProtocGoPlugin) // enable it first to test possibility of getting overridden
 
 scalaVersion := "2.13.18"
 
