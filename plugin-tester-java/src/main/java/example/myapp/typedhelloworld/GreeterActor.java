@@ -25,29 +25,11 @@ public class GreeterActor extends AbstractBehavior<GreeterActor.GreetingCommand>
 
   public static interface GreetingCommand {}
 
-  public static class ChangeGreeting implements GreetingCommand {
-    public final String newGreeting;
+  public record ChangeGreeting(String newGreeting) implements GreetingCommand {}
 
-    public ChangeGreeting(String newGreeting) {
-      this.newGreeting = newGreeting;
-    }
-  }
+  public record GetGreeting(ActorRef<Greeting> replyTo) implements GreetingCommand {}
 
-  public static class GetGreeting implements GreetingCommand {
-    public final ActorRef<Greeting> replyTo;
-
-    public GetGreeting(ActorRef<Greeting> replyTo) {
-      this.replyTo = replyTo;
-    }
-  }
-
-  public static class Greeting {
-    public final String greeting;
-
-    public Greeting(String greeting) {
-      this.greeting = greeting;
-    }
-  }
+  public record Greeting(String greeting) {}
 
   public static Behavior<GreetingCommand> create(final String initialGreeting) {
     return Behaviors.setup(context -> new GreeterActor(context, initialGreeting));
@@ -67,12 +49,12 @@ public class GreeterActor extends AbstractBehavior<GreeterActor.GreetingCommand>
   }
 
   private Behavior<GreetingCommand> onGetGreeting(GetGreeting get) {
-    get.replyTo.tell(greeting);
+    get.replyTo().tell(greeting);
     return this;
   }
 
   private Behavior<GreetingCommand> onChangeGreeting(ChangeGreeting change) {
-    greeting = new Greeting(change.newGreeting);
+    greeting = new Greeting(change.newGreeting());
     return this;
   }
 }

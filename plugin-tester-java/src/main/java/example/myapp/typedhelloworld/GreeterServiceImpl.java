@@ -42,7 +42,9 @@ public final class GreeterServiceImpl implements GreeterService {
             system.scheduler());
     return response.thenApply(
         message ->
-            HelloReply.newBuilder().setMessage(((GreeterActor.Greeting) message).greeting).build());
+            HelloReply.newBuilder()
+                .setMessage(((GreeterActor.Greeting) message).greeting())
+                .build());
   }
 
   public CompletionStage<ChangeResponse> changeGreeting(ChangeRequest in) {

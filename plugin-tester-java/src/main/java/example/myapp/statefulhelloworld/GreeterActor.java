@@ -19,25 +19,13 @@ import org.apache.pekko.actor.Props;
 // #actor
 public class GreeterActor extends AbstractActor {
 
-  public static class ChangeGreeting {
-    public final String newGreeting;
-
-    public ChangeGreeting(String newGreeting) {
-      this.newGreeting = newGreeting;
-    }
-  }
+  public record ChangeGreeting(String newGreeting) {}
 
   public static class GetGreeting {}
 
   public static GetGreeting GET_GREETING = new GetGreeting();
 
-  public static class Greeting {
-    public final String greeting;
-
-    public Greeting(String greeting) {
-      this.greeting = greeting;
-    }
-  }
+  public record Greeting(String greeting) {}
 
   public static Props props(final String initialGreeting) {
     return Props.create(GreeterActor.class, () -> new GreeterActor(initialGreeting));
@@ -61,7 +49,7 @@ public class GreeterActor extends AbstractActor {
   }
 
   private void onChangeGreeting(ChangeGreeting change) {
-    greeting = new Greeting(change.newGreeting);
+    greeting = new Greeting(change.newGreeting());
   }
 }
 // #actor

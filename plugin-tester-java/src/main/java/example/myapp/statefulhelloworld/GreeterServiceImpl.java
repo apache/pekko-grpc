@@ -38,7 +38,7 @@ public final class GreeterServiceImpl implements GreeterService {
         .thenApply(
             message ->
                 HelloReply.newBuilder()
-                    .setMessage(((GreeterActor.Greeting) message).greeting)
+                    .setMessage(((GreeterActor.Greeting) message).greeting())
                     .build());
   }
 
