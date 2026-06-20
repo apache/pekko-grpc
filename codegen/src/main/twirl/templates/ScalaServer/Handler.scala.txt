@@ -107,13 +107,14 @@ object @{serviceName}Handler {
           pekko.grpc.scaladsl.ServerReflection.partial(List(@{service.name})))
 }
 
-    private def methodName(request: model.HttpRequest, prefix: String): String =
-      request.uri.path match {
-        case model.Uri.Path.Slash(model.Uri.Path.Segment(`prefix`, model.Uri.Path.Slash(model.Uri.Path.Segment(method, model.Uri.Path.Empty)))) =>
-          method
-        case _ =>
-          null
-      }
+    private def methodName(request: model.HttpRequest, prefix: String): String = {
+      val path = request.uri.path.toString
+      val prefixStart = 1
+      val methodStart = prefix.length + 2
+      if (path.length > methodStart && path.charAt(0) == '/' && path.startsWith(prefix, prefixStart) && path.charAt(methodStart - 1) == '/') {
+        path.substring(methodStart)
+      } else null
+    }
 
     private def handler(implementation: @serviceName, prefix: String, eHandler: ActorSystem => PartialFunction[Throwable, Trailers])(implicit system: ClassicActorSystemProvider): model.HttpRequest => scala.concurrent.Future[model.HttpResponse] = {
       implicit val mat: Materializer = SystemMaterializer(system).materializer
