@@ -43,3 +43,6 @@ libraryDependencies += "org.eclipse.jgit" % "org.eclipse.jgit" % "5.13.5.2025082
 libraryDependencies += "org.scala-sbt" %% "scripted-plugin" % sbtVersion.value
 
 libraryDependencies += "com.thesamet.scalapb" %% "compilerplugin" % "1.0.0-alpha.5"
+
+// https://eed3si9n.com/reducing-scaladoc-file-size-with-sbt-salad-days/
+addSbtPlugin("com.eed3si9n" % "sbt-salad-days" % "0.1.0")
