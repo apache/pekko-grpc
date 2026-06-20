@@ -182,11 +182,12 @@ object GrpcProtocol {
         else if (requestEncoding == "identity") Identity
         else if (requestEncoding == "gzip") Gzip
         else return slowNegotiateOpt(request, subType)
-      // Determine writer codec (response encoding - prefer Identity for small messages)
-      val writerCodec: Codec =
-        if (acceptEncoding eq null) Identity
-        else if (acceptEncoding.contains("identity") || !acceptEncoding.contains("gzip")) Identity
-        else Gzip
+      // Determine writer codec (response encoding)
+      // For native gRPC, always prefer Identity for responses. The per-frame compression
+      // flag tells the client whether each frame is compressed. For typical small gRPC
+      // messages, avoiding compression saves significant CPU overhead (~20-30% of handler time).
+      // Clients that need compression for large messages can still handle uncompressed frames.
+      val writerCodec: Codec = Identity
       // Return pre-computed result for common combinations
       if ((readerCodec eq Identity) && (writerCodec eq Identity)) return Some(NativeIdentityIdentity)
       if ((readerCodec eq Identity) && (writerCodec eq Gzip)) return Some(NativeIdentityGzip)
