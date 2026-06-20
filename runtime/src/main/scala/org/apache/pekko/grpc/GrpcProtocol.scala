@@ -182,11 +182,11 @@ object GrpcProtocol {
         else if (requestEncoding == "identity") Identity
         else if (requestEncoding == "gzip") Gzip
         else return slowNegotiateOpt(request, subType)
-      // Determine writer codec (response encoding - pick first supported from accept list)
+      // Determine writer codec (response encoding - prefer Identity for small messages)
       val writerCodec: Codec =
         if (acceptEncoding eq null) Identity
-        else if (acceptEncoding.contains("gzip")) Gzip
-        else Identity
+        else if (acceptEncoding.contains("identity") || !acceptEncoding.contains("gzip")) Identity
+        else Gzip
       // Return pre-computed result for common combinations
       if ((readerCodec eq Identity) && (writerCodec eq Identity)) return Some(NativeIdentityIdentity)
       if ((readerCodec eq Identity) && (writerCodec eq Gzip)) return Some(NativeIdentityGzip)
