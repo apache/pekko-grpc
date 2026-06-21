@@ -19,16 +19,17 @@ import pekko.grpc.GrpcProtocol
 import pekko.grpc.internal.{ GrpcProtocolWeb, GrpcProtocolWebText }
 import pekko.http.javadsl.{ model => jmodel }
 import pekko.http.scaladsl.model.{ HttpRequest, HttpResponse, StatusCodes }
+import pekko.http.scaladsl.util.FastFuture
 
 import scala.concurrent.Future
 
 @ApiMayChange
 object ServiceHandler {
 
-  private[scaladsl] val notFound: Future[HttpResponse] = Future.successful(HttpResponse(StatusCodes.NotFound))
+  private[scaladsl] val notFound: Future[HttpResponse] = FastFuture.successful(HttpResponse(StatusCodes.NotFound))
 
   private[scaladsl] val unsupportedMediaType: Future[HttpResponse] =
-    Future.successful(HttpResponse(StatusCodes.UnsupportedMediaType))
+    FastFuture.successful(HttpResponse(StatusCodes.UnsupportedMediaType))
 
   private def matchesVariant(variants: Set[GrpcProtocol])(request: jmodel.HttpRequest) =
     variants.exists(_.mediaTypes.contains(request.entity.getContentType.mediaType))

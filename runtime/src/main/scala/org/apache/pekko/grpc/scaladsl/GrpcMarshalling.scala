@@ -57,7 +57,7 @@ object GrpcMarshalling {
   def negotiated[T](req: HttpRequest, f: (GrpcProtocolReader, GrpcProtocolWriter) => Future[T]): Option[Future[T]] =
     GrpcProtocol.negotiate(req).map {
       case (Success(reader), writer) => f(reader, writer)
-      case (Failure(ex), _)          => Future.failed(ex)
+      case (Failure(ex), _)          => FastFuture.failed(ex)
     }
 
   def unmarshal[T](data: Source[ByteString, Any])(
@@ -69,7 +69,7 @@ object GrpcMarshalling {
   def unmarshal[T](
       entity: HttpEntity)(implicit u: ProtobufSerializer[T], mat: Materializer, reader: GrpcProtocolReader): Future[T] =
     entity match {
-      case HttpEntity.Strict(_, data) => Future.fromTry(Try(u.deserialize(reader.decodeSingleFrame(data))))
+      case HttpEntity.Strict(_, data) => FastFuture(Try(u.deserialize(reader.decodeSingleFrame(data))))
       case _                          => unmarshal(entity.dataBytes)
     }
 
@@ -77,7 +77,7 @@ object GrpcMarshalling {
       implicit u: ProtobufSerializer[T],
       @nowarn("msg=is never used") mat: Materializer,
       reader: GrpcProtocolReader): Future[Source[T, NotUsed]] = {
-    Future.successful(
+    FastFuture.successful(
       data
         .mapMaterializedValue(_ => NotUsed)
         .via(reader.dataFrameDecoder)

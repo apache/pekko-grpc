@@ -19,6 +19,7 @@ import org.apache.pekko
 import pekko.NotUsed
 import pekko.annotation.{ InternalApi, InternalStableApi }
 import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, GrpcServiceException, GrpcSingleResponse }
+import pekko.http.scaladsl.util.FastFuture
 import pekko.stream.{ Graph, Materializer, SourceShape }
 import pekko.stream.javadsl.{ Source => JavaSource }
 import pekko.stream.scaladsl.{ Keep, Sink, Source }
@@ -349,7 +350,7 @@ object RequestBuilderImpl {
   }
 
   def richError[U]: PartialFunction[Throwable, Future[U]] = {
-    case item => Future.failed(RequestBuilderImpl.lift(item))
+    case item => FastFuture.failed(RequestBuilderImpl.lift(item))
   }
 
   def lift(item: Throwable): scala.Throwable = item match {

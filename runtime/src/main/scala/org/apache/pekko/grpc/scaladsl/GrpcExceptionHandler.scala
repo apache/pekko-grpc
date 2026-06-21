@@ -21,6 +21,7 @@ import pekko.grpc.{ GrpcServiceException, Trailers }
 import pekko.grpc.GrpcProtocol.GrpcProtocolWriter
 import pekko.grpc.internal.{ GrpcMetadataImpl, GrpcResponseHelpers, MissingParameterException }
 import pekko.http.scaladsl.model.HttpResponse
+import pekko.http.scaladsl.util.FastFuture
 import io.grpc.{ Status, StatusRuntimeException }
 import org.apache.pekko.http.scaladsl.model.http2.PeerClosedStreamException
 
@@ -63,6 +64,7 @@ object GrpcExceptionHandler {
   def from(mapper: PartialFunction[Throwable, Trailers])(
       implicit system: ClassicActorSystemProvider,
       writer: GrpcProtocolWriter): PartialFunction[Throwable, Future[HttpResponse]] =
-    mapper.orElse(defaultMapper(system.classicSystem)).andThen(s => Future.successful(GrpcResponseHelpers.status(s)))
+    mapper.orElse(defaultMapper(system.classicSystem)).andThen(s =>
+      FastFuture.successful(GrpcResponseHelpers.status(s)))
 
 }
