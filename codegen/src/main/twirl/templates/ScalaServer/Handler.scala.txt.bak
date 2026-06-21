@@ -126,7 +126,7 @@ object @{serviceName}Handler {
       // Pre-create lambdas for unary methods to avoid per-request allocation
       @for(method <- service.methods) {
       @if(method.methodType == org.apache.pekko.grpc.gen.Unary) {
-      val @{method.nameSafe}Handler: @method.parameterType => scala.concurrent.Future[@method.outputTypeUnboxed] = 
+      val @{method.nameSafe}Handler: @method.parameterType => scala.concurrent.Future[@method.outputType] = 
         (e: @method.parameterType) => implementation.@{method.nameSafe}(e@{if(powerApis) { ", metadata" } else { "" }})
       }
       }
@@ -177,7 +177,7 @@ object @{serviceName}Handler {
       // Pre-create lambdas for unary methods to avoid per-request allocation
       @for(method <- service.methods) {
       @if(method.methodType == org.apache.pekko.grpc.gen.Unary) {
-      val @{method.nameSafe}Handler: @method.parameterType => scala.concurrent.Future[@method.outputTypeUnboxed] = 
+      val @{method.nameSafe}Handler: @method.parameterType => scala.concurrent.Future[@method.outputType] = 
         (e: @method.parameterType) => implementation.@{method.nameSafe}(e@{if(powerApis) { ", metadata" } else { "" }})
       }
       }
