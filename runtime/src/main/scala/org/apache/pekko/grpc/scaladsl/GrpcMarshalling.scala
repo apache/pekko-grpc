@@ -125,7 +125,13 @@ object GrpcMarshalling {
     entity match {
       case HttpEntity.Strict(_, data) =>
         try {
-          val in = u.deserialize(reader.decodeSingleFrame(data))
+          val in = u match {
+            case frameSerializer: ProtobufFrameSerializer[In @unchecked] =>
+              frameSerializer.deserialize(data, AbstractGrpcProtocol.FrameHeaderSize,
+                data.length - AbstractGrpcProtocol.FrameHeaderSize)
+            case _ =>
+              u.deserialize(reader.decodeSingleFrame(data))
+          }
           invokeUnary(in, implementation, eHandler)
         } catch {
           case NonFatal(ex) => handleUnaryException(ex, eHandler)
