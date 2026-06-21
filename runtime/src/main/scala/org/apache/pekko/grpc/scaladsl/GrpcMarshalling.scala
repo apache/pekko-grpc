@@ -55,9 +55,10 @@ object GrpcMarshalling {
   }
 
   def negotiated[T](req: HttpRequest, f: (GrpcProtocolReader, GrpcProtocolWriter) => Future[T]): Option[Future[T]] =
-    GrpcProtocol.negotiate(req).map {
-      case (Success(reader), writer) => f(reader, writer)
-      case (Failure(ex), _)          => Future.failed(ex)
+    GrpcProtocol.negotiate(req) match {
+      case Some((Success(reader), writer)) => Some(f(reader, writer))
+      case Some((Failure(ex), _))          => Some(Future.failed(ex))
+      case None                            => None
     }
 
   def unmarshal[T](data: Source[ByteString, Any])(
