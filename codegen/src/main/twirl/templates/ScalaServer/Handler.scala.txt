@@ -123,11 +123,13 @@ object @{serviceName}Handler {
 
       import @{service.name}.Serializers.@{service.scalaCompatConstants.WildcardImport}
 
+      @if(!powerApis) {
       // Pre-create lambdas for unary methods to avoid per-request allocation
       @for(method <- service.methods) {
       @if(method.methodType == org.apache.pekko.grpc.gen.Unary) {
-      val @{method.nameSafe}Handler: @method.parameterType => scala.concurrent.Future[@method.outputTypeUnboxed] = 
+      val @{method.handlerName}: @method.parameterType => scala.concurrent.Future[@method.outputTypeUnboxed] =
         (e: @method.parameterType) => implementation.@{method.nameSafe}(e@{if(powerApis) { ", metadata" } else { "" }})
+      }
       }
       }
 
@@ -138,7 +140,7 @@ object @{serviceName}Handler {
             case "@method.grpcName" =>
                 @{if(powerApis) { "val metadata = MetadataBuilder.fromHeaders(request.headers)" } else { "" }}
                 @if(method.methodType == org.apache.pekko.grpc.gen.Unary) {
-                GrpcMarshalling.handleUnary(request.entity, @{method.nameSafe}Handler, eHandler)(
+                GrpcMarshalling.handleUnary(request.entity, @{if(powerApis) { s"(e: ${method.parameterType}) => implementation.${method.nameSafe}(e, metadata)" } else method.handlerName}, eHandler)(
                   @{service.scalaCompatConstants.ImplicitUsing}@method.deserializer.name, @method.serializer.name, mat, reader, writer, system, ec)
                 } else {
                 @{method.unmarshal}(request.entity)(@{service.scalaCompatConstants.ImplicitUsing}@method.deserializer.name, mat, reader)
@@ -174,11 +176,13 @@ object @{serviceName}Handler {
 
       import @{service.name}.Serializers.@{service.scalaCompatConstants.WildcardImport}
 
+      @if(!powerApis) {
       // Pre-create lambdas for unary methods to avoid per-request allocation
       @for(method <- service.methods) {
       @if(method.methodType == org.apache.pekko.grpc.gen.Unary) {
-      val @{method.nameSafe}Handler: @method.parameterType => scala.concurrent.Future[@method.outputTypeUnboxed] = 
+      val @{method.handlerName}: @method.parameterType => scala.concurrent.Future[@method.outputTypeUnboxed] =
         (e: @method.parameterType) => implementation.@{method.nameSafe}(e@{if(powerApis) { ", metadata" } else { "" }})
+      }
       }
       }
 
@@ -189,7 +193,7 @@ object @{serviceName}Handler {
             case "@method.grpcName" =>
                 @{if(powerApis) { "val metadata = MetadataBuilder.fromHeaders(request.headers)" } else { "" }}
                 @if(method.methodType == org.apache.pekko.grpc.gen.Unary) {
-                GrpcMarshalling.handleUnary(request.entity, @{method.nameSafe}Handler, eHandler)(
+                GrpcMarshalling.handleUnary(request.entity, @{if(powerApis) { s"(e: ${method.parameterType}) => implementation.${method.nameSafe}(e, metadata)" } else method.handlerName}, eHandler)(
                   @{service.scalaCompatConstants.ImplicitUsing}@method.deserializer.name, @method.serializer.name, mat, reader, writer, system, ec)
                 } else {
                 @{method.unmarshal}(request.entity)(@{service.scalaCompatConstants.ImplicitUsing}@method.deserializer.name, mat, reader)

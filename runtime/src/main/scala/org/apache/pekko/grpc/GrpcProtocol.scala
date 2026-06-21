@@ -18,7 +18,7 @@ import pekko.NotUsed
 import pekko.annotation.InternalApi
 import pekko.annotation.InternalStableApi
 import pekko.grpc.GrpcProtocol.{ GrpcProtocolReader, GrpcProtocolWriter }
-import pekko.grpc.internal.{ Codec, Codecs, Gzip, GrpcProtocolNative, GrpcProtocolWeb, GrpcProtocolWebText, Identity }
+import pekko.grpc.internal.{ Codec, Codecs, GrpcProtocolNative, GrpcProtocolWeb, GrpcProtocolWebText, Gzip, Identity }
 import pekko.http.javadsl.{ model => jmodel }
 import pekko.http.scaladsl.model.{ ContentType, HttpHeader, HttpResponse, Trailer }
 import pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
@@ -144,8 +144,6 @@ object GrpcProtocol {
   // Pre-computed negotiation results for common codec combinations
   private val NativeIdentityIdentity: (Try[GrpcProtocolReader], GrpcProtocolWriter) =
     (scala.util.Success(GrpcProtocolNative.newReader(Identity)), GrpcProtocolNative.newWriter(Identity))
-  private val NativeIdentityGzip: (Try[GrpcProtocolReader], GrpcProtocolWriter) =
-    (scala.util.Success(GrpcProtocolNative.newReader(Identity)), GrpcProtocolNative.newWriter(Gzip))
 
   /**
    * Calculates the gRPC protocol encoding to use for an interaction with a gRPC client.
@@ -162,7 +160,6 @@ object GrpcProtocol {
     if (isNative) {
       // Single-pass header scan for native gRPC
       var requestEncoding: String = null
-      var acceptEncoding: String = null
       request match {
         case sReq: pekko.http.scaladsl.model.HttpMessage =>
           val headers = sReq.headers
@@ -171,7 +168,6 @@ object GrpcProtocol {
             val h = headers(i)
             val name = h.lowercaseName
             if (name == "grpc-encoding") requestEncoding = h.value
-            else if (name == "grpc-accept-encoding") acceptEncoding = h.value
             i += 1
           }
         case _ =>
@@ -190,15 +186,16 @@ object GrpcProtocol {
       val writerCodec: Codec = Identity
       // Return pre-computed result for common combinations
       if ((readerCodec eq Identity) && (writerCodec eq Identity)) return Some(NativeIdentityIdentity)
-      if ((readerCodec eq Identity) && (writerCodec eq Gzip)) return Some(NativeIdentityGzip)
-      return Some((scala.util.Success(GrpcProtocolNative.newReader(readerCodec)), GrpcProtocolNative.newWriter(writerCodec)))
+      return Some((scala.util.Success(GrpcProtocolNative.newReader(readerCodec)),
+        GrpcProtocolNative.newWriter(writerCodec)))
     }
 
     // Non-native protocols - slow path
     slowNegotiateOpt(request, subType)
   }
 
-  private def slowNegotiateOpt(request: jmodel.HttpRequest, subType: String): Option[(Try[GrpcProtocolReader], GrpcProtocolWriter)] = {
+  private def slowNegotiateOpt(request: jmodel.HttpRequest, subType: String)
+      : Option[(Try[GrpcProtocolReader], GrpcProtocolWriter)] = {
     val variant = subType match {
       case "grpc-web" | "grpc-web+proto"           => Some(GrpcProtocolWeb)
       case "grpc-web-text" | "grpc-web-text+proto" => Some(GrpcProtocolWebText)
