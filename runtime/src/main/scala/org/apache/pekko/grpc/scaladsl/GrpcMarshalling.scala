@@ -128,6 +128,8 @@ object GrpcMarshalling {
         try {
           val in = u match {
             case frameSerializer: ProtobufFrameSerializer[In @unchecked] =>
+              if (data.length < AbstractGrpcProtocol.FrameHeaderSize)
+                throw new MissingParameterException
               frameSerializer.deserialize(data, AbstractGrpcProtocol.FrameHeaderSize,
                 data.length - AbstractGrpcProtocol.FrameHeaderSize)
             case _ =>
@@ -135,7 +137,8 @@ object GrpcMarshalling {
           }
           invokeUnary(in, implementation, eHandler)
         } catch {
-          case NonFatal(ex) => handleUnaryException(ex, eHandler)
+          case ex: MissingParameterException => handleUnaryException(ex, eHandler)
+          case NonFatal(ex)                  => handleUnaryException(ex, eHandler)
         }
       case _ =>
         val requestFuture = unmarshal[In](entity)(u, mat, reader)
