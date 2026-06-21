@@ -27,4 +27,12 @@ trait ProtobufSerializer[T] {
 
 private[grpc] trait ProtobufFrameSerializer[T] extends ProtobufSerializer[T] {
   private[grpc] def serializeDataFrame(t: T): ByteString
+
+  /**
+   * Deserialize a protobuf message from a ByteString starting at the given offset.
+   * Avoids ByteString.slice allocation by passing the offset directly to the parser.
+   * Default implementation falls back to slice + deserialize.
+   */
+  private[grpc] def deserialize(data: ByteString, offset: Int, length: Int): T =
+    deserialize(data.slice(offset, offset + length))
 }
