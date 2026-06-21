@@ -128,15 +128,16 @@ object GrpcMarshalling {
           val in = u.deserialize(reader.decodeSingleFrame(data))
           invokeUnary(in, implementation, eHandler)
         } catch {
-          case NonFatal(ex) => unaryExceptionHandler(eHandler)(system, writer)(ex)
+          case NonFatal(ex) => handleUnaryException(ex, eHandler)
         }
       case _ =>
         val requestFuture = unmarshal[In](entity)(u, mat, reader)
         requestFuture.value match {
           case Some(Success(in)) => invokeUnary(in, implementation, eHandler)
-          case Some(Failure(ex)) => unaryExceptionHandler(eHandler)(system, writer)(ex)
+          case Some(Failure(ex)) => handleUnaryException(ex, eHandler)
           case None              =>
-            val exceptionHandler = unaryExceptionHandler(eHandler)
+            // Lazy: only create the PartialFunction if actually needed for recovery
+            lazy val exceptionHandler = unaryExceptionHandler(eHandler)
             requestFuture
               .flatMap(in => invokeUnary(in, implementation, eHandler))
               .recoverWith(exceptionHandler)
@@ -154,7 +155,7 @@ object GrpcMarshalling {
       ec: ExecutionContext): Future[HttpResponse] =
     try handleUnaryResponse(implementation(in), eHandler)
     catch {
-      case NonFatal(ex) => unaryExceptionHandler(eHandler)(system, writer)(ex)
+      case NonFatal(ex) => handleUnaryException(ex, eHandler)
     }
 
   @inline private def handleUnaryResponse[Out](
@@ -166,9 +167,9 @@ object GrpcMarshalling {
       ec: ExecutionContext): Future[HttpResponse] =
     responseFuture.value match {
       case Some(Success(out)) => marshalUnaryResponse(out, eHandler)
-      case Some(Failure(ex))  => unaryExceptionHandler(eHandler)(system, writer)(ex)
+      case Some(Failure(ex))  => handleUnaryException(ex, eHandler)
       case None               =>
-        val exceptionHandler = unaryExceptionHandler(eHandler)
+        lazy val exceptionHandler = unaryExceptionHandler(eHandler)
         responseFuture.map(out => marshal[Out](out, eHandler)(m, writer, system)).recoverWith(exceptionHandler)
     }
 
@@ -180,8 +181,24 @@ object GrpcMarshalling {
       system: ClassicActorSystemProvider): Future[HttpResponse] =
     try FastFuture.successful(marshal[Out](out, eHandler)(m, writer, system))
     catch {
-      case NonFatal(ex) => unaryExceptionHandler(eHandler)(system, writer)(ex)
+      case NonFatal(ex) => handleUnaryException(ex, eHandler)
     }
+
+  /**
+   * Inline exception handling for synchronous error paths.
+   * Avoids allocating a PartialFunction via GrpcExceptionHandler.from() for each exception.
+   * Instead, directly applies the mapper and converts to response.
+   */
+  @inline private def handleUnaryException(
+      ex: Throwable,
+      eHandler: ActorSystem => PartialFunction[Throwable, Trailers])(
+      implicit writer: GrpcProtocolWriter,
+      system: ClassicActorSystemProvider): Future[HttpResponse] = {
+    val mapper = eHandler(system.classicSystem)
+    val trailers = if (mapper.isDefinedAt(ex)) mapper(ex)
+    else GrpcExceptionHandler.defaultMapper(system.classicSystem)(ex)
+    FastFuture.successful(GrpcResponseHelpers.status(trailers))
+  }
 
   @inline private def unaryExceptionHandler(eHandler: ActorSystem => PartialFunction[Throwable, Trailers])(
       implicit system: ClassicActorSystemProvider,
