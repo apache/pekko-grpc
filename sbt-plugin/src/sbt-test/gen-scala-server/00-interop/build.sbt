@@ -73,3 +73,12 @@ pekkoGrpcGeneratedSources := Seq(PekkoGrpc.Client, PekkoGrpc.Server)
 pekkoGrpcGeneratedLanguages := Seq(PekkoGrpc.Scala, PekkoGrpc.Java)
 pekkoGrpcCodeGeneratorSettings := pekkoGrpcCodeGeneratorSettings.value.filterNot(_ == "flat_package")
 //#languages-both
+
+// Make sure proto's reliably make it into the artifact:
+TaskKey[Unit]("checkJar") := {
+  val binary = (Compile / packageBin).value
+  IO.withTemporaryDirectory { dir =>
+    val files = IO.unzip(binary, dir, "*.proto")
+    assert(files.contains(dir / "google/protobuf/duration.proto"))
+  }
+}
