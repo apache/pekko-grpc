@@ -38,7 +38,7 @@ object Dependencies {
     // Even referenced explicitly in the sbt-plugin's sbt-tests
     // If changing this, remember to update protoc plugin version to align in
     // maven-plugin/src/main/maven/plugin.xml and org.apache.pekko.grpc.sbt.PekkoGrpcPlugin
-    val googleProtoc = "4.35.0" // checked synced by VersionSyncCheckPlugin
+    val googleProtoc = "4.35.1" // checked synced by VersionSyncCheckPlugin
     val googleProtobufJava = "4.35.1"
 
     val scalaTest = "3.2.20"
