@@ -172,8 +172,8 @@ lazy val sbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
     name := s"$pekkoPrefix-sbt-plugin",
     pluginCrossBuild / sbtVersion := {
       scalaBinaryVersion.value match {
-        case "2.12" => "1.12.11"
-        case _      => "2.0.0-RC13"
+        case "2.12" => "1.12.13"
+        case _      => "2.0.0"
       }
     },
     /** And for scripted tests: */
