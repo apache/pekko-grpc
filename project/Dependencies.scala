@@ -57,6 +57,8 @@ object Dependencies {
     val scalapbCompilerPlugin = "com.thesamet.scalapb" %% "compilerplugin" % scalapb.compiler.Version.scalapbVersion
     val scalapbRuntime = ("com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion)
       .exclude("io.grpc", "grpc-netty")
+    val scalapbRuntimeProtobuf = "com.thesamet.scalapb" %% "scalapb-runtime" % scalapb.compiler.Version.scalapbVersion %
+      "protobuf"
 
     val grpcCore = "io.grpc" % "grpc-core" % Versions.grpc
     val grpcProtobuf = "io.grpc" % "grpc-protobuf" % Versions.grpc
@@ -164,4 +166,11 @@ object Dependencies {
     Test.scalaTest,
     Test.scalaTestPlusJunit,
     Protobuf.googleCommonProtos) ++ junitJupiterTestDeps.value
+
+  lazy val benchmarks = l ++= Seq(
+    Compile.scalapbRuntime,
+    Compile.scalapbRuntimeProtobuf,
+    Protobuf.protobufJava
+  )
+
 }
