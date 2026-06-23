@@ -173,6 +173,7 @@ object GrpcProtocol {
             i += 1
           }
         case _ =>
+          return slowNegotiateOpt(request, subType)
       }
       // Determine reader codec (request encoding)
       val readerCodec: Codec =

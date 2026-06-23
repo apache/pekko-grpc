@@ -97,9 +97,11 @@ class GrpcProtocolSpec extends AnyWordSpec with Matchers with TryValues {
       GrpcProtocol.negotiate(request) should be(None)
     }
 
-    "return None for unknown grpc-encoding" in {
+    "return a failed reader for unknown grpc-encoding" in {
       val result = GrpcProtocol.negotiate(grpcRequest(encoding = Some("zstd")))
-      result should be(None)
+      result shouldBe defined
+      val (readerTry, _) = result.get
+      readerTry.failure.exception shouldBe a[GrpcServiceException]
     }
   }
 }

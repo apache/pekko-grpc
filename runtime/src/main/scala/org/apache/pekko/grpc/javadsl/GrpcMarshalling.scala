@@ -65,8 +65,16 @@ object GrpcMarshalling {
             case frameSerializer: ProtobufFrameSerializer[T @unchecked] =>
               if (strict.data.length < AbstractGrpcProtocol.FrameHeaderSize)
                 throw new MissingParameterException
-              frameSerializer.deserialize(strict.data, AbstractGrpcProtocol.FrameHeaderSize,
-                strict.data.length - AbstractGrpcProtocol.FrameHeaderSize)
+              val frameType = strict.data(0)
+              if ((frameType & 1) != 0)
+                throw new io.grpc.StatusException(
+                  io.grpc.Status.INTERNAL.withDescription(
+                    "Compressed-Flag bit is set, but a compression encoding is not specified"))
+              val declaredLength = strict.data.readIntBE(1)
+              val available = strict.data.length - AbstractGrpcProtocol.FrameHeaderSize
+              if (declaredLength > available) throw new MissingParameterException
+              if (declaredLength < 0) throw new IllegalStateException(s"Invalid frame length: $declaredLength")
+              frameSerializer.deserialize(strict.data, AbstractGrpcProtocol.FrameHeaderSize, declaredLength)
             case _ =>
               u.deserialize(reader.decodeSingleFrame(strict.data))
           }
