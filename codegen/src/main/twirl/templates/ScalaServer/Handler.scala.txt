@@ -125,6 +125,7 @@ object @{serviceName}Handler {
       implicit val mat: Materializer = SystemMaterializer(system).materializer
       implicit val ec: ExecutionContext = mat.executionContext
       val spi = TelemetryExtension(system).spi
+      val compressionThreshold = system.classicSystem.settings.config.getInt("pekko.grpc.server.compression-threshold")
 
       import @{service.name}.Serializers.@{service.scalaCompatConstants.WildcardImport}
 
@@ -156,7 +157,7 @@ object @{serviceName}Handler {
             }
             case m => GrpcExceptionHandler.from(eHandler(system.classicSystem))(system, writer)(new NotImplementedError(s"Not implemented: $m"))
           }
-      ).getOrElse(unsupportedMediaType)
+      , compressionThreshold).getOrElse(unsupportedMediaType)
 
       request => {
         val method = methodName(request, prefix)
@@ -178,6 +179,7 @@ object @{serviceName}Handler {
       implicit val mat: Materializer = SystemMaterializer(system).materializer
       implicit val ec: ExecutionContext = mat.executionContext
       val spi = TelemetryExtension(system).spi
+      val compressionThreshold = system.classicSystem.settings.config.getInt("pekko.grpc.server.compression-threshold")
 
       import @{service.name}.Serializers.@{service.scalaCompatConstants.WildcardImport}
 
@@ -209,7 +211,7 @@ object @{serviceName}Handler {
             }
             case m => GrpcExceptionHandler.from(eHandler(system.classicSystem))(system, writer)(new NotImplementedError(s"Not implemented: $m"))
           }
-      ).getOrElse(unsupportedMediaType)
+      , compressionThreshold).getOrElse(unsupportedMediaType)
 
       Function.unlift((req: model.HttpRequest) => {
         val method = methodName(req, prefix)

@@ -18,7 +18,16 @@ import pekko.NotUsed
 import pekko.annotation.InternalApi
 import pekko.annotation.InternalStableApi
 import pekko.grpc.GrpcProtocol.{ GrpcProtocolReader, GrpcProtocolWriter }
-import pekko.grpc.internal.{ Codec, Codecs, GrpcProtocolNative, GrpcProtocolWeb, GrpcProtocolWebText, Gzip, Identity }
+import pekko.grpc.internal.{
+  AdaptiveGzip,
+  Codec,
+  Codecs,
+  GrpcProtocolNative,
+  GrpcProtocolWeb,
+  GrpcProtocolWebText,
+  Gzip,
+  Identity
+}
 import pekko.http.javadsl.{ model => jmodel }
 import pekko.http.scaladsl.model.{ ContentType, HttpHeader, HttpResponse, Trailer }
 import pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
@@ -141,18 +150,43 @@ object GrpcProtocol {
     case _                                       => None
   }
 
-  // Pre-computed negotiation results for common codec combinations
+  // Pre-computed negotiation result for Identity reader + Identity writer (no gzip support)
   private val NativeIdentityIdentity: (Try[GrpcProtocolReader], GrpcProtocolWriter) =
     (scala.util.Success(GrpcProtocolNative.newReader(Identity)), GrpcProtocolNative.newWriter(Identity))
+
+  // Pre-computed negotiation result for Identity reader + AdaptiveGzip writer (default threshold)
+  // This is the most common case: client accepts gzip, server uses adaptive compression.
+  private val NativeIdentityAdaptiveGzip: (Try[GrpcProtocolReader], GrpcProtocolWriter) =
+    (scala.util.Success(GrpcProtocolNative.newReader(Identity)),
+      GrpcProtocolNative.newWriter(AdaptiveGzip(AdaptiveGzip.DefaultCompressionThreshold)))
+
+  /**
+   * Calculates the gRPC protocol encoding to use for an interaction with a gRPC client.
+   * Optimized with a fast path for native gRPC that does a single header scan.
+   *
+   * For response encoding, uses adaptive gzip: messages above a configurable threshold
+   * (default 1KB) are compressed with gzip, while smaller messages are sent uncompressed.
+   * The gRPC per-frame compression flag (bit 0 of the 5-byte frame header) tells the
+   * client whether each individual frame is compressed.
+   *
+   * @param request the client request to respond to.
+   * @return the protocol reader for the request, and a protocol writer for the response.
+   */
+  def negotiate(request: jmodel.HttpRequest): Option[(Try[GrpcProtocolReader], GrpcProtocolWriter)] =
+    negotiate(request, AdaptiveGzip.DefaultCompressionThreshold)
 
   /**
    * Calculates the gRPC protocol encoding to use for an interaction with a gRPC client.
    * Optimized with a fast path for native gRPC that does a single header scan.
    *
    * @param request the client request to respond to.
+   * @param compressionThreshold minimum message size in bytes to trigger gzip compression.
+   *                             Messages below this threshold are sent uncompressed.
    * @return the protocol reader for the request, and a protocol writer for the response.
    */
-  def negotiate(request: jmodel.HttpRequest): Option[(Try[GrpcProtocolReader], GrpcProtocolWriter)] = {
+  def negotiate(
+      request: jmodel.HttpRequest,
+      compressionThreshold: Int): Option[(Try[GrpcProtocolReader], GrpcProtocolWriter)] = {
     val mediaType = request.entity.getContentType.mediaType
     val subType = mediaType.subType
     val isNative = (subType eq "grpc+proto") || (subType eq "grpc")
@@ -160,6 +194,7 @@ object GrpcProtocol {
     if (isNative) {
       // Single-pass header scan for native gRPC
       var requestEncoding: String = null
+      var acceptEncoding: String = null
       request match {
         case sReq: pekko.http.scaladsl.model.HttpMessage =>
           val headers = sReq.headers
@@ -168,6 +203,7 @@ object GrpcProtocol {
             val h = headers(i)
             val name = h.lowercaseName
             if (name == "grpc-encoding") requestEncoding = h.value
+            else if (name == "grpc-accept-encoding") acceptEncoding = h.value
             i += 1
           }
         case _ =>
@@ -179,15 +215,19 @@ object GrpcProtocol {
         else if (requestEncoding == "gzip") Gzip
         else return slowNegotiateOpt(request, subType)
       // Determine writer codec (response encoding)
-      // For native gRPC, always prefer Identity for responses. The per-frame compression
-      // flag tells the client whether each frame is compressed. For typical small gRPC
-      // messages, avoiding compression saves significant CPU overhead (~20-30% of handler time).
-      // Clients that need compression for large messages can still handle uncompressed frames.
-      val writerCodec: Codec = Identity
-      // Return pre-computed result for common combinations
-      if ((readerCodec eq Identity) && (writerCodec eq Identity)) return Some(NativeIdentityIdentity)
-      return Some((scala.util.Success(GrpcProtocolNative.newReader(readerCodec)),
-        GrpcProtocolNative.newWriter(writerCodec)))
+      // Adaptive compression: use gzip for messages above threshold, identity for smaller ones.
+      // Only activate when client advertises gzip support via grpc-accept-encoding.
+      val clientAcceptsGzip = acceptEncoding != null && acceptEncoding.contains("gzip")
+      if (!clientAcceptsGzip && (readerCodec eq Identity)) return Some(NativeIdentityIdentity)
+      if (clientAcceptsGzip && (readerCodec eq Identity) &&
+        compressionThreshold == AdaptiveGzip.DefaultCompressionThreshold)
+        return Some(NativeIdentityAdaptiveGzip)
+      val writerCodec: Codec =
+        if (clientAcceptsGzip) AdaptiveGzip(compressionThreshold)
+        else Identity
+      return Some(
+        (scala.util.Success(GrpcProtocolNative.newReader(readerCodec)),
+          GrpcProtocolNative.newWriter(writerCodec)))
     }
 
     // Non-native protocols - slow path

@@ -29,6 +29,7 @@ class ScalapbProtobufSerializer[T <: GeneratedMessage](companion: GeneratedMessa
     extends ProtobufFrameSerializer[T] {
   override def serialize(t: T): ByteString =
     ByteString.fromArrayUnsafe(t.toByteArray)
+  override private[grpc] def serializedDataSize(t: T): Int = t.serializedSize
   override private[grpc] def serializeDataFrame(t: T): ByteString = {
     val dataLength = t.serializedSize
     val frame = new Array[Byte](AbstractGrpcProtocol.FrameHeaderSize + dataLength)

@@ -28,6 +28,7 @@ class GoogleProtobufSerializer[T <: com.google.protobuf.Message](parser: Parser[
 
   override def serialize(t: T): ByteString =
     ByteString.fromArrayUnsafe(t.toByteArray)
+  override private[grpc] def serializedDataSize(t: T): Int = t.getSerializedSize
   override private[grpc] def serializeDataFrame(t: T): ByteString = {
     val dataLength = t.getSerializedSize
     val frame = new Array[Byte](AbstractGrpcProtocol.FrameHeaderSize + dataLength)

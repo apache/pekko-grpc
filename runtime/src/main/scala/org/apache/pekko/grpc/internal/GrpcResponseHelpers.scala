@@ -72,10 +72,23 @@ object GrpcResponseHelpers {
       system: ClassicActorSystemProvider): HttpResponse = {
     val responseHeaders = responseHeadersFor(writer)
     try {
-      if ((writer.messageEncoding eq Identity) && writer.contentType == GrpcProtocolNative.contentType) {
-        m match {
-          case frameSerializer: ProtobufFrameSerializer[T @unchecked] =>
-            nativeResponse(writer, frameSerializer.serializeDataFrame(e), responseHeaders)
+      if (writer.contentType == GrpcProtocolNative.contentType) {
+        writer.messageEncoding match {
+          case Identity =>
+            m match {
+              case frameSerializer: ProtobufFrameSerializer[T @unchecked] =>
+                nativeResponse(writer, frameSerializer.serializeDataFrame(e), responseHeaders)
+              case _ =>
+                writer.encodeDataToResponse(m.serialize(e), responseHeaders, TrailerOkAttribute)
+            }
+          case adaptive: AdaptiveGzip =>
+            m match {
+              case frameSerializer: ProtobufFrameSerializer[T @unchecked]
+                  if frameSerializer.serializedDataSize(e) < adaptive.compressionThreshold =>
+                nativeResponse(writer, frameSerializer.serializeDataFrame(e), responseHeaders)
+              case _ =>
+                writer.encodeDataToResponse(m.serialize(e), responseHeaders, TrailerOkAttribute)
+            }
           case _ =>
             writer.encodeDataToResponse(m.serialize(e), responseHeaders, TrailerOkAttribute)
         }

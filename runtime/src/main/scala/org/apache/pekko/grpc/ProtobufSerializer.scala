@@ -35,4 +35,14 @@ private[grpc] trait ProtobufFrameSerializer[T] extends ProtobufSerializer[T] {
    */
   private[grpc] def deserialize(data: ByteString, offset: Int, length: Int): T =
     deserialize(data.slice(offset, offset + length))
+
+  /**
+   * Returns the serialized size of the message without actually serializing it.
+   * Used by adaptive compression to decide whether to compress small messages.
+   *
+   * Implementations should override this with an efficient method (e.g.
+   * `GeneratedMessage.serializedSize` for ScalaPB or `Message.getSerializedSize`
+   * for Google protobuf) to avoid the overhead of full serialization.
+   */
+  private[grpc] def serializedDataSize(t: T): Int = serialize(t).length
 }

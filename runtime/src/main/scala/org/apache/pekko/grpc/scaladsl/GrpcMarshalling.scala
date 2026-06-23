@@ -61,6 +61,21 @@ object GrpcMarshalling {
       case None                            => None
     }
 
+  /**
+   * Like `negotiated` but accepts a pre-read compression threshold to avoid
+   * per-request config reading. The threshold should be read once at handler
+   * creation time from `pekko.grpc.server.compression-threshold`.
+   */
+  def negotiated[T](
+      req: HttpRequest,
+      f: (GrpcProtocolReader, GrpcProtocolWriter) => Future[T],
+      compressionThreshold: Int): Option[Future[T]] =
+    GrpcProtocol.negotiate(req, compressionThreshold) match {
+      case Some((Success(reader), writer)) => Some(f(reader, writer))
+      case Some((Failure(ex), _))          => Some(Future.failed(ex))
+      case None                            => None
+    }
+
   def unmarshal[T](data: Source[ByteString, Any])(
       implicit u: ProtobufSerializer[T],
       mat: Materializer,

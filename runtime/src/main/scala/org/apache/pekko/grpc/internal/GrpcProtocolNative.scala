@@ -69,7 +69,8 @@ object GrpcProtocolNative extends AbstractGrpcProtocol("grpc") {
   private def encodeFrame(codec: Codec, frame: Frame): ChunkStreamPart =
     frame match {
       case DataFrame(data) =>
-        Chunk(AbstractGrpcProtocol.encodeFrameData(codec.compress(data), codec.isCompressed, isTrailer = false))
+        val (compressed, wasCompressed) = codec.compressWithFlag(data)
+        Chunk(AbstractGrpcProtocol.encodeFrameData(compressed, wasCompressed, isTrailer = false))
       case TrailerFrame(headers) => LastChunk(trailer = headers)
     }
   private def encodeDataToResponse(
@@ -81,6 +82,8 @@ object GrpcProtocolNative extends AbstractGrpcProtocol("grpc") {
       protocol = HttpProtocols.`HTTP/1.1`,
       attributes = Map.empty[AttributeKey[?], Any].updated(AttributeKeys.trailer, trailer))
 
-  private def encodeDataToFrameBytes(codec: Codec, data: ByteString): ByteString =
-    AbstractGrpcProtocol.encodeFrameData(codec.compress(data), codec.isCompressed, isTrailer = false)
+  private def encodeDataToFrameBytes(codec: Codec, data: ByteString): ByteString = {
+    val (compressed, wasCompressed) = codec.compressWithFlag(data)
+    AbstractGrpcProtocol.encodeFrameData(compressed, wasCompressed, isTrailer = false)
+  }
 }
