@@ -155,7 +155,7 @@ object GrpcProtocol {
   def negotiate(request: jmodel.HttpRequest): Option[(Try[GrpcProtocolReader], GrpcProtocolWriter)] = {
     val mediaType = request.entity.getContentType.mediaType
     val subType = mediaType.subType
-    val isNative = (subType eq "grpc+proto") || (subType eq "grpc")
+    val isNative = (subType == "grpc+proto") || (subType == "grpc")
 
     if (isNative) {
       // Single-pass header scan for native gRPC
