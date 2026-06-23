@@ -23,9 +23,8 @@ import scala.collection.immutable
 import scala.util.{ Failure, Success, Try }
 
 object Codecs {
-  // Identity preferred over Gzip: for typical small protobuf messages, compression
-  // adds CPU overhead without meaningful size reduction. Clients requiring compression
-  // can still negotiate it explicitly.
+  // Codecs supported by this server. The selection order is determined by the
+  // client's grpc-accept-encoding header preference, not by this sequence order.
   val supportedCodecs = immutable.Seq(Identity, Gzip)
   private val supportedByName: Map[String, Codec] = supportedCodecs.map(c => c.name -> c).toMap
 

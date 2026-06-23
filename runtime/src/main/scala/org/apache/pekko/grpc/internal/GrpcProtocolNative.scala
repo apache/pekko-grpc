@@ -58,8 +58,9 @@ object GrpcProtocolNative extends AbstractGrpcProtocol("grpc") {
     val length = frame.readIntBE(1)
     val available = frame.length - AbstractGrpcProtocol.FrameHeaderSize
     if (length > available) throw new MissingParameterException
-    if (length < 0 || length < available)
-      throw new IllegalStateException("Unexpected data")
+    if (length < 0) throw new IllegalStateException(s"Invalid frame length: $length")
+    if (length < available)
+      throw new IllegalStateException("Unexpected trailing data")
     if ((frameType & 0x80) != 0) throw new IllegalStateException("Cannot read unknown frame")
 
     if ((frameType & 1) != 0)

@@ -160,6 +160,7 @@ object GrpcProtocol {
     if (isNative) {
       // Single-pass header scan for native gRPC
       var requestEncoding: String = null
+      var acceptEncoding: String = null
       request match {
         case sReq: pekko.http.scaladsl.model.HttpMessage =>
           val headers = sReq.headers
@@ -168,6 +169,7 @@ object GrpcProtocol {
             val h = headers(i)
             val name = h.lowercaseName
             if (name == "grpc-encoding") requestEncoding = h.value
+            else if (name == "grpc-accept-encoding") acceptEncoding = h.value
             i += 1
           }
         case _ =>
@@ -179,11 +181,25 @@ object GrpcProtocol {
         else if (requestEncoding == "gzip") Gzip
         else return slowNegotiateOpt(request, subType)
       // Determine writer codec (response encoding)
-      // For native gRPC, always prefer Identity for responses. The per-frame compression
-      // flag tells the client whether each frame is compressed. For typical small gRPC
-      // messages, avoiding compression saves significant CPU overhead (~20-30% of handler time).
-      // Clients that need compression for large messages can still handle uncompressed frames.
-      val writerCodec: Codec = Identity
+      // Respect client's grpc-accept-encoding preference order (matching Codecs.negotiate).
+      // gRPC format: comma-separated, e.g. "gzip,identity" — client order indicates preference.
+      val writerCodec: Codec =
+        if (acceptEncoding eq null) Identity
+        else if (acceptEncoding == "gzip") Gzip
+        else if (acceptEncoding == "identity") Identity
+        else if (acceptEncoding.contains(",")) {
+          // Multiple encodings: iterate client preference order, pick first supported
+          val parts = acceptEncoding.split(",")
+          var codec: Codec = null
+          var i = 0
+          while (i < parts.length && (codec eq null)) {
+            val trimmed = parts(i).trim
+            if (trimmed == "gzip") codec = Gzip
+            else if (trimmed == "identity") codec = Identity
+            i += 1
+          }
+          if (codec eq null) Identity else codec
+        } else return slowNegotiateOpt(request, subType)
       // Return pre-computed result for common combinations
       if ((readerCodec eq Identity) && (writerCodec eq Identity)) return Some(NativeIdentityIdentity)
       return Some((scala.util.Success(GrpcProtocolNative.newReader(readerCodec)),
