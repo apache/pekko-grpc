@@ -137,8 +137,7 @@ object GrpcMarshalling {
           }
           invokeUnary(in, implementation, eHandler)
         } catch {
-          case ex: MissingParameterException => handleUnaryException(ex, eHandler)
-          case NonFatal(ex)                  => handleUnaryException(ex, eHandler)
+          case NonFatal(ex) => handleUnaryException(ex, eHandler)
         }
       case _ =>
         val requestFuture = unmarshal[In](entity)(u, mat, reader)

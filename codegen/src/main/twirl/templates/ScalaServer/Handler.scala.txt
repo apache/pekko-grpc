@@ -133,7 +133,7 @@ object @{serviceName}Handler {
       @for(method <- service.methods) {
       @if(method.methodType == org.apache.pekko.grpc.gen.Unary) {
       val @{method.handlerName}: @method.parameterType => scala.concurrent.Future[@method.outputTypeUnboxed] =
-        (e: @method.parameterType) => implementation.@{method.nameSafe}(e@{if(powerApis) { ", metadata" } else { "" }})
+        (e: @method.parameterType) => implementation.@{method.nameSafe}(e)
       }
       }
       }
@@ -186,7 +186,7 @@ object @{serviceName}Handler {
       @for(method <- service.methods) {
       @if(method.methodType == org.apache.pekko.grpc.gen.Unary) {
       val @{method.handlerName}: @method.parameterType => scala.concurrent.Future[@method.outputTypeUnboxed] =
-        (e: @method.parameterType) => implementation.@{method.nameSafe}(e@{if(powerApis) { ", metadata" } else { "" }})
+        (e: @method.parameterType) => implementation.@{method.nameSafe}(e)
       }
       }
       }

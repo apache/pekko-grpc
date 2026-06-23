@@ -63,6 +63,8 @@ object GrpcMarshalling {
         completedOrFailed {
           u match {
             case frameSerializer: ProtobufFrameSerializer[T @unchecked] =>
+              if (strict.data.length < AbstractGrpcProtocol.FrameHeaderSize)
+                throw new MissingParameterException
               frameSerializer.deserialize(strict.data, AbstractGrpcProtocol.FrameHeaderSize,
                 strict.data.length - AbstractGrpcProtocol.FrameHeaderSize)
             case _ =>

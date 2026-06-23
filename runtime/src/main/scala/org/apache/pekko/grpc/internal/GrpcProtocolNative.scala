@@ -62,7 +62,10 @@ object GrpcProtocolNative extends AbstractGrpcProtocol("grpc") {
       throw new IllegalStateException("Unexpected data")
     if ((frameType & 0x80) != 0) throw new IllegalStateException("Cannot read unknown frame")
 
-    Identity.uncompress((frameType & 1) == 1, frame.slice(AbstractGrpcProtocol.FrameHeaderSize, frame.length))
+    if ((frameType & 1) != 0)
+      throw new io.grpc.StatusException(
+        io.grpc.Status.INTERNAL.withDescription("Compressed-Flag bit is set, but a compression encoding is not specified"))
+    frame.drop(AbstractGrpcProtocol.FrameHeaderSize)
   }
 
   @inline
