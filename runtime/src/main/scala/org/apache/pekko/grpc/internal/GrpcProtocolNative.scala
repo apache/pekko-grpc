@@ -64,7 +64,8 @@ object GrpcProtocolNative extends AbstractGrpcProtocol("grpc") {
 
     if ((frameType & 1) != 0)
       throw new io.grpc.StatusException(
-        io.grpc.Status.INTERNAL.withDescription("Compressed-Flag bit is set, but a compression encoding is not specified"))
+        io.grpc.Status.INTERNAL.withDescription(
+          "Compressed-Flag bit is set, but a compression encoding is not specified"))
     frame.drop(AbstractGrpcProtocol.FrameHeaderSize)
   }
 
