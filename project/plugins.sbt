@@ -45,4 +45,4 @@ libraryDependencies += "org.scala-sbt" %% "scripted-plugin" % sbtVersion.value
 libraryDependencies += "com.thesamet.scalapb" %% "compilerplugin" % "1.0.0-alpha.5"
 
 // https://eed3si9n.com/reducing-scaladoc-file-size-with-sbt-salad-days/
-addSbtPlugin("com.eed3si9n" % "sbt-salad-days" % "0.1.0")
+addSbtPlugin("com.eed3si9n" % "sbt-salad-days" % "0.2.0")
