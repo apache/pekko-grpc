@@ -147,14 +147,11 @@ public class AsyncClient {
   }
 
   private Future<Histogram> doRpcs(BenchmarkServiceClient client, SimpleRequest request, long endTime) {
-    switch (config.rpcType) {
-      case UNARY:
-        return doUnaryCalls(client, request, endTime);
-      case STREAMING:
-        return doStreamingCalls(client, request, endTime);
-      default:
-        throw new IllegalStateException("unsupported rpc type");
-    }
+    return switch (config.rpcType) {
+      case UNARY -> doUnaryCalls(client, request, endTime);
+      case STREAMING -> doStreamingCalls(client, request, endTime);
+      default -> throw new IllegalStateException("unsupported rpc type");
+    };
   }
 
   private Future<Histogram> doUnaryCalls(BenchmarkServiceClient client, final SimpleRequest request,

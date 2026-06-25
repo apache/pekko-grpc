@@ -47,18 +47,11 @@ final class LoadServer {
     port = config.getPort() ==  0 ? Utils.pickUnusedPort() : config.getPort();
 
     switch (config.getServerType()) {
-      case ASYNC_SERVER: {
-        break;
-      }
-      case SYNC_SERVER: {
-        throw new IllegalArgumentException("SYNC_SERVER not implemented");
-      }
-      case ASYNC_GENERIC_SERVER: {
-        throw new IllegalArgumentException("ASYNC_GENERIC_SERVER not implemented");
-      }
-      default: {
-        throw new IllegalArgumentException();
-      }
+      case ASYNC_SERVER -> {}
+      case SYNC_SERVER -> throw new IllegalArgumentException("SYNC_SERVER not implemented");
+      case ASYNC_GENERIC_SERVER ->
+          throw new IllegalArgumentException("ASYNC_GENERIC_SERVER not implemented");
+      default -> throw new IllegalArgumentException();
     }
     if (config.hasSecurityParams()) {
       // FIXME currently only Utils.serverHttpContext and the test certs are used
