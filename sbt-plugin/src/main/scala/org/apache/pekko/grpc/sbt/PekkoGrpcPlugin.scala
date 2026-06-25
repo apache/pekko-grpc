@@ -117,7 +117,28 @@ object PekkoGrpcPlugin extends AutoPlugin {
         pekkoGrpcCodeGeneratorSettings / target := crossTarget.value / "pekko-grpc" / Defaults.nameForSrc(
           configuration.value.name),
         managedSourceDirectories += (pekkoGrpcCodeGeneratorSettings / target).value,
-        unmanagedResourceDirectories ++= (PB.recompile / resourceDirectories).value,
+        packageBin / mappings := {
+          val existingMappings = (packageBin / mappings).value
+          val unpackedFiles = PB.unpackDependencies.value.files
+          val mappingsToAdd =
+            unpackedFiles.pair(Path.relativeTo(Seq(PB.externalSourcePath.value, PB.externalIncludePath.value)))
+          @scala.annotation.tailrec
+          def withoutDuplicates(soFar: List[(File, String)], seen: Set[String], toAdd: Seq[(File, String)])
+              : Seq[(File, String)] = {
+            toAdd.headOption match {
+              case Some((file, string)) =>
+                if (seen.contains(string)) {
+                  withoutDuplicates(soFar, seen, toAdd.tail)
+                } else {
+                  withoutDuplicates((file, string) :: soFar, seen + string, toAdd.tail)
+                }
+              case None =>
+                soFar
+            }
+          }
+          withoutDuplicates(existingMappings.toList, existingMappings.map(_._2).toSet, mappingsToAdd)
+        },
+        unmanagedResourceDirectories ++= (PB.recompile / unmanagedResourceDirectories).value,
         Defaults.ConfigZero / watchSources ++= Def.uncached {
           (PB.recompile / sources).value.map(f => WatchSource(f))
         },
@@ -135,30 +156,7 @@ object PekkoGrpcPlugin extends AutoPlugin {
             (pekkoGrpcCodeGeneratorSettings / target).value,
             pekkoGrpcCodeGeneratorSettings.value,
             pekkoGrpcGenerators.value),
-        PB.protoSources += sourceDirectory.value / "proto")) ++
-    inConfig(config)(Seq(
-      PB.recompile / includeFilter := GlobFilter("*.proto"),
-      PB.recompile / managedSourceDirectories := Nil,
-      PB.recompile / unmanagedSourceDirectories := Seq(sourceDirectory.value),
-      PB.recompile / sourceDirectories := (PB.recompile / unmanagedSourceDirectories).value ++
-      (PB.recompile / managedSourceDirectories).value,
-      PB.recompile / managedSources := Nil,
-      PB.recompile / unmanagedSources := {
-        Defaults.collectFiles(PB.recompile / unmanagedSourceDirectories, PB.recompile / includeFilter,
-          PB.recompile / excludeFilter).value
-      },
-      PB.recompile / sources := (PB.recompile / managedSources).value ++ (PB.recompile / unmanagedSources).value,
-      PB.recompile / managedResourceDirectories := Nil,
-      PB.recompile / unmanagedResourceDirectories := resourceDirectory.value +: PB.protoSources.value,
-      PB.recompile / resourceDirectories := (PB.recompile / unmanagedResourceDirectories).value ++
-      (PB.recompile / managedResourceDirectories).value,
-      PB.recompile / managedResources := Nil,
-      PB.recompile / unmanagedResources := {
-        Defaults.collectFiles(PB.recompile / unmanagedResourceDirectories, PB.recompile / includeFilter,
-          PB.recompile / excludeFilter).value
-      },
-      PB.recompile / resources := (PB.recompile / managedResources).value ++
-      (PB.recompile / unmanagedResources).value))
+        PB.protoSources += sourceDirectory.value / "proto"))
 
   def targetsFor(
       targetPath: File,
