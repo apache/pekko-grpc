@@ -27,8 +27,8 @@ import java.security.SecureRandom;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import javax.net.ssl.KeyManagerFactory;
@@ -88,7 +88,7 @@ public class PekkoGrpcServerJava extends GrpcServer<Tuple2<ActorSystem, ServerBi
     ServerSettings serverSettings = ServerSettings.create(sys);
 
     CompletionStage<ServerBinding> binding;
-    if (Arrays.asList(args).contains("--use_tls=false")) {
+    if (List.of(args).contains("--use_tls=false")) {
       binding =
           Http.get(sys)
               .newServerAt("127.0.0.1", 0)

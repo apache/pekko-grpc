@@ -31,7 +31,6 @@ import java.util.Set;
 
 import static org.apache.pekko.grpc.benchmarks.Utils.parseBoolean;
 import static java.lang.Integer.parseInt;
-import static java.util.Arrays.asList;
 
 /**
  * Configuration options for benchmark clients.
@@ -119,7 +118,7 @@ public class ClientConfiguration implements Configuration {
         // If no options are supplied, default to including all options.
         supportedParams = ClientParam.values();
       }
-      return Set.copyOf(asList(supportedParams));
+      return Set.of(supportedParams);
     }
   }
 

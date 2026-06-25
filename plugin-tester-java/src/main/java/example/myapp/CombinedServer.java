@@ -20,7 +20,7 @@ import org.apache.pekko.stream.Materializer;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CompletionStage;
 
 // #import
@@ -68,7 +68,7 @@ class CombinedServer {
 
     // #grpc-web
     Function<HttpRequest, CompletionStage<HttpResponse>> grpcWebServiceHandlers =
-        WebHandler.grpcWebHandler(Arrays.asList(greeterService, echoService), sys, mat);
+        WebHandler.grpcWebHandler(List.of(greeterService, echoService), sys, mat);
 
     Http.get(sys)
         .newServerAt("127.0.0.1", 8090)
