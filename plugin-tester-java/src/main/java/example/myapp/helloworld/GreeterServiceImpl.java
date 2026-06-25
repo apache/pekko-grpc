@@ -19,7 +19,6 @@ import example.myapp.helloworld.grpc.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.stream.Collectors;
 import org.apache.pekko.NotUsed;
 import org.apache.pekko.stream.Materializer;
 import org.apache.pekko.stream.javadsl.Sink;
@@ -52,7 +51,7 @@ public class GreeterServiceImpl implements GreeterService {
               String elementsStr =
                   elements.stream()
                       .map(HelloRequest::getName)
-                      .collect(Collectors.toList())
+                      .toList()
                       .toString();
               return HelloReply.newBuilder().setMessage("Hello, " + elementsStr).build();
             });
@@ -62,7 +61,7 @@ public class GreeterServiceImpl implements GreeterService {
   public Source<HelloReply, NotUsed> itKeepsReplying(HelloRequest in) {
     System.out.println("sayHello to " + in.getName() + " with stream of chars");
     List<Character> characters =
-        ("Hello, " + in.getName()).chars().mapToObj(c -> (char) c).collect(Collectors.toList());
+        ("Hello, " + in.getName()).chars().mapToObj(c -> (char) c).toList();
     return Source.from(characters)
         .map(character -> HelloReply.newBuilder().setMessage(String.valueOf(character)).build());
   }

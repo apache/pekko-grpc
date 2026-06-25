@@ -20,7 +20,6 @@ import example.myapp.helloworld.grpc.HelloRequest;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.stream.Collectors;
 import org.apache.pekko.NotUsed;
 import org.apache.pekko.grpc.javadsl.Metadata;
 import org.apache.pekko.stream.Materializer;
@@ -52,7 +51,7 @@ public class PowerGreeterServiceImpl implements GreeterServicePowerApi {
               String elementsStr =
                   elements.stream()
                       .map(elem -> authTaggedName(elem, metadata))
-                      .collect(Collectors.toList())
+                      .toList()
                       .toString();
               return HelloReply.newBuilder().setMessage("Hello, " + elementsStr).build();
             });
@@ -63,7 +62,7 @@ public class PowerGreeterServiceImpl implements GreeterServicePowerApi {
     String greetee = authTaggedName(in, metadata);
     System.out.println("sayHello to " + greetee + " with stream of chars");
     List<Character> characters =
-        ("Hello, " + greetee).chars().mapToObj(c -> (char) c).collect(Collectors.toList());
+        ("Hello, " + greetee).chars().mapToObj(c -> (char) c).toList();
     return Source.from(characters)
         .map(character -> HelloReply.newBuilder().setMessage(String.valueOf(character)).build());
   }
