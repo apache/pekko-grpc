@@ -85,8 +85,7 @@ public class PowerGreeterServiceImpl implements GreeterServicePowerApi {
   }
 
   private String authTaggedName(HelloRequest in, Metadata metadata) {
-    return String.format(
-        "%s (%sauthenticated)", in.getName(), isAuthenticated(metadata) ? "" : "not ");
+    return "%s (%sauthenticated)".formatted(in.getName(), isAuthenticated(metadata) ? "" : "not ");
   }
 }
 // #full-service-impl
