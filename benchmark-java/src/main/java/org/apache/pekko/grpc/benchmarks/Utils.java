@@ -37,6 +37,7 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.SocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.KeyFactory;
@@ -156,7 +157,7 @@ public final class Utils {
   }
 
   public static HttpsConnectionContext serverHttpContext() throws Exception {
-    String keyEncoded = new String(Files.readAllBytes(Paths.get(TestUtils.loadCert("server1.key").getAbsolutePath())), "UTF-8")
+    String keyEncoded = Files.readString(Paths.get(TestUtils.loadCert("server1.key").getAbsolutePath()), StandardCharsets.UTF_8)
         .replace("-----BEGIN PRIVATE KEY-----\n", "")
         .replace("-----END PRIVATE KEY-----\n", "")
         .replace("\n", "");

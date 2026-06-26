@@ -18,6 +18,7 @@ import io.grpc.internal.testing.TestUtils;
 import io.grpc.testing.integration.TestService;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.KeyFactory;
@@ -122,9 +123,7 @@ public class PekkoGrpcServerJava extends GrpcServer<Tuple2<ActorSystem, ServerBi
 
   private HttpsConnectionContext serverHttpContext() throws Exception {
     String keyEncoded =
-        new String(
-                Files.readAllBytes(Paths.get(TestUtils.loadCert("server1.key").getAbsolutePath())),
-                "UTF-8")
+        Files.readString(Paths.get(TestUtils.loadCert("server1.key").getAbsolutePath()), StandardCharsets.UTF_8)
             .replace("-----BEGIN PRIVATE KEY-----\n", "")
             .replace("-----END PRIVATE KEY-----\n", "")
             .replace("\n", "");
