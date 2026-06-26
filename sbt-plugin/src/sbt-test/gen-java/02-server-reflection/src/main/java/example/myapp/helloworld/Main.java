@@ -20,7 +20,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
 //#server-reflection
-import java.util.Arrays;
+import java.util.List;
 
 import org.apache.pekko.grpc.javadsl.ServiceHandler;
 import org.apache.pekko.grpc.javadsl.ServerReflection;
@@ -55,7 +55,7 @@ public class Main {
                 EchoServiceHandlerFactory.create(new EchoServiceImpl(), sys);
         // Create the reflection handler for multiple services
         Function<HttpRequest, CompletionStage<HttpResponse>> reflectionPartial =
-                ServerReflection.create(Arrays.asList(GreeterService.description, EchoService.description), sys);
+                ServerReflection.create(List.of(GreeterService.description, EchoService.description), sys);
 
         // Concatenate the partial functions into a single handler
         ServiceHandler.concatOrNotFound(
