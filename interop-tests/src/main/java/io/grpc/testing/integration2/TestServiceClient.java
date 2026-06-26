@@ -111,8 +111,9 @@ public class TestServiceClient {
       case SERVER_COMPRESSED_STREAMING -> clientTester.serverCompressedStreaming();
       case PING_PONG -> clientTester.pingPong();
       case EMPTY_STREAM -> clientTester.emptyStream();
-      case COMPUTE_ENGINE_CREDS -> clientTester.computeEngineCreds(
-          settings.getDefaultServiceAccount(), settings.getOauthScope());
+      case COMPUTE_ENGINE_CREDS ->
+          clientTester.computeEngineCreds(
+              settings.getDefaultServiceAccount(), settings.getOauthScope());
       case SERVICE_ACCOUNT_CREDS -> {
         String jsonKey =
             Files.asCharSource(new File(settings.getServiceAccountKeyFile()), UTF_8).read();
