@@ -27,8 +27,6 @@ import io.grpc.internal.testing.TestUtils;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 import static org.apache.pekko.grpc.benchmarks.Utils.parseBoolean;
@@ -121,7 +119,7 @@ public class ClientConfiguration implements Configuration {
         // If no options are supplied, default to including all options.
         supportedParams = ClientParam.values();
       }
-      return Collections.unmodifiableSet(new LinkedHashSet<Param>(asList(supportedParams)));
+      return Set.copyOf(asList(supportedParams));
     }
   }
 
