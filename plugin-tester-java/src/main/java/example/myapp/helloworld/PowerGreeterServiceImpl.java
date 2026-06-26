@@ -49,10 +49,7 @@ public class PowerGreeterServiceImpl implements GreeterServicePowerApi {
         .thenApply(
             elements -> {
               String elementsStr =
-                  elements.stream()
-                      .map(elem -> authTaggedName(elem, metadata))
-                      .toList()
-                      .toString();
+                  elements.stream().map(elem -> authTaggedName(elem, metadata)).toList().toString();
               return HelloReply.newBuilder().setMessage("Hello, " + elementsStr).build();
             });
   }
@@ -61,8 +58,7 @@ public class PowerGreeterServiceImpl implements GreeterServicePowerApi {
   public Source<HelloReply, NotUsed> itKeepsReplying(HelloRequest in, Metadata metadata) {
     String greetee = authTaggedName(in, metadata);
     System.out.println("sayHello to " + greetee + " with stream of chars");
-    List<Character> characters =
-        ("Hello, " + greetee).chars().mapToObj(c -> (char) c).toList();
+    List<Character> characters = ("Hello, " + greetee).chars().mapToObj(c -> (char) c).toList();
     return Source.from(characters)
         .map(character -> HelloReply.newBuilder().setMessage(String.valueOf(character)).build());
   }
