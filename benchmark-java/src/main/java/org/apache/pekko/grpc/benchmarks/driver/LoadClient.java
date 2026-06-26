@@ -105,35 +105,30 @@ class LoadClient {
     system.getWhenTerminated().whenComplete((__, t) -> shutdownNow());
 
     // Create the load distribution
-    switch (config.getLoadParams().getLoadCase()) {
-      case CLOSED_LOOP:
-        distribution = null;
-        break;
-      case LOAD_NOT_SET:
-        distribution = null;
-        break;
-      case POISSON:
-        // Mean of exp distribution per thread is <no threads> / <offered load per second>
-        distribution = new ExponentialDistribution(
-            threadCount / config.getLoadParams().getPoisson().getOfferedLoad());
-        break;
-      default:
-        throw new IllegalArgumentException("Scenario not implemented");
-    }
+    distribution =
+        switch (config.getLoadParams().getLoadCase()) {
+          case CLOSED_LOOP, LOAD_NOT_SET -> null;
+          case POISSON ->
+          // Mean of exp distribution per thread is <no threads> / <offered load per second>
+          new ExponentialDistribution(
+              threadCount / config.getLoadParams().getPoisson().getOfferedLoad());
+          default -> throw new IllegalArgumentException("Scenario not implemented");
+        };
 
     // Create payloads
-    switch (config.getPayloadConfig().getPayloadCase()) {
-      case SIMPLE_PARAMS: {
-        Payloads.SimpleProtoParams simpleParams = config.getPayloadConfig().getSimpleParams();
-        simpleRequest = Utils.makeRequest(Messages.PayloadType.COMPRESSABLE,
-            simpleParams.getReqSize(), simpleParams.getRespSize());
-        break;
-      }
-      default: {
-        // Not implemented yet
-        throw new IllegalArgumentException("Scenario not implemented");
-      }
-    }
+    simpleRequest =
+        switch (config.getPayloadConfig().getPayloadCase()) {
+          case SIMPLE_PARAMS -> {
+            Payloads.SimpleProtoParams simpleParams = config.getPayloadConfig().getSimpleParams();
+            yield Utils.makeRequest(
+                Messages.PayloadType.COMPRESSABLE,
+                simpleParams.getReqSize(),
+                simpleParams.getRespSize());
+          }
+          default ->
+          // Not implemented yet
+          throw new IllegalArgumentException("Scenario not implemented");
+        };
 
     List<OperatingSystemMXBean> beans =
         ManagementFactory.getPlatformMXBeans(OperatingSystemMXBean.class);
@@ -152,24 +147,24 @@ class LoadClient {
    */
   void start() {
     for (int i = 0; i < threadCount; i++) {
-      Runnable r = null;
-      switch (config.getPayloadConfig().getPayloadCase()) {
-        case SIMPLE_PARAMS: {
-          if (config.getClientType() == Control.ClientType.ASYNC_CLIENT) {
-            if (config.getRpcType() == Control.RpcType.UNARY) {
-              r = new AsyncUnaryWorker(clients[i % clients.length]);
-            } else if (config.getRpcType() == Control.RpcType.STREAMING) {
-              r = new AsyncPingPongWorker(mat, clients[i % clients.length]);
+      Runnable r =
+          switch (config.getPayloadConfig().getPayloadCase()) {
+            case SIMPLE_PARAMS -> {
+              if (config.getClientType() == Control.ClientType.ASYNC_CLIENT) {
+                if (config.getRpcType() == Control.RpcType.UNARY) {
+                  yield new AsyncUnaryWorker(clients[i % clients.length]);
+                } else if (config.getRpcType() == Control.RpcType.STREAMING) {
+                  yield new AsyncPingPongWorker(mat, clients[i % clients.length]);
+                }
+              }
+              yield null;
             }
-          }
-          break;
-        }
-        default: {
-          throw Status.UNIMPLEMENTED.withDescription(
-              "Unknown payload case " + config.getPayloadConfig().getPayloadCase().name())
-              .asRuntimeException();
-        }
-      }
+            default ->
+                throw Status.UNIMPLEMENTED.withDescription(
+                        "Unknown payload case "
+                            + config.getPayloadConfig().getPayloadCase().name())
+                    .asRuntimeException();
+          };
       if (r == null) {
         throw new IllegalStateException(config.getRpcType().name()
             + " not supported for client type "

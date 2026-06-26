@@ -100,139 +100,54 @@ public class TestServiceClient {
 
   private void runTest(TestCases testCase, Settings settings) throws Exception {
     switch (testCase) {
-      case EMPTY_UNARY:
-        clientTester.emptyUnary();
-        break;
-
-      case CACHEABLE_UNARY:
-        {
-          clientTester.cacheableUnary();
-          break;
-        }
-
-      case LARGE_UNARY:
-        clientTester.largeUnary();
-        break;
-
-      case CLIENT_COMPRESSED_UNARY:
-        clientTester.clientCompressedUnary(false);
-        break;
-
-      case SERVER_COMPRESSED_UNARY:
-        clientTester.serverCompressedUnary();
-        break;
-
-      case CLIENT_STREAMING:
-        clientTester.clientStreaming();
-        break;
-
-      case CLIENT_COMPRESSED_STREAMING:
-        clientTester.clientCompressedStreaming(false);
-        break;
-
-      case SERVER_STREAMING:
-        clientTester.serverStreaming();
-        break;
-
-      case SERVER_COMPRESSED_STREAMING:
-        clientTester.serverCompressedStreaming();
-        break;
-
-      case PING_PONG:
-        clientTester.pingPong();
-        break;
-
-      case EMPTY_STREAM:
-        clientTester.emptyStream();
-        break;
-
-      case COMPUTE_ENGINE_CREDS:
-        clientTester.computeEngineCreds(
-            settings.getDefaultServiceAccount(), settings.getOauthScope());
-        break;
-
-      case SERVICE_ACCOUNT_CREDS:
-        {
-          String jsonKey =
-              Files.asCharSource(new File(settings.getServiceAccountKeyFile()), UTF_8).read();
-          FileInputStream credentialsStream =
-              new FileInputStream(settings.getServiceAccountKeyFile());
-          clientTester.serviceAccountCreds(jsonKey, credentialsStream, settings.getOauthScope());
-          break;
-        }
-
-      case JWT_TOKEN_CREDS:
-        {
-          FileInputStream credentialsStream =
-              new FileInputStream(settings.getServiceAccountKeyFile());
-          clientTester.jwtTokenCreds(credentialsStream);
-          break;
-        }
-
-      case OAUTH2_AUTH_TOKEN:
-        {
-          String jsonKey =
-              Files.asCharSource(new File(settings.getServiceAccountKeyFile()), UTF_8).read();
-          FileInputStream credentialsStream =
-              new FileInputStream(settings.getServiceAccountKeyFile());
-          clientTester.oauth2AuthToken(jsonKey, credentialsStream, settings.getOauthScope());
-          break;
-        }
-
-      case PER_RPC_CREDS:
-        {
-          String jsonKey =
-              Files.asCharSource(new File(settings.getServiceAccountKeyFile()), UTF_8).read();
-          FileInputStream credentialsStream =
-              new FileInputStream(settings.getServiceAccountKeyFile());
-          clientTester.perRpcCreds(jsonKey, credentialsStream, settings.getOauthScope());
-          break;
-        }
-
-      case CUSTOM_METADATA:
-        {
-          clientTester.customMetadata();
-          break;
-        }
-
-      case STATUS_CODE_AND_MESSAGE:
-        {
-          clientTester.statusCodeAndMessage();
-          break;
-        }
-
-      case UNIMPLEMENTED_METHOD:
-        {
-          clientTester.unimplementedMethod();
-          break;
-        }
-
-      case UNIMPLEMENTED_SERVICE:
-        {
-          clientTester.unimplementedService();
-          break;
-        }
-
-      case CANCEL_AFTER_BEGIN:
-        {
-          clientTester.cancelAfterBegin();
-          break;
-        }
-
-      case CANCEL_AFTER_FIRST_RESPONSE:
-        {
-          clientTester.cancelAfterFirstResponse();
-          break;
-        }
-
-      case TIMEOUT_ON_SLEEPING_SERVER:
-        {
-          clientTester.timeoutOnSleepingServer();
-          break;
-        }
-
-      default:
-        throw new IllegalArgumentException("Unknown test case: " + testCase);
+      case EMPTY_UNARY -> clientTester.emptyUnary();
+      case CACHEABLE_UNARY -> clientTester.cacheableUnary();
+      case LARGE_UNARY -> clientTester.largeUnary();
+      case CLIENT_COMPRESSED_UNARY -> clientTester.clientCompressedUnary(false);
+      case SERVER_COMPRESSED_UNARY -> clientTester.serverCompressedUnary();
+      case CLIENT_STREAMING -> clientTester.clientStreaming();
+      case CLIENT_COMPRESSED_STREAMING -> clientTester.clientCompressedStreaming(false);
+      case SERVER_STREAMING -> clientTester.serverStreaming();
+      case SERVER_COMPRESSED_STREAMING -> clientTester.serverCompressedStreaming();
+      case PING_PONG -> clientTester.pingPong();
+      case EMPTY_STREAM -> clientTester.emptyStream();
+      case COMPUTE_ENGINE_CREDS ->
+          clientTester.computeEngineCreds(
+              settings.getDefaultServiceAccount(), settings.getOauthScope());
+      case SERVICE_ACCOUNT_CREDS -> {
+        String jsonKey =
+            Files.asCharSource(new File(settings.getServiceAccountKeyFile()), UTF_8).read();
+        FileInputStream credentialsStream =
+            new FileInputStream(settings.getServiceAccountKeyFile());
+        clientTester.serviceAccountCreds(jsonKey, credentialsStream, settings.getOauthScope());
+      }
+      case JWT_TOKEN_CREDS -> {
+        FileInputStream credentialsStream =
+            new FileInputStream(settings.getServiceAccountKeyFile());
+        clientTester.jwtTokenCreds(credentialsStream);
+      }
+      case OAUTH2_AUTH_TOKEN -> {
+        String jsonKey =
+            Files.asCharSource(new File(settings.getServiceAccountKeyFile()), UTF_8).read();
+        FileInputStream credentialsStream =
+            new FileInputStream(settings.getServiceAccountKeyFile());
+        clientTester.oauth2AuthToken(jsonKey, credentialsStream, settings.getOauthScope());
+      }
+      case PER_RPC_CREDS -> {
+        String jsonKey =
+            Files.asCharSource(new File(settings.getServiceAccountKeyFile()), UTF_8).read();
+        FileInputStream credentialsStream =
+            new FileInputStream(settings.getServiceAccountKeyFile());
+        clientTester.perRpcCreds(jsonKey, credentialsStream, settings.getOauthScope());
+      }
+      case CUSTOM_METADATA -> clientTester.customMetadata();
+      case STATUS_CODE_AND_MESSAGE -> clientTester.statusCodeAndMessage();
+      case UNIMPLEMENTED_METHOD -> clientTester.unimplementedMethod();
+      case UNIMPLEMENTED_SERVICE -> clientTester.unimplementedService();
+      case CANCEL_AFTER_BEGIN -> clientTester.cancelAfterBegin();
+      case CANCEL_AFTER_FIRST_RESPONSE -> clientTester.cancelAfterFirstResponse();
+      case TIMEOUT_ON_SLEEPING_SERVER -> clientTester.timeoutOnSleepingServer();
+      default -> throw new IllegalArgumentException("Unknown test case: " + testCase);
     }
   }
 }
