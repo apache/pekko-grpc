@@ -73,8 +73,7 @@ class ServerConfiguration implements Configuration {
     }
 
     private static List<Param> supportedParams() {
-      return Collections.unmodifiableList(new ArrayList<Param>(
-          Arrays.asList(ServerParam.values())));
+      return List.copyOf(Arrays.asList(ServerParam.values()));
     }
   }
 
