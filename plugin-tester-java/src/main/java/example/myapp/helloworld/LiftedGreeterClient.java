@@ -19,7 +19,6 @@ import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.pekko.Done;
 import org.apache.pekko.NotUsed;
@@ -68,7 +67,7 @@ class LiftedGreeterClient {
     List<HelloRequest> requests =
         Stream.of("Alice", "Bob", "Peter")
             .map(name -> HelloRequest.newBuilder().setName(name).build())
-            .collect(Collectors.toList());
+            .toList();
     CompletionStage<HelloReply> reply =
         client.itKeepsTalking().addHeader("key", "value").invoke(Source.from(requests));
     System.out.println(
