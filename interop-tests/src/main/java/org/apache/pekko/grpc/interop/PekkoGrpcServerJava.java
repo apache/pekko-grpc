@@ -123,7 +123,9 @@ public class PekkoGrpcServerJava extends GrpcServer<Tuple2<ActorSystem, ServerBi
 
   private HttpsConnectionContext serverHttpContext() throws Exception {
     String keyEncoded =
-        Files.readString(Paths.get(TestUtils.loadCert("server1.key").getAbsolutePath()), StandardCharsets.UTF_8)
+        Files.readString(
+                Paths.get(TestUtils.loadCert("server1.key").getAbsolutePath()),
+                StandardCharsets.UTF_8)
             .replace("-----BEGIN PRIVATE KEY-----\n", "")
             .replace("-----END PRIVATE KEY-----\n", "")
             .replace("\n", "");
