@@ -13,7 +13,7 @@
 
 package org.apache.pekko.grpc.javadsl;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -21,10 +21,9 @@ import java.util.concurrent.TimeUnit;
 import org.apache.pekko.grpc.internal.GrpcProtocolNative;
 import org.apache.pekko.http.javadsl.model.*;
 import org.apache.pekko.util.ByteString;
-import org.junit.Test;
-import org.scalatestplus.junit.JUnitSuite;
+import org.junit.jupiter.api.Test;
 
-public class ConcatOrNotFoundTest extends JUnitSuite {
+public class ConcatOrNotFoundTest {
 
   private final HttpRequest emptyGrpcRequest =
       HttpRequest.create()

@@ -32,13 +32,10 @@ import org.apache.pekko.stream.javadsl.Sink;
 import org.apache.pekko.stream.javadsl.Source;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-import org.scalatestplus.junit.JUnitSuite;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.net.InetSocketAddress;
 import java.time.Duration;
@@ -46,13 +43,12 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Basic tests for {@link org.apache.pekko.grpc.benchmarks.driver.LoadWorker}
  */
-@RunWith(JUnit4.class)
-public class LoadWorkerTest extends JUnitSuite {
+public class LoadWorkerTest {
 
 
   private static final int TIMEOUT = 5;
@@ -66,7 +62,7 @@ public class LoadWorkerTest extends JUnitSuite {
   private ActorSystem system;
   private Materializer mat;
 
-  @Before
+  @BeforeEach
   public void setup() throws Exception {
     // important to enable HTTP/2 in ActorSystem's config
     Config conf = ConfigFactory.parseString("pekko.http.server.enable-http2 = on")
@@ -81,7 +77,7 @@ public class LoadWorkerTest extends JUnitSuite {
     workerServiceStub = WorkerServiceClient.create(settings, system);
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     if (system != null) {
       workerServiceStub.close();
@@ -90,7 +86,7 @@ public class LoadWorkerTest extends JUnitSuite {
     }
   }
 
-  @Ignore // SYNC_CLIENT not implemented
+  @Disabled // SYNC_CLIENT not implemented
   public void runUnaryBlockingClosedLoop() throws Exception {
     Control.ServerArgs.Builder serverArgsBuilder = Control.ServerArgs.newBuilder();
     serverArgsBuilder.getSetupBuilder()
@@ -173,7 +169,7 @@ public class LoadWorkerTest extends JUnitSuite {
     assertWorkOccurred(clientArgsBuilder.build());
   }
 
-  @Ignore // ASYNC_GENERIC_SERVER not implemented
+  @Disabled // ASYNC_GENERIC_SERVER not implemented
   public void runGenericPingPongAsyncClosedLoop() throws Exception {
     Control.ServerArgs.Builder serverArgsBuilder = Control.ServerArgs.newBuilder();
     serverArgsBuilder.getSetupBuilder()

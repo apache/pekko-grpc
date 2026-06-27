@@ -12,6 +12,7 @@ package org.apache.pekko.grpc
 import sbt._
 import sbt.Keys._
 import buildinfo.BuildInfo
+import com.github.sbt.junit.jupiter.sbt.Import.JupiterKeys
 
 object Dependencies {
   object Versions {
@@ -77,6 +78,15 @@ object Dependencies {
     val scalaTestPlusJunit = "org.scalatestplus" %% "junit-4-13" % (Versions.scalaTest + ".0") % Test
   }
 
+  // JUnit Jupiter dependencies - versions derived from the sbt-jupiter-interface plugin settings
+  lazy val junitJupiterTestDeps: Def.Initialize[Seq[ModuleID]] = Def.setting {
+    Seq(
+      "com.github.sbt.junit" % "jupiter-interface" % JupiterKeys.jupiterVersion.value % sbt.Test,
+      "org.junit.jupiter" % "junit-jupiter-api" % JupiterKeys.junitJupiterVersion.value % sbt.Test,
+      "org.junit.jupiter" % "junit-jupiter-engine" % JupiterKeys.junitJupiterVersion.value % sbt.Test,
+      "org.junit.platform" % "junit-platform-launcher" % JupiterKeys.junitPlatformVersion.value % sbt.Test)
+  }
+
   object Runtime {
     val logback = "ch.qos.logback" % "logback-classic" % "1.5.37" % "runtime"
   }
@@ -106,8 +116,7 @@ object Dependencies {
     Compile.grpcCore,
     Compile.grpcStub % Provided, // comes from the generators
     Compile.grpcNettyShaded,
-    Test.scalaTest,
-    Test.scalaTestPlusJunit)
+    Test.scalaTest) ++ junitJupiterTestDeps.value
 
   lazy val mavenPlugin = l ++= Seq(
     Compile.slf4jApi,
@@ -127,8 +136,13 @@ object Dependencies {
     Compile.grpcInteropTesting,
     Compile.grpcInteropTesting % "protobuf", // gets the proto files for interop tests
     Runtime.logback,
-    Test.scalaTest.withConfigurations(Some("compile")),
-    Test.scalaTestPlusJunit.withConfigurations(Some("compile")))
+    Test.scalaTest.withConfigurations(Some("compile"))) ++ Def.setting {
+    Seq(
+      "com.github.sbt.junit" % "jupiter-interface" % JupiterKeys.jupiterVersion.value % "compile",
+      "org.junit.jupiter" % "junit-jupiter-api" % JupiterKeys.junitJupiterVersion.value % "compile",
+      "org.junit.jupiter" % "junit-jupiter-engine" % JupiterKeys.junitJupiterVersion.value % "compile",
+      "org.junit.platform" % "junit-platform-launcher" % JupiterKeys.junitPlatformVersion.value % "compile")
+  }.value
 
   lazy val pluginTester = l ++= Seq(
     // usually automatically added by `suggestedDependencies`, which doesn't work with ReflectiveCodeGen
@@ -136,5 +150,5 @@ object Dependencies {
     Runtime.logback,
     Test.scalaTest,
     Test.scalaTestPlusJunit,
-    Protobuf.googleCommonProtos)
+    Protobuf.googleCommonProtos) ++ junitJupiterTestDeps.value
 }

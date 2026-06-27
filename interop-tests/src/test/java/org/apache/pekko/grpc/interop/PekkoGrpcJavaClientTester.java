@@ -13,8 +13,8 @@
 
 package org.apache.pekko.grpc.interop;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import com.google.protobuf.ByteString;
 import io.grpc.Status;
@@ -49,7 +49,6 @@ import org.apache.pekko.stream.SystemMaterializer;
 import org.apache.pekko.stream.javadsl.Keep;
 import org.apache.pekko.stream.javadsl.Sink;
 import org.apache.pekko.stream.javadsl.Source;
-import org.junit.Assert;
 import scala.concurrent.ExecutionContext;
 
 /**
@@ -119,7 +118,7 @@ public class PekkoGrpcJavaClientTester implements ClientTester {
 
   @Override
   public void emptyUnary() throws Exception {
-    Assert.assertEquals(
+    assertEquals(
         EmptyProtos.Empty.newBuilder().build(),
         client.emptyCall(EmptyProtos.Empty.newBuilder().build()).toCompletableFuture().get());
   }
@@ -430,9 +429,9 @@ public class PekkoGrpcJavaClientTester implements ClientTester {
 
     Metadata fullDuplexTrailer = fullDuplexMetadata.getTrailers().toCompletableFuture().get();
     assertEquals(
-        "Trailer should contain binary header [" + fullDuplexTrailer + "]",
         Optional.of(binaryValue),
-        fullDuplexTrailer.getBinary("x-grpc-test-echo-trailing-bin"));
+        fullDuplexTrailer.getBinary("x-grpc-test-echo-trailing-bin"),
+        "Trailer should contain binary header [" + fullDuplexTrailer + "]");
   }
 
   @Override
