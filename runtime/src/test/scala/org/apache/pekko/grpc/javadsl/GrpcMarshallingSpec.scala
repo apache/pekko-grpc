@@ -23,14 +23,16 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 
 import com.google.protobuf.{ Any => ProtobufAny, ByteString => ProtobufByteString }
+import io.grpc.StatusException
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 import org.apache.pekko
 import pekko.actor.ActorSystem
-import pekko.grpc.internal.{ AbstractGrpcProtocol, GrpcProtocolNative, Identity }
+import pekko.grpc.internal.{ AbstractGrpcProtocol, GrpcProtocolNative, Identity, MissingParameterException }
 import pekko.http.scaladsl.model.HttpEntity
 import pekko.stream.SystemMaterializer
+import pekko.util.ByteString
 
 class GrpcMarshallingSpec extends AnyWordSpec with Matchers {
   "The javadsl GrpcMarshalling" should {
@@ -57,6 +59,45 @@ class GrpcMarshallingSpec extends AnyWordSpec with Matchers {
       } finally {
         Await.result(system.terminate(), 10.seconds)
       }
+    }
+
+    "decode a strict native identity frame directly" in {
+      val serializer = new GoogleProtobufSerializer(ProtobufAny.parser())
+      val message =
+        ProtobufAny.newBuilder().setTypeUrl("benchmark").setValue(ProtobufByteString.copyFromUtf8("payload")).build()
+      val payload = serializer.serialize(message)
+      val frame = AbstractGrpcProtocol.encodeFrameData(payload, isCompressed = false, isTrailer = false)
+
+      GrpcProtocolNative.newReader(Identity).decodeSingleFrame(frame) should be(payload)
+    }
+
+    "reject compressed strict native identity frames" in {
+      val frame = AbstractGrpcProtocol.encodeFrameData(ByteString(1, 2, 3), isCompressed = true, isTrailer = false)
+
+      a[StatusException] should be thrownBy GrpcProtocolNative.newReader(Identity).decodeSingleFrame(frame)
+    }
+
+    "reject truncated strict native identity frames" in {
+      a[MissingParameterException] should be thrownBy
+      GrpcProtocolNative
+        .newReader(Identity)
+        .decodeSingleFrame(ByteString(0, 0, 0, 0))
+    }
+
+    "reject strict native identity frames with missing payload bytes" in {
+      a[MissingParameterException] should be thrownBy
+      GrpcProtocolNative
+        .newReader(Identity)
+        .decodeSingleFrame(ByteString(0, 0, 0, 0, 3, 1, 2))
+    }
+
+    "reject strict native identity frames with trailing bytes" in {
+      val frame = AbstractGrpcProtocol.encodeFrameData(ByteString(1, 2, 3), isCompressed = false, isTrailer = false)
+
+      an[IllegalStateException] should be thrownBy
+      GrpcProtocolNative
+        .newReader(Identity)
+        .decodeSingleFrame(frame ++ ByteString(4))
     }
 
     "recover a failed unary response stage" in {

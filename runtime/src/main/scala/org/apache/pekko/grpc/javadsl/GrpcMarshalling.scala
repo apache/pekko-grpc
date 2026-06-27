@@ -60,7 +60,15 @@ object GrpcMarshalling {
       reader: GrpcProtocolReader): CompletionStage[T] =
     entity match {
       case strict: pekko.http.scaladsl.model.HttpEntity.Strict =>
-        completedOrFailed(u.deserialize(reader.decodeSingleFrame(strict.data)))
+        completedOrFailed {
+          u match {
+            case frameSerializer: ProtobufFrameSerializer[T @unchecked] =>
+              frameSerializer.deserialize(strict.data, AbstractGrpcProtocol.FrameHeaderSize,
+                strict.data.length - AbstractGrpcProtocol.FrameHeaderSize)
+            case _ =>
+              u.deserialize(reader.decodeSingleFrame(strict.data))
+          }
+        }
       case _ =>
         unmarshal(entity.getDataBytes, u, mat, reader)
     }

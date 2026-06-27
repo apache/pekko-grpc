@@ -107,20 +107,37 @@ object @{serviceName}Handler {
           pekko.grpc.scaladsl.ServerReflection.partial(List(@{service.name})))
 }
 
-    private def methodName(request: model.HttpRequest, prefix: String): String =
+    private def methodName(request: model.HttpRequest, prefix: String): String = {
+      // Use Uri.Path structure matching instead of toString to avoid
+      // renderPath + StringBuilder + String allocations per request.
+      // gRPC path format: /{service}/{method}
       request.uri.path match {
-        case model.Uri.Path.Slash(model.Uri.Path.Segment(`prefix`, model.Uri.Path.Slash(model.Uri.Path.Segment(method, model.Uri.Path.Empty)))) =>
-          method
-        case _ =>
-          null
+        case model.Uri.Path.Slash(
+          model.Uri.Path.Segment(serviceName,
+            model.Uri.Path.Slash(
+              model.Uri.Path.Segment(method, model.Uri.Path.Empty))))
+          if serviceName == prefix => method
+        case _ => null
       }
+    }
 
     private def handler(implementation: @serviceName, prefix: String, eHandler: ActorSystem => PartialFunction[Throwable, Trailers])(implicit system: ClassicActorSystemProvider): model.HttpRequest => scala.concurrent.Future[model.HttpResponse] = {
       implicit val mat: Materializer = SystemMaterializer(system).materializer
       implicit val ec: ExecutionContext = mat.executionContext
       val spi = TelemetryExtension(system).spi
+      val compressionThreshold = system.classicSystem.settings.config.getInt("pekko.grpc.server.compression-threshold")
 
       import @{service.name}.Serializers.@{service.scalaCompatConstants.WildcardImport}
+
+      @if(!powerApis) {
+      // Pre-create lambdas for unary methods to avoid per-request allocation
+      @for(method <- service.methods) {
+      @if(method.methodType == org.apache.pekko.grpc.gen.Unary) {
+      val @{method.handlerName}: @method.parameterType => scala.concurrent.Future[@method.outputTypeUnboxed] =
+        (e: @method.parameterType) => implementation.@{method.nameSafe}(e@{if(powerApis) { ", metadata" } else { "" }})
+      }
+      }
+      }
 
       def handle(request: model.HttpRequest, method: String): scala.concurrent.Future[model.HttpResponse] =
         GrpcMarshalling.negotiated(request, (reader, writer) =>
@@ -129,7 +146,7 @@ object @{serviceName}Handler {
             case "@method.grpcName" =>
                 @{if(powerApis) { "val metadata = MetadataBuilder.fromHeaders(request.headers)" } else { "" }}
                 @if(method.methodType == org.apache.pekko.grpc.gen.Unary) {
-                GrpcMarshalling.handleUnary(request.entity, (e: @method.parameterType) => implementation.@{method.nameSafe}(e@{if(powerApis) { ", metadata" } else { "" }}), eHandler)(
+                GrpcMarshalling.handleUnary(request.entity, @{if(powerApis) { s"(e: ${method.parameterType}) => implementation.${method.nameSafe}(e, metadata)" } else method.handlerName}, eHandler)(
                   @{service.scalaCompatConstants.ImplicitUsing}@method.deserializer.name, @method.serializer.name, mat, reader, writer, system, ec)
                 } else {
                 @{method.unmarshal}(request.entity)(@{service.scalaCompatConstants.ImplicitUsing}@method.deserializer.name, mat, reader)
@@ -140,7 +157,7 @@ object @{serviceName}Handler {
             }
             case m => GrpcExceptionHandler.from(eHandler(system.classicSystem))(system, writer)(new NotImplementedError(s"Not implemented: $m"))
           }
-      ).getOrElse(unsupportedMediaType)
+      , compressionThreshold).getOrElse(unsupportedMediaType)
 
       request => {
         val method = methodName(request, prefix)
@@ -162,8 +179,19 @@ object @{serviceName}Handler {
       implicit val mat: Materializer = SystemMaterializer(system).materializer
       implicit val ec: ExecutionContext = mat.executionContext
       val spi = TelemetryExtension(system).spi
+      val compressionThreshold = system.classicSystem.settings.config.getInt("pekko.grpc.server.compression-threshold")
 
       import @{service.name}.Serializers.@{service.scalaCompatConstants.WildcardImport}
+
+      @if(!powerApis) {
+      // Pre-create lambdas for unary methods to avoid per-request allocation
+      @for(method <- service.methods) {
+      @if(method.methodType == org.apache.pekko.grpc.gen.Unary) {
+      val @{method.handlerName}: @method.parameterType => scala.concurrent.Future[@method.outputTypeUnboxed] =
+        (e: @method.parameterType) => implementation.@{method.nameSafe}(e@{if(powerApis) { ", metadata" } else { "" }})
+      }
+      }
+      }
 
       def handle(request: model.HttpRequest, method: String): scala.concurrent.Future[model.HttpResponse] =
         GrpcMarshalling.negotiated(request, (reader, writer) =>
@@ -172,7 +200,7 @@ object @{serviceName}Handler {
             case "@method.grpcName" =>
                 @{if(powerApis) { "val metadata = MetadataBuilder.fromHeaders(request.headers)" } else { "" }}
                 @if(method.methodType == org.apache.pekko.grpc.gen.Unary) {
-                GrpcMarshalling.handleUnary(request.entity, (e: @method.parameterType) => implementation.@{method.nameSafe}(e@{if(powerApis) { ", metadata" } else { "" }}), eHandler)(
+                GrpcMarshalling.handleUnary(request.entity, @{if(powerApis) { s"(e: ${method.parameterType}) => implementation.${method.nameSafe}(e, metadata)" } else method.handlerName}, eHandler)(
                   @{service.scalaCompatConstants.ImplicitUsing}@method.deserializer.name, @method.serializer.name, mat, reader, writer, system, ec)
                 } else {
                 @{method.unmarshal}(request.entity)(@{service.scalaCompatConstants.ImplicitUsing}@method.deserializer.name, mat, reader)
@@ -183,7 +211,7 @@ object @{serviceName}Handler {
             }
             case m => GrpcExceptionHandler.from(eHandler(system.classicSystem))(system, writer)(new NotImplementedError(s"Not implemented: $m"))
           }
-      ).getOrElse(unsupportedMediaType)
+      , compressionThreshold).getOrElse(unsupportedMediaType)
 
       Function.unlift((req: model.HttpRequest) => {
         val method = methodName(req, prefix)
