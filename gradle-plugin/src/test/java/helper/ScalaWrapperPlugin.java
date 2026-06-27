@@ -7,15 +7,15 @@
  * This file is part of the Apache Pekko project, which was derived from Akka.
  */
 
-package helper
+package helper;
 
-import org.gradle.api.Plugin
-import org.gradle.api.Project
-import org.gradle.api.plugins.scala.ScalaPlugin
+import org.gradle.api.Plugin;
+import org.gradle.api.Project;
+import org.gradle.api.plugins.scala.ScalaPlugin;
 
-class ScalaWrapperPlugin implements Plugin<Project> {
+public class ScalaWrapperPlugin implements Plugin<Project> {
     @Override
-    void apply(Project project) {
-        project.pluginManager.apply ScalaPlugin
+    public void apply(Project project) {
+        project.getPluginManager().apply(ScalaPlugin.class);
     }
 }

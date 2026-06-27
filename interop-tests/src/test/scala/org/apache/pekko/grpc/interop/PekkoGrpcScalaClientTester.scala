@@ -24,7 +24,7 @@ import io.grpc.testing.integration.messages._
 import io.grpc.testing.integration.test.{ TestServiceClient, UnimplementedServiceClient }
 import io.grpc.testing.integration2.{ ClientTester, Settings }
 import io.grpc.{ Status, StatusRuntimeException }
-import org.junit.Assert._
+import org.junit.jupiter.api.Assertions._
 import org.scalatest.matchers.should.Matchers._
 
 import java.io.InputStream
@@ -241,9 +241,9 @@ class PekkoGrpcScalaClientTester(val settings: Settings, backend: String, testWi
 
     val trailers = Await.result(fullDuplexMetadata.trailers, awaitTimeout)
     assertEquals(
-      s"Trailer should contain binary header [$trailers]",
       Some(binaryHeaderValue),
-      trailers.getBinary("x-grpc-test-echo-trailing-bin"))
+      trailers.getBinary("x-grpc-test-echo-trailing-bin"),
+      s"Trailer should contain binary header [$trailers]")
   }
 
   def statusCodeAndMessage(): Unit = {

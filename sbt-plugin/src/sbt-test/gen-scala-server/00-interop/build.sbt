@@ -16,7 +16,8 @@ val grpcVersion = "1.82.1" // checked synced by VersionSyncCheckPlugin
 libraryDependencies ++= Seq(
   "io.grpc" % "grpc-interop-testing" % grpcVersion % "protobuf-src",
   "org.apache.pekko" %% "pekko-grpc-interop-tests" % sys.props("project.version") % "test",
-  "org.scalatest" %% "scalatest" % "3.2.20" % Test)
+  "org.scalatest" %% "scalatest" % "3.2.20" % Test,
+  "org.junit.jupiter" % "junit-jupiter-api" % "6.1.0" % Test)
 
 scalacOptions ++= List("-unchecked", "-deprecation", "-language:_", "-encoding", "UTF-8")
 

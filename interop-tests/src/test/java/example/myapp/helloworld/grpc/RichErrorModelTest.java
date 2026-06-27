@@ -13,7 +13,8 @@
 
 package example.myapp.helloworld.grpc;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -29,11 +30,9 @@ import org.apache.pekko.http.javadsl.Http;
 import org.apache.pekko.http.javadsl.ServerBinding;
 import org.apache.pekko.http.javadsl.model.HttpRequest;
 import org.apache.pekko.http.javadsl.model.HttpResponse;
-import org.junit.Assert;
-import org.junit.Test;
-import org.scalatestplus.junit.JUnitSuite;
+import org.junit.jupiter.api.Test;
 
-public class RichErrorModelTest extends JUnitSuite {
+public class RichErrorModelTest {
 
   private com.google.protobuf.any.Any fromJavaProto(com.google.protobuf.Any javaPbSource) {
     return com.google.protobuf.any.Any.of(javaPbSource.getTypeUrl(), javaPbSource.getValue());
@@ -84,7 +83,7 @@ public class RichErrorModelTest extends JUnitSuite {
       // #client_request
 
     } catch (Exception e) {
-      Assert.fail("Got unexpected error " + e.getMessage());
+      fail("Got unexpected error " + e.getMessage());
     } finally {
       if (client != null) client.close();
       sys.terminate();

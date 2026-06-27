@@ -17,21 +17,17 @@
 
 package org.apache.pekko.grpc.benchmarks.driver;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.pekko.grpc.benchmarks.proto.Control;
 import org.apache.pekko.grpc.benchmarks.proto.Stats;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-import org.scalatestplus.junit.JUnitSuite;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests for {@link LoadClient}.
  */
-@RunWith(JUnit4.class)
-public class LoadClientTest extends JUnitSuite {
+public class LoadClientTest {
 
   @Test
   public void testHistogramToStatsConversion() throws Exception {

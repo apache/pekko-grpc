@@ -9,6 +9,7 @@
 
 import com.github.pjfanning.pekkobuild._
 import com.github.sbt.JavaFormatterPlugin.autoImport.javafmtSortImports
+import com.github.sbt.junit.jupiter.sbt.Import.JupiterKeys
 import net.bzzt.reproduciblebuilds.ReproducibleBuildsPlugin.reproducibleBuildsCheckResolver
 import org.apache.pekko.grpc.{ Dependencies, NoPublish, PekkoCoreDependency, PekkoHttpDependency }
 import org.apache.pekko.grpc.Dependencies.Versions.{ scala212, scala213 }
@@ -20,6 +21,8 @@ import sbt.Keys.scalaVersion
 sourceDistName := "apache-pekko-grpc"
 sourceDistIncubating := false
 ThisBuild / versionScheme := Some(VersionScheme.SemVerSpec)
+ThisBuild / JupiterKeys.junitJupiterVersion := "6.1.0"
+ThisBuild / JupiterKeys.junitPlatformVersion := "6.1.0"
 
 commands := commands.value.filterNot { command =>
   command.nameOption.exists { name =>
