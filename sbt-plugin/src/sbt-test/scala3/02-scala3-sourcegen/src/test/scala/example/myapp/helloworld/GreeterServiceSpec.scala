@@ -7,7 +7,7 @@
  * This file is part of the Apache Pekko project, which was derived from Akka.
  */
 
-package example.myapp.helloworld;
+package example.myapp.helloworld
 
 import scala.concurrent.duration._
 
@@ -20,12 +20,14 @@ import pekko.grpc.GrpcClientSettings
 import example.myapp.helloworld.grpc._
 
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.concurrent.PatienceConfiguration
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.time.{ Millis, Seconds, Span }
 import org.scalatest.wordspec.AnyWordSpec
 
-class GreeterServiceSpec extends AnyWordSpec with Matchers with ScalaFutures:
+class GreeterServiceSpec extends AnyWordSpec with Matchers with ScalaFutures {
+  implicit val patience: PatienceConfig =
+    PatienceConfig(timeout = Span(10, Seconds), interval = Span(100, Millis))
+
   implicit val system: ActorSystem = ActorSystem("GreeterServiceSpec")
 
   val binding = Http()
@@ -45,3 +47,4 @@ class GreeterServiceSpec extends AnyWordSpec with Matchers with ScalaFutures:
       r.message shouldBe "Hello, Dave!"
     }
   }
+}
