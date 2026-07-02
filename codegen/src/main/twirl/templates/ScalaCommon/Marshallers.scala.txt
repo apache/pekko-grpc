@@ -36,18 +36,18 @@ import pekko.grpc.PekkoGrpcGenerated
 @@PekkoGrpcGenerated
 object @{service.name}Marshallers {
   @for(serializer <- service.serializers) {
-  implicit val @serializer.name: ScalapbProtobufSerializer[@{serializer.scalaType}] = @{service.packageName}.@{service.name}.Serializers.@{serializer.name}
+  @{service.scalaCompatConstants.ImplicitVal} @serializer.name: ScalapbProtobufSerializer[@{serializer.scalaType}] = @{service.packageName}.@{service.name}.Serializers.@{serializer.name}
   }
 
-  implicit def unmarshaller[T](implicit serializer: ProtobufSerializer[T], mat: Materializer): FromRequestUnmarshaller[T] =
+  @{service.scalaCompatConstants.ImplicitDef} unmarshaller[T](@{service.scalaCompatConstants.ImplicitParameter} serializer: ProtobufSerializer[T], mat: Materializer): FromRequestUnmarshaller[T] =
     Unmarshaller((_: ExecutionContext) => (req: HttpRequest) => GrpcMarshalling.unmarshal(req)(serializer, mat))
 
-  implicit def toSourceUnmarshaller[T](implicit serializer: ProtobufSerializer[T], mat: Materializer): FromRequestUnmarshaller[pekko.stream.scaladsl.Source[T, pekko.NotUsed]] =
+  @{service.scalaCompatConstants.ImplicitDef} toSourceUnmarshaller[T](@{service.scalaCompatConstants.ImplicitParameter} serializer: ProtobufSerializer[T], mat: Materializer): FromRequestUnmarshaller[pekko.stream.scaladsl.Source[T, pekko.NotUsed]] =
     Unmarshaller((_: ExecutionContext) => (req: HttpRequest) => GrpcMarshalling.unmarshalStream(req)(serializer, mat))
 
-  implicit def marshaller[T](implicit serializer: ProtobufSerializer[T], writer: GrpcProtocolWriter, system: ClassicActorSystemProvider): ToResponseMarshaller[T] =
+  @{service.scalaCompatConstants.ImplicitDef} marshaller[T](@{service.scalaCompatConstants.ImplicitParameter} serializer: ProtobufSerializer[T], writer: GrpcProtocolWriter, system: ClassicActorSystemProvider): ToResponseMarshaller[T] =
     Marshaller.opaque((response: T) => GrpcMarshalling.marshal(response)(serializer, writer, system))
 
-  implicit def fromSourceMarshaller[T](implicit serializer: ProtobufSerializer[T], writer: GrpcProtocolWriter, system: ClassicActorSystemProvider): ToResponseMarshaller[pekko.stream.scaladsl.Source[T, pekko.NotUsed]] =
+  @{service.scalaCompatConstants.ImplicitDef} fromSourceMarshaller[T](@{service.scalaCompatConstants.ImplicitParameter} serializer: ProtobufSerializer[T], writer: GrpcProtocolWriter, system: ClassicActorSystemProvider): ToResponseMarshaller[pekko.stream.scaladsl.Source[T, pekko.NotUsed]] =
     Marshaller.opaque((response: pekko.stream.scaladsl.Source[T, pekko.NotUsed]) => GrpcMarshalling.marshalStream(response)(serializer, writer, system))
 }

@@ -43,5 +43,10 @@ class ProtocSpec extends AnyWordSpec with Matchers {
       val settings = Map("flatPackage" -> "true", "serverPowerApis" -> "true")
       AbstractGenerateMojo.parseGeneratorSettings(settings.asJava) shouldBe Seq("flat_package", "server_power_apis")
     }
+
+    "support the scala3Sources setting" in {
+      val settings = Map("scala3Sources" -> "true")
+      AbstractGenerateMojo.parseGeneratorSettings(settings.asJava) shouldBe Seq("scala3_sources")
+    }
   }
 }

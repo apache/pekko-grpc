@@ -31,6 +31,7 @@ class PekkoGrpcPluginExtension {
     boolean serverPowerApis = false
     boolean usePlayActions = false
     boolean includeStdTypes = false
+    boolean scala3Sources = false
 
     List<String> extraGenerators = []
 

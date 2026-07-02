@@ -53,6 +53,23 @@ To additionally generate server "power APIs" that have access to request metadat
     </plugin>
     ```
 
+### Generating Scala 3 sources
+
+For Scala projects, set `scala3Sources` in `generatorSettings` to generate Scala 3-friendly sources:
+
+`pom.xml`
+:   ```xml
+    <plugin>
+        ...
+        <configuration>
+          ...
+          <generatorSettings>
+            <scala3Sources>true</scala3Sources>
+          </generatorSettings>
+        </configuration>
+    </plugin>
+    ```
+
 ## Proto source directory
 
 By default the plugin looks for `.proto`-files under `src/main/protobuf` (and `src/main/proto`). This can be changed with the `protoPaths` setting,
