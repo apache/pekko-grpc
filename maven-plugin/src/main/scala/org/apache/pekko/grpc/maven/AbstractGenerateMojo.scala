@@ -215,7 +215,7 @@ abstract class AbstractGenerateMojo @Inject() (buildContext: BuildContext) exten
     }
   }
 
-  private[this] def executeProtoc(
+  private def executeProtoc(
       protocCommand: Seq[String] => Int,
       schemas: Set[File],
       protoDir: File,
@@ -235,7 +235,7 @@ abstract class AbstractGenerateMojo @Inject() (buildContext: BuildContext) exten
         throw new RuntimeException("error occurred while compiling protobuf files: %s".format(e.getMessage), e)
     }
 
-  private[this] def compile(
+  private def compile(
       protocCommand: Seq[String] => Int,
       schemas: Set[File],
       protoDir: File,
