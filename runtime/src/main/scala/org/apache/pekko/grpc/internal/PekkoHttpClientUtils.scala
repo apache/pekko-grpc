@@ -467,7 +467,8 @@ object PekkoHttpClientUtils {
             // error to report, not an exception to throw at the caller
             Status.INTERNAL.withDescription(s"Invalid grpc-status [$statusCode] in response")
         }
-        new StatusRuntimeException(status.augmentDescription(s"When calling rpc service: ${requestUri.toString()}"), metadata)
+        new StatusRuntimeException(status.augmentDescription(s"When calling rpc service: ${requestUri.toString()}"),
+          metadata)
     }
   }
 

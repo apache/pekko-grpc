@@ -110,7 +110,8 @@ class PekkoHttpClientUtilsSpec extends TestKit(ActorSystem()) with AnyWordSpecLi
 
       val failure = PekkoHttpClientUtils.responseToSource(testUri, response, null).run().failed.futureValue
 
-      failure.asInstanceOf[StatusRuntimeException].getStatus.getDescription should be(s"$message\nWhen calling rpc service: $testUri")
+      failure.asInstanceOf[StatusRuntimeException].getStatus.getDescription should
+      be(s"$message\nWhen calling rpc service: $testUri")
     }
 
     "leave an unencoded grpc-message alone" in {
@@ -121,7 +122,8 @@ class PekkoHttpClientUtilsSpec extends TestKit(ActorSystem()) with AnyWordSpecLi
 
       val failure = PekkoHttpClientUtils.responseToSource(testUri, response, null).run().failed.futureValue
 
-      failure.asInstanceOf[StatusRuntimeException].getStatus.getDescription should be(s"$message\nWhen calling rpc service: $testUri")
+      failure.asInstanceOf[StatusRuntimeException].getStatus.getDescription should
+      be(s"$message\nWhen calling rpc service: $testUri")
     }
 
     "not throw away a grpc-message with a broken escape" in {
@@ -132,7 +134,8 @@ class PekkoHttpClientUtilsSpec extends TestKit(ActorSystem()) with AnyWordSpecLi
 
       val failure = PekkoHttpClientUtils.responseToSource(testUri, response, null).run().failed.futureValue
 
-      failure.asInstanceOf[StatusRuntimeException].getStatus.getDescription should be(s"broken %ZZ escape\nWhen calling rpc service: $testUri")
+      failure.asInstanceOf[StatusRuntimeException].getStatus.getDescription should
+      be(s"broken %ZZ escape\nWhen calling rpc service: $testUri")
     }
 
     "report a non-numeric grpc-status as INTERNAL rather than throwing" in {
@@ -192,7 +195,8 @@ class PekkoHttpClientUtilsSpec extends TestKit(ActorSystem()) with AnyWordSpecLi
     "include the request URI in StatusRuntimeException description for HTTP errors" in {
       val uri = Uri("https://myhost.example.com/com.example.MyService/DoSomething")
       val response =
-        Future.successful(HttpResponse(ServiceUnavailable, entity = Strict(GrpcProtocolNative.contentType, ByteString.empty)))
+        Future.successful(HttpResponse(ServiceUnavailable,
+          entity = Strict(GrpcProtocolNative.contentType, ByteString.empty)))
       val source = PekkoHttpClientUtils.responseToSource(uri, response, null)
 
       val failure = source.run().failed.futureValue
