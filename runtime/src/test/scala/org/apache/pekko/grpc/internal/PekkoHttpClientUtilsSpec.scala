@@ -91,7 +91,8 @@ class PekkoHttpClientUtilsSpec extends TestKit(ActorSystem()) with AnyWordSpecLi
     "include the request URI in StatusRuntimeException description for HTTP errors" in {
       val uri = Uri("https://myhost.example.com/com.example.MyService/DoSomething")
       val response =
-        Future.successful(HttpResponse(ServiceUnavailable, entity = Strict(GrpcProtocolNative.contentType, ByteString.empty)))
+        Future.successful(HttpResponse(ServiceUnavailable,
+          entity = Strict(GrpcProtocolNative.contentType, ByteString.empty)))
       val source = PekkoHttpClientUtils.responseToSource(uri, response, null)
 
       val failure = source.run().failed.futureValue
