@@ -38,6 +38,7 @@ Names and default values are provided.
         generatePlay = false
         usePlayActions = false
         serverPowerApis = false
+        scala3Sources = false
         extraGenerators = []
     }
     ```
@@ -54,6 +55,20 @@ To additionally generate server "power APIs" that have access to request metadat
     pekkoGrpc {
       ...
       serverPowerApis = true
+    }
+    ```
+    @@@
+
+### Generating Scala 3 sources
+
+For Scala projects, set `scala3Sources` to generate Scala 3-friendly sources:
+
+`build.gradle`
+:   @@@vars
+    ```gradle
+    pekkoGrpc {
+      ...
+      scala3Sources = true
     }
     ```
     @@@

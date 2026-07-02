@@ -140,6 +140,9 @@ class PekkoGrpcPlugin implements Plugin<Project> {
                             if (pekkoGrpcExt.generatePlay) {
                                 option "generate_play=true"
                             }
+                            if (pekkoGrpcExt.scala && pekkoGrpcExt.scala3Sources) {
+                                option "scala3_sources=true"
+                            }
                             if (pekkoGrpcExt.scala) {
                                 option "flat_package"
                             }
@@ -147,6 +150,9 @@ class PekkoGrpcPlugin implements Plugin<Project> {
                         if (pekkoGrpcExt.scala) {
                             scalapb {
                                 option "flat_package"
+                                if (pekkoGrpcExt.scala3Sources) {
+                                    option "scala3_sources"
+                                }
                             }
                         }
                     }
@@ -202,4 +208,3 @@ class PekkoGrpcPlugin implements Plugin<Project> {
         scalaVersions.first()
     }
 }
-

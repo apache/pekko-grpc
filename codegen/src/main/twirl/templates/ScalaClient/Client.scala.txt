@@ -53,15 +53,15 @@ trait @{service.name}Client extends @{service.name} with @{service.name}ClientPo
 
 @@PekkoGrpcGenerated
 object @{service.name}Client {
-  def apply(settings: GrpcClientSettings)(implicit sys: ClassicActorSystemProvider): @{service.name}Client =
+  def apply(settings: GrpcClientSettings)(@{service.scalaCompatConstants.ImplicitParameter} sys: ClassicActorSystemProvider): @{service.name}Client =
     new Default@{service.name}Client(GrpcChannel(settings), isChannelOwned = true)
-  def apply(channel: GrpcChannel)(implicit sys: ClassicActorSystemProvider): @{service.name}Client =
+  def apply(channel: GrpcChannel)(@{service.scalaCompatConstants.ImplicitParameter} sys: ClassicActorSystemProvider): @{service.name}Client =
     new Default@{service.name}Client(channel, isChannelOwned = false)
 
-  private class Default@{service.name}Client(channel: GrpcChannel, isChannelOwned: Boolean)(implicit sys: ClassicActorSystemProvider) extends @{service.name}Client {
+  private class Default@{service.name}Client(channel: GrpcChannel, isChannelOwned: Boolean)(@{service.scalaCompatConstants.ImplicitParameter} sys: ClassicActorSystemProvider) extends @{service.name}Client {
     import @{service.name}.MethodDescriptors.@{service.scalaCompatConstants.WildcardImport}
 
-    private implicit val ex: ExecutionContext = sys.classicSystem.dispatcher
+    private @{service.scalaCompatConstants.ImplicitVal} ex: ExecutionContext = sys.classicSystem.dispatcher
     private val settings = channel.settings
     private val options = NettyClientUtils.callOptions(settings)
 

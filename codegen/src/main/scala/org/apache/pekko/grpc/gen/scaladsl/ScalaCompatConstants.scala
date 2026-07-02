@@ -18,8 +18,11 @@
 package org.apache.pekko.grpc.gen.scaladsl
 
 private[scaladsl] class ScalaCompatConstants(emitScala3Sources: Boolean = false) {
-  // val WildcardType: String = if (emitScala3Sources) "?" else "_"
+  val WildcardType: String = if (emitScala3Sources) "?" else "_"
   val WildcardImport: String = if (emitScala3Sources) "*" else "_"
 
   val ImplicitUsing: String = if (emitScala3Sources) "using " else ""
+  val ImplicitParameter: String = if (emitScala3Sources) "using" else "implicit"
+  val ImplicitVal: String = if (emitScala3Sources) "given" else "implicit val"
+  val ImplicitDef: String = if (emitScala3Sources) "given" else "implicit def"
 }
