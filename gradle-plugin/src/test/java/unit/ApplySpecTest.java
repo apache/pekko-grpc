@@ -11,14 +11,19 @@ package unit;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
 import java.nio.file.Files;
+import java.util.Collection;
 import java.util.stream.Stream;
 
+import com.google.protobuf.gradle.GenerateProtoTask;
 import helper.BaseSpec;
 import helper.ScalaWrapperPlugin;
 import org.apache.pekko.grpc.gradle.PekkoGrpcPluginExtension;
 import org.gradle.api.Project;
 import org.gradle.api.ProjectConfigurationException;
+import org.gradle.api.NamedDomainObjectContainer;
 import org.gradle.api.internal.project.ProjectInternal;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.gradle.testkit.runner.BuildResult;
@@ -35,6 +40,8 @@ import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ApplySpecTest extends BaseSpec {
+
+    private static final VarHandle PLUGINS_HANDLE = pluginsHandle();
 
     private Project project;
 
@@ -125,6 +132,48 @@ class ApplySpecTest extends BaseSpec {
         ((ProjectInternal) project).evaluate();
 
         assertTrue(pekkoGrpcExt.getScala());
+    }
+
+    @Test
+    void shouldExposeScala3SourcesOption() throws IOException {
+        PekkoGrpcPluginExtension pekkoGrpcExt = sampleSetup(project);
+
+        assertFalse(pekkoGrpcExt.getScala3Sources());
+
+        pekkoGrpcExt.setScala3Sources(true);
+
+        assertTrue(pekkoGrpcExt.getScala3Sources());
+    }
+
+    @Test
+    void shouldPassScala3SourcesToScalaGenerators() throws Exception {
+        PekkoGrpcPluginExtension pekkoGrpcExt = sampleSetup(project);
+        pekkoGrpcExt.setScala3Sources(true);
+
+        ((ProjectInternal) project).evaluate();
+
+        GenerateProtoTask task = (GenerateProtoTask) project.getTasks().getByName("generateProto");
+        Collection<GenerateProtoTask.PluginOptions> plugins = pluginOptionsForCaching(task);
+        assertTrue(plugins.stream()
+                .filter(plugin -> "pekkoGrpc".equals(plugin.getName()))
+                .anyMatch(plugin -> plugin.getOptions().contains("scala3_sources=true")));
+        assertTrue(plugins.stream()
+                .filter(plugin -> "scalapb".equals(plugin.getName()))
+                .anyMatch(plugin -> plugin.getOptions().contains("scala3_sources")));
+    }
+
+    @SuppressWarnings("unchecked")
+    private Collection<GenerateProtoTask.PluginOptions> pluginOptionsForCaching(GenerateProtoTask task) {
+        return (NamedDomainObjectContainer<GenerateProtoTask.PluginOptions>) PLUGINS_HANDLE.get(task);
+    }
+
+    private static VarHandle pluginsHandle() {
+        try {
+            return MethodHandles.privateLookupIn(GenerateProtoTask.class, MethodHandles.lookup())
+                    .findVarHandle(GenerateProtoTask.class, "plugins", NamedDomainObjectContainer.class);
+        } catch (IllegalAccessException | NoSuchFieldException ex) {
+            throw new ExceptionInInitializerError(ex);
+        }
     }
 
     @Test

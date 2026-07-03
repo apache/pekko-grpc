@@ -54,7 +54,7 @@ object @{serviceName}Handler {
      * Use `org.apache.pekko.grpc.scaladsl.ServiceHandler.concatOrNotFound` with `@{service.name}Handler.partial` when combining
      * several services.
      */
-    def apply(implementation: @serviceName)(implicit system: ClassicActorSystemProvider): model.HttpRequest => scala.concurrent.Future[model.HttpResponse] =
+    def apply(implementation: @serviceName)(@{service.scalaCompatConstants.ImplicitParameter} system: ClassicActorSystemProvider): model.HttpRequest => scala.concurrent.Future[model.HttpResponse] =
       handler(implementation, @{service.name}.name, GrpcExceptionHandler.defaultMapper)
 
     /**
@@ -64,7 +64,7 @@ object @{serviceName}Handler {
      * Use `org.apache.pekko.grpc.scaladsl.ServiceHandler.concatOrNotFound` with `@{service.name}Handler.partial` when combining
      * several services.
      */
-    def apply(implementation: @serviceName, eHandler: ActorSystem => PartialFunction[Throwable, Trailers])(implicit system: ClassicActorSystemProvider): model.HttpRequest => scala.concurrent.Future[model.HttpResponse] =
+    def apply(implementation: @serviceName, eHandler: ActorSystem => PartialFunction[Throwable, Trailers])(@{service.scalaCompatConstants.ImplicitParameter} system: ClassicActorSystemProvider): model.HttpRequest => scala.concurrent.Future[model.HttpResponse] =
       handler(implementation, @{service.name}.name, eHandler)
 
     /**
@@ -76,7 +76,7 @@ object @{serviceName}Handler {
      *
      * Registering a gRPC service under a custom prefix is not widely supported and strongly discouraged by the specification.
      */
-    def apply(implementation: @serviceName, prefix: String)(implicit system: ClassicActorSystemProvider): model.HttpRequest => scala.concurrent.Future[model.HttpResponse] =
+    def apply(implementation: @serviceName, prefix: String)(@{service.scalaCompatConstants.ImplicitParameter} system: ClassicActorSystemProvider): model.HttpRequest => scala.concurrent.Future[model.HttpResponse] =
       handler(implementation, prefix, GrpcExceptionHandler.defaultMapper)
 
     /**
@@ -88,7 +88,7 @@ object @{serviceName}Handler {
      *
      * Registering a gRPC service under a custom prefix is not widely supported and strongly discouraged by the specification.
      */
-    def apply(implementation: @serviceName, prefix: String, eHandler: ActorSystem => PartialFunction[Throwable, Trailers])(implicit system: ClassicActorSystemProvider): model.HttpRequest => scala.concurrent.Future[model.HttpResponse] =
+    def apply(implementation: @serviceName, prefix: String, eHandler: ActorSystem => PartialFunction[Throwable, Trailers])(@{service.scalaCompatConstants.ImplicitParameter} system: ClassicActorSystemProvider): model.HttpRequest => scala.concurrent.Future[model.HttpResponse] =
       handler(implementation, prefix, eHandler)
 
 @if(serviceName != "ServerReflection") {
@@ -101,7 +101,7 @@ object @{serviceName}Handler {
      * Use `org.apache.pekko.grpc.scaladsl.ServiceHandler.concatOrNotFound` with `@{service.name}Handler.partial` when combining
      * several services.
      */
-    def withServerReflection(implementation: @serviceName)(implicit system: ClassicActorSystemProvider): model.HttpRequest => scala.concurrent.Future[model.HttpResponse] =
+    def withServerReflection(implementation: @serviceName)(@{service.scalaCompatConstants.ImplicitParameter} system: ClassicActorSystemProvider): model.HttpRequest => scala.concurrent.Future[model.HttpResponse] =
         pekko.grpc.scaladsl.ServiceHandler.concatOrNotFound(
           @{serviceName}Handler.partial(implementation),
           pekko.grpc.scaladsl.ServerReflection.partial(List(@{service.name})))
@@ -115,9 +115,9 @@ object @{serviceName}Handler {
           null
       }
 
-    private def handler(implementation: @serviceName, prefix: String, eHandler: ActorSystem => PartialFunction[Throwable, Trailers])(implicit system: ClassicActorSystemProvider): model.HttpRequest => scala.concurrent.Future[model.HttpResponse] = {
-      implicit val mat: Materializer = SystemMaterializer(system).materializer
-      implicit val ec: ExecutionContext = mat.executionContext
+    private def handler(implementation: @serviceName, prefix: String, eHandler: ActorSystem => PartialFunction[Throwable, Trailers])(@{service.scalaCompatConstants.ImplicitParameter} system: ClassicActorSystemProvider): model.HttpRequest => scala.concurrent.Future[model.HttpResponse] = {
+      @{service.scalaCompatConstants.ImplicitVal} mat: Materializer = SystemMaterializer(system).materializer
+      @{service.scalaCompatConstants.ImplicitVal} ec: ExecutionContext = mat.executionContext
       val spi = TelemetryExtension(system).spi
 
       import @{service.name}.Serializers.@{service.scalaCompatConstants.WildcardImport}
@@ -158,9 +158,9 @@ object @{serviceName}Handler {
      *
      * Registering a gRPC service under a custom prefix is not widely supported and strongly discouraged by the specification.
      */
-    def partial(implementation: @serviceName, prefix: String = @{service.name}.name, eHandler: ActorSystem => PartialFunction[Throwable, Trailers] = GrpcExceptionHandler.defaultMapper)(implicit system: ClassicActorSystemProvider): PartialFunction[model.HttpRequest, scala.concurrent.Future[model.HttpResponse]] = {
-      implicit val mat: Materializer = SystemMaterializer(system).materializer
-      implicit val ec: ExecutionContext = mat.executionContext
+    def partial(implementation: @serviceName, prefix: String = @{service.name}.name, eHandler: ActorSystem => PartialFunction[Throwable, Trailers] = GrpcExceptionHandler.defaultMapper)(@{service.scalaCompatConstants.ImplicitParameter} system: ClassicActorSystemProvider): PartialFunction[model.HttpRequest, scala.concurrent.Future[model.HttpResponse]] = {
+      @{service.scalaCompatConstants.ImplicitVal} mat: Materializer = SystemMaterializer(system).materializer
+      @{service.scalaCompatConstants.ImplicitVal} ec: ExecutionContext = mat.executionContext
       val spi = TelemetryExtension(system).spi
 
       import @{service.name}.Serializers.@{service.scalaCompatConstants.WildcardImport}
