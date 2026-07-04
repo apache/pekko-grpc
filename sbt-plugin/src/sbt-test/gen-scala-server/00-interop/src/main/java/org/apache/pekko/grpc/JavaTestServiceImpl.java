@@ -29,7 +29,7 @@ import io.grpc.testing.integration.TestService;
 /**
  * Implementation of the generated service.
  *
- * Essentially porting the client code from [[io.grpc.testing.integration.TestServiceImpl]] against our API's
+ * Essentially porting the client code from {@code io.grpc.testing.integration.TestServiceImpl} against our API's
  *
  * The same implementation is also be found as part of the 'non-scripted' tests at
  * /interop-tests/src/test/java/org/apache/pekko/grpc/interop/JavaTestServiceImpl.scala
