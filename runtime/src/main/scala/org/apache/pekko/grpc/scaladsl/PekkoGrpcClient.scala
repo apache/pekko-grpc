@@ -29,7 +29,7 @@ trait PekkoGrpcClient {
    * This method is only valid for clients that use an internal channel. If the client was created
    * with a shared user-provided channel, the channel itself should be closed.
    *
-   * @throws org.apache.pekko.grpc.GrpcClientCloseException if client was created with a user-provided [[pekko.grpc.GrpcChannel]].
+   * @throws org.apache.pekko.grpc.GrpcClientCloseException if client was created with a user-provided `pekko.grpc.GrpcChannel`.
    */
   def close(): Future[Done]
 

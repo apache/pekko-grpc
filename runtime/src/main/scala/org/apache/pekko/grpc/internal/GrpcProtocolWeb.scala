@@ -88,8 +88,8 @@ abstract class GrpcProtocolWebBase(subType: String) extends AbstractGrpcProtocol
  * Implementation of the gRPC Web protocol.
  *
  * Protocol:
- *  - Data frames are encoded to a stream of [[Chunk]] as per the gRPC-web specification.
- *  - Trailer frames are encoded to a [[Chunk]] (containing a marked trailer frame) as per the gRPC-web specification.
+ *  - Data frames are encoded to a stream of `Chunk` as per the gRPC-web specification.
+ *  - Trailer frames are encoded to a `Chunk` (containing a marked trailer frame) as per the gRPC-web specification.
  */
 object GrpcProtocolWeb extends GrpcProtocolWebBase("grpc-web") {
 

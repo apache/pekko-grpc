@@ -20,7 +20,7 @@ import org.apache.pekko
 package object javadsl {
 
   /**
-   * Helper for creating Scala partial functions from [[pekko.japi.function.Function]]
+   * Helper for creating Scala partial functions from `pekko.japi.function.Function`
    * instances.
    */
   @deprecated("no longer needed since support for Scala 2.11 has been dropped", "1.2.0")
@@ -29,7 +29,7 @@ package object javadsl {
   }
 
   /**
-   * Helper for creating Scala anonymous partial functions from [[pekko.japi.function.Function]]
+   * Helper for creating Scala anonymous partial functions from `pekko.japi.function.Function`
    * instances.
    */
   @nowarn("msg=deprecated")
