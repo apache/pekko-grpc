@@ -28,7 +28,7 @@ public interface Configuration {
   interface Builder<T extends Configuration> {
     /**
      * Builds the {@link Configuration} from the given command-line arguments.
-     * @throws IllegalArgumentException if unable to build the configuration for any reason.
+     * @throws java.lang.IllegalArgumentException if unable to build the configuration for any reason.
      */
     T build(String[] args);
 
