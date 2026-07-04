@@ -39,7 +39,7 @@ public enum Transport {
   /**
    * Validates the given address for this transport.
    *
-   * @throws IllegalArgumentException if the given address is invalid for this transport.
+   * @throws java.lang.IllegalArgumentException if the given address is invalid for this transport.
    */
   public void validateSocketAddress(SocketAddress address) {
     if (!socketAddressValidator.isValidSocketAddress(address)) {

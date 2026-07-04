@@ -32,7 +32,7 @@ import io.grpc.testing.integration.TestService;
 /**
  * Implementation of the generated service.
  *
- * <p>Essentially porting the client code from [[io.grpc.testing.integration.TestServiceImpl]]
+ * <p>Essentially porting the client code from {@code io.grpc.testing.integration.TestServiceImpl}
  * against our API's
  *
  * <p>The same implementation is also be found as part of the 'scripted' tests at

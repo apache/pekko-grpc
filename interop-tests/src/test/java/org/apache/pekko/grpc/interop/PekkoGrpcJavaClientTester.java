@@ -55,8 +55,8 @@ import scala.concurrent.ExecutionContext;
  * ClientTester implementation that uses the generated pekko-grpc Java client to exercise a server
  * under test.
  *
- * <p>Essentially porting the client code from [[io.grpc.testing.integration.AbstractInteropTest]]
- * against our Scala API's
+ * <p>Essentially porting the client code from {@code
+ * io.grpc.testing.integration.AbstractInteropTest} against our Scala API's
  */
 public class PekkoGrpcJavaClientTester implements ClientTester {
 
