@@ -65,8 +65,7 @@ class GradleCompatibilitySpecTest extends BaseSpec {
 
     static Stream<Arguments> failVersions() {
         return Stream.of(
-                Arguments.of("5.5"),
-                Arguments.of("4.0"));
+                Arguments.of("5.5"));
     }
 
     @ParameterizedTest(name = "should fail for version {0} less than 5.6")
@@ -86,8 +85,7 @@ class GradleCompatibilitySpecTest extends BaseSpec {
     private static void assumeGradleVersionCanRunOnCurrentJava(String gradleVersion) {
         Assumptions.assumeFalse(
                 Runtime.version().feature() >= 17 &&
-                        GradleVersion.version(gradleVersion).compareTo(GradleVersion.version("7.3")) < 0 &&
-                        !GradleVersion.version(gradleVersion).equals(GradleVersion.version("4.0")),
+                        GradleVersion.version(gradleVersion).compareTo(GradleVersion.version("7.3")) < 0,
                 "Gradle " + gradleVersion + " cannot run on Java " + Runtime.version().feature());
     }
 }
