@@ -79,7 +79,7 @@ object PekkoHttpServerProviderJava$ extends PekkoHttpServerProvider {
   val pendingCases =
     Set("custom_metadata")
 
-  val server = new PekkoGrpcServerJava((mat, sys) => {
+  val server: GrpcServer[?] = new PekkoGrpcServerJava((mat, sys) => {
     TestServiceHandlerFactory.create(new JavaTestServiceImpl(mat), sys)
   })
 }
@@ -87,13 +87,13 @@ object PekkoHttpServerProviderJava$ extends PekkoHttpServerProvider {
 class PekkoClientProviderScala(backend: String, testWithSslContext: Boolean) extends PekkoClientProvider {
   val label: String = s"pekko-grpc scala client tester $backend"
 
-  def client = PekkoGrpcClientScala(settings =>
+  def client: GrpcClient = PekkoGrpcClientScala(settings =>
     implicit sys => new PekkoGrpcScalaClientTester(settings, backend, testWithSslContext))
 }
 
 class PekkoClientProviderJava(backend: String, testWithSslContext: Boolean) extends PekkoClientProvider {
   val label: String = "pekko-grpc java client tester"
 
-  def client = new PekkoGrpcClientJava((settings, sys) =>
+  def client: GrpcClient = new PekkoGrpcClientJava((settings, sys) =>
     new PekkoGrpcJavaClientTester(settings, sys, backend, testWithSslContext))
 }

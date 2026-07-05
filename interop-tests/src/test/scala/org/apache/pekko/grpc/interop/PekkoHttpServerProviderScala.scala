@@ -16,15 +16,22 @@ package org.apache.pekko.grpc.interop
 import org.apache.pekko
 import pekko.NotUsed
 import pekko.actor.ActorSystem
-import pekko.grpc.GrpcProtocol
+import pekko.grpc.{ GrpcProtocol, ProtobufSerializer }
 import pekko.grpc.internal.{ GrpcEntityHelpers, GrpcProtocolNative, GrpcResponseHelpers, Identity }
+import pekko.http.scaladsl.marshalling.ToResponseMarshaller
 import pekko.http.scaladsl.model.headers.RawHeader
 import pekko.http.scaladsl.model.{ AttributeKeys, HttpEntity, HttpHeader, Trailer }
 import pekko.http.scaladsl.server.{ Directive0, Directives, Route }
+import pekko.http.scaladsl.unmarshalling.FromRequestUnmarshaller
 import pekko.stream.Materializer
 import pekko.stream.scaladsl.Source
 import io.grpc.Status
-import io.grpc.testing.integration.messages.{ SimpleRequest, StreamingOutputCallRequest }
+import io.grpc.testing.integration.messages.{
+  SimpleRequest,
+  SimpleResponse,
+  StreamingOutputCallRequest,
+  StreamingOutputCallResponse
+}
 import io.grpc.testing.integration.test.{ TestService, TestServiceHandler, TestServiceMarshallers }
 
 import scala.collection.immutable
@@ -63,7 +70,21 @@ object PekkoHttpServerProviderScala extends PekkoHttpServerProvider with Directi
     implicit val ec: ExecutionContext = mat.executionContext
     implicit val writer: GrpcProtocol.GrpcProtocolWriter = GrpcProtocolNative.newWriter(Identity)
 
-    import TestServiceMarshallers._
+    implicit val simpleRequestSerializer: ProtobufSerializer[SimpleRequest] =
+      TestService.Serializers.SimpleRequestSerializer
+    implicit val simpleResponseSerializer: ProtobufSerializer[SimpleResponse] =
+      TestService.Serializers.SimpleResponseSerializer
+    implicit val streamingOutputCallRequestSerializer: ProtobufSerializer[StreamingOutputCallRequest] =
+      TestService.Serializers.StreamingOutputCallRequestSerializer
+    implicit val streamingOutputCallResponseSerializer: ProtobufSerializer[StreamingOutputCallResponse] =
+      TestService.Serializers.StreamingOutputCallResponseSerializer
+    implicit val simpleRequestUnmarshaller: FromRequestUnmarshaller[SimpleRequest] =
+      TestServiceMarshallers.unmarshaller[SimpleRequest]
+    implicit val streamingOutputCallRequestUnmarshaller
+        : FromRequestUnmarshaller[Source[StreamingOutputCallRequest, NotUsed]] =
+      TestServiceMarshallers.toSourceUnmarshaller[StreamingOutputCallRequest]
+    implicit val simpleResponseMarshaller: ToResponseMarshaller[SimpleResponse] =
+      TestServiceMarshallers.marshaller[SimpleResponse]
 
     pathPrefix("UnaryCall") {
       entity(as[SimpleRequest]) { req =>

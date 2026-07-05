@@ -27,6 +27,7 @@ import org.scalatest.time.Span
 import org.scalatest.wordspec.AnyWordSpecLike
 import org.scalatestplus.junit.JUnitRunner
 
+import scala.annotation.nowarn
 import scala.concurrent.{ Await, ExecutionContext }
 import scala.concurrent.duration._
 
@@ -51,11 +52,15 @@ class GreeterServiceSpec extends Matchers with AnyWordSpecLike with BeforeAndAft
 
   implicit val ec: ExecutionContext = clientSystem.dispatcher
 
-  val clients = Seq(8080, 8081).map { port =>
-    GreeterServiceClient(
-      GrpcClientSettings
-        .connectToServiceAt("127.0.0.1", port)(clientSystem.asInstanceOf[ClassicActorSystemProvider])
-        .withTls(false))(clientSystem.asInstanceOf[ClassicActorSystemProvider])
+  val clients = {
+    @nowarn("msg=local val .* is never used")
+    implicit val classicClientSystem: ClassicActorSystemProvider = clientSystem
+    Seq(8080, 8081).map { port =>
+      GreeterServiceClient(
+        GrpcClientSettings
+          .connectToServiceAt("127.0.0.1", port)
+          .withTls(false))
+    }
   }
 
   override def afterAll(): Unit = {

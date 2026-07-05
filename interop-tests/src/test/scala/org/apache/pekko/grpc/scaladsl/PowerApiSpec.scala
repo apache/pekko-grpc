@@ -67,7 +67,7 @@ abstract class PowerApiSpec(backend: String)
   val server: Http.ServerBinding =
     Http().newServerAt("localhost", 0).bind(GreeterServicePowerApiHandler(new PowerGreeterServiceImpl())).futureValue
 
-  var client: GreeterServiceClient = _
+  var client: GreeterServiceClient = null
 
   after {
     if (client != null && !client.closed.isCompleted) {

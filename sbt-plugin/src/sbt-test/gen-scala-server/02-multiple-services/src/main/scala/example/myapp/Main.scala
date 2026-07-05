@@ -24,16 +24,18 @@ import example.myapp.echo.grpc.EchoServiceHandler
 import example.myapp.helloworld.GreeterServiceImpl
 import example.myapp.helloworld.grpc.GreeterServiceHandler
 
-object Main extends App {
-  implicit val system: ActorSystem = ActorSystem()
+object Main {
+  def main(args: Array[String]): Unit = {
+    implicit val system: ActorSystem = ActorSystem()
 
-  val echoHandler = EchoServiceHandler.partial(new EchoServiceImpl)
-  val greeterHandler = GreeterServiceHandler.partial(new GreeterServiceImpl)
-  val serviceHandler = ServiceHandler.concatOrNotFound(echoHandler, greeterHandler)
+    val echoHandler = EchoServiceHandler.partial(new EchoServiceImpl)
+    val greeterHandler = GreeterServiceHandler.partial(new GreeterServiceImpl)
+    val serviceHandler = ServiceHandler.concatOrNotFound(echoHandler, greeterHandler)
 
-  Http().newServerAt("localhost", 8443)
-    .enableHttps(serverHttpContext())
-    .bind(serviceHandler)
+    Http().newServerAt("localhost", 8443)
+      .enableHttps(serverHttpContext())
+      .bind(serviceHandler)
+  }
 
   private def serverHttpContext() = {
     // never put passwords into code!

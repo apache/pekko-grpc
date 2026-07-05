@@ -7,9 +7,15 @@
  * This file is part of the Apache Pekko project, which was derived from Akka.
  */
 
-scalaVersion := "3.3.8"
+scalaVersion := sys.props.getOrElse(
+  "pekko.grpc.scala3.next.version",
+  sys.error("pekko.grpc.scala3.next.version must be provided by scriptedLaunchOpts"))
 
-scalacOptions += "-Xfatal-warnings"
+scalacOptions ++= Seq(
+  "-Werror",
+  "-Wconf:msg=Implicit parameters should be provided with a `using` clause:s",
+  "-Wconf:msg=Ignoring \\[this\\] qualifier:s",
+  "-Wconf:msg=`_` is deprecated for wildcard arguments of types:s")
 
 enablePlugins(PekkoGrpcPlugin)
 

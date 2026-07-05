@@ -46,7 +46,7 @@ object ServiceHandler {
   @varargs
   def concatOrNotFound(handlers: JFunction[HttpRequest, CompletionStage[HttpResponse]]*)
       : JFunction[HttpRequest, CompletionStage[HttpResponse]] =
-    handler(handlers: _*)
+    handler(handlers *)
 
   /**
    * Creates a `HttpRequest` to `HttpResponse` handler for gRPC services that can be used in
@@ -56,7 +56,7 @@ object ServiceHandler {
   @varargs
   def handler(handlers: JFunction[HttpRequest, CompletionStage[HttpResponse]]*)
       : JFunction[HttpRequest, CompletionStage[HttpResponse]] = {
-    val servicesHandler = concat(handlers: _*)
+    val servicesHandler = concat(handlers *)
     (req: HttpRequest) => servicesHandler(req)
   }
 

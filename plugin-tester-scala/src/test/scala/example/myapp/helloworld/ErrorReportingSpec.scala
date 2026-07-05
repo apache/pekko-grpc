@@ -31,6 +31,7 @@ import org.scalatest.time.Span
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.junit.JUnitRunner
 
+import scala.annotation.nowarn
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
@@ -45,7 +46,11 @@ class ErrorReportingSpec extends AnyWordSpec with Matchers with ScalaFutures wit
 
     val binding = Http()
       .newServerAt("127.0.0.1", 0)
-      .bind(GreeterServiceHandler(new GreeterServiceImpl())(system.asInstanceOf[ClassicActorSystemProvider]))
+      .bind {
+        @nowarn("msg=local val .* is never used")
+        implicit val classicSystem: ClassicActorSystemProvider = system
+        GreeterServiceHandler(new GreeterServiceImpl())
+      }
       .futureValue
 
     "respond with an 'unimplemented' gRPC error status when calling an unknown method" in {

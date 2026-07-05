@@ -29,48 +29,50 @@ import example.myapp.helloworld.grpc._
 
 //#server-reflection
 
-object Main extends App {
-  val conf = ConfigFactory
-    .parseString("pekko.http.server.enable-http2 = on")
-    .withFallback(ConfigFactory.defaultApplication())
-  implicit val sys: ActorSystem = ActorSystem("HelloWorld", conf)
+object Main {
+  def main(args: Array[String]): Unit = {
+    val conf = ConfigFactory
+      .parseString("pekko.http.server.enable-http2 = on")
+      .withFallback(ConfigFactory.defaultApplication())
+    implicit val sys: ActorSystem = ActorSystem("HelloWorld", conf)
 
-  implicit val ec: ExecutionContext = sys.dispatcher
+    implicit val ec: ExecutionContext = sys.dispatcher
 
-  // #server-reflection
-  // Create service handler with a fallback to a Server Reflection handler.
-  // `.withServerReflection` is a convenience method that contacts a partial
-  // function of the provided service with a reflection handler for that
-  // same service.
-  val greeter: HttpRequest => Future[HttpResponse] =
-    GreeterServiceHandler.withServerReflection(new GreeterServiceImpl())
+    // #server-reflection
+    // Create service handler with a fallback to a Server Reflection handler.
+    // `.withServerReflection` is a convenience method that contacts a partial
+    // function of the provided service with a reflection handler for that
+    // same service.
+    val greeter: HttpRequest => Future[HttpResponse] =
+      GreeterServiceHandler.withServerReflection(new GreeterServiceImpl())
 
-  // Bind service handler servers to localhost:8080
-  val binding = Http().newServerAt("127.0.0.1", 8080)
-    .bind(greeter)
-  // #server-reflection
+    // Bind service handler servers to localhost:8080
+    val binding = Http().newServerAt("127.0.0.1", 8080)
+      .bind(greeter)
+    // #server-reflection
 
-  // report successful binding
-  binding.foreach { binding =>
-    println(s"gRPC server bound to: ${binding.localAddress}")
+    // report successful binding
+    binding.foreach { binding =>
+      println(s"gRPC server bound to: ${binding.localAddress}")
+    }
+
+    // #server-reflection-manual-concat
+    // Create service handlers
+    val greeterPartial: PartialFunction[HttpRequest, Future[HttpResponse]] =
+      GreeterServiceHandler.partial(new GreeterServiceImpl(), "greeting-prefix")
+    val echoPartial: PartialFunction[HttpRequest, Future[HttpResponse]] =
+      EchoServiceHandler.partial(new EchoServiceImpl())
+    // Create the reflection handler for multiple services
+    val reflection =
+      ServerReflection.partial(List(GreeterService, EchoService))
+
+    // Concatenate the partial functions into a single handler
+    val handler =
+      ServiceHandler.concatOrNotFound(
+        greeterPartial,
+        echoPartial,
+        reflection)
+    // #server-reflection-manual-concat
   }
-
-  // #server-reflection-manual-concat
-  // Create service handlers
-  val greeterPartial: PartialFunction[HttpRequest, Future[HttpResponse]] =
-    GreeterServiceHandler.partial(new GreeterServiceImpl(), "greeting-prefix")
-  val echoPartial: PartialFunction[HttpRequest, Future[HttpResponse]] =
-    EchoServiceHandler.partial(new EchoServiceImpl())
-  // Create the reflection handler for multiple services
-  val reflection =
-    ServerReflection.partial(List(GreeterService, EchoService))
-
-  // Concatenate the partial functions into a single handler
-  val handler =
-    ServiceHandler.concatOrNotFound(
-      greeterPartial,
-      echoPartial,
-      reflection)
-  // #server-reflection-manual-concat
 
 }

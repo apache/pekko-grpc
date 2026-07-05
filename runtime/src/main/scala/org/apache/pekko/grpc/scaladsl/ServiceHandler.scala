@@ -38,7 +38,7 @@ object ServiceHandler {
 
   def concatOrNotFound(
       handlers: PartialFunction[HttpRequest, Future[HttpResponse]]*): HttpRequest => Future[HttpResponse] =
-    concat(handlers: _*).orElse { case _ => notFound }
+    concat(handlers *).orElse { case _ => notFound }
 
   def concat(handlers: PartialFunction[HttpRequest, Future[HttpResponse]]*)
       : PartialFunction[HttpRequest, Future[HttpResponse]] =

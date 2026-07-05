@@ -23,7 +23,9 @@ import org.apache.pekko.grpc.interop.PekkoHttpServerProviderScala
  *
  * You can start this app from sbt with 'interop-tests/test:reStart'
  */
-object PekkoHttpServerAppScala extends App {
-  val (sys, binding) = PekkoHttpServerProviderScala.server.start(Array())
-  sys.log.info(s"Bound to ${binding.localAddress}")
+object PekkoHttpServerAppScala {
+  def main(args: Array[String]): Unit = {
+    val (sys, binding) = PekkoHttpServerProviderScala.server.start(Array())
+    sys.log.info(s"Bound to ${binding.localAddress}")
+  }
 }

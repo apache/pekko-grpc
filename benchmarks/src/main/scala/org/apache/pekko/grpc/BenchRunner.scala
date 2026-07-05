@@ -31,7 +31,7 @@ object BenchRunner {
     }
     // @formatter:on
 
-    val opts = new CommandLineOptions(args2: _*)
+    val opts = new CommandLineOptions(args2 *)
     val results = new Runner(opts).run()
 
     val report = results.asScala.map { (result: RunResult) =>

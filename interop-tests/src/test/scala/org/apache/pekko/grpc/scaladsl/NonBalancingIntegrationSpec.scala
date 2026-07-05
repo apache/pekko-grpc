@@ -164,7 +164,7 @@ class NonBalancingIntegrationSpec(backend: String)
     "eventually fail when no valid endpoints are provided" in {
       // https://github.com/akka/akka-grpc/issues/1246
       if (backend == "pekko-http")
-        cancel("The Pekko HTTP backend doesn't fail when the persistent connection fails")
+        pending
 
       val discovery =
         new MutableServiceDiscovery(

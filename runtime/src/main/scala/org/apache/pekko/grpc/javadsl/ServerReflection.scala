@@ -32,8 +32,9 @@ object ServerReflection {
       objects: Collection[ServiceDescription],
       sys: ClassicActorSystemProvider): pekko.japi.function.Function[HttpRequest, CompletionStage[HttpResponse]] = {
     import scala.jdk.CollectionConverters._
+    implicit val system: ClassicActorSystemProvider = sys
     val delegate = ServerReflectionHandler.apply(
-      ServerReflectionImpl(objects.asScala.map(_.descriptor).toSeq, objects.asScala.map(_.name).toList))(sys)
+      ServerReflectionImpl(objects.asScala.map(_.descriptor).toSeq, objects.asScala.map(_.name).toList))
     import scala.jdk.FutureConverters._
     request =>
       delegate

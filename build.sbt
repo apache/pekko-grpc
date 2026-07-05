@@ -116,7 +116,12 @@ lazy val runtime = Project(id = "runtime", base = file("runtime"))
     ReflectiveCodeGen.generatedLanguages := Seq("Scala"),
     ReflectiveCodeGen.extraGenerators := Seq("ScalaMarshallersCodeGenerator"),
     PB.protocVersion := Dependencies.Versions.googleProtoc,
-    Test / PB.targets += (scalapb.gen() -> (Test / sourceManaged).value))
+    Test / PB.targets += {
+      val scalapbGenerator =
+        if (scalaBinaryVersion.value == "3") scalapb.gen(scalapb.GeneratorOption.Scala3Sources)
+        else scalapb.gen()
+      scalapbGenerator -> (Test / sourceManaged).value
+    })
   .enablePlugins(org.apache.pekko.grpc.build.ReflectiveCodeGen)
   .enablePlugins(ReproducibleBuildsPlugin)
 
@@ -162,6 +167,7 @@ lazy val mavenPlugin = Project(id = "maven-plugin", base = file("maven-plugin"))
   .settings(
     name := s"$pekkoPrefix-maven-plugin",
     crossPaths := false,
+    crossTarget := target.value / s"scala-${scalaVersion.value}",
     crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
     scalaVersion := Dependencies.Versions.CrossScalaForPlugin.head)
   .dependsOn(codegen)
@@ -173,15 +179,21 @@ lazy val sbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
   .settings(Dependencies.sbtPlugin)
   .settings(
     name := s"$pekkoPrefix-sbt-plugin",
+    sbt.Keys.sbtPlugin :=
+      Dependencies.Versions.CrossScalaForSbtPlugin.contains(scalaVersion.value),
     pluginCrossBuild / sbtVersion := {
-      scalaBinaryVersion.value match {
-        case "2.12" => "1.12.13"
-        case _      => "2.0.0"
+      if (!Dependencies.Versions.CrossScalaForSbtPlugin.contains(scalaVersion.value)) "1.12.13"
+      else {
+        scalaBinaryVersion.value match {
+          case "2.12" => "1.12.13"
+          case _      => "2.0.0"
+        }
       }
     },
     /** And for scripted tests: */
     scriptedSbt := (pluginCrossBuild / sbtVersion).value,
     scriptedLaunchOpts += ("-Dproject.version=" + version.value),
+    scriptedLaunchOpts += ("-Dpekko.grpc.scala3.next.version=" + Dependencies.Versions.scala3Next),
     scriptedLaunchOpts ++= sys.props.collect { case (k @ "sbt.ivy.home", v) => s"-D$k=$v" }.toSeq,
     scriptedDependencies := {
       val p1 = publishLocal.value
@@ -195,10 +207,25 @@ lazy val sbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
         case "2.12" => Seq("-Xsource:3")
         case _      => Seq.empty
       }
+    },
+    libraryDependencies := {
+      val dependencies = libraryDependencies.value
+      if (Dependencies.Versions.CrossScalaForSbtPlugin.contains(scalaVersion.value)) dependencies
+      else Seq.empty
+    },
+    Compile / sources := {
+      val sources0 = (Compile / sources).value
+      if (Dependencies.Versions.CrossScalaForSbtPlugin.contains(scalaVersion.value)) sources0
+      else Seq.empty
+    },
+    Test / sources := {
+      val sources0 = (Test / sources).value
+      if (Dependencies.Versions.CrossScalaForSbtPlugin.contains(scalaVersion.value)) sources0
+      else Seq.empty
     })
   .settings(
-    crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
-    scalaVersion := Dependencies.Versions.CrossScalaForPlugin.head)
+    crossScalaVersions := Dependencies.Versions.CrossScalaForSbtPlugin,
+    scalaVersion := Dependencies.Versions.CrossScalaForSbtPlugin.head)
   .dependsOn(codegen)
 
 lazy val interopTests = Project(id = "interop-tests", base = file("interop-tests"))
@@ -220,8 +247,11 @@ lazy val interopTests = Project(id = "interop-tests", base = file("interop-tests
     ReflectiveCodeGen.generatedLanguages := Seq("Scala", "Java"),
     ReflectiveCodeGen.extraGenerators := Seq("ScalaMarshallersCodeGenerator"),
     ReflectiveCodeGen.codeGeneratorSettings ++= Seq("server_power_apis"),
-    // grpc 1.54.2 brings in extra unnecessary proto files that cause build issues
-    PB.generate / excludeFilter := new SimpleFileFilter(f => f.getAbsolutePath().contains("envoy")),
+    // grpc brings in extra unnecessary proto files that cause build issues or generated-code warnings
+    PB.generate / excludeFilter := new SimpleFileFilter(f => {
+      val path = f.getAbsolutePath.replace('\\', '/')
+      path.contains("envoy") || path.contains("grpc/reflection/v1alpha")
+    }),
     PB.protocVersion := Dependencies.Versions.googleProtoc,
     // We need to be able to publish locally in order for sbt interopt tests to work
     // however this sbt project should not be published to an actual repository
