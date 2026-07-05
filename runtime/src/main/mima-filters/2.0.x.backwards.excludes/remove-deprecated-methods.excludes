@@ -29,3 +29,4 @@ ProblemFilters.exclude[DirectMissingMethodProblem]("org.apache.pekko.grpc.javads
 ProblemFilters.exclude[DirectMissingMethodProblem]("org.apache.pekko.grpc.javadsl.package.javaFunction")
 ProblemFilters.exclude[DirectMissingMethodProblem]("org.apache.pekko.grpc.javadsl.package.japiFunction")
 ProblemFilters.exclude[DirectMissingMethodProblem]("org.apache.pekko.grpc.internal.ScalaServerStreamingRequestBuilder.this")
+ProblemFilters.exclude[DirectMissingMethodProblem]("org.apache.pekko.grpc.javadsl.package.scalaPartialFunction")
