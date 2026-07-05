@@ -34,6 +34,7 @@ private[internal] class TelemetryExtensionImpl(val spi: TelemetrySpi) extends Ex
 /** INTERNAL API */
 @InternalStableApi
 object TelemetryExtension extends ExtensionId[TelemetryExtensionImpl] with ExtensionIdProvider {
+  @nowarn("msg=the inferred type changes")
   override def lookup = TelemetryExtension
   override def createExtension(system: ExtendedActorSystem) =
     new TelemetryExtensionImpl(TelemetrySpi(system))

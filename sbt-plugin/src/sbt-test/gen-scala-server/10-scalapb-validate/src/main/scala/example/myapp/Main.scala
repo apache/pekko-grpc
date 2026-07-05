@@ -14,16 +14,18 @@ import scalapb.validate._
 
 import example.myapp.helloworld.grpc.HelloRequest
 
-object Main extends App {
+object Main {
+  def main(args: Array[String]): Unit = {
 
-  Try(HelloRequest("valid")) match {
-    case Success(_) => // expected
-    case Failure(e) => throw new RuntimeException("unexpected violations for \"valid\"", e)
-  }
+    Try(HelloRequest("valid")) match {
+      case Success(_) => // expected
+      case Failure(e) => throw new RuntimeException("unexpected violations for \"valid\"", e)
+    }
 
-  Try(HelloRequest("ko")) match {
-    case Success(_) => throw new RuntimeException("unexpected success for \"ko\"")
-    case Failure(e) => // expected
+    Try(HelloRequest("ko")) match {
+      case Success(_) => throw new RuntimeException("unexpected success for \"ko\"")
+      case Failure(e) => // expected
+    }
   }
 
 }

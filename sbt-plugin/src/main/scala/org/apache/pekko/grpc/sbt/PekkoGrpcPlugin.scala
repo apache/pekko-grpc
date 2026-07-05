@@ -120,23 +120,17 @@ object PekkoGrpcPlugin extends AutoPlugin {
         packageBin / mappings := {
           val existingMappings = (packageBin / mappings).value
           val unpackedFiles = PB.unpackDependencies.value.files
+          val converter = fileConverter.value
           val mappingsToAdd =
-            unpackedFiles.pair(Path.relativeTo(Seq(PB.externalSourcePath.value, PB.externalIncludePath.value)))
-          @scala.annotation.tailrec
-          def withoutDuplicates(soFar: List[(File, String)], seen: Set[String], toAdd: Seq[(File, String)])
-              : Seq[(File, String)] = {
-            toAdd.headOption match {
-              case Some((file, string)) =>
-                if (seen.contains(string)) {
-                  withoutDuplicates(soFar, seen, toAdd.tail)
-                } else {
-                  withoutDuplicates((file, string) :: soFar, seen + string, toAdd.tail)
-                }
-              case None =>
-                soFar
-            }
-          }
-          withoutDuplicates(existingMappings.toList, existingMappings.map(_._2).toSet, mappingsToAdd)
+            unpackedFiles
+              .pair(Path.relativeTo(Seq(PB.externalSourcePath.value, PB.externalIncludePath.value)))
+              .map { case (file, path) => PackageMappingCompat.packageMapping(file, path, converter) }
+          (existingMappings.toList ++ mappingsToAdd).foldLeft((List.empty[PackageMappingCompat.PackageMapping],
+            Set.empty[String])) {
+            case ((soFar, seen), mapping @ (_, path)) =>
+              if (seen(path)) (soFar, seen)
+              else (mapping :: soFar, seen + path)
+          }._1.reverse
         },
         unmanagedResourceDirectories ++= (PB.recompile / unmanagedResourceDirectories).value,
         Defaults.ConfigZero / watchSources ++= Def.uncached {
@@ -154,7 +148,7 @@ object PekkoGrpcPlugin extends AutoPlugin {
         PB.targets ++=
           targetsFor(
             (pekkoGrpcCodeGeneratorSettings / target).value,
-            pekkoGrpcCodeGeneratorSettings.value,
+            pekkoGrpcCodeGeneratorSettings.value ++ scala3SourcesSettings.value,
             pekkoGrpcGenerators.value),
         PB.protoSources += sourceDirectory.value / "proto"))
 
@@ -175,6 +169,9 @@ object PekkoGrpcPlugin extends AutoPlugin {
             settings
         })
     }
+
+  private def scala3SourcesSettings: Def.Initialize[Seq[String]] =
+    Def.setting(if (scalaBinaryVersion.value == "3") Seq("scala3_sources") else Seq.empty)
 
   // creates a seq of generator and per generator settings
   def generatorsFor(

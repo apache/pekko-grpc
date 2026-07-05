@@ -21,6 +21,7 @@ import pekko.http.javadsl.{ model => jm }
 
 import scala.collection.compat.immutable.ArraySeq
 import scala.collection.immutable
+import scala.annotation.nowarn
 import scala.util.Try
 
 @ApiMayChange
@@ -28,6 +29,7 @@ final class `Message-Accept-Encoding`(override val value: String)
     extends ModeledCustomHeader[`Message-Accept-Encoding`] {
   override def renderInRequests = true
   override def renderInResponses = true
+  @nowarn("msg=the inferred type changes")
   override val companion = `Message-Accept-Encoding`
 
   lazy val values: Array[String] = value.split(',')
@@ -55,6 +57,7 @@ object `Message-Accept-Encoding` extends ModeledCustomHeaderCompanion[`Message-A
 final class `Message-Encoding`(encoding: String) extends ModeledCustomHeader[`Message-Encoding`] {
   override def renderInRequests = true
   override def renderInResponses = true
+  @nowarn("msg=the inferred type changes")
   override val companion = `Message-Encoding`
   override def value: String = encoding
 }
@@ -79,6 +82,7 @@ object `Message-Encoding` extends ModeledCustomHeaderCompanion[`Message-Encoding
 final class `Status`(code: Int) extends ModeledCustomHeader[`Status`] {
   override def renderInRequests = false
   override def renderInResponses = true
+  @nowarn("msg=the inferred type changes")
   override val companion = `Status`
 
   override def value() = code.toString
@@ -98,6 +102,7 @@ object `Status` extends ModeledCustomHeaderCompanion[`Status`] {
 final class `Status-Message`(val unencodedValue: String) extends ModeledCustomHeader[`Status-Message`] {
   override def renderInRequests = false
   override def renderInResponses = true
+  @nowarn("msg=the inferred type changes")
   override val companion = `Status-Message`
   override def value() = PercentEncoding.Encoder.encode(unencodedValue)
 }

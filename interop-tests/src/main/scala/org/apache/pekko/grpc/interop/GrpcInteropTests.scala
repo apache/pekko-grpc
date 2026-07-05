@@ -139,7 +139,7 @@ object IoGrpcJavaServerProvider extends GrpcServerProvider {
   val pendingCases =
     Set()
 
-  val server = IoGrpcServer
+  val server: GrpcServer[?] = IoGrpcServer
 }
 
 object IoGrpcJavaClientProvider extends GrpcClientProvider {
@@ -148,7 +148,7 @@ object IoGrpcJavaClientProvider extends GrpcClientProvider {
   val pendingCases =
     Set()
 
-  val client = IoGrpcClient
+  val client: GrpcClient = IoGrpcClient
 }
 
 trait PekkoHttpServerProvider extends GrpcServerProvider

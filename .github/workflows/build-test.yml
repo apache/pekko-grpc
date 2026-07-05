@@ -85,7 +85,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        SCALA_VERSION: [2.13.18, 3.3.8]
+        SCALA_VERSION: [scala213, scala3, next]
         JAVA_VERSION: [17, 21]
     steps:
       - name: Checkout
@@ -107,9 +107,10 @@ jobs:
 
       - name: Compile and test for JDK ${{ matrix.JAVA_VERSION }}, Scala ${{ matrix.SCALA_VERSION }}
         run: |-
+          scala_version="$(bash .github/scripts/resolve-scala-version.sh "${{ matrix.SCALA_VERSION }}")"
           cp .jvmopts-ci .jvmopts
-          sbt ++${{ matrix.SCALA_VERSION }} test
-          sbt ++${{ matrix.SCALA_VERSION }}! codegen/test
+          sbt "++${scala_version}!" test
+          sbt "++${scala_version}!" codegen/test
 
   test-sbt:
     name: sbt scripted tests
@@ -121,7 +122,7 @@ jobs:
           - test-set: gen-scala-server
             scala-version: 2.13
           - test-set: scala3
-            scala-version: 3.3
+            scala-version: next
           - test-set: gen-java
             scala-version: 2.13
     steps:
@@ -151,7 +152,14 @@ jobs:
         uses: coursier/cache-action@95e5b1029b6b86e7bac033ee44a0697d8a527d2d # v8.1.1
 
       - name: Scripted ${{ matrix.test-set }}
-        run: cp .jvmopts-ci .jvmopts && sbt ++${{ matrix.scala-version }}.* "sbt-plugin/scripted ${{ matrix.test-set }}/*"
+        run: |-
+          cp .jvmopts-ci .jvmopts
+          if [ "${{ matrix.scala-version }}" = "next" ]; then
+            scala_version="$(bash .github/scripts/resolve-scala-version.sh "${{ matrix.scala-version }}")"
+            sbt "++${scala_version}!" "sbt-plugin/scripted ${{ matrix.test-set }}/*"
+          else
+            sbt "++${{ matrix.scala-version }}.*" "sbt-plugin/scripted ${{ matrix.test-set }}/*"
+          fi
 
   test-gradle:
     name: Gradle tests
