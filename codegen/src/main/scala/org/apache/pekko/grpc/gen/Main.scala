@@ -15,6 +15,7 @@ package org.apache.pekko.grpc.gen
 
 import java.io.ByteArrayOutputStream
 import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 
 import com.google.protobuf.compiler.PluginProtos.CodeGeneratorRequest
 import org.apache.pekko
@@ -61,7 +62,7 @@ object Main {
     val logger: Logger =
       parameters
         .get("logfile_enc")
-        .map(URLDecoder.decode(_, "utf-8"))
+        .map(URLDecoder.decode(_, StandardCharsets.UTF_8))
         .orElse(parameters.get("logfile"))
         .map(new FileLogger(_))
         .getOrElse(SilencedLogger)

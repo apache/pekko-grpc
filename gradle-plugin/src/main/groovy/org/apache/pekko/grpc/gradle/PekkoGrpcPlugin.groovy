@@ -21,6 +21,7 @@ import org.gradle.util.GradleVersion
 import org.gradle.util.VersionNumber
 
 import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Path
 
@@ -133,7 +134,7 @@ class PekkoGrpcPlugin implements Plugin<Project> {
                             option "server_power_apis=${pekkoGrpcExt.serverPowerApis}"
                             option "use_play_actions=${pekkoGrpcExt.usePlayActions}"
                             option "extra_generators=${pekkoGrpcExt.extraGenerators.join(';')}"
-                            option "logfile_enc=${URLEncoder.encode(logFileRelative, "utf-8")}"
+                            option "logfile_enc=${URLEncoder.encode(logFileRelative, StandardCharsets.UTF_8)}"
                             if (pekkoGrpcExt.includeStdTypes) {
                                 option "include_std_types=true"
                             }
