@@ -24,6 +24,7 @@ import io.grpc.testing.integration.TestServiceGrpc;
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Application that starts a client for the {@link TestServiceGrpc.TestServiceImplBase} and runs
@@ -31,7 +32,7 @@ import java.nio.charset.Charset;
  */
 public class TestServiceClient {
 
-  private static final Charset UTF_8 = Charset.forName("UTF-8");
+  private static final Charset UTF_8 = StandardCharsets.UTF_8;
 
   private String testCase = "empty_unary";
 

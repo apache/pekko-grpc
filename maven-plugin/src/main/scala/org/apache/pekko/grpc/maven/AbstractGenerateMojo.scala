@@ -14,6 +14,7 @@
 package org.apache.pekko.grpc.maven
 
 import java.io.{ ByteArrayOutputStream, File, PrintStream }
+import java.nio.charset.StandardCharsets
 
 import org.apache.pekko
 import pekko.grpc.gen.{ CodeGenerator, Logger, ProtocSettings }
@@ -47,9 +48,9 @@ object AbstractGenerateMojo {
 
   private def captureStdOutAndErr[T](block: => T): (String, String, T) = {
     val errBao = new ByteArrayOutputStream()
-    val errPrinter = new PrintStream(errBao, true, "UTF-8")
+    val errPrinter = new PrintStream(errBao, true, StandardCharsets.UTF_8)
     val outBao = new ByteArrayOutputStream()
-    val outPrinter = new PrintStream(outBao, true, "UTF-8")
+    val outPrinter = new PrintStream(outBao, true, StandardCharsets.UTF_8)
     val originalOut = System.out
     val originalErr = System.err
     System.setOut(outPrinter)
@@ -62,7 +63,7 @@ object AbstractGenerateMojo {
         System.setErr(originalErr)
       }
 
-    (outBao.toString("UTF-8"), errBao.toString("UTF-8"), t)
+    (outBao.toString(StandardCharsets.UTF_8), errBao.toString(StandardCharsets.UTF_8), t)
   }
 
   sealed trait Language {

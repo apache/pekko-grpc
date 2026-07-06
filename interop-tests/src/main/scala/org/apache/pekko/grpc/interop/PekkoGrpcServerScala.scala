@@ -14,6 +14,7 @@
 package org.apache.pekko.grpc.interop
 
 import java.io.FileInputStream
+import java.nio.charset.StandardCharsets
 import java.nio.file.{ Files, Paths }
 import java.security.cert.CertificateFactory
 import java.security.spec.PKCS8EncodedKeySpec
@@ -61,7 +62,8 @@ case class PekkoGrpcServerScala(serverHandlerFactory: ActorSystem => HttpRequest
 
   private def serverHttpContext() = {
     val keyEncoded =
-      new String(Files.readAllBytes(Paths.get(TestUtils.loadCert("server1.key").getAbsolutePath)), "UTF-8")
+      new String(Files.readAllBytes(Paths.get(TestUtils.loadCert("server1.key").getAbsolutePath)),
+        StandardCharsets.UTF_8)
         .replace("-----BEGIN PRIVATE KEY-----\n", "")
         .replace("-----END PRIVATE KEY-----\n", "")
         .replace("\n", "")

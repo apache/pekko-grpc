@@ -14,6 +14,7 @@
 package org.apache.pekko.grpc.gen
 
 import java.io.PrintWriter
+import java.nio.charset.StandardCharsets
 
 // specific to gen so that the build tools can implement their own
 trait Logger {
@@ -41,7 +42,7 @@ object SilencedLogger extends Logger {
 }
 
 class FileLogger(path: String) extends Logger {
-  val printer = new PrintWriter(path, "UTF-8")
+  val printer = new PrintWriter(path, StandardCharsets.UTF_8)
   def debug(text: String): Unit = {
     printer.println(s"[debug] $text")
     printer.flush()
