@@ -14,8 +14,11 @@
 package org.apache.pekko.grpc.gen
 
 import java.io.ByteArrayOutputStream
+import java.lang.invoke.{ MethodHandle, MethodHandles, MethodType => JMethodType }
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
+
+import scala.collection.concurrent.TrieMap
 
 import com.google.protobuf.compiler.PluginProtos.CodeGeneratorRequest
 import org.apache.pekko
@@ -24,6 +27,10 @@ import pekko.grpc.gen.scaladsl.{ ScalaClientCodeGenerator, ScalaServerCodeGenera
 
 // This is the protoc plugin that the gradle plugin uses
 object Main {
+  private val publicLookup = MethodHandles.publicLookup()
+  private val generatorConstructorType = JMethodType.methodType(Void.TYPE)
+  private val generatorConstructors = TrieMap.empty[String, MethodHandle]
+
   def main(args: Array[String]): Unit = {
     val inBytes: Array[Byte] = {
       val baos = new ByteArrayOutputStream(math.max(64, System.in.available()))
@@ -84,12 +91,21 @@ object Main {
         else throw new IllegalArgumentException("At least one of generateClient or generateServer must be enabled")
       }
     val loadedExtraGenerators =
-      extraGenerators.map(cls => Class.forName(cls).getDeclaredConstructor().newInstance().asInstanceOf[CodeGenerator])
+      extraGenerators.map(loadExtraGenerator)
 
     (codeGenerators ++ loadedExtraGenerators).foreach { g =>
       val gout = g.run(req, logger)
       System.out.write(gout.toByteArray)
       System.out.flush()
     }
+  }
+
+  private def loadExtraGenerator(className: String): CodeGenerator =
+    generatorConstructors.getOrElseUpdate(className, constructorHandle(className)).invoke()
+      .asInstanceOf[CodeGenerator]
+
+  private def constructorHandle(className: String): MethodHandle = {
+    val clazz = Class.forName(className)
+    publicLookup.findConstructor(clazz, generatorConstructorType)
   }
 }

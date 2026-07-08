@@ -14,7 +14,10 @@
 package org.apache.pekko.grpc.gen
 
 import java.io.PrintWriter
+import java.lang.invoke.{ MethodHandle, MethodHandles, MethodType => JMethodType }
 import java.nio.charset.StandardCharsets
+
+import scala.collection.concurrent.TrieMap
 
 // specific to gen so that the build tools can implement their own
 trait Logger {
@@ -62,19 +65,36 @@ class FileLogger(path: String) extends Logger {
 }
 
 /**
- * Logger that forwards calls to another Logger via reflection.
+ * Logger that forwards calls to another Logger via MethodHandles.
  *
  *  This enables a code generator that is loaded inside a sandboxed class loader to
  *  use a logger that lives in a different class loader.
  */
 class ReflectiveLogger(logger: Object) extends Logger {
-  private val debugMethod = logger.getClass.getMethod("debug", classOf[String])
-  private val infoMethod = logger.getClass.getMethod("info", classOf[String])
-  private val warnMethod = logger.getClass.getMethod("warn", classOf[String])
-  private val errorMethod = logger.getClass.getMethod("error", classOf[String])
+  import ReflectiveLogger._
 
-  def debug(text: String): Unit = debugMethod.invoke(logger, text)
-  def info(text: String): Unit = infoMethod.invoke(logger, text)
-  def warn(text: String): Unit = warnMethod.invoke(logger, text)
-  def error(text: String): Unit = errorMethod.invoke(logger, text)
+  private val handles = handlesFor(logger.getClass)
+
+  def debug(text: String): Unit = handles.debug.invoke(logger, text)
+  def info(text: String): Unit = handles.info.invoke(logger, text)
+  def warn(text: String): Unit = handles.warn.invoke(logger, text)
+  def error(text: String): Unit = handles.error.invoke(logger, text)
+}
+
+private object ReflectiveLogger {
+  private final case class LoggerHandles(debug: MethodHandle, info: MethodHandle, warn: MethodHandle,
+      error: MethodHandle)
+
+  private val lookup = MethodHandles.publicLookup()
+  private val loggerMethodType = JMethodType.methodType(Void.TYPE, classOf[String])
+  private val handlesByLoggerClass = TrieMap.empty[Class[?], LoggerHandles]
+
+  private def handlesFor(loggerClass: Class[?]): LoggerHandles =
+    handlesByLoggerClass.getOrElseUpdate(
+      loggerClass,
+      LoggerHandles(
+        lookup.findVirtual(loggerClass, "debug", loggerMethodType),
+        lookup.findVirtual(loggerClass, "info", loggerMethodType),
+        lookup.findVirtual(loggerClass, "warn", loggerMethodType),
+        lookup.findVirtual(loggerClass, "error", loggerMethodType)))
 }
