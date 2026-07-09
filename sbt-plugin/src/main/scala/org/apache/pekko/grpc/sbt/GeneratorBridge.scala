@@ -13,6 +13,8 @@
 
 package org.apache.pekko.grpc.sbt
 
+import java.lang.invoke.{ MethodHandles, MethodType }
+
 import org.apache.pekko
 import pekko.grpc.gen.Logger
 import pekko.grpc.gen.BuildInfo
@@ -58,22 +60,26 @@ object GeneratorBridge {
    */
   private class SandboxedProtocBridgeSbtPluginCodeGenerator(classLoader: ClassLoader, className: String, logger: Logger)
       extends protocbridge.ProtocCodeGenerator {
-    val genClass = classLoader.loadClass(className)
-    val module = genClass.getField("MODULE$").get(null)
+    private val lookup = MethodHandles.publicLookup()
+    private val genClass = classLoader.loadClass(className)
+    private val module: Object = lookup.findStaticGetter(genClass, "MODULE$", genClass).invoke()
+    private val loggerClass = classLoader.loadClass("org.apache.pekko.grpc.gen.Logger")
+    private val reflectiveLoggerClass = classLoader.loadClass("org.apache.pekko.grpc.gen.ReflectiveLogger")
     private val reflectiveLogger: Object =
-      classLoader
-        .loadClass("org.apache.pekko.grpc.gen.ReflectiveLogger")
-        .asInstanceOf[Class[Object]]
-        .getConstructor(classOf[Object])
-        .newInstance(logger)
+      lookup
+        .findConstructor(
+          reflectiveLoggerClass,
+          MethodType.methodType(Void.TYPE, classOf[Object]))
+        .invoke(logger)
 
-    private val runMethods =
-      module.getClass.getMethods
-        .find(m => m.getName == "run" && m.getParameterTypes()(0) == classOf[Array[Byte]])
-        .getOrElse(throw new RuntimeException("Could not find 'run' method that takes an Array[Byte]"))
+    private val runMethod =
+      lookup.findVirtual(
+        genClass,
+        "run",
+        MethodType.methodType(classOf[Array[Byte]], classOf[Array[Byte]], loggerClass))
 
     override def run(request: Array[Byte]): Array[Byte] =
-      runMethods.invoke(module, request, reflectiveLogger).asInstanceOf[Array[Byte]]
+      runMethod.invoke(module, request, reflectiveLogger).asInstanceOf[Array[Byte]]
     override def toString = s"SandboxedProtocBridgeSbtPluginCodeGenerator(${className})"
   }
 

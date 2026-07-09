@@ -19,7 +19,6 @@ import ProtocPlugin.autoImport.PB
 import protocbridge.Target
 import sbt.ProjectRef
 import sbt.file
-import sbt.internal.inc.classpath.ClasspathUtil
 
 import scala.collection.mutable.ListBuffer
 import protocbridge.{ Artifact => BridgeArtifact }
@@ -80,7 +79,7 @@ object ReflectiveCodeGen extends AutoPlugin {
           }
         }.value,
         setCodeGenerator := Def.taskDyn {
-          // Scala 2.12 still uses the sbt-plugin/toolbox path. Library cross builds use codegen
+          // Scala 2.12 still uses the sbt-plugin classpath. Library cross builds use codegen
           // directly so forced 2.13/3.3 matrix runs do not compile the sbt 2 plugin project.
           val generatorProject =
             if (scalaBinaryVersion.value == "2.12") "sbt-plugin"
@@ -122,59 +121,15 @@ object ReflectiveCodeGen extends AutoPlugin {
       generatorSettings: Seq[String],
       targets: ListBuffer[Target],
       scalaBinaryVersion: String): Unit = {
-    if (scalaBinaryVersion != "2.12") {
-      loadAndSetGeneratorWithMethodHandles(
-        classpath,
-        languages0,
-        sources0,
-        extraGenerators0,
-        targetPath,
-        generatorSettings,
-        targets,
-        scalaBinaryVersion)
-      return
-    }
-
-    val languages = languages0.mkString(", ")
-    val sources = sources0.mkString(", ")
-    val extraGenerators = extraGenerators0.mkString(", ")
-    val generatorSettings1 = generatorSettings.mkString("\"", "\", \"", "\"")
-
-    val cp = classpath.map(_.data)
-    // ensure to set right parent classloader, so that protocbridge.ProtocCodeGenerator etc are
-    // compatible with what is already accessible from this sbt build
-    val loader = ClasspathUtil.toLoader(cp, classOf[protocbridge.ProtocCodeGenerator].getClassLoader)
-    import scala.reflect.runtime.universe
-    import scala.tools.reflect.ToolBox
-
-    val tb = universe.runtimeMirror(loader).mkToolBox()
-    val source =
-      s"""import org.apache.pekko.grpc.sbt.PekkoGrpcPlugin
-          |import org.apache.pekko.grpc.sbt.GeneratorBridge
-          |import PekkoGrpcPlugin.autoImport._
-          |import PekkoGrpc._
-          |import org.apache.pekko.grpc.gen.scaladsl._
-          |import org.apache.pekko.grpc.gen.javadsl._
-          |import org.apache.pekko.grpc.gen.CodeGenerator.ScalaBinaryVersion
-          |
-          |val languages: Seq[PekkoGrpc.Language] = Seq($languages)
-          |val sources: Seq[PekkoGrpc.GeneratedSource] = Seq($sources)
-          |val scalaBinaryVersion = ScalaBinaryVersion("$scalaBinaryVersion")
-          |
-          |val logger = org.apache.pekko.grpc.gen.StdoutLogger
-          |
-          |(targetPath: java.io.File, settings: Seq[String]) => {
-          |  val generators =
-          |    PekkoGrpcPlugin.generatorsFor(sources, languages, scalaBinaryVersion, logger) ++
-          |    Seq($extraGenerators).map(gen => GeneratorBridge.sandboxedGenerator(gen, scalaBinaryVersion, org.apache.pekko.grpc.gen.StdoutLogger))
-          |  PekkoGrpcPlugin.targetsFor(targetPath, settings, generators)
-          |}
-        """.stripMargin
-    val generatorsF = tb.eval(tb.parse(source)).asInstanceOf[(File, Seq[String]) => Seq[Target]]
-    val generators = generatorsF(targetPath, generatorSettings)
-
-    targets.clear()
-    targets ++= generators.asInstanceOf[Seq[Target]]
+    loadAndSetGeneratorWithMethodHandles(
+      classpath,
+      languages0,
+      sources0,
+      extraGenerators0,
+      targetPath,
+      generatorSettings,
+      targets,
+      scalaBinaryVersion)
   }
 
   private def loadAndSetGeneratorWithMethodHandles(
@@ -296,19 +251,19 @@ object ReflectiveCodeGen extends AutoPlugin {
       new ChildFirstClassLoader(classpath.map(_.toURI.toURL).toArray, classLoader)
     private val lookup = MethodHandles.publicLookup()
     private val moduleClass = childFirstClassLoader.loadClass(className)
-    private val module =
-      lookup.findStaticGetter(moduleClass, "MODULE$", moduleClass).invokeWithArguments()
+    private val module: Object =
+      lookup.findStaticGetter(moduleClass, "MODULE$", moduleClass).invoke()
     private val loggerClass = childFirstClassLoader.loadClass("org.apache.pekko.grpc.gen.Logger")
     private val loggerModuleClass = childFirstClassLoader.loadClass("org.apache.pekko.grpc.gen.SilencedLogger$")
-    private val logger =
-      lookup.findStaticGetter(loggerModuleClass, "MODULE$", loggerModuleClass).invokeWithArguments()
+    private val logger: Object =
+      lookup.findStaticGetter(loggerModuleClass, "MODULE$", loggerModuleClass).invoke()
     private val runMethod = lookup.findVirtual(
       moduleClass,
       "run",
       MethodType.methodType(classOf[Array[Byte]], classOf[Array[Byte]], loggerClass))
 
     override def run(request: Array[Byte]): Array[Byte] =
-      runMethod.invokeWithArguments(module, request.asInstanceOf[Object], logger).asInstanceOf[Array[Byte]]
+      runMethod.invoke(module, request.asInstanceOf[Object], logger).asInstanceOf[Array[Byte]]
 
     override def toString = s"MethodHandleProtocCodeGenerator($className)"
   }

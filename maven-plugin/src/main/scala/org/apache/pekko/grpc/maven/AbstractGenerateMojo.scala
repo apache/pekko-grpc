@@ -14,7 +14,10 @@
 package org.apache.pekko.grpc.maven
 
 import java.io.{ ByteArrayOutputStream, File, PrintStream }
+import java.lang.invoke.{ MethodHandle, MethodHandles, MethodType }
 import java.nio.charset.StandardCharsets
+
+import scala.collection.concurrent.TrieMap
 
 import org.apache.pekko
 import pekko.grpc.gen.{ CodeGenerator, Logger, ProtocSettings }
@@ -36,6 +39,9 @@ import scala.util.control.NoStackTrace
 object AbstractGenerateMojo {
   case class ProtocError(file: String, line: Int, pos: Int, message: String)
   private val ProtocErrorRegex = """(\w+\.\w+):(\d+):(\d+):\s(.*)""".r
+  private val publicLookup = MethodHandles.publicLookup()
+  private val generatorConstructorType = MethodType.methodType(Void.TYPE)
+  private val generatorConstructors = TrieMap.empty[String, MethodHandle]
 
   /** @return a left(parsed error) or a right(original error string) if it cannot be parsed */
   def parseError(errorLine: String): Either[ProtocError, String] =
@@ -45,6 +51,15 @@ object AbstractGenerateMojo {
       case unknown =>
         Right(unknown)
     }
+
+  private def loadExtraGenerator(className: String): CodeGenerator =
+    generatorConstructors.getOrElseUpdate(className, constructorHandle(className)).invoke()
+      .asInstanceOf[CodeGenerator]
+
+  private def constructorHandle(className: String): MethodHandle = {
+    val clazz = Class.forName(className)
+    publicLookup.findConstructor(clazz, generatorConstructorType)
+  }
 
   private def captureStdOutAndErr[T](block: => T): (String, String, T) = {
     val errBao = new ByteArrayOutputStream()
@@ -182,8 +197,7 @@ abstract class AbstractGenerateMojo @Inject() (buildContext: BuildContext) exten
     } else {
       import scala.jdk.CollectionConverters._
       val loadedExtraGenerators =
-        extraGenerators.asScala.map(cls =>
-          Class.forName(cls).getDeclaredConstructor().newInstance().asInstanceOf[CodeGenerator])
+        extraGenerators.asScala.map(AbstractGenerateMojo.loadExtraGenerator)
 
       val targets = language match {
         case Java =>
