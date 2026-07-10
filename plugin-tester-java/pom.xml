@@ -26,7 +26,7 @@
     <maven-exec-plugin.version>3.6.3</maven-exec-plugin.version>
     <pekko.version>2.0.0-M3</pekko.version>
     <pekko.http.version>2.0.0-M1</pekko.http.version>
-    <grpc.version>1.82.1</grpc.version> <!-- checked synced by VersionSyncCheckPlugin -->
+    <grpc.version>1.82.2</grpc.version> <!-- checked synced by VersionSyncCheckPlugin -->
     <project.encoding>UTF-8</project.encoding>
   </properties>
 
