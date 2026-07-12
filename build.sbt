@@ -21,8 +21,8 @@ import sbt.Keys.scalaVersion
 sourceDistName := "apache-pekko-grpc"
 sourceDistIncubating := false
 ThisBuild / versionScheme := Some(VersionScheme.SemVerSpec)
-ThisBuild / JupiterKeys.junitJupiterVersion := "6.1.1"
-ThisBuild / JupiterKeys.junitPlatformVersion := "6.1.1"
+ThisBuild / JupiterKeys.junitJupiterVersion := "6.1.2"
+ThisBuild / JupiterKeys.junitPlatformVersion := "6.1.2"
 
 commands := commands.value.filterNot { command =>
   command.nameOption.exists { name =>
