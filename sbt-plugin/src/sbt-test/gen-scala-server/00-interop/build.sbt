@@ -17,7 +17,7 @@ libraryDependencies ++= Seq(
   "io.grpc" % "grpc-interop-testing" % grpcVersion % "protobuf-src",
   "org.apache.pekko" %% "pekko-grpc-interop-tests" % sys.props("project.version") % "test",
   "org.scalatest" %% "scalatest" % "3.2.20" % Test,
-  "org.junit.jupiter" % "junit-jupiter-api" % "6.1.1" % Test)
+  "org.junit.jupiter" % "junit-jupiter-api" % "6.1.2" % Test)
 
 scalacOptions ++= List("-unchecked", "-deprecation", "-language:_", "-encoding", "UTF-8")
 
