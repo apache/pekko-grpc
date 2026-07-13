@@ -19,7 +19,6 @@ import sbt.Keys.scalaVersion
 sourceDistName := "apache-pekko-grpc"
 sourceDistIncubating := false
 ThisBuild / versionScheme := Some(VersionScheme.SemVerSpec)
-ThisBuild / resolvers += Resolver.ApacheMavenStagingRepo
 
 commands := commands.value.filterNot { command =>
   command.nameOption.exists { name =>
@@ -27,6 +26,7 @@ commands := commands.value.filterNot { command =>
   }
 }
 
+ThisBuild / resolvers += Resolver.ApacheMavenStagingRepo
 ThisBuild / reproducibleBuildsCheckResolver := Resolver.ApacheMavenStagingRepo
 
 // So that gRPC is properly styled
