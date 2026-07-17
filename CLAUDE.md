@@ -9,6 +9,7 @@ Before opening or updating a PR, verify:
 - Gradle plugin changes pass the Gradle test suite.
 - Maven plugin changes pass Maven integration tests.
 - Native `scalafmt` or the sbt scalafmt tasks were run for changed Scala/SBT files, or the missing tool is recorded in `Tests`.
+- Code must use syntax compatible with both Scala 2.13 and Scala 3. Do not use Scala 3-only syntax such as significant indentation, `as` for import rename, `*` for wildcard import, or postfix `*` for vararg splices. The `.scalafmt.conf` enforces these restrictions via `dialectOverride`.
 - `sbt javafmtAll` was run with JDK 17 when relevant.
 - `sbt headerCreateAll` was run to add headers for new files. Never hand-write or invent license headers; let sbt manage them, and preserve existing copyright notices intact.
 - For copied code, the source file or external project is noted in the PR (see Licensing Rules in `AGENTS.md`).
