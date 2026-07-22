@@ -100,10 +100,19 @@ object AbstractGrpcProtocol {
       })
       .toContentType
 
+  private val SmallMessageThreshold = 4096
+
   def encodeFrameData(data: ByteString, isCompressed: Boolean, isTrailer: Boolean): ByteString = {
-    val header = new Array[Byte](FrameHeaderSize)
-    writeFrameHeader(header, 0, data.length, isCompressed, isTrailer)
-    ByteString.fromArrayUnsafe(header, 0, FrameHeaderSize) ++ data
+    if (data.length <= SmallMessageThreshold) {
+      val combined = new Array[Byte](FrameHeaderSize + data.length)
+      writeFrameHeader(combined, 0, data.length, isCompressed, isTrailer)
+      data.copyToArray(combined, FrameHeaderSize)
+      ByteString.fromArrayUnsafe(combined)
+    } else {
+      val header = new Array[Byte](FrameHeaderSize)
+      writeFrameHeader(header, 0, data.length, isCompressed, isTrailer)
+      ByteString.fromArrayUnsafe(header, 0, FrameHeaderSize) ++ data
+    }
   }
 
   def writer(

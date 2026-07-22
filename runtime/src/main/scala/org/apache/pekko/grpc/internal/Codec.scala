@@ -28,4 +28,14 @@ abstract class Codec {
   def uncompress(compressedBitSet: Boolean, bytes: ByteString): ByteString
 
   def isCompressed: Boolean = this != Identity
+
+  /**
+   * Compress data and report whether compression was actually applied.
+   * Returns a tuple of (compressedData, wasCompressed) where wasCompressed
+   * indicates whether the data should be marked with the compression flag
+   * in the gRPC frame header. Default implementation uses compress() + isCompressed.
+   * Adaptive codecs override this to signal per-frame compression decisions.
+   */
+  def compressWithFlag(bytes: ByteString): (ByteString, Boolean) =
+    (compress(bytes), isCompressed)
 }

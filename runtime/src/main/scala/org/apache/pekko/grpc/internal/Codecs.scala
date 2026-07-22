@@ -23,8 +23,10 @@ import scala.collection.immutable
 import scala.util.{ Failure, Success, Try }
 
 object Codecs {
-  // TODO should this list be made user-extensible?
-  val supportedCodecs = immutable.Seq(Gzip, Identity)
+  // Identity preferred over Gzip: for typical small protobuf messages, compression
+  // adds CPU overhead without meaningful size reduction. Clients requiring compression
+  // can still negotiate it explicitly.
+  val supportedCodecs = immutable.Seq(Identity, Gzip)
   private val supportedByName: Map[String, Codec] = supportedCodecs.map(c => c.name -> c).toMap
 
   private def extractHeaders(request: jm.HttpMessage): Iterable[jm.HttpHeader] = {
