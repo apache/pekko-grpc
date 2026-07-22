@@ -107,13 +107,19 @@ object @{serviceName}Handler {
           pekko.grpc.scaladsl.ServerReflection.partial(List(@{service.name})))
 }
 
-    private def methodName(request: model.HttpRequest, prefix: String): String =
+    private def methodName(request: model.HttpRequest, prefix: String): String = {
+      // Use Uri.Path structure matching instead of toString to avoid
+      // renderPath + StringBuilder + String allocations per request.
+      // gRPC path format: /{service}/{method}
       request.uri.path match {
-        case model.Uri.Path.Slash(model.Uri.Path.Segment(`prefix`, model.Uri.Path.Slash(model.Uri.Path.Segment(method, model.Uri.Path.Empty)))) =>
-          method
-        case _ =>
-          null
+        case model.Uri.Path.Slash(
+          model.Uri.Path.Segment(serviceName,
+            model.Uri.Path.Slash(
+              model.Uri.Path.Segment(method, model.Uri.Path.Empty))))
+          if serviceName == prefix => method
+        case _ => null
       }
+    }
 
     private def handler(implementation: @serviceName, prefix: String, eHandler: ActorSystem => PartialFunction[Throwable, Trailers])(@{service.scalaCompatConstants.ImplicitParameter} system: ClassicActorSystemProvider): model.HttpRequest => scala.concurrent.Future[model.HttpResponse] = {
       @{service.scalaCompatConstants.ImplicitVal} mat: Materializer = SystemMaterializer(system).materializer
@@ -122,6 +128,16 @@ object @{serviceName}Handler {
 
       import @{service.name}.Serializers.@{service.scalaCompatConstants.WildcardImport}
 
+      @if(!powerApis) {
+      // Pre-create lambdas for unary methods to avoid per-request allocation
+      @for(method <- service.methods) {
+      @if(method.methodType == org.apache.pekko.grpc.gen.Unary) {
+      val @{method.handlerName}: @method.parameterType => scala.concurrent.Future[@method.outputTypeUnboxed] =
+        (e: @method.parameterType) => implementation.@{method.nameSafe}(e)
+      }
+      }
+      }
+
       def handle(request: model.HttpRequest, method: String): scala.concurrent.Future[model.HttpResponse] =
         GrpcMarshalling.negotiated(request, (reader, writer) =>
           method match {
@@ -129,7 +145,7 @@ object @{serviceName}Handler {
             case "@method.grpcName" =>
                 @{if(powerApis) { "val metadata = MetadataBuilder.fromHeaders(request.headers)" } else { "" }}
                 @if(method.methodType == org.apache.pekko.grpc.gen.Unary) {
-                GrpcMarshalling.handleUnary(request.entity, (e: @method.parameterType) => implementation.@{method.nameSafe}(e@{if(powerApis) { ", metadata" } else { "" }}), eHandler)(
+                GrpcMarshalling.handleUnary(request.entity, @{if(powerApis) { s"(e: ${method.parameterType}) => implementation.${method.nameSafe}(e, metadata)" } else method.handlerName}, eHandler)(
                   @{service.scalaCompatConstants.ImplicitUsing}@method.deserializer.name, @method.serializer.name, mat, reader, writer, system, ec)
                 } else {
                 @{method.unmarshal}(request.entity)(@{service.scalaCompatConstants.ImplicitUsing}@method.deserializer.name, mat, reader)
@@ -165,6 +181,16 @@ object @{serviceName}Handler {
 
       import @{service.name}.Serializers.@{service.scalaCompatConstants.WildcardImport}
 
+      @if(!powerApis) {
+      // Pre-create lambdas for unary methods to avoid per-request allocation
+      @for(method <- service.methods) {
+      @if(method.methodType == org.apache.pekko.grpc.gen.Unary) {
+      val @{method.handlerName}: @method.parameterType => scala.concurrent.Future[@method.outputTypeUnboxed] =
+        (e: @method.parameterType) => implementation.@{method.nameSafe}(e)
+      }
+      }
+      }
+
       def handle(request: model.HttpRequest, method: String): scala.concurrent.Future[model.HttpResponse] =
         GrpcMarshalling.negotiated(request, (reader, writer) =>
           method match {
@@ -172,7 +198,7 @@ object @{serviceName}Handler {
             case "@method.grpcName" =>
                 @{if(powerApis) { "val metadata = MetadataBuilder.fromHeaders(request.headers)" } else { "" }}
                 @if(method.methodType == org.apache.pekko.grpc.gen.Unary) {
-                GrpcMarshalling.handleUnary(request.entity, (e: @method.parameterType) => implementation.@{method.nameSafe}(e@{if(powerApis) { ", metadata" } else { "" }}), eHandler)(
+                GrpcMarshalling.handleUnary(request.entity, @{if(powerApis) { s"(e: ${method.parameterType}) => implementation.${method.nameSafe}(e, metadata)" } else method.handlerName}, eHandler)(
                   @{service.scalaCompatConstants.ImplicitUsing}@method.deserializer.name, @method.serializer.name, mat, reader, writer, system, ec)
                 } else {
                 @{method.unmarshal}(request.entity)(@{service.scalaCompatConstants.ImplicitUsing}@method.deserializer.name, mat, reader)
