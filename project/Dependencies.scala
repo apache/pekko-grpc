@@ -99,7 +99,7 @@ object Dependencies {
 
   object Plugins {
     val sbtProtoc = "com.thesamet" % "sbt-protoc" % BuildInfo.sbtProtocVersion
-    val sbt2Compat = "com.github.sbt" % "sbt2-compat" % "0.1.0"
+    val sbt2Compat = "com.github.sbt" % "sbt2-compat" % "0.2.0"
   }
 
   private lazy val l = libraryDependencies
