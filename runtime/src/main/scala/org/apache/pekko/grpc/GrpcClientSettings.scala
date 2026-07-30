@@ -158,7 +158,8 @@ object GrpcClientSettings {
       getOptionalString(clientConfiguration, "user-agent"),
       clientConfiguration.getBoolean("use-tls"),
       getOptionalString(clientConfiguration, "load-balancing-policy"),
-      clientConfiguration.getString("backend"))
+      clientConfiguration.getString("backend"),
+      maxInboundMessageSize = clientConfiguration.getInt("max-inbound-message-size"))
 
   private def getOptionalString(config: Config, path: String): Option[String] =
     config.getString(path) match {
@@ -206,7 +207,8 @@ final class GrpcClientSettings private (
     val useTls: Boolean,
     val loadBalancingPolicy: Option[String],
     val backend: String,
-    val channelBuilderOverrides: NettyChannelBuilder => NettyChannelBuilder = identity) {
+    val channelBuilderOverrides: NettyChannelBuilder => NettyChannelBuilder = identity,
+    val maxInboundMessageSize: Int) {
   require(
     sslContext.isEmpty || trustManager.isEmpty,
     "Configuring the sslContext or the trustManager is mutually exclusive")
@@ -289,6 +291,15 @@ final class GrpcClientSettings private (
   def withBackend(value: String): GrpcClientSettings =
     copy(backend = value)
 
+  /**
+   * Maximum allowed size for inbound gRPC messages (in bytes).
+   * Applies to the decompressed message size. Messages exceeding this limit
+   * will be rejected with RESOURCE_EXHAUSTED status.
+   * @since 2.0.0
+   */
+  def withMaxInboundMessageSize(value: Int): GrpcClientSettings =
+    copy(maxInboundMessageSize = value)
+
   private def copy(
       serviceName: String = serviceName,
       servicePortName: Option[String] = servicePortName,
@@ -306,7 +317,8 @@ final class GrpcClientSettings private (
       connectionAttempts: Option[Int] = connectionAttempts,
       loadBalancingPolicy: Option[String] = loadBalancingPolicy,
       backend: String = backend,
-      channelBuilderOverrides: NettyChannelBuilder => NettyChannelBuilder = channelBuilderOverrides)
+      channelBuilderOverrides: NettyChannelBuilder => NettyChannelBuilder = channelBuilderOverrides,
+      maxInboundMessageSize: Int = maxInboundMessageSize)
       : GrpcClientSettings =
     new GrpcClientSettings(
       callCredentials = callCredentials,
@@ -326,5 +338,6 @@ final class GrpcClientSettings private (
       connectionAttempts = connectionAttempts,
       loadBalancingPolicy = loadBalancingPolicy,
       backend = backend,
-      channelBuilderOverrides = channelBuilderOverrides)
+      channelBuilderOverrides = channelBuilderOverrides,
+      maxInboundMessageSize = maxInboundMessageSize)
 }

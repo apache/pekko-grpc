@@ -43,8 +43,8 @@ object GrpcProtocolNative extends AbstractGrpcProtocol("grpc") {
   override protected def writer(codec: Codec) =
     AbstractGrpcProtocol.writer(this, codec, encodeFrame(codec, _), encodeDataToResponse(codec))
 
-  override protected def reader(codec: Codec): GrpcProtocolReader =
-    AbstractGrpcProtocol.reader(codec, decodeFrame)
+  override protected def reader(codec: Codec, maxInboundMessageSize: Int): GrpcProtocolReader =
+    AbstractGrpcProtocol.reader(codec, decodeFrame, maxInboundMessageSize = maxInboundMessageSize)
 
   @inline
   private def decodeFrame(@nowarn("msg=is never used") frameType: Int, data: ByteString) = DataFrame(data)
