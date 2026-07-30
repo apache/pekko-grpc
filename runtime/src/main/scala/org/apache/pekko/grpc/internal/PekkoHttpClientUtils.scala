@@ -16,7 +16,6 @@ package org.apache.pekko.grpc.internal
 import java.net.InetSocketAddress
 import java.security.SecureRandom
 import java.util.concurrent.CompletionStage
-import java.util.concurrent.atomic.AtomicInteger
 
 import org.apache.pekko
 import pekko.{ Done, NotUsed }
