@@ -32,7 +32,7 @@ class DependenciesSpecTest extends BaseSpec {
     static final String PROTOC_PLUGIN_CODEGEN = "pekkoGrpc";
     static final String PROTOC_PLUGIN_SCALAPB = "scalapb";
     static final String PROTOC_PLUGIN_SCALA_VERSION = "2.12";
-    static final String GRPC_VERSION = "1.83.0";
+    static final String GRPC_VERSION = "1.83.1";
 
     private Project project;
 
