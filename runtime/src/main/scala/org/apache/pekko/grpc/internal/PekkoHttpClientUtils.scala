@@ -16,6 +16,7 @@ package org.apache.pekko.grpc.internal
 import java.net.InetSocketAddress
 import java.security.SecureRandom
 import java.util.concurrent.CompletionStage
+import java.util.concurrent.atomic.AtomicInteger
 
 import org.apache.pekko
 import pekko.{ Done, NotUsed }
@@ -37,7 +38,6 @@ import io.grpc.{ CallOptions, MethodDescriptor, Status, StatusRuntimeException }
 import javax.net.ssl.{ KeyManager, SSLContext, TrustManager }
 import scala.collection.immutable
 import scala.concurrent.{ ExecutionContext, Future, Promise }
-import scala.concurrent.duration._
 import scala.jdk.FutureConverters._
 import scala.util.{ Failure, Success }
 
@@ -68,17 +68,20 @@ object PekkoHttpClientUtils {
     // https://github.com/akka/akka-grpc/issues/1196
     // https://github.com/akka/akka-grpc/issues/1197
 
-    var roundRobin: Int = 0
+    val roundRobin = new AtomicInteger(0)
     val clientConnectionSettings =
       ClientConnectionSettings(sys).withTransport(ClientTransport.withCustomResolver((host, _) => {
         settings.overrideAuthority.foreach { authority =>
           assert(host == authority)
         }
-        settings.serviceDiscovery.lookup(settings.serviceName, 10.seconds).map { resolved =>
+        settings.serviceDiscovery.lookup(settings.serviceName, settings.resolveTimeout).map { resolved =>
+          if (resolved.addresses.isEmpty)
+            throw new IllegalStateException(
+              s"Service discovery for '${settings.serviceName}' returned no addresses")
           // quasi-roundrobin is nicer than random selection: somewhat lower chance of making
           // an 'unlucky choice' multiple times in a row.
-          roundRobin += 1
-          val target = resolved.addresses(roundRobin % resolved.addresses.size)
+          val idx = roundRobin.getAndIncrement()
+          val target = resolved.addresses(math.abs(idx % resolved.addresses.size))
           target.address match {
             case Some(address) =>
               new InetSocketAddress(address, target.port.getOrElse(settings.defaultPort))
