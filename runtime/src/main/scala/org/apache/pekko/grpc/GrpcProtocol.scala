@@ -18,7 +18,7 @@ import pekko.NotUsed
 import pekko.annotation.InternalApi
 import pekko.annotation.InternalStableApi
 import pekko.grpc.GrpcProtocol.{ GrpcProtocolReader, GrpcProtocolWriter }
-import pekko.grpc.internal.{ Codec, Codecs, GrpcProtocolNative, GrpcProtocolWeb, GrpcProtocolWebText }
+import pekko.grpc.internal.{ AbstractGrpcProtocol, Codec, Codecs, GrpcProtocolNative, GrpcProtocolWeb, GrpcProtocolWebText }
 import pekko.http.javadsl.{ model => jmodel }
 import pekko.http.scaladsl.model.{ ContentType, HttpHeader, HttpResponse, Trailer }
 import pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
@@ -63,9 +63,10 @@ trait GrpcProtocol {
    *
    * Constructs a protocol reader for reading gRPC protocol frames for this variant.
    * @param codec the compression codec to decode data frame bodies with.
+   * @param maxInboundMessageSize the maximum allowed inbound message size in bytes.
    */
   @InternalStableApi
-  def newReader(codec: Codec): GrpcProtocolReader
+  def newReader(codec: Codec, maxInboundMessageSize: Int = AbstractGrpcProtocol.DefaultMaxInboundMessageSize): GrpcProtocolReader
 }
 
 /**
@@ -148,8 +149,21 @@ object GrpcProtocol {
    * @return the protocol reader for the request, and a protocol writer for the response.
    */
   def negotiate(request: jmodel.HttpRequest): Option[(Try[GrpcProtocolReader], GrpcProtocolWriter)] =
+    negotiate(request, AbstractGrpcProtocol.DefaultMaxInboundMessageSize)
+
+  /**
+   * Calculates the gRPC protocol encoding to use for an interaction with a gRPC client.
+   *
+   * @param request the client request to respond to.
+   * @param maxInboundMessageSize the maximum allowed inbound message size in bytes.
+   * @return the protocol reader for the request, and a protocol writer for the response.
+   */
+  def negotiate(
+      request: jmodel.HttpRequest,
+      maxInboundMessageSize: Int): Option[(Try[GrpcProtocolReader], GrpcProtocolWriter)] =
     detect(request).map { variant =>
-      (Codecs.detect(request).map(variant.newReader), variant.newWriter(Codecs.negotiate(request)))
+      (Codecs.detect(request).map(variant.newReader(_, maxInboundMessageSize)),
+        variant.newWriter(Codecs.negotiate(request)))
     }
 
 }
