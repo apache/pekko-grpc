@@ -295,6 +295,7 @@ final class GrpcClientSettings private (
    * Maximum allowed size for inbound gRPC messages (in bytes).
    * Applies to the decompressed message size. Messages exceeding this limit
    * will be rejected with RESOURCE_EXHAUSTED status.
+   * @since 2.0.0
    */
   def withMaxInboundMessageSize(value: Int): GrpcClientSettings =
     copy(maxInboundMessageSize = value)
