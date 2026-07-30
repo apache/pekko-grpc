@@ -18,7 +18,14 @@ import pekko.NotUsed
 import pekko.annotation.InternalApi
 import pekko.annotation.InternalStableApi
 import pekko.grpc.GrpcProtocol.{ GrpcProtocolReader, GrpcProtocolWriter }
-import pekko.grpc.internal.{ AbstractGrpcProtocol, Codec, Codecs, GrpcProtocolNative, GrpcProtocolWeb, GrpcProtocolWebText }
+import pekko.grpc.internal.{
+  AbstractGrpcProtocol,
+  Codec,
+  Codecs,
+  GrpcProtocolNative,
+  GrpcProtocolWeb,
+  GrpcProtocolWebText
+}
 import pekko.http.javadsl.{ model => jmodel }
 import pekko.http.scaladsl.model.{ ContentType, HttpHeader, HttpResponse, Trailer }
 import pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
@@ -66,7 +73,8 @@ trait GrpcProtocol {
    * @param maxInboundMessageSize the maximum allowed inbound message size in bytes.
    */
   @InternalStableApi
-  def newReader(codec: Codec, maxInboundMessageSize: Int = AbstractGrpcProtocol.DefaultMaxInboundMessageSize): GrpcProtocolReader
+  def newReader(codec: Codec, maxInboundMessageSize: Int = AbstractGrpcProtocol.DefaultMaxInboundMessageSize)
+      : GrpcProtocolReader
 }
 
 /**
