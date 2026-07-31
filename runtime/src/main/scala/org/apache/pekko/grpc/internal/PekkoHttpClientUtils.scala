@@ -223,7 +223,7 @@ object PekkoHttpClientUtils {
                           case Chunk(data, _) =>
                             data
                           case LastChunk(_, trailer) =>
-                            trailerPromise.success(trailer)
+                            trailerPromise.trySuccess(trailer)
                             ByteString.empty
                         }
                         .watchTermination((_, done) =>
