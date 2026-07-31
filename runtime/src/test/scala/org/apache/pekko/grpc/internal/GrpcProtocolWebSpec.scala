@@ -65,7 +65,7 @@ class GrpcProtocolWebSpec extends TestKit(ActorSystem()) with AnyWordSpecLike wi
 
       probe.expectNext() match {
         case TrailerFrame(decoded) =>
-          decoded should have length 2
+          (decoded should have).length(2)
           decoded.head shouldBe RawHeader("grpc-status", "0")
           decoded(1) shouldBe RawHeader("grpc-message", "")
         case other => fail(s"Expected TrailerFrame, got $other")
@@ -90,7 +90,7 @@ class GrpcProtocolWebSpec extends TestKit(ActorSystem()) with AnyWordSpecLike wi
       probe.expectNext(dataFrame)
       probe.expectNext() match {
         case TrailerFrame(decoded) =>
-          decoded should have length 1
+          (decoded should have).length(1)
           decoded.head shouldBe RawHeader("grpc-status", "0")
         case other => fail(s"Expected TrailerFrame, got $other")
       }
