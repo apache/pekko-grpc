@@ -20,7 +20,7 @@ import org.apache.pekko
 import pekko.{ Done, NotUsed }
 import pekko.annotation.InternalApi
 import pekko.event.LoggingAdapter
-import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, GrpcSingleResponse }
+import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, GrpcSingleResponse, SSLContextUtils }
 import pekko.stream.scaladsl.{ Flow, Keep, Source }
 import io.grpc.{ CallOptions, MethodDescriptor }
 import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts
@@ -69,7 +69,7 @@ object NettyClientUtils {
       builder = builder.negotiationType(NegotiationType.TLS)
       builder = settings.sslContext match {
         case Some(sslContext) =>
-          builder.sslContext(createNettySslContext(sslContext))
+          builder.sslContext(createNettySslContext(sslContext, settings.minimumTlsVersion))
         case None =>
           (settings.trustManager, settings.sslProvider) match {
             case (None, None) =>
@@ -81,10 +81,19 @@ object NettyClientUtils {
                 case Some(sslProvider) =>
                   GrpcSslContexts.configure(SslContextBuilder.forClient(), sslProvider)
               }
-              builder.sslContext((tm match {
+              val withTm = tm match {
                 case None               => context
                 case Some(trustManager) => context.trustManager(trustManager)
-              }).build())
+              }
+              settings.minimumTlsVersion.foreach { v =>
+                withTm.protocols(
+                  SSLContextUtils
+                    .enabledProtocols(
+                      javax.net.ssl.SSLContext.getDefault.getDefaultSSLParameters.getProtocols,
+                      v)
+                    .toIndexedSeq: _*)
+              }
+              builder.sslContext(withTm.build())
           }
       }
     }
@@ -182,10 +191,14 @@ object NettyClientUtils {
    * a Netty HTTP/2 channel.
    */
   @InternalApi
-  private def createNettySslContext(javaSslContext: SSLContext): SslContext = {
+  private def createNettySslContext(javaSslContext: SSLContext, minimumTlsVersion: Option[String]): SslContext = {
     import io.grpc.netty.shaded.io.netty.handler.ssl.{ ApplicationProtocolConfig, ClientAuth, JdkSslContext }
     import io.grpc.netty.shaded.io.netty.handler.codec.http2.Http2SecurityUtil
     import io.grpc.netty.shaded.io.netty.handler.ssl.SupportedCipherSuiteFilter
+    val protocols: Array[String] = minimumTlsVersion match {
+      case Some(v) => SSLContextUtils.enabledProtocols(javaSslContext, v)
+      case None    => null // use JDK defaults (null is accepted as indicated in constructor Javadoc)
+    }
     // See
     // https://github.com/netty/netty/blob/4.1/handler/src/main/java/io/netty/handler/ssl/JdkSslContext.java#L229-L309
     new JdkSslContext(
@@ -200,7 +213,7 @@ object NettyClientUtils {
         ApplicationProtocolConfig.SelectedListenerFailureBehavior.ACCEPT,
         "h2"),
       ClientAuth.NONE, // server-only option, which is ignored as isClient=true (as indicated in constructor Javadoc)
-      /* String[] protocols */ null, // use JDK defaults (null is accepted as indicated in constructor Javadoc)
+      protocols,
       /* boolean startTls */ false)
   }
 
