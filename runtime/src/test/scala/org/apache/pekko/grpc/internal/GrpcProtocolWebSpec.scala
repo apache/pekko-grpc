@@ -97,6 +97,33 @@ class GrpcProtocolWebSpec extends TestKit(ActorSystem()) with AnyWordSpecLike wi
       probe.expectComplete()
     }
 
+    "decode trailer with LF-only line endings" in {
+      // Construct a trailer frame manually with \n instead of \r\n
+      val trailerData = ByteString("grpc-status:0\ngrpc-message:ok\n")
+      val header = new Array[Byte](5)
+      header(0) = 0x80.toByte // trailer flag
+      header(1) = (trailerData.length >>> 24).toByte
+      header(2) = (trailerData.length >>> 16).toByte
+      header(3) = (trailerData.length >>> 8).toByte
+      header(4) = trailerData.length.toByte
+      val rawFrame = ByteString.fromArrayUnsafe(header, 0, 5) ++ trailerData
+
+      val probe = Source
+        .single(rawFrame)
+        .via(reader.frameDecoder)
+        .runWith(TestSink[Frame]())
+        .request(1)
+
+      probe.expectNext() match {
+        case TrailerFrame(decoded) =>
+          (decoded should have).length(2)
+          decoded.head shouldBe RawHeader("grpc-status", "0")
+          decoded(1) shouldBe RawHeader("grpc-message", "ok")
+        case other => fail(s"Expected TrailerFrame, got $other")
+      }
+      probe.expectComplete()
+    }
+
     "reject frame with negative length" in {
       // Construct a raw frame with a negative length (high bit set in length field)
       // Frame format: 1 byte flags + 4 bytes length (big-endian) + data

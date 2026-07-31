@@ -82,12 +82,12 @@ abstract class GrpcProtocolWebBase(subType: String) extends AbstractGrpcProtocol
   }
 
   private final def decodeTrailer(data: ByteString): List[HttpHeader] = {
-    val str = data.utf8String
-    str.split("\r\n").iterator.filter(_.nonEmpty).flatMap { line =>
-      val colon = line.indexOf(':')
+    data.utf8String.split("\n").iterator.filter(_.nonEmpty).flatMap { line =>
+      val trimmed = line.stripSuffix("\r")
+      val colon = trimmed.indexOf(':')
       if (colon > 0) {
-        val key = line.substring(0, colon).trim
-        val value = line.substring(colon + 1).trim
+        val key = trimmed.substring(0, colon).trim
+        val value = trimmed.substring(colon + 1).trim
         if (key.nonEmpty) Some(RawHeader(key, value)) else None
       } else None
     }.toList
