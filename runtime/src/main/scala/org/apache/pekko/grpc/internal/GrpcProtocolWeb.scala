@@ -18,6 +18,7 @@ import pekko.NotUsed
 import pekko.grpc.GrpcProtocol._
 import pekko.http.scaladsl.model._
 import pekko.http.scaladsl.model.HttpEntity.{ Chunk, ChunkStreamPart }
+import pekko.http.scaladsl.model.headers.RawHeader
 import pekko.stream.scaladsl.Flow
 import pekko.util.{ ByteString, ByteStringBuilder }
 import io.grpc.{ Status, StatusException }
@@ -64,10 +65,10 @@ abstract class GrpcProtocolWebBase(subType: String) extends AbstractGrpcProtocol
     }
 
   private final def decodeFrame(frameHeader: Int, data: ByteString): Frame = {
-    (frameHeader & 80) match {
-      case 0 => DataFrame(data)
-      case 1 => TrailerFrame(decodeTrailer(data))
-      case f => throw new StatusException(Status.INTERNAL.withDescription(s"Unknown frame type [$f]"))
+    (frameHeader & 0x80) match {
+      case 0    => DataFrame(data)
+      case 0x80 => TrailerFrame(decodeTrailer(data))
+      case f    => throw new StatusException(Status.INTERNAL.withDescription(s"Unknown frame type [$f]"))
     }
   }
 
@@ -80,7 +81,17 @@ abstract class GrpcProtocolWebBase(subType: String) extends AbstractGrpcProtocol
     builder.result()
   }
 
-  private final def decodeTrailer(data: ByteString): List[HttpHeader] = ???
+  private final def decodeTrailer(data: ByteString): List[HttpHeader] = {
+    val str = data.utf8String
+    str.split("\r\n").iterator.filter(_.nonEmpty).flatMap { line =>
+      val colon = line.indexOf(':')
+      if (colon > 0) {
+        val key = line.substring(0, colon).trim
+        val value = line.substring(colon + 1).trim
+        if (key.nonEmpty) Some(RawHeader(key, value)) else None
+      } else None
+    }.toList
+  }
 
 }
 
