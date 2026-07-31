@@ -48,8 +48,8 @@ final class GrpcChannel private (
    * Scala API: Initiates a shutdown in which preexisting and new calls are cancelled.
    */
   def close(): Future[pekko.Done] = {
-    Grpc(sys).deregisterChannel(this)
-    ChannelUtils.close(internalChannel)
+    try ChannelUtils.close(internalChannel)
+    finally Grpc(sys).deregisterChannel(this)
   }
 
   /**
