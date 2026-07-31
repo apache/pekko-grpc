@@ -29,7 +29,7 @@ import pekko.http.scaladsl.{ ClientTransport, ConnectionContext, Http }
 import pekko.http.scaladsl.model._
 import pekko.http.scaladsl.model.headers.RawHeader
 import pekko.http.scaladsl.settings.ClientConnectionSettings
-import pekko.stream.{ Materializer, OverflowStrategy }
+import pekko.stream.{ Materializer, OverflowStrategy, QueueOfferResult }
 import pekko.stream.scaladsl.{ Keep, Sink, Source }
 import pekko.util.ByteString
 import io.grpc.{ CallOptions, MethodDescriptor, Status, StatusRuntimeException }
@@ -125,7 +125,11 @@ object PekkoHttpClientUtils {
 
     def singleRequest(request: HttpRequest): Future[HttpResponse] = {
       val p = Promise[HttpResponse]()
-      queue.offer(request.addAttribute(ResponsePromise.Key, ResponsePromise(p))).flatMap(_ => p.future)
+      queue.offer(request.addAttribute(ResponsePromise.Key, ResponsePromise(p))).foreach {
+        case QueueOfferResult.Enqueued => // promise will be completed by the response sink
+        case _                         => p.tryFailure(new IllegalStateException("Request queue closed"))
+      }
+      p.future
     }
 
     implicit def serializerFromMethodDescriptor[I, O](descriptor: MethodDescriptor[I, O]): ProtobufSerializer[I] =
