@@ -34,6 +34,17 @@ class GrpcProtocolWebSpec extends TestKit(ActorSystem()) with AnyWordSpecLike wi
   val reader = GrpcProtocolWeb.newReader(Identity)
   val writer = GrpcProtocolWeb.newWriter(Identity)
 
+  /** Construct a raw trailer frame: 1 byte flags (0x80) + 4 bytes length + data */
+  private def trailerFrameBytes(data: ByteString): ByteString = {
+    val header = new Array[Byte](5)
+    header(0) = 0x80.toByte
+    header(1) = (data.length >>> 24).toByte
+    header(2) = (data.length >>> 16).toByte
+    header(3) = (data.length >>> 8).toByte
+    header(4) = data.length.toByte
+    ByteString.fromArrayUnsafe(header, 0, 5) ++ data
+  }
+
   "GrpcProtocolWeb" should {
 
     "encode and decode a data frame" in {
@@ -98,15 +109,8 @@ class GrpcProtocolWebSpec extends TestKit(ActorSystem()) with AnyWordSpecLike wi
     }
 
     "decode trailer with LF-only line endings" in {
-      // Construct a trailer frame manually with \n instead of \r\n
       val trailerData = ByteString("grpc-status:0\ngrpc-message:ok\n")
-      val header = new Array[Byte](5)
-      header(0) = 0x80.toByte // trailer flag
-      header(1) = (trailerData.length >>> 24).toByte
-      header(2) = (trailerData.length >>> 16).toByte
-      header(3) = (trailerData.length >>> 8).toByte
-      header(4) = trailerData.length.toByte
-      val rawFrame = ByteString.fromArrayUnsafe(header, 0, 5) ++ trailerData
+      val rawFrame = trailerFrameBytes(trailerData)
 
       val probe = Source
         .single(rawFrame)
@@ -119,6 +123,143 @@ class GrpcProtocolWebSpec extends TestKit(ActorSystem()) with AnyWordSpecLike wi
           (decoded should have).length(2)
           decoded.head shouldBe RawHeader("grpc-status", "0")
           decoded(1) shouldBe RawHeader("grpc-message", "ok")
+        case other => fail(s"Expected TrailerFrame, got $other")
+      }
+      probe.expectComplete()
+    }
+
+    "decode trailer with extra whitespace around key and value" in {
+      val trailerData = ByteString("  grpc-status  :  0  \r\ngrpc-message : ok \r\n")
+      val rawFrame = trailerFrameBytes(trailerData)
+
+      val probe = Source
+        .single(rawFrame)
+        .via(reader.frameDecoder)
+        .runWith(TestSink[Frame]())
+        .request(1)
+
+      probe.expectNext() match {
+        case TrailerFrame(decoded) =>
+          (decoded should have).length(2)
+          decoded.head shouldBe RawHeader("grpc-status", "0")
+          decoded(1) shouldBe RawHeader("grpc-message", "ok")
+        case other => fail(s"Expected TrailerFrame, got $other")
+      }
+      probe.expectComplete()
+    }
+
+    "decode trailer with empty value" in {
+      val trailerData = ByteString("grpc-status:0\r\ngrpc-message:\r\n")
+      val rawFrame = trailerFrameBytes(trailerData)
+
+      val probe = Source
+        .single(rawFrame)
+        .via(reader.frameDecoder)
+        .runWith(TestSink[Frame]())
+        .request(1)
+
+      probe.expectNext() match {
+        case TrailerFrame(decoded) =>
+          (decoded should have).length(2)
+          decoded.head shouldBe RawHeader("grpc-status", "0")
+          decoded(1) shouldBe RawHeader("grpc-message", "")
+        case other => fail(s"Expected TrailerFrame, got $other")
+      }
+      probe.expectComplete()
+    }
+
+    "decode trailer with multiple colons in value" in {
+      val trailerData = ByteString("grpc-status:0\r\ncustom-header: some: value\r\n")
+      val rawFrame = trailerFrameBytes(trailerData)
+
+      val probe = Source
+        .single(rawFrame)
+        .via(reader.frameDecoder)
+        .runWith(TestSink[Frame]())
+        .request(1)
+
+      probe.expectNext() match {
+        case TrailerFrame(decoded) =>
+          (decoded should have).length(2)
+          decoded.head shouldBe RawHeader("grpc-status", "0")
+          decoded(1) shouldBe RawHeader("custom-header", "some: value")
+        case other => fail(s"Expected TrailerFrame, got $other")
+      }
+      probe.expectComplete()
+    }
+
+    "decode trailer with blank lines between entries" in {
+      val trailerData = ByteString("grpc-status:0\r\n\r\n\r\ngrpc-message:ok\r\n")
+      val rawFrame = trailerFrameBytes(trailerData)
+
+      val probe = Source
+        .single(rawFrame)
+        .via(reader.frameDecoder)
+        .runWith(TestSink[Frame]())
+        .request(1)
+
+      probe.expectNext() match {
+        case TrailerFrame(decoded) =>
+          (decoded should have).length(2)
+          decoded.head shouldBe RawHeader("grpc-status", "0")
+          decoded(1) shouldBe RawHeader("grpc-message", "ok")
+        case other => fail(s"Expected TrailerFrame, got $other")
+      }
+      probe.expectComplete()
+    }
+
+    "skip malformed lines with no colon in trailer" in {
+      val trailerData = ByteString("grpc-status:0\r\nmalformed line\r\ngrpc-message:ok\r\n")
+      val rawFrame = trailerFrameBytes(trailerData)
+
+      val probe = Source
+        .single(rawFrame)
+        .via(reader.frameDecoder)
+        .runWith(TestSink[Frame]())
+        .request(1)
+
+      probe.expectNext() match {
+        case TrailerFrame(decoded) =>
+          (decoded should have).length(2)
+          decoded.head shouldBe RawHeader("grpc-status", "0")
+          decoded(1) shouldBe RawHeader("grpc-message", "ok")
+        case other => fail(s"Expected TrailerFrame, got $other")
+      }
+      probe.expectComplete()
+    }
+
+    "decode empty trailer frame" in {
+      val trailerData = ByteString.empty
+      val rawFrame = trailerFrameBytes(trailerData)
+
+      val probe = Source
+        .single(rawFrame)
+        .via(reader.frameDecoder)
+        .runWith(TestSink[Frame]())
+        .request(1)
+
+      probe.expectNext() match {
+        case TrailerFrame(decoded) =>
+          decoded shouldBe empty
+        case other => fail(s"Expected TrailerFrame, got $other")
+      }
+      probe.expectComplete()
+    }
+
+    "decode trailer with no trailing newline" in {
+      val trailerData = ByteString("grpc-status:0")
+      val rawFrame = trailerFrameBytes(trailerData)
+
+      val probe = Source
+        .single(rawFrame)
+        .via(reader.frameDecoder)
+        .runWith(TestSink[Frame]())
+        .request(1)
+
+      probe.expectNext() match {
+        case TrailerFrame(decoded) =>
+          (decoded should have).length(1)
+          decoded.head shouldBe RawHeader("grpc-status", "0")
         case other => fail(s"Expected TrailerFrame, got $other")
       }
       probe.expectComplete()
