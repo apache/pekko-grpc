@@ -31,6 +31,7 @@ import io.grpc.netty.shaded.io.netty.handler.ssl.{ SslContext, SslContextBuilder
 import scala.annotation.nowarn
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ ExecutionContext, Future, Promise }
+import scala.jdk.CollectionConverters._
 import scala.util.{ Failure, Success }
 
 /**
@@ -86,12 +87,11 @@ object NettyClientUtils {
                 case Some(trustManager) => context.trustManager(trustManager)
               }
               settings.minimumTlsVersion.foreach { v =>
-                withTm.protocols(
-                  SSLContextUtils
-                    .enabledProtocols(
-                      javax.net.ssl.SSLContext.getDefault.getDefaultSSLParameters.getProtocols,
-                      v)
-                    .toIndexedSeq: _*)
+                withTm.protocols(SSLContextUtils
+                  .enabledProtocols(
+                    javax.net.ssl.SSLContext.getDefault.getDefaultSSLParameters.getProtocols,
+                    v)
+                  .toSeq.asJava)
               }
               builder.sslContext(withTm.build())
           }
