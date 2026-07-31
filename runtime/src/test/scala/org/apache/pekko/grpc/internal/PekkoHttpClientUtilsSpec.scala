@@ -18,13 +18,15 @@ import scala.concurrent.duration._
 
 import org.apache.pekko
 import pekko.actor.ActorSystem
+import pekko.grpc.GrpcResponseMetadata
 import pekko.http.scaladsl.model.HttpEntity.Strict
 import pekko.http.scaladsl.model._
 import pekko.http.scaladsl.model.StatusCodes._
 import pekko.http.scaladsl.model.headers.RawHeader
+import pekko.stream.scaladsl.{ Sink, Source }
 import pekko.testkit.TestKit
 import pekko.util.ByteString
-import io.grpc.{ Metadata, Status, StatusRuntimeException }
+import io.grpc.{ CallOptions, Deadline, Metadata, Status, StatusRuntimeException }
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.time.Span
@@ -85,5 +87,36 @@ class PekkoHttpClientUtilsSpec extends TestKit(ActorSystem()) with AnyWordSpecLi
 
     lazy val key = Metadata.Key.of("custom-key", Metadata.ASCII_STRING_MARSHALLER)
     lazy val keyBin = Metadata.Key.of("custom-key-bin", Metadata.BINARY_BYTE_MARSHALLER)
+  }
+
+  "applyDeadline" should {
+    type Resp = Future[GrpcResponseMetadata]
+
+    "pass source through unchanged when no deadline is set" in {
+      val source = Source.single(ByteString(1, 2, 3))
+      val options = CallOptions.DEFAULT
+      val result = PekkoHttpClientUtils.applyDeadline(source.asInstanceOf[Source[Any, Resp]], options)
+      val value = result.runWith(Sink.head).futureValue
+      value shouldBe ByteString(1, 2, 3)
+    }
+
+    "fail immediately when deadline is already expired" in {
+      val source = Source.single(ByteString(1, 2, 3))
+      val options = CallOptions.DEFAULT.withDeadline(Deadline.after(0, java.util.concurrent.TimeUnit.MILLISECONDS))
+      val result = PekkoHttpClientUtils.applyDeadline(source.asInstanceOf[Source[Any, Resp]], options)
+      val failure = result.runWith(Sink.head).failed.futureValue
+      failure shouldBe a[StatusRuntimeException]
+      failure.asInstanceOf[StatusRuntimeException].getStatus.getCode shouldBe Status.Code.DEADLINE_EXCEEDED
+    }
+
+    "fail with DEADLINE_EXCEEDED when source does not complete in time" in {
+      // Source that never completes
+      val source = Source.maybe[ByteString]
+      val options = CallOptions.DEFAULT.withDeadline(Deadline.after(100, java.util.concurrent.TimeUnit.MILLISECONDS))
+      val result = PekkoHttpClientUtils.applyDeadline(source.asInstanceOf[Source[Any, Resp]], options)
+      val failure = result.runWith(Sink.head).failed.futureValue
+      failure shouldBe a[StatusRuntimeException]
+      failure.asInstanceOf[StatusRuntimeException].getStatus.getCode shouldBe Status.Code.DEADLINE_EXCEEDED
+    }
   }
 }

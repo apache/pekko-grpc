@@ -207,7 +207,37 @@ object PekkoHttpClientUtils {
             descriptor.getFullMethodName),
           GrpcEntityHelpers.metadataHeaders(headers.entries),
           source)
-        responseToSource(singleRequest(httpRequest), deserializer)
+        val base = responseToSource(singleRequest(httpRequest), deserializer)
+        applyDeadline(base, options)
+      }
+    }
+  }
+
+  /**
+   * INTERNAL API
+   */
+  @InternalApi
+  private[internal] def applyDeadline[O](source: Source[O, Future[GrpcResponseMetadata]], options: CallOptions)
+      : Source[O, Future[GrpcResponseMetadata]] = {
+    val deadline = options.getDeadline
+    if (deadline == null) source
+    else {
+      val remaining = deadline.timeRemaining(java.util.concurrent.TimeUnit.MILLISECONDS)
+      if (remaining <= 0) {
+        val ex = Status.DEADLINE_EXCEEDED
+          .withDescription(s"Deadline expired ${-remaining} ms ago")
+          .asRuntimeException()
+        Source.failed(ex).mapMaterializedValue(_ => Future.failed(ex))
+      } else {
+        source.completionTimeout(remaining.millis).recoverWithRetries(
+          1,
+          {
+            case _: pekko.stream.CompletionTimeoutException =>
+              val ex = Status.DEADLINE_EXCEEDED
+                .withDescription(s"Deadline of ${remaining}ms exceeded")
+                .asRuntimeException()
+              Source.failed(ex)
+          })
       }
     }
   }
