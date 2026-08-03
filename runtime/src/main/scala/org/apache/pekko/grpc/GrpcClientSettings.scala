@@ -158,7 +158,8 @@ object GrpcClientSettings {
       getOptionalString(clientConfiguration, "user-agent"),
       clientConfiguration.getBoolean("use-tls"),
       getOptionalString(clientConfiguration, "load-balancing-policy"),
-      clientConfiguration.getString("backend"))
+      clientConfiguration.getString("backend"),
+      getOptionalString(clientConfiguration, "minimum-tls-version"))
 
   private def getOptionalString(config: Config, path: String): Option[String] =
     config.getString(path) match {
@@ -206,6 +207,7 @@ final class GrpcClientSettings private (
     val useTls: Boolean,
     val loadBalancingPolicy: Option[String],
     val backend: String,
+    val minimumTlsVersion: Option[String],
     val channelBuilderOverrides: NettyChannelBuilder => NettyChannelBuilder = identity) {
   require(
     sslContext.isEmpty || trustManager.isEmpty,
@@ -270,6 +272,14 @@ final class GrpcClientSettings private (
     copy(loadBalancingPolicy = Some(loadBalancingPolicy))
 
   /**
+   * Set the minimum TLS protocol version to use. Accepted values: "TLSv1.2", "TLSv1.3".
+   * On older JDKs that do not support the specified version, the connection will fail.
+   * @since 2.0.0
+   */
+  def withMinimumTlsVersion(version: String): GrpcClientSettings =
+    copy(minimumTlsVersion = Some(version))
+
+  /**
    * How many times to retry establishing a connection before failing the client
    * Failure can be monitored using client.stopped and monitoring the Future/CompletionStage.
    * An exponentially increasing backoff is used between attempts.
@@ -306,6 +316,7 @@ final class GrpcClientSettings private (
       connectionAttempts: Option[Int] = connectionAttempts,
       loadBalancingPolicy: Option[String] = loadBalancingPolicy,
       backend: String = backend,
+      minimumTlsVersion: Option[String] = minimumTlsVersion,
       channelBuilderOverrides: NettyChannelBuilder => NettyChannelBuilder = channelBuilderOverrides)
       : GrpcClientSettings =
     new GrpcClientSettings(
@@ -326,5 +337,6 @@ final class GrpcClientSettings private (
       connectionAttempts = connectionAttempts,
       loadBalancingPolicy = loadBalancingPolicy,
       backend = backend,
+      minimumTlsVersion = minimumTlsVersion,
       channelBuilderOverrides = channelBuilderOverrides)
 }

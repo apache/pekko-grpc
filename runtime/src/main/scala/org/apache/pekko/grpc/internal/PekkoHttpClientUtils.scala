@@ -23,7 +23,7 @@ import pekko.actor.ClassicActorSystemProvider
 import pekko.annotation.InternalApi
 import pekko.event.LoggingAdapter
 import pekko.grpc.GrpcProtocol.GrpcProtocolReader
-import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, GrpcSingleResponse, ProtobufSerializer }
+import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, GrpcSingleResponse, ProtobufSerializer, SSLContextUtils }
 import pekko.http.scaladsl.model.HttpEntity.{ Chunk, Chunked, LastChunk, Strict }
 import pekko.http.scaladsl.{ ClientTransport, ConnectionContext, Http }
 import pekko.http.scaladsl.model._
@@ -94,18 +94,19 @@ object PekkoHttpClientUtils {
 
     val http2client =
       if (settings.useTls) {
-        val connectionContext =
-          ConnectionContext.httpsClient {
-            settings.sslContext.getOrElse {
-              settings.trustManager match {
-                case None               => SSLContext.getDefault
-                case Some(trustManager) =>
-                  val sslContext: SSLContext = SSLContext.getInstance("TLS")
-                  sslContext.init(Array[KeyManager](), Array[TrustManager](trustManager), new SecureRandom)
-                  sslContext
-              }
+        val baseContext =
+          settings.sslContext.getOrElse {
+            settings.trustManager match {
+              case None               => SSLContext.getDefault
+              case Some(trustManager) =>
+                val sslContext: SSLContext = SSLContext.getInstance("TLS")
+                sslContext.init(Array[KeyManager](), Array[TrustManager](trustManager), new SecureRandom)
+                sslContext
             }
           }
+        val sslContext = settings.minimumTlsVersion.fold(baseContext)(v =>
+          SSLContextUtils.withMinimumTlsVersion(baseContext, v))
+        val connectionContext = ConnectionContext.httpsClient(sslContext)
 
         builder.withCustomHttpsConnectionContext(connectionContext).managedPersistentHttp2()
       } else {
