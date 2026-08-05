@@ -293,8 +293,8 @@ final class GrpcClientSettings private (
 
   /**
    * Whether to verify the server's hostname against its TLS certificate (RFC 2818).
-   * When false (the default), the client accepts any valid certificate regardless
-   * of hostname. This is insecure for production and should only be used for testing.
+   * When false, the client accepts any valid certificate regardless of hostname.
+   * This is insecure and should only be used for testing.
    * Only effective for the pekko-http backend; the netty backend always verifies.
    * @since 2.0.0
    */
