@@ -96,18 +96,34 @@ object PekkoHttpClientUtils {
 
     val http2client =
       if (settings.useTls) {
-        val connectionContext =
-          ConnectionContext.httpsClient {
-            settings.sslContext.getOrElse {
-              settings.trustManager match {
-                case None               => SSLContext.getDefault
-                case Some(trustManager) =>
-                  val sslContext: SSLContext = SSLContext.getInstance("TLS")
-                  sslContext.init(Array[KeyManager](), Array[TrustManager](trustManager), new SecureRandom)
-                  sslContext
-              }
+        if (!settings.verifyHostname) {
+          log.warning(
+            "TLS hostname verification is disabled for pekko-http client '{}'. " +
+            "This is insecure and should only be used for testing. " +
+            "Enable it with verify-hostname = true in your configuration. " +
+            "Note: the netty backend always verifies hostnames.",
+            settings.serviceName)
+        }
+        val sslContext =
+          settings.sslContext.getOrElse {
+            settings.trustManager match {
+              case None               => SSLContext.getDefault
+              case Some(trustManager) =>
+                val ctx: SSLContext = SSLContext.getInstance("TLS")
+                ctx.init(Array[KeyManager](), Array[TrustManager](trustManager), new SecureRandom)
+                ctx
             }
           }
+        val connectionContext =
+          ConnectionContext.httpsClient((hostname, port) => {
+            val engine = sslContext.createSSLEngine(hostname, port)
+            if (settings.verifyHostname) {
+              val sslParams = engine.getSSLParameters
+              sslParams.setEndpointIdentificationAlgorithm("HTTPS")
+              engine.setSSLParameters(sslParams)
+            }
+            engine
+          })
 
         builder.withCustomHttpsConnectionContext(connectionContext).managedPersistentHttp2()
       } else {
