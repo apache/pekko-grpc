@@ -100,7 +100,7 @@ object PekkoHttpClientUtils {
           log.warning(
             "TLS hostname verification is disabled for pekko-http client '{}'. " +
             "This is insecure and should only be used for testing. " +
-            "Enable it with verify-hostname = true in your configuration. " +
+            "Set verify-hostname = true in your configuration (now the default). " +
             "Note: the netty backend always verifies hostnames.",
             settings.serviceName)
         }
