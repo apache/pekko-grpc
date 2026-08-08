@@ -37,6 +37,7 @@ import io.grpc.{ CallOptions, MethodDescriptor, Status, StatusRuntimeException }
 import javax.net.ssl.{ KeyManager, SSLContext, TrustManager }
 import scala.collection.immutable
 import scala.concurrent.{ ExecutionContext, Future, Promise }
+import scala.concurrent.duration.DurationLong
 import scala.jdk.FutureConverters._
 import scala.util.{ Failure, Success }
 
@@ -207,7 +208,36 @@ object PekkoHttpClientUtils {
             descriptor.getFullMethodName),
           GrpcEntityHelpers.metadataHeaders(headers.entries),
           source)
-        responseToSource(singleRequest(httpRequest), deserializer)
+        applyDeadline(responseToSource(singleRequest(httpRequest), deserializer), options)
+      }
+    }
+  }
+
+  /**
+   * INTERNAL API
+   */
+  @InternalApi
+  private[internal] def applyDeadline[O](source: Source[O, Future[GrpcResponseMetadata]], options: CallOptions)
+      : Source[O, Future[GrpcResponseMetadata]] = {
+    val deadline = options.getDeadline
+    if (deadline == null) source
+    else {
+      val remaining = deadline.timeRemaining(java.util.concurrent.TimeUnit.MILLISECONDS)
+      if (remaining <= 0) {
+        val ex = Status.DEADLINE_EXCEEDED
+          .withDescription(s"Deadline expired ${-remaining} ms ago")
+          .asRuntimeException()
+        Source.failed(ex).mapMaterializedValue(_ => Future.failed(ex))
+      } else {
+        source.completionTimeout(remaining.millis).recoverWithRetries(
+          1,
+          {
+            case _: pekko.stream.CompletionTimeoutException =>
+              val ex = Status.DEADLINE_EXCEEDED
+                .withDescription(s"Deadline of ${remaining}ms exceeded")
+                .asRuntimeException()
+              Source.failed(ex)
+          })
       }
     }
   }
