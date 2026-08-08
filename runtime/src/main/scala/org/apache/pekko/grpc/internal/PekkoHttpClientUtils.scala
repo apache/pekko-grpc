@@ -37,6 +37,7 @@ import io.grpc.{ CallOptions, MethodDescriptor, Status, StatusRuntimeException }
 import javax.net.ssl.{ KeyManager, SSLContext, TrustManager }
 import scala.collection.immutable
 import scala.concurrent.{ ExecutionContext, Future, Promise }
+import scala.concurrent.duration.DurationLong
 import scala.jdk.FutureConverters._
 import scala.util.{ Failure, Success }
 
