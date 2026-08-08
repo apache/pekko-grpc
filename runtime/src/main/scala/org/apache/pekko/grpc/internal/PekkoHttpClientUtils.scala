@@ -207,8 +207,7 @@ object PekkoHttpClientUtils {
             descriptor.getFullMethodName),
           GrpcEntityHelpers.metadataHeaders(headers.entries),
           source)
-        val base = responseToSource(singleRequest(httpRequest), deserializer)
-        applyDeadline(base, options)
+        applyDeadline(responseToSource(singleRequest(httpRequest), deserializer), options)
       }
     }
   }
