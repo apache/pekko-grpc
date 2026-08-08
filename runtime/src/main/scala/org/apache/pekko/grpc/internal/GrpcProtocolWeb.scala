@@ -91,27 +91,28 @@ abstract class GrpcProtocolWebBase(subType: String) extends AbstractGrpcProtocol
       while (i < len &&
         (str.charAt(i) == ' ' || str.charAt(i) == '\t' || str.charAt(i) == '\r' || str.charAt(i) == '\n'))
         i += 1
-      if (i >= len) return headers.result()
-      // scan for colon (key:value separator), stopping at LF for malformed lines
-      val keyStart = i
-      while (i < len && str.charAt(i) != ':' && str.charAt(i) != '\n') i += 1
-      if (i >= len || str.charAt(i) == '\n') {
-        // no colon found before end-of-line — skip malformed line
-        if (i < len) i += 1 // skip LF
-      } else {
-        val keyEnd = i
-        i += 1 // skip ':'
-        // scan for LF (line terminator)
-        val valueStart = i
-        while (i < len && str.charAt(i) != '\n') i += 1
-        var valueEnd = i
-        // strip trailing CR
-        if (valueEnd > valueStart && str.charAt(valueEnd - 1) == '\r') valueEnd -= 1
-        i += 1 // skip LF
-        // trim and emit
-        val key = str.substring(keyStart, keyEnd).trim
-        val value = str.substring(valueStart, valueEnd).trim
-        if (key.nonEmpty) headers += RawHeader(key, value)
+      if (i < len) {
+        // scan for colon (key:value separator), stopping at LF for malformed lines
+        val keyStart = i
+        while (i < len && str.charAt(i) != ':' && str.charAt(i) != '\n') i += 1
+        if (i >= len || str.charAt(i) == '\n') {
+          // no colon found before end-of-line — skip malformed line
+          if (i < len) i += 1 // skip LF
+        } else {
+          val keyEnd = i
+          i += 1 // skip ':'
+          // scan for LF (line terminator)
+          val valueStart = i
+          while (i < len && str.charAt(i) != '\n') i += 1
+          var valueEnd = i
+          // strip trailing CR
+          if (valueEnd > valueStart && str.charAt(valueEnd - 1) == '\r') valueEnd -= 1
+          i += 1 // skip LF
+          // trim and emit
+          val key = str.substring(keyStart, keyEnd).trim
+          val value = str.substring(valueStart, valueEnd).trim
+          if (key.nonEmpty) headers += RawHeader(key, value)
+        }
       }
     }
     headers.result()
