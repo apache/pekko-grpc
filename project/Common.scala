@@ -38,49 +38,47 @@ object Common extends AutoPlugin {
         "Contributors",
         "dev@pekko.apache.org",
         url("https://github.com/apache/pekko-grpc/graphs/contributors")),
-      description := "Apache Pekko gRPC - Support for building streaming gRPC servers and clients on top of Pekko Streams.")
+      description :=
+        "Apache Pekko gRPC - Support for building streaming gRPC servers and clients on top of Pekko Streams.")
 
   override lazy val projectSettings = Seq(
     projectInfoVersion := (if (isSnapshot.value) "snapshot" else version.value),
-    scalacOptions ++= (if (!isScala3.value)
-                         Seq(
-                           "-unchecked",
-                           "-deprecation",
-                           "-language:_",
-                           "-Xfatal-warnings",
-                           "-Ywarn-unused",
-                           "-encoding",
-                           "UTF-8")
-                       else
-                         Seq(
-                           "-unchecked",
-                           "-deprecation",
-                           "-language:_",
-                           "-Xfatal-warnings",
-                           "-Wunused:imports",
-                           "-encoding",
-                           "UTF-8")),
-    Compile / scalacOptions ++= (if (!isScala3.value)
-                                   Seq(
-                                     // Generated code for methods/fields marked 'deprecated'
-                                     "-Wconf:msg=Marked as deprecated in proto file:silent",
-                                     // deprecated in 2.13, but used as long as we support 2.12
-                                     "-Wconf:msg=Use `scala.jdk.CollectionConverters` instead:silent",
-                                     "-Wconf:msg=Use LazyList instead of Stream:silent",
-                                     // ignore imports in templates (FIXME why is that trailing .* needed?)
-                                     "-Wconf:src=.*.txt.*:silent",
-                                     "-Wconf:cat=unused-nowarn:silent")
-                                 else
-                                   Seq(
-                                     // Generated code for methods/fields marked 'deprecated'
-                                     "-Wconf:msg=Marked as deprecated in proto file:silent",
-                                     // deprecated in 2.13, but used as long as we support 2.12
-                                     "-Wconf:msg=Use `scala.jdk.CollectionConverters` instead:silent",
-                                     "-Wconf:msg=instead of Stream:silent",
-                                     "-Wconf:msg=unused import:silent",
-                                     "-Wconf:cat=feature:silent")),
+    scalacOptions ++=
+      (if (!isScala3.value)
+         Seq(
+           "-unchecked",
+           "-deprecation",
+           "-language:_",
+           "-Xfatal-warnings",
+           "-Ywarn-unused",
+           "-encoding",
+           "UTF-8")
+       else
+         Seq(
+           "-unchecked",
+           "-deprecation",
+           "-Werror",
+           "-Wunused:imports",
+           "-encoding",
+           "UTF-8")),
+    Compile / scalacOptions ++=
+      (if (!isScala3.value)
+         Seq(
+           // Generated code for methods/fields marked 'deprecated'
+           "-Wconf:msg=Marked as deprecated in proto file:silent",
+           // ignore imports in templates (FIXME why is that trailing .* needed?)
+           "-Wconf:src=.*.txt.*:silent",
+           "-Wconf:cat=unused-nowarn:silent")
+       else
+         Seq(
+           // Generated code for methods/fields marked 'deprecated'
+           "-Wconf:msg=Marked as deprecated in proto file:silent",
+           "-Wconf:msg=unused import:silent",
+           "-Wconf:cat=feature:silent")),
     Compile / console / scalacOptions ~= (_.filterNot(consoleDisabledOptions.contains)),
     javacOptions ++= List("-Xlint:unchecked", "-Xlint:deprecation"),
+    Compile / compile / javacOptions ++= Seq("--release", "17"),
+    Compile / compile / scalacOptions ++= Seq("-release", "17"),
     Compile / doc / scalacOptions := scalacOptions.value ++ Seq(
       "-doc-title",
       "Apache Pekko gRPC",

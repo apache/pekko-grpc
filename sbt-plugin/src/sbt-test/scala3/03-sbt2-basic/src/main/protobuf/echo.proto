@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "example.myapp.echo.grpc";
+option java_outer_classname = "EchoProto";
+
+package echo;
+
+// Simple echo service used to verify sbt-plugin code generation under sbt 2.
+service EchoService {
+    rpc Echo (EchoRequest) returns (EchoReply) {}
+}
+
+message EchoRequest {
+    string message = 1;
+}
+
+message EchoReply {
+    string message = 1;
+}

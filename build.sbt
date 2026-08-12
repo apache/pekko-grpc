@@ -78,7 +78,7 @@ lazy val codegen = Project(id = "codegen", base = file("codegen"))
       case _                                                        => MergeStrategy.deduplicate
     },
     crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
-    scalaVersion := scala212,
+    scalaVersion := Dependencies.Versions.CrossScalaForPlugin.head,
     Compile / unmanagedSourceDirectories ++= {
       if (scalaBinaryVersion.value == "2.12") {
         Seq.empty
@@ -114,7 +114,8 @@ lazy val runtime = Project(id = "runtime", base = file("runtime"))
     AutomaticModuleName.settings("pekko.grpc.runtime"),
     ReflectiveCodeGen.generatedLanguages := Seq("Scala"),
     ReflectiveCodeGen.extraGenerators := Seq("ScalaMarshallersCodeGenerator"),
-    PB.protocVersion := Dependencies.Versions.googleProtoc)
+    PB.protocVersion := Dependencies.Versions.googleProtoc,
+    Test / PB.targets += (scalapb.gen() -> (Test / sourceManaged).value))
   .enablePlugins(org.apache.pekko.grpc.build.ReflectiveCodeGen)
   .enablePlugins(ReproducibleBuildsPlugin)
 
@@ -146,8 +147,8 @@ lazy val scalapbProtocPlugin = Project(id = "scalapb-protoc-plugin", base = file
       case _                                                        => MergeStrategy.deduplicate
     })
   .settings(
-    crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
-    scalaVersion := Dependencies.Versions.CrossScalaForLib.head)
+    crossScalaVersions := Dependencies.Versions.CrossScalaAll,
+    scalaVersion := Dependencies.Versions.CrossScalaAll.head)
   .settings(addArtifact(Compile / assembly / artifact, assembly))
   .settings(addArtifact(sbt.Artifact(pekkoGrpcProtocPluginId, "bat", "bat", "bat"), mkBatAssemblyTask))
   .enablePlugins(ReproducibleBuildsPlugin)
@@ -164,6 +165,9 @@ lazy val mavenPlugin = Project(id = "maven-plugin", base = file("maven-plugin"))
     scalaVersion := Dependencies.Versions.CrossScalaForPlugin.head)
   .dependsOn(codegen)
 
+val pekkoGrpcVersion = "1.2.0"
+val scalaPbVersion = "0.11.20"
+
 lazy val sbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
   .enablePlugins(SbtPlugin)
   .enablePlugins(ReproducibleBuildsPlugin)
@@ -171,7 +175,16 @@ lazy val sbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
   .settings(Dependencies.sbtPlugin)
   .settings(
     name := s"$pekkoPrefix-sbt-plugin",
+    sbtPluginPublishLegacyMavenStyle := true,
+    addSbtPlugin("com.github.sbt" % "sbt2-compat" % "0.1.0"),
+    pluginCrossBuild / sbtVersion := {
+      scalaBinaryVersion.value match {
+        case "2.12" => "1.12.11"
+        case _      => "2.0.1"
+      }
+    },
     /** And for scripted tests: */
+    scriptedSbt := (pluginCrossBuild / sbtVersion).value,
     scriptedLaunchOpts += ("-Dproject.version=" + version.value),
     scriptedLaunchOpts ++= sys.props.collect { case (k @ "sbt.ivy.home", v) => s"-D$k=$v" }.toSeq,
     scriptedDependencies := {
@@ -180,11 +193,28 @@ lazy val sbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
       val p3 = (runtime / publishLocal).value
       val p4 = (interopTests / publishLocal).value
     },
-    scriptedSbt := "1.11.7",
-    scriptedBufferLog := false)
+    scriptedBufferLog := false,
+    scalaVersion := "3.8.4",
+    scalacOptions ++= {
+      scalaBinaryVersion.value match {
+        case "2.12" => Seq("-Xsource:3")
+        case _      => Seq.empty
+      }
+    })
   .settings(
     crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
-    scalaVersion := Dependencies.Versions.CrossScalaForPlugin.head)
+    scalaVersion := Dependencies.Versions.CrossScalaForPlugin.head
+  )
+  .settings(
+    libraryDependencies := libraryDependencies.value.filterNot(m => m.name == "compilerplugin"),
+    libraryDependencies ++= Seq(
+      ("org.apache.pekko" %% "pekko-grpc-codegen" % pekkoGrpcVersion)
+        .exclude("com.thesamet.scalapb", "compilerplugin_3"),
+      ("org.apache.pekko" %% "pekko-grpc-scalapb-protoc-plugin" % pekkoGrpcVersion)
+        .exclude("com.thesamet.scalapb", "compilerplugin_3"),
+      ("com.thesamet.scalapb" %% "compilerplugin" % scalaPbVersion).exclude("com.thesamet.scalapb", "protoc-bridge_2.13")
+    )
+  )
   .dependsOn(codegen)
 
 lazy val interopTests = Project(id = "interop-tests", base = file("interop-tests"))

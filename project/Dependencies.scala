@@ -16,13 +16,15 @@ import buildinfo.BuildInfo
 object Dependencies {
   object Versions {
     // Update the .github workflows when these scala versions change
-    val scala212 = "2.12.20"
-    val scala213 = "2.13.16"
-    val scala3 = "3.3.6"
+    val scala212 = "2.12.21"
+    val scala213 = "2.13.18"
+    val scala3 = "3.3.7"
+    val scala3_8 = "3.8.3"
 
     // the order in the list is important because the head will be considered the default.
-    val CrossScalaForLib = Seq(scala212, scala213, scala3)
-    val CrossScalaForPlugin = Seq(scala212)
+    val CrossScalaForLib = Seq(scala213, scala3)
+    val CrossScalaForPlugin = Seq(scala212, scala3_8)
+    val CrossScalaAll = Seq(scala212, scala213, scala3)
 
     // We don't force Pekko updates because downstream projects can upgrade
     // themselves. For more information see
@@ -63,7 +65,7 @@ object Dependencies {
     val slf4jApi = "org.slf4j" % "slf4j-api" % "2.0.17"
     val mavenPluginApi = "org.apache.maven" % "maven-plugin-api" % Versions.maven
     val mavenCore = "org.apache.maven" % "maven-core" % Versions.maven
-    val protocJar = "com.github.os72" % "protoc-jar" % "3.11.4"
+    val protocJar = "io.github.blackrock" % "protoc-jar" % "3.0.0"
 
     val plexusBuildApi = "org.sonatype.plexus" % "plexus-build-api" % "0.0.7" % "optional"
   }

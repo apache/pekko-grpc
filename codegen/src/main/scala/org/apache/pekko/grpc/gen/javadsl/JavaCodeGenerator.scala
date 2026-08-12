@@ -19,7 +19,7 @@ import protocbridge.Artifact
 import templates.JavaCommon.txt.ApiInterface
 
 import scala.annotation.nowarn
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.*
 import scala.collection.immutable
 import protocgen.CodeGenRequest
 

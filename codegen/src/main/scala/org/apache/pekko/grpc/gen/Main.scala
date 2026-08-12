@@ -15,13 +15,15 @@ package org.apache.pekko.grpc.gen
 
 import java.io.ByteArrayOutputStream
 import java.net.URLDecoder
-
 import com.google.protobuf.compiler.PluginProtos.CodeGeneratorRequest
 import org.apache.pekko
-import pekko.grpc.gen.javadsl.{ JavaClientCodeGenerator, JavaInterfaceCodeGenerator, JavaServerCodeGenerator }
-import pekko.grpc.gen.scaladsl.{ ScalaClientCodeGenerator, ScalaServerCodeGenerator, ScalaTraitCodeGenerator }
+import pekko.grpc.gen.javadsl.{JavaClientCodeGenerator, JavaInterfaceCodeGenerator, JavaServerCodeGenerator}
+import pekko.grpc.gen.scaladsl.{ScalaClientCodeGenerator, ScalaServerCodeGenerator, ScalaTraitCodeGenerator}
+
+import scala.annotation.nowarn
 
 // This is the protoc plugin that the gradle plugin uses
+@nowarn
 object Main extends App {
   val inBytes: Array[Byte] = {
     val baos = new ByteArrayOutputStream(math.max(64, System.in.available()))
