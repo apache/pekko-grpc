@@ -44,10 +44,31 @@ object GrpcProtocolNative extends AbstractGrpcProtocol("grpc") {
     AbstractGrpcProtocol.writer(this, codec, encodeFrame(codec, _), encodeDataToResponse(codec))
 
   override protected def reader(codec: Codec): GrpcProtocolReader =
-    AbstractGrpcProtocol.reader(codec, decodeFrame)
+    if (codec eq Identity)
+      AbstractGrpcProtocol.reader(codec, decodeFrame).copy(decodeSingleFrame = decodeIdentitySingleFrame)
+    else AbstractGrpcProtocol.reader(codec, decodeFrame)
 
   @inline
   private def decodeFrame(@nowarn("msg=is never used") frameType: Int, data: ByteString) = DataFrame(data)
+
+  private def decodeIdentitySingleFrame(frame: ByteString): ByteString = {
+    if (frame.length < AbstractGrpcProtocol.FrameHeaderSize) throw new MissingParameterException
+
+    val frameType = frame(0)
+    val length = frame.readIntBE(1)
+    val available = frame.length - AbstractGrpcProtocol.FrameHeaderSize
+    if (length > available) throw new MissingParameterException
+    if (length < 0) throw new IllegalStateException(s"Invalid frame length: $length")
+    if (length < available)
+      throw new IllegalStateException("Unexpected trailing data")
+    if ((frameType & 0x80) != 0) throw new IllegalStateException("Cannot read unknown frame")
+
+    if ((frameType & 1) != 0)
+      throw new io.grpc.StatusException(
+        io.grpc.Status.INTERNAL.withDescription(
+          "Compressed-Flag bit is set, but a compression encoding is not specified"))
+    frame.drop(AbstractGrpcProtocol.FrameHeaderSize)
+  }
 
   @inline
   private def encodeFrame(codec: Codec, frame: Frame): ChunkStreamPart =

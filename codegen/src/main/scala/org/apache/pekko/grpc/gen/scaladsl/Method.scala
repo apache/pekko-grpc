@@ -66,6 +66,8 @@ case class Method(
     else if (ReservedMethodNames.contains(name)) s"$name$ReservedMethodNameSuffix"
     else name
 
+  val handlerName: String = s"${name}Handler"
+
 }
 
 object Method {
