@@ -16,6 +16,7 @@ import org.apache.pekko
 import pekko.grpc.internal.{ Codecs, Gzip, Identity }
 import pekko.grpc.scaladsl.headers
 import pekko.http.scaladsl.model.HttpRequest
+import pekko.http.scaladsl.model.headers.RawHeader
 import io.grpc.Status
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -58,6 +59,19 @@ class CodecsSpec extends AnyWordSpec with Matchers with TryValues {
       Codecs.negotiate(accept("xxxxx")) should be(Identity)
     }
 
+    // Regression test: akka-grpc #1897 — request.header[T] silently returns None for
+    // ModeledCustomHeader types, which would break compression negotiation.
+    // Our implementation uses findIn on raw headers instead, which works correctly.
+    "negotiate gzip from raw headers (not typed custom headers)" in {
+      val request = HttpRequest(headers = immutable.Seq(RawHeader("grpc-accept-encoding", "gzip")))
+      Codecs.negotiate(request) should be(Gzip)
+    }
+
+    "negotiate from raw headers with multiple encodings" in {
+      val request = HttpRequest(headers = immutable.Seq(RawHeader("grpc-accept-encoding", "gzip,identity")))
+      Codecs.negotiate(request) should be(Gzip)
+    }
+
   }
 
   "Detecting message encoding from remote" should {
@@ -79,6 +93,12 @@ class CodecsSpec extends AnyWordSpec with Matchers with TryValues {
       detected.failure.exception shouldBe a[GrpcServiceException]
       detected.failure.exception.asInstanceOf[GrpcServiceException].status.getCode should be(
         Status.UNIMPLEMENTED.getCode)
+    }
+
+    // Regression test: same as akka-grpc #1897 but for detect path
+    "detect encoding from raw headers (not typed custom headers)" in {
+      val request = HttpRequest(headers = immutable.Seq(RawHeader("grpc-encoding", "gzip")))
+      Codecs.detect(request).success.value should be(Gzip)
     }
   }
 
