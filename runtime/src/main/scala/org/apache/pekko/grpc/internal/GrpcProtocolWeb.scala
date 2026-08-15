@@ -18,6 +18,7 @@ import pekko.NotUsed
 import pekko.grpc.GrpcProtocol._
 import pekko.http.scaladsl.model._
 import pekko.http.scaladsl.model.HttpEntity.{ Chunk, ChunkStreamPart }
+import pekko.http.scaladsl.model.headers.RawHeader
 import pekko.stream.scaladsl.Flow
 import pekko.util.{ ByteString, ByteStringBuilder }
 import io.grpc.{ Status, StatusException }
@@ -64,10 +65,10 @@ abstract class GrpcProtocolWebBase(subType: String) extends AbstractGrpcProtocol
     }
 
   private final def decodeFrame(frameHeader: Int, data: ByteString): Frame = {
-    (frameHeader & 80) match {
-      case 0 => DataFrame(data)
-      case 1 => TrailerFrame(decodeTrailer(data))
-      case f => throw new StatusException(Status.INTERNAL.withDescription(s"Unknown frame type [$f]"))
+    (frameHeader & 0x80) match {
+      case 0    => DataFrame(data)
+      case 0x80 => TrailerFrame(decodeTrailer(data))
+      case f    => throw new StatusException(Status.INTERNAL.withDescription(s"Unknown frame type [$f]"))
     }
   }
 
@@ -80,7 +81,42 @@ abstract class GrpcProtocolWebBase(subType: String) extends AbstractGrpcProtocol
     builder.result()
   }
 
-  private final def decodeTrailer(data: ByteString): List[HttpHeader] = ???
+  private final def decodeTrailer(data: ByteString): List[HttpHeader] = {
+    val str = data.utf8String
+    val len = str.length
+    val headers = List.newBuilder[HttpHeader]
+    var i = 0
+    while (i < len) {
+      // skip leading whitespace and blank lines
+      while (i < len &&
+        (str.charAt(i) == ' ' || str.charAt(i) == '\t' || str.charAt(i) == '\r' || str.charAt(i) == '\n'))
+        i += 1
+      if (i < len) {
+        // scan for colon (key:value separator), stopping at LF for malformed lines
+        val keyStart = i
+        while (i < len && str.charAt(i) != ':' && str.charAt(i) != '\n') i += 1
+        if (i >= len || str.charAt(i) == '\n') {
+          // no colon found before end-of-line — skip malformed line
+          if (i < len) i += 1 // skip LF
+        } else {
+          val keyEnd = i
+          i += 1 // skip ':'
+          // scan for LF (line terminator)
+          val valueStart = i
+          while (i < len && str.charAt(i) != '\n') i += 1
+          var valueEnd = i
+          // strip trailing CR
+          if (valueEnd > valueStart && str.charAt(valueEnd - 1) == '\r') valueEnd -= 1
+          i += 1 // skip LF
+          // trim and emit
+          val key = str.substring(keyStart, keyEnd).trim
+          val value = str.substring(valueStart, valueEnd).trim
+          if (key.nonEmpty) headers += RawHeader(key, value)
+        }
+      }
+    }
+    headers.result()
+  }
 
 }
 

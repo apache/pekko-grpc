@@ -162,12 +162,11 @@ private final class PekkoNettyGrpcClientGraphStage[I, O](
           call.request(1)
           requested += 1
         }
-      override def onDownstreamFinish(cause: Throwable): Unit =
-        if (isClosed(out)) {
-          call.cancel("Downstream cancelled", cause)
-          call = null
-          completeStage()
-        }
+      override def onDownstreamFinish(cause: Throwable): Unit = {
+        if (call != null) call.cancel("Downstream cancelled", cause)
+        call = null
+        completeStage()
+      }
 
       def onCallClosed(status: Status, trailers: Metadata): Unit = {
         if (status.isOk()) {

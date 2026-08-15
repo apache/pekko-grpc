@@ -11,13 +11,13 @@ organization := "org.apache.pekko"
 
 scalaVersion := "2.13.18"
 
-val grpcVersion = "1.83.0" // checked synced by VersionSyncCheckPlugin
+val grpcVersion = "1.83.1" // checked synced by VersionSyncCheckPlugin
 
 libraryDependencies ++= Seq(
   "io.grpc" % "grpc-interop-testing" % grpcVersion % "protobuf-src",
   "org.apache.pekko" %% "pekko-grpc-interop-tests" % sys.props("project.version") % "test",
   "org.scalatest" %% "scalatest" % "3.2.20" % Test,
-  "org.junit.jupiter" % "junit-jupiter-api" % "6.1.2" % Test)
+  "org.junit.jupiter" % "junit-jupiter-api" % "6.1.3" % Test)
 
 scalacOptions ++= List("-unchecked", "-deprecation", "-language:_", "-encoding", "UTF-8")
 

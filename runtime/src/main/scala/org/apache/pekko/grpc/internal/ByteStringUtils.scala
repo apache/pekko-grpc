@@ -35,12 +35,13 @@ private[grpc] object ByteStringUtils {
     val nextByte = if (initialBytes < 0) -1 else stream.read() // Test for EOF
 
     if (nextByte == -1) {
-      if (initialBytes < 1) pekko.util.ByteString.empty // EOF immediately
-      else {
-        // WARNING: buffer is retained in full below,
-        // which could be problematic if ProtobufSerializer.deserialize keeps a reference to the ByteString
-        pekko.util.ByteString.fromArrayUnsafe(buffer, 0, initialBytes)
-      }
+      if (initialBytes < 1) ByteString.empty // EOF immediately
+      else if (initialBytes > (buffer.length >> 1))
+        // Most of the buffer is used — reuse it to avoid a copy
+        ByteString.fromArrayUnsafe(buffer, 0, initialBytes)
+      else
+        // Small read from a large buffer — copy to right-size so the rest can be GC'd
+        ByteString.fromArray(buffer, 0, initialBytes)
     } else {
       val baos = new ByteArrayOutputStream(buffer.length * 2) // To avoid immediate resize
       baos.write(buffer, 0, initialBytes)
@@ -52,7 +53,7 @@ private[grpc] object ByteStringUtils {
         bytesRead = stream.read(buffer)
       }
 
-      pekko.util.ByteString.fromArrayUnsafe(baos.toByteArray)
+      ByteString.fromArrayUnsafe(baos.toByteArray)
     }
   }
 }

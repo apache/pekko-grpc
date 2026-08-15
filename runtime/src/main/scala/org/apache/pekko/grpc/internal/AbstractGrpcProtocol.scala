@@ -143,9 +143,7 @@ object AbstractGrpcProtocol {
         val reader = new ByteReader(strictAdapter(bs))
         val frameType = reader.readByte()
         val length = reader.readIntBE()
-        if (length < 0)
-          throw new StatusException(
-            Status.INTERNAL.withDescription(s"Invalid frame length: $length"))
+        if (length < 0) throw new IllegalStateException(s"Frame length must not be negative, was $length")
         if (length > maxInboundMessageSize)
           throw new StatusException(
             Status.RESOURCE_EXHAUSTED.withDescription(
@@ -173,8 +171,8 @@ object AbstractGrpcProtocol {
         object ReadFrameHeader extends Step {
           override def parse(reader: ByteReader): ParseResult[Frame] = {
             val frameType = reader.readByte()
-            // If we want to support > 2GB frames, this should be unsigned
             val length = reader.readIntBE()
+            if (length < 0) throw new IllegalStateException(s"Frame length must not be negative, was $length")
 
             if (length < 0)
               throw new StatusException(

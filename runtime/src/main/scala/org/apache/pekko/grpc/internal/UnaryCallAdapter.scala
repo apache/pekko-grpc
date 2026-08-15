@@ -63,7 +63,7 @@ private[pekko] final class UnaryCallAdapter[Res] extends ClientCall.Listener[Res
 @InternalApi
 private[pekko] final class UnaryCallWithMetadataAdapter[Res] extends ClientCall.Listener[Res] {
   private val responsePromise = Promise[GrpcSingleResponse[Res]]()
-  private var headers: OptionVal[Metadata] = OptionVal.None
+  @volatile private var headers: OptionVal[Metadata] = OptionVal.None
   private val trailerPromise = Promise[Metadata]()
 
   // always invoked before message
