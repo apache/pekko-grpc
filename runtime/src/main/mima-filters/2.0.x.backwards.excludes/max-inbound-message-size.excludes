@@ -28,3 +28,4 @@ ProblemFilters.exclude[DirectMissingMethodProblem]("org.apache.pekko.grpc.intern
 ProblemFilters.exclude[DirectMissingMethodProblem]("org.apache.pekko.grpc.internal.GrpcProtocolWeb.newReader")
 ProblemFilters.exclude[DirectMissingMethodProblem]("org.apache.pekko.grpc.internal.GrpcProtocolWebBase.reader")
 ProblemFilters.exclude[DirectMissingMethodProblem]("org.apache.pekko.grpc.internal.GrpcProtocolWebText.newReader")
+ProblemFilters.exclude[DirectMissingMethodProblem]("org.apache.pekko.grpc.internal.PekkoHttpClientUtils.responseToSource")

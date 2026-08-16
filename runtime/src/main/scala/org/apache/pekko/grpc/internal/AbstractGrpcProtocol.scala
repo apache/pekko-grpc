@@ -174,9 +174,6 @@ object AbstractGrpcProtocol {
             val length = reader.readIntBE()
             if (length < 0) throw new IllegalStateException(s"Frame length must not be negative, was $length")
 
-            if (length < 0)
-              throw new StatusException(
-                Status.INTERNAL.withDescription(s"Invalid frame length: $length"))
             if (length > maxInboundMessageSize)
               throw new StatusException(
                 Status.RESOURCE_EXHAUSTED.withDescription(

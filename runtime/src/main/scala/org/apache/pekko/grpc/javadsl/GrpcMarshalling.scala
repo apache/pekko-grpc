@@ -46,6 +46,24 @@ object GrpcMarshalling {
       }
       .fold(Optional.empty[CompletionStage[T]])(Optional.of)
 
+  /**
+   * INTERNAL API
+   *
+   * Negotiates the gRPC protocol with a custom maximum inbound message size.
+   */
+  @InternalApi
+  def negotiated[T](
+      req: HttpRequest,
+      maxInboundMessageSize: Int,
+      f: (GrpcProtocolReader, GrpcProtocolWriter) => CompletionStage[T]): Optional[CompletionStage[T]] =
+    GrpcProtocol
+      .negotiate(req, maxInboundMessageSize)
+      .map {
+        case (maybeReader, writer) =>
+          maybeReader.map(reader => f(reader, writer)).fold[CompletionStage[T]](failure, identity)
+      }
+      .fold(Optional.empty[CompletionStage[T]])(Optional.of)
+
   def unmarshal[T](
       data: Source[ByteString, AnyRef],
       u: ProtobufSerializer[T],
