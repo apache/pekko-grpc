@@ -95,7 +95,7 @@ class JavaUnaryHandlerBenchmark extends CommonBenchmark {
       JGrpcMarshalling
         .negotiated[JHttpResponse](
           request,
-          (reader, writer) => {
+          (reader: pekko.grpc.GrpcProtocol.GrpcProtocolReader, writer: pekko.grpc.GrpcProtocol.GrpcProtocolWriter) => {
             request.entity() match {
               case strict: pekko.http.scaladsl.model.HttpEntity.Strict =>
                 try {
@@ -126,7 +126,7 @@ class JavaUnaryHandlerBenchmark extends CommonBenchmark {
       JGrpcMarshalling
         .negotiated[JHttpResponse](
           request,
-          (reader, writer) =>
+          (reader: pekko.grpc.GrpcProtocol.GrpcProtocolReader, writer: pekko.grpc.GrpcProtocol.GrpcProtocolWriter) =>
             JGrpcMarshalling
               .unmarshal(request.entity(), serializer, mat, reader)
               .thenCompose(in => invoke(in))
