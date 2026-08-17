@@ -172,7 +172,10 @@ object AbstractGrpcProtocol {
           override def parse(reader: ByteReader): ParseResult[Frame] = {
             val frameType = reader.readByte()
             val length = reader.readIntBE()
-            if (length < 0) throw new IllegalStateException(s"Frame length must not be negative, was $length")
+
+            if (length < 0)
+              throw new StatusException(
+                Status.INTERNAL.withDescription(s"Frame length must not be negative, was $length"))
 
             if (length > maxInboundMessageSize)
               throw new StatusException(
