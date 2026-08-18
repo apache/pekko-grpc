@@ -126,29 +126,6 @@ object GrpcMarshalling {
       : HttpResponse =
     GrpcResponseHelpers(e.asScala, scalaAnonymousPartialFunction(eHandler))(m, writer, system)
 
-  @InternalApi
-  def handleUnaryResponse[Out](
-      response: CompletionStage[Out],
-      m: ProtobufSerializer[Out],
-      writer: GrpcProtocolWriter,
-      system: ClassicActorSystemProvider,
-      eHandler: JFunction[ActorSystem, JFunction[Throwable, Trailers]]): CompletionStage[HttpResponse] =
-    response
-      .thenApply(out => marshal(out, m, writer, system, eHandler))
-      .exceptionally(error => GrpcExceptionHandler.standard(error, eHandler, writer, system))
-
-  @InternalApi
-  def handleUnaryFailure(
-      error: Throwable,
-      writer: GrpcProtocolWriter,
-      system: ClassicActorSystemProvider,
-      eHandler: JFunction[ActorSystem, JFunction[Throwable, Trailers]]): CompletionStage[HttpResponse] =
-    if (NonFatal(error)) completedResponse(GrpcExceptionHandler.standard(error, eHandler, writer, system))
-    else throw error
-
-  private def completedResponse(response: HttpResponse): CompletableFuture[HttpResponse] =
-    CompletableFuture.completedFuture(response)
-
   private def failure[R](error: Throwable): CompletableFuture[R] = {
     val future: CompletableFuture[R] = new CompletableFuture()
     future.completeExceptionally(error)
