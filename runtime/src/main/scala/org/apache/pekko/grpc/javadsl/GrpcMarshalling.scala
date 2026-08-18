@@ -133,26 +133,9 @@ object GrpcMarshalling {
       writer: GrpcProtocolWriter,
       system: ClassicActorSystemProvider,
       eHandler: JFunction[ActorSystem, JFunction[Throwable, Trailers]]): CompletionStage[HttpResponse] =
-    try {
-      response match {
-        case future: CompletableFuture[?] if future.isDone =>
-          try completedResponse(marshal(completedValue[Out](future), m, writer, system, eHandler))
-          catch {
-            case NonFatal(error) => handleUnaryFailure(error, writer, system, eHandler)
-          }
-        case _ =>
-          response
-            .thenApply(out => marshal(out, m, writer, system, eHandler))
-            .exceptionally(error => GrpcExceptionHandler.standard(error, eHandler, writer, system))
-      }
-    } catch {
-      case NonFatal(error) => handleUnaryFailure(error, writer, system, eHandler)
-    }
-
-  @InternalApi
-  def handleUnaryFailure(error: Throwable): CompletionStage[HttpResponse] =
-    if (NonFatal(error)) failure(error)
-    else throw error
+    response
+      .thenApply(out => marshal(out, m, writer, system, eHandler))
+      .exceptionally(error => GrpcExceptionHandler.standard(error, eHandler, writer, system))
 
   @InternalApi
   def handleUnaryFailure(
@@ -178,6 +161,4 @@ object GrpcMarshalling {
       case NonFatal(error) => failure(error)
     }
 
-  private def completedValue[T](future: CompletableFuture[?]): T =
-    future.asInstanceOf[CompletableFuture[T]].getNow(null.asInstanceOf[T])
 }
