@@ -16,7 +16,7 @@ package org.apache.pekko.grpc.internal
 import java.net.InetSocketAddress
 import java.security.SecureRandom
 import java.util.concurrent.CompletionStage
-import scala.concurrent.duration._
+
 import org.apache.pekko
 import pekko.{ Done, NotUsed }
 import pekko.actor.ClassicActorSystemProvider
@@ -27,6 +27,7 @@ import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, GrpcSingleResponse
 import pekko.http.scaladsl.model.HttpEntity.{ Chunk, Chunked, LastChunk, Strict }
 import pekko.http.scaladsl.{ ClientTransport, ConnectionContext, Http }
 import pekko.http.scaladsl.model._
+import pekko.http.scaladsl.model.StatusCodes
 import pekko.http.scaladsl.model.headers.RawHeader
 import pekko.http.scaladsl.settings.ClientConnectionSettings
 import pekko.stream.{ Materializer, OverflowStrategy }
@@ -38,8 +39,8 @@ import io.grpc.{ CallOptions, MethodDescriptor, Status, StatusRuntimeException }
 import javax.net.ssl.{ KeyManager, SSLContext, TrustManager }
 import scala.collection.immutable
 import scala.concurrent.{ ExecutionContext, Future, Promise }
+import scala.concurrent.duration._
 import scala.util.{ Failure, Success }
-import pekko.http.scaladsl.model.StatusCodes
 
 /**
  * INTERNAL API
@@ -94,18 +95,34 @@ object PekkoHttpClientUtils {
 
     val http2client =
       if (settings.useTls) {
-        val connectionContext =
-          ConnectionContext.httpsClient {
-            settings.sslContext.getOrElse {
-              settings.trustManager match {
-                case None => SSLContext.getDefault
-                case Some(trustManager) =>
-                  val sslContext: SSLContext = SSLContext.getInstance("TLS")
-                  sslContext.init(Array[KeyManager](), Array[TrustManager](trustManager), new SecureRandom)
-                  sslContext
-              }
+        if (!settings.verifyHostname) {
+          log.warning(
+            "TLS hostname verification is disabled for pekko-http client '{}'. " +
+            "This is insecure and should only be used for testing. " +
+            "Enable it with verify-hostname = true in your configuration. " +
+            "Note: the netty backend always verifies hostnames.",
+            settings.serviceName)
+        }
+        val sslContext =
+          settings.sslContext.getOrElse {
+            settings.trustManager match {
+              case None => SSLContext.getDefault
+              case Some(trustManager) =>
+                val ctx: SSLContext = SSLContext.getInstance("TLS")
+                ctx.init(Array[KeyManager](), Array[TrustManager](trustManager), new SecureRandom)
+                ctx
             }
           }
+        val connectionContext =
+          ConnectionContext.httpsClient((hostname, port) => {
+            val engine = sslContext.createSSLEngine(hostname, port)
+            if (settings.verifyHostname) {
+              val sslParams = engine.getSSLParameters
+              sslParams.setEndpointIdentificationAlgorithm("HTTPS")
+              engine.setSSLParameters(sslParams)
+            }
+            engine
+          })
 
         builder.withCustomHttpsConnectionContext(connectionContext).managedPersistentHttp2()
       } else {
