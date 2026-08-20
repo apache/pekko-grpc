@@ -72,6 +72,11 @@ class CodecsSpec extends AnyWordSpec with Matchers with TryValues {
       Codecs.negotiate(request) should be(Gzip)
     }
 
+    "negotiate gzip when grpc-accept-encoding uses comma+space separators (as sent by grpc-go/grpc-python/grpcurl)" in {
+      val request = HttpRequest(headers = immutable.Seq(RawHeader("grpc-accept-encoding", "deflate, gzip")))
+      Codecs.negotiate(request) should be(Gzip)
+    }
+
   }
 
   "Detecting message encoding from remote" should {

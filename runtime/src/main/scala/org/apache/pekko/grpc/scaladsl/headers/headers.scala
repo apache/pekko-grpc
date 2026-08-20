@@ -44,7 +44,7 @@ object `Message-Accept-Encoding` extends ModeledCustomHeaderCompanion[`Message-A
     Try(new `Message-Accept-Encoding`(value))
 
   def findIn(headers: Iterable[jm.HttpHeader]): Array[String] =
-    headers.collectFirst { case h if h.is(name) => h.value().split(',') }.getOrElse(Array.empty)
+    headers.collectFirst { case h if h.is(name) => h.value().split(',').map(_.trim) }.getOrElse(Array.empty)
 
   /** Java API */
   def findIn(headers: java.lang.Iterable[jm.HttpHeader]): Array[String] = {
