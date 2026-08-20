@@ -32,12 +32,12 @@ object Dependencies {
     val pekkoHttp = PekkoHttpDependency.version
     val pekkoHttpBinary = pekkoHttp.take(3)
 
-    val grpc = "1.75.0" // checked synced by VersionSyncCheckPlugin
+    val grpc = "1.83.1" // checked synced by VersionSyncCheckPlugin
     // Even referenced explicitly in the sbt-plugin's sbt-tests
     // If changing this, remember to update protoc plugin version to align in
     // maven-plugin/src/main/maven/plugin.xml and org.apache.pekko.grpc.sbt.PekkoGrpcPlugin
-    val googleProtoc = "3.25.8" // checked synced by VersionSyncCheckPlugin
-    val googleProtobufJava = "3.25.8"
+    val googleProtoc = "3.25.9" // checked synced by VersionSyncCheckPlugin
+    val googleProtobufJava = "3.25.9"
 
     val scalaTest = "3.2.19"
 
@@ -59,6 +59,7 @@ object Dependencies {
     val grpcInteropTesting = ("io.grpc" % "grpc-interop-testing" % Versions.grpc)
       .exclude("io.grpc", "grpc-alts")
       .exclude("io.grpc", "grpc-xds")
+      .exclude("io.opentelemetry", "opentelemetry-exporter-prometheus")
 
     val slf4jApi = "org.slf4j" % "slf4j-api" % "2.0.17"
     val mavenPluginApi = "org.apache.maven" % "maven-plugin-api" % Versions.maven

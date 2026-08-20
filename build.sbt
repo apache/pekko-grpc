@@ -72,6 +72,7 @@ lazy val codegen = Project(id = "codegen", base = file("codegen"))
     (assembly / assemblyOption) := (assembly / assemblyOption).value.withPrependShellScript(
       Some(sbtassembly.AssemblyPlugin.defaultUniversalScript(shebang = true))),
     (assembly / assemblyMergeStrategy) := {
+      case PathList("META-INF", "LICENSE")                          => MergeStrategy.concat
       case PathList("META-INF", "MANIFEST.MF")                      => MergeStrategy.discard
       case PathList("META-INF", "versions", _, "module-info.class") => MergeStrategy.discard
       case "LICENSE" | "LICENSE.txt" | "NOTICE"                     => MergeStrategy.discard
@@ -181,7 +182,7 @@ lazy val sbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
       val p3 = (runtime / publishLocal).value
       val p4 = (interopTests / publishLocal).value
     },
-    scriptedSbt := "1.11.7",
+    scriptedSbt := "1.12.14",
     scriptedBufferLog := false)
   .settings(
     crossScalaVersions := Dependencies.Versions.CrossScalaForPlugin,
@@ -212,6 +213,11 @@ lazy val interopTests = Project(id = "interop-tests", base = file("interop-tests
     // We need to be able to publish locally in order for sbt interopt tests to work
     // however this sbt project should not be published to an actual repository
     publishLocal / skip := false,
+    // the following is needed to exclude the gRPC generated sources for protobuf-java from the sources,
+    // they cause tests to fail - https://github.com/apache/pekko-grpc/pull/610
+    Compile / sources := (Compile / sources).value.filterNot { f =>
+      f.getPath.replace('\\', '/').contains("/src_managed/main/com/google/protobuf")
+    },
     Compile / doc := (Compile / doc / target).value)
   .settings(inConfig(Test)(Seq(
     reStart / mainClass := (Test / run / mainClass).value, {
