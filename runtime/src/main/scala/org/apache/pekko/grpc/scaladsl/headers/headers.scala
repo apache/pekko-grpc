@@ -25,9 +25,9 @@ import scala.annotation.nowarn
 import scala.util.Try
 
 /**
-  * Simple CSV parser for HTTP header values. Not meant to be a full CSV parser,
-  * just enough to parse the headers we care about.
-  */
+ * Simple CSV parser for HTTP header values. Not meant to be a full CSV parser,
+ * just enough to parse the headers we care about.
+ */
 private object SimpleCSVParser {
   def parse(value: String): Array[String] = value.split(',').map(_.trim)
 }
