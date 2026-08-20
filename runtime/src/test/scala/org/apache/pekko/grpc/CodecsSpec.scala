@@ -16,6 +16,7 @@ import org.apache.pekko
 import pekko.grpc.internal.{ Codecs, Gzip, Identity }
 import pekko.grpc.scaladsl.headers
 import pekko.http.scaladsl.model.HttpRequest
+import pekko.http.scaladsl.model.headers.RawHeader
 import io.grpc.Status
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
