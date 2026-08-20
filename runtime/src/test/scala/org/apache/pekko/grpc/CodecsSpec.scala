@@ -58,6 +58,24 @@ class CodecsSpec extends AnyWordSpec with Matchers with TryValues {
       Codecs.negotiate(accept("xxxxx")) should be(Identity)
     }
 
+    // Regression test: akka-grpc #1897 — request.header[T] silently returns None for
+    // ModeledCustomHeader types, which would break compression negotiation.
+    // Our implementation uses findIn on raw headers instead, which works correctly.
+    "negotiate gzip from raw headers (not typed custom headers)" in {
+      val request = HttpRequest(headers = immutable.Seq(RawHeader("grpc-accept-encoding", "gzip")))
+      Codecs.negotiate(request) should be(Gzip)
+    }
+
+    "negotiate from raw headers with multiple encodings" in {
+      val request = HttpRequest(headers = immutable.Seq(RawHeader("grpc-accept-encoding", "gzip,identity")))
+      Codecs.negotiate(request) should be(Gzip)
+    }
+
+    "negotiate gzip when grpc-accept-encoding uses comma+space separators (as sent by grpc-go/grpc-python/grpcurl)" in {
+      val request = HttpRequest(headers = immutable.Seq(RawHeader("grpc-accept-encoding", "deflate, gzip")))
+      Codecs.negotiate(request) should be(Gzip)
+    }
+
   }
 
   "Detecting message encoding from remote" should {
