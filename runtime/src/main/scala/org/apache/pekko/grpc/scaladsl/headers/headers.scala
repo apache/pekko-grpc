@@ -23,6 +23,14 @@ import scala.collection.compat.immutable.ArraySeq
 import scala.collection.immutable
 import scala.util.Try
 
+/**
+ * Simple CSV parser for HTTP header values. Not meant to be a full CSV parser,
+ * just enough to parse the headers we care about.
+ */
+private object SimpleCSVParser {
+  def parse(value: String): Array[String] = value.split(',').map(_.trim)
+}
+
 @ApiMayChange
 final class `Message-Accept-Encoding`(override val value: String)
     extends ModeledCustomHeader[`Message-Accept-Encoding`] {
@@ -30,7 +38,7 @@ final class `Message-Accept-Encoding`(override val value: String)
   override def renderInResponses = true
   override val companion = `Message-Accept-Encoding`
 
-  lazy val values: Array[String] = value.split(',')
+  lazy val values: Array[String] = SimpleCSVParser.parse(value)
 }
 
 @ApiMayChange
@@ -42,7 +50,9 @@ object `Message-Accept-Encoding` extends ModeledCustomHeaderCompanion[`Message-A
     Try(new `Message-Accept-Encoding`(value))
 
   def findIn(headers: Iterable[jm.HttpHeader]): Array[String] =
-    headers.collectFirst { case h if h.is(name) => h.value().split(',') }.getOrElse(Array.empty)
+    headers.collectFirst {
+      case h if h.is(name) => SimpleCSVParser.parse(h.value())
+    }.getOrElse(Array.empty)
 
   /** Java API */
   def findIn(headers: java.lang.Iterable[jm.HttpHeader]): Array[String] = {
@@ -131,10 +141,11 @@ private[grpc] object `Trailer` extends ModeledCustomHeaderCompanion[`Trailer`] {
 
   override val lowercaseName: String = super.lowercaseName
 
-  override def parse(value: String): Try[`Trailer`] = Try(`Trailer`(ArraySeq.unsafeWrapArray(value.split(','))))
+  override def parse(value: String): Try[`Trailer`] =
+    Try(`Trailer`(ArraySeq.unsafeWrapArray(SimpleCSVParser.parse(value))))
 
   def findIn(headers: immutable.Seq[HttpHeader]): Option[immutable.Seq[String]] =
     headers.collectFirst {
-      case header if header.is(name) => ArraySeq.unsafeWrapArray(header.value().split(',').map(_.trim))
+      case header if header.is(name) => ArraySeq.unsafeWrapArray(SimpleCSVParser.parse(header.value()))
     }
 }
