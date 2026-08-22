@@ -66,6 +66,15 @@ object NettyClientUtils {
     if (!settings.useTls)
       builder = builder.usePlaintext()
     else {
+      // the setting cannot be honoured here: grpc-java's netty transport always checks the server
+      // hostname against its certificate and does not expose a switch for it. Say so rather than
+      // letting the client silently keep verifying.
+      if (!settings.verifyHostname)
+        log.warning(
+          "verify-hostname = false is ignored by the netty backend for client '{}'; " +
+          "the netty backend always verifies the server hostname against its certificate. " +
+          "Use the pekko-http backend if you need to disable verification.",
+          settings.serviceName)
       builder = builder.negotiationType(NegotiationType.TLS)
       builder = settings.sslContext match {
         case Some(sslContext) =>
