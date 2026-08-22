@@ -27,6 +27,7 @@ import org.apache.pekko.annotation.ApiMayChange;
 import org.apache.pekko.stream.Materializer;
 import org.apache.pekko.stream.SystemMaterializer;
 
+import org.apache.pekko.grpc.GrpcServerSettings;
 import org.apache.pekko.grpc.Trailers;
 import org.apache.pekko.grpc.javadsl.GrpcMarshalling;
 import org.apache.pekko.grpc.javadsl.GrpcExceptionHandler;
@@ -158,12 +159,40 @@ public class @{serviceName}HandlerFactory {
       });
     }
 
+    /**
+     * Creates a `HttpRequest` to `HttpResponse` handler that can be used in for example
+     * `Http.get(system).bindAndHandleAsync`. It ends with `StatusCodes.NotFound` if the request is not matching.
+     *
+     * Use {@@link org.apache.pekko.grpc.javadsl.ServiceHandler#concatOrNotFound} when combining several services.
+     *
+     * @@param maxInboundMessageSize the maximum allowed inbound message size in bytes
+     */
+    public static Function<org.apache.pekko.http.javadsl.model.HttpRequest, CompletionStage<org.apache.pekko.http.javadsl.model.HttpResponse>> partial(@serviceName implementation, String prefix, Materializer mat, org.apache.pekko.japi.function.Function<ActorSystem, org.apache.pekko.japi.function.Function<Throwable, Trailers>> eHandler, int maxInboundMessageSize, ClassicActorSystemProvider system) {
+      TelemetrySpi spi = TelemetryExtension.get(system).spi();
+      return (req -> {
+        Iterator<String> segments = req.getUri().pathSegments().iterator();
+        if (segments.hasNext() && segments.next().equals(prefix) && segments.hasNext()) {
+          String method = segments.next();
+          if (segments.hasNext()) return notFound; // we don't allow any random `/prefix/Method/anything/here
+          else {
+            return handle(spi.onRequest(prefix, method, req), method, implementation, mat, eHandler, maxInboundMessageSize, system);
+          }
+        } else {
+          return notFound;
+        }
+      });
+    }
+
     public String getServiceName() {
       return @{service.name}.name;
     }
 
     private static CompletionStage<org.apache.pekko.http.javadsl.model.HttpResponse> handle(org.apache.pekko.http.javadsl.model.HttpRequest request, String method, @serviceName implementation, Materializer mat, org.apache.pekko.japi.function.Function<ActorSystem, org.apache.pekko.japi.function.Function<Throwable, Trailers>> eHandler, ClassicActorSystemProvider system) {
-      return GrpcMarshalling.negotiated(request, (reader, writer) -> {
+      return handle(request, method, implementation, mat, eHandler, GrpcServerSettings.create(system).maxInboundMessageSize(), system);
+    }
+
+    private static CompletionStage<org.apache.pekko.http.javadsl.model.HttpResponse> handle(org.apache.pekko.http.javadsl.model.HttpRequest request, String method, @serviceName implementation, Materializer mat, org.apache.pekko.japi.function.Function<ActorSystem, org.apache.pekko.japi.function.Function<Throwable, Trailers>> eHandler, int maxInboundMessageSize, ClassicActorSystemProvider system) {
+      return GrpcMarshalling.negotiated(request, maxInboundMessageSize, (reader, writer) -> {
         CompletionStage<org.apache.pekko.http.javadsl.model.HttpResponse> response;
         @{if(powerApis) { "Metadata metadata = MetadataBuilder.fromHeaders(request.getHeaders());" } else { "" }}
         switch(method) {

@@ -215,7 +215,9 @@ object PekkoHttpClientUtils {
             descriptor.getFullMethodName),
           GrpcEntityHelpers.metadataHeaders(headers.entries),
           source)
-        applyDeadline(responseToSource(singleRequest(httpRequest), deserializer), options)
+        applyDeadline(
+          responseToSource(singleRequest(httpRequest), deserializer, settings.maxInboundMessageSize),
+          options)
       }
     }
   }
@@ -253,7 +255,10 @@ object PekkoHttpClientUtils {
    * INTERNAL API
    */
   @InternalApi
-  def responseToSource[O](response: Future[HttpResponse], deserializer: ProtobufSerializer[O])(
+  def responseToSource[O](
+      response: Future[HttpResponse],
+      deserializer: ProtobufSerializer[O],
+      maxInboundMessageSize: Int = AbstractGrpcProtocol.DefaultMaxInboundMessageSize)(
       implicit ec: ExecutionContext,
       mat: Materializer): Source[O, Future[GrpcResponseMetadata]] = {
     Source.lazyFutureSource[O, Future[GrpcResponseMetadata]](() => {
@@ -266,7 +271,8 @@ object PekkoHttpClientUtils {
           } else {
             Codecs.detect(response) match {
               case Success(codec) =>
-                implicit val reader: GrpcProtocolReader = GrpcProtocolNative.newReader(codec)
+                implicit val reader: GrpcProtocolReader =
+                  GrpcProtocolNative.newReader(codec, maxInboundMessageSize)
                 val trailerPromise = Promise[immutable.Seq[HttpHeader]]()
                 // Completed with success or failure based on grpc-status and grpc-message trailing headers
                 val completionFuture: Future[Unit] =

@@ -32,8 +32,8 @@ abstract class GrpcProtocolWebBase(subType: String) extends AbstractGrpcProtocol
   override protected def writer(codec: Codec): GrpcProtocolWriter =
     AbstractGrpcProtocol.writer(this, codec, frame => encodeFrame(codec, frame), encodeDataToResponse(codec))
 
-  override protected def reader(codec: Codec): GrpcProtocolReader =
-    AbstractGrpcProtocol.reader(codec, decodeFrame, preDecodeStrict, preDecodeFlow)
+  override protected def reader(codec: Codec, maxInboundMessageSize: Int): GrpcProtocolReader =
+    AbstractGrpcProtocol.reader(codec, decodeFrame, preDecodeStrict, preDecodeFlow, maxInboundMessageSize)
 
   private def encodeFrame(codec: Codec, frame: Frame): ChunkStreamPart =
     Chunk(postEncode(encodeFrameToBytes(codec, frame)))

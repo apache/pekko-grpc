@@ -159,6 +159,7 @@ object GrpcClientSettings {
       clientConfiguration.getBoolean("use-tls"),
       getOptionalString(clientConfiguration, "load-balancing-policy"),
       clientConfiguration.getString("backend"),
+      maxInboundMessageSize = clientConfiguration.getInt("max-inbound-message-size"),
       verifyHostname = clientConfiguration.getBoolean("verify-hostname"))
 
   private def getOptionalString(config: Config, path: String): Option[String] =
@@ -208,6 +209,7 @@ final class GrpcClientSettings private (
     val loadBalancingPolicy: Option[String],
     val backend: String,
     val channelBuilderOverrides: NettyChannelBuilder => NettyChannelBuilder = identity,
+    val maxInboundMessageSize: Int,
     val verifyHostname: Boolean) {
   require(
     sslContext.isEmpty || trustManager.isEmpty,
@@ -292,6 +294,15 @@ final class GrpcClientSettings private (
     copy(backend = value)
 
   /**
+   * Maximum allowed size for inbound gRPC messages (in bytes).
+   * Applies to the decompressed message size. Messages exceeding this limit
+   * will be rejected with RESOURCE_EXHAUSTED status.
+   * @since 2.0.0
+   */
+  def withMaxInboundMessageSize(value: Int): GrpcClientSettings =
+    copy(maxInboundMessageSize = value)
+
+  /**
    * Whether to verify the server's hostname against its TLS certificate (RFC 2818).
    * When false, the client accepts any valid certificate regardless of hostname.
    * This is insecure and should only be used for testing.
@@ -319,6 +330,7 @@ final class GrpcClientSettings private (
       loadBalancingPolicy: Option[String] = loadBalancingPolicy,
       backend: String = backend,
       channelBuilderOverrides: NettyChannelBuilder => NettyChannelBuilder = channelBuilderOverrides,
+      maxInboundMessageSize: Int = maxInboundMessageSize,
       verifyHostname: Boolean = verifyHostname)
       : GrpcClientSettings =
     new GrpcClientSettings(
@@ -340,5 +352,6 @@ final class GrpcClientSettings private (
       loadBalancingPolicy = loadBalancingPolicy,
       backend = backend,
       channelBuilderOverrides = channelBuilderOverrides,
+      maxInboundMessageSize = maxInboundMessageSize,
       verifyHostname = verifyHostname)
 }
