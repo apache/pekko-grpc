@@ -29,7 +29,7 @@ import pekko.http.scaladsl.{ ClientTransport, ConnectionContext, Http }
 import pekko.http.scaladsl.model._
 import pekko.http.scaladsl.model.headers.RawHeader
 import pekko.http.scaladsl.settings.ClientConnectionSettings
-import pekko.stream.{ Materializer, OverflowStrategy, QueueOfferResult }
+import pekko.stream.{ Materializer, QueueOfferResult }
 import pekko.stream.scaladsl.{ Keep, Sink, Source }
 import pekko.util.ByteString
 import io.grpc.{ CallOptions, MethodDescriptor, Status, StatusRuntimeException }
@@ -133,7 +133,7 @@ object PekkoHttpClientUtils {
 
     val (queue, doneFuture) =
       Source
-        .queue[HttpRequest](4242, OverflowStrategy.fail)
+        .queue[HttpRequest](4242)
         .via(http2client)
         .toMat(Sink.foreach { res =>
           res.attribute(ResponsePromise.Key).get.promise.trySuccess(res)
@@ -142,11 +142,18 @@ object PekkoHttpClientUtils {
 
     def singleRequest(request: HttpRequest): Future[HttpResponse] = {
       val p = Promise[HttpResponse]()
-      queue.offer(request.addAttribute(ResponsePromise.Key, ResponsePromise(p))).foreach {
-        case QueueOfferResult.Enqueued => // promise will be completed by the response sink
-        case _                         => p.tryFailure(new IllegalStateException("Request queue closed"))
+      queue.offer(request.addAttribute(ResponsePromise.Key, ResponsePromise(p))) match {
+        case QueueOfferResult.Enqueued =>
+          p.future
+        case QueueOfferResult.Dropped =>
+          Future.failed(
+            new StatusRuntimeException(
+              Status.RESOURCE_EXHAUSTED.withDescription("Too many concurrent requests, buffer is full")))
+        case QueueOfferResult.QueueClosed =>
+          Future.failed(new StatusRuntimeException(Status.UNAVAILABLE.withDescription("Request queue closed")))
+        case QueueOfferResult.Failure(cause) =>
+          Future.failed(new StatusRuntimeException(Status.UNAVAILABLE.withCause(cause)))
       }
-      p.future
     }
 
     implicit def serializerFromMethodDescriptor[I, O](descriptor: MethodDescriptor[I, O]): ProtobufSerializer[I] =
