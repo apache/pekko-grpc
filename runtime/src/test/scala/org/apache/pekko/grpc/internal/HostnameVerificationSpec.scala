@@ -119,7 +119,7 @@ class HostnameVerificationSpec
       // because the certificate is otherwise valid and trusted
       handshake("127.0.0.1") match {
         case Success(response) => fail(s"expected the handshake to fail, got [$response]")
-        case Failure(e)        =>
+        case Failure(e) =>
           val causes = Iterator.iterate(e)(_.getCause).takeWhile(_ ne null).toList
           withClue(causes.mkString(", ")) {
             causes.exists(_.isInstanceOf[SSLHandshakeException]) shouldBe true
