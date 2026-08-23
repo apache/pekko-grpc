@@ -158,8 +158,7 @@ object GrpcClientSettings {
       getOptionalString(clientConfiguration, "user-agent"),
       clientConfiguration.getBoolean("use-tls"),
       getOptionalString(clientConfiguration, "load-balancing-policy"),
-      clientConfiguration.getString("backend"),
-      verifyHostname = clientConfiguration.getBoolean("verify-hostname"))
+      clientConfiguration.getString("backend"))
 
   private def getOptionalString(config: Config, path: String): Option[String] =
     config.getString(path) match {
@@ -207,8 +206,7 @@ final class GrpcClientSettings private (
     val useTls: Boolean,
     val loadBalancingPolicy: Option[String],
     val backend: String,
-    val channelBuilderOverrides: NettyChannelBuilder => NettyChannelBuilder = identity,
-    val verifyHostname: Boolean) {
+    val channelBuilderOverrides: NettyChannelBuilder => NettyChannelBuilder = identity) {
   require(
     sslContext.isEmpty || trustManager.isEmpty,
     "Configuring the sslContext or the trustManager is mutually exclusive")
@@ -296,16 +294,6 @@ final class GrpcClientSettings private (
   def withBackend(value: String): GrpcClientSettings =
     copy(backend = value)
 
-  /**
-   * Whether to verify the server's hostname against its TLS certificate (RFC 2818).
-   * When false (the default), the client accepts any valid certificate regardless
-   * of hostname. This is insecure for production and should only be used for testing.
-   * Only effective for the pekko-http backend; the netty backend always verifies.
-   * @since 2.0.0
-   */
-  def withVerifyHostname(value: Boolean): GrpcClientSettings =
-    copy(verifyHostname = value)
-
   private def copy(
       serviceName: String = serviceName,
       servicePortName: Option[String] = servicePortName,
@@ -323,8 +311,7 @@ final class GrpcClientSettings private (
       connectionAttempts: Option[Int] = connectionAttempts,
       loadBalancingPolicy: Option[String] = loadBalancingPolicy,
       backend: String = backend,
-      channelBuilderOverrides: NettyChannelBuilder => NettyChannelBuilder = channelBuilderOverrides,
-      verifyHostname: Boolean = verifyHostname)
+      channelBuilderOverrides: NettyChannelBuilder => NettyChannelBuilder = channelBuilderOverrides)
       : GrpcClientSettings =
     new GrpcClientSettings(
       callCredentials = callCredentials,
@@ -344,6 +331,5 @@ final class GrpcClientSettings private (
       connectionAttempts = connectionAttempts,
       loadBalancingPolicy = loadBalancingPolicy,
       backend = backend,
-      channelBuilderOverrides = channelBuilderOverrides,
-      verifyHostname = verifyHostname)
+      channelBuilderOverrides = channelBuilderOverrides)
 }
