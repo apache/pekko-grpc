@@ -182,7 +182,7 @@ lazy val sbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
     sbt.Keys.sbtPlugin :=
       Dependencies.Versions.CrossScalaForSbtPlugin.contains(scalaVersion.value),
     pluginCrossBuild / sbtVersion := {
-      if (!Dependencies.Versions.CrossScalaForSbtPlugin.contains(scalaVersion.value)) "1.12.13"
+      if (!Dependencies.Versions.CrossScalaForSbtPlugin.contains(scalaVersion.value)) "1.12.15"
       else {
         scalaBinaryVersion.value match {
           case "2.12" => "1.12.13"
