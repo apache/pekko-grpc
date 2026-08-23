@@ -25,7 +25,7 @@ import pekko.event.LoggingAdapter
 import pekko.grpc.GrpcProtocol.GrpcProtocolReader
 import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, GrpcSingleResponse, ProtobufSerializer }
 import pekko.http.scaladsl.model.HttpEntity.{ Chunk, Chunked, LastChunk, Strict }
-import pekko.http.scaladsl.{ ClientTransport, ConnectionContext, Http }
+import pekko.http.scaladsl.{ ClientTransport, ConnectionContext, Http, HttpsConnectionContext }
 import pekko.http.scaladsl.model._
 import pekko.http.scaladsl.model.headers.RawHeader
 import pekko.http.scaladsl.settings.ClientConnectionSettings
@@ -94,20 +94,7 @@ object PekkoHttpClientUtils {
 
     val http2client =
       if (settings.useTls) {
-        val connectionContext =
-          ConnectionContext.httpsClient {
-            settings.sslContext.getOrElse {
-              settings.trustManager match {
-                case None => SSLContext.getDefault
-                case Some(trustManager) =>
-                  val sslContext: SSLContext = SSLContext.getInstance("TLS")
-                  sslContext.init(Array[KeyManager](), Array[TrustManager](trustManager), new SecureRandom)
-                  sslContext
-              }
-            }
-          }
-
-        builder.withCustomHttpsConnectionContext(connectionContext).managedPersistentHttp2()
+        builder.withCustomHttpsConnectionContext(connectionContext(settings)).managedPersistentHttp2()
       } else {
         builder.managedPersistentHttp2WithPriorKnowledge()
       }
@@ -188,6 +175,39 @@ object PekkoHttpClientUtils {
       }
     }
   }
+
+  /**
+   * INTERNAL API
+   *
+   * The `SSLContext` for the pekko-http backend, from the explicitly configured context, the
+   * configured trust manager, or the JVM default.
+   */
+  @InternalApi
+  private[grpc] def sslContextFor(settings: GrpcClientSettings): SSLContext =
+    settings.sslContext.getOrElse {
+      settings.trustManager match {
+        case None => SSLContext.getDefault
+        case Some(trustManager) =>
+          val sslContext: SSLContext = SSLContext.getInstance("TLS")
+          sslContext.init(Array[KeyManager](), Array[TrustManager](trustManager), new SecureRandom)
+          sslContext
+      }
+    }
+
+  /**
+   * INTERNAL API
+   *
+   * The HTTPS connection context for the pekko-http backend.
+   *
+   * `ConnectionContext.httpsClient(SSLContext)` sets client mode and the `https` endpoint
+   * identification algorithm, which is where hostname verification comes from. Kept as a separate
+   * method so that contract is reachable from a test: through `createChannel` it is not, because
+   * `managedPersistentHttp2` retries connection failures rather than surfacing them, so a
+   * rejected handshake is indistinguishable from any other connection problem.
+   */
+  @InternalApi
+  private[grpc] def connectionContext(settings: GrpcClientSettings): HttpsConnectionContext =
+    ConnectionContext.httpsClient(sslContextFor(settings))
 
   /**
    * INTERNAL API
