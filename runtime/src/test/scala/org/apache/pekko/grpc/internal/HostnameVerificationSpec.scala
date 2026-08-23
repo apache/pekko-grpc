@@ -17,6 +17,7 @@
 
 package org.apache.pekko.grpc.internal
 
+import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets.UTF_8
 import java.security.{ KeyFactory, KeyStore, SecureRandom }
 import java.security.cert.CertificateFactory
@@ -63,8 +64,17 @@ class HostnameVerificationSpec
 
   private def resourceBytes(path: String): Array[Byte] = {
     val in = getClass.getResourceAsStream(path)
-    try in.readAllBytes()
-    finally in.close()
+    try {
+      // no InputStream.readAllBytes here, this branch still builds on JDK 8
+      val out = new ByteArrayOutputStream()
+      val buffer = new Array[Byte](8192)
+      var read = in.read(buffer)
+      while (read != -1) {
+        out.write(buffer, 0, read)
+        read = in.read(buffer)
+      }
+      out.toByteArray
+    } finally in.close()
   }
 
   private def serverSslContext(): SSLContext = {
