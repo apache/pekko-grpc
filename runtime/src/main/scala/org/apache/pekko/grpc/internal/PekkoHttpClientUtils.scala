@@ -25,7 +25,7 @@ import pekko.event.LoggingAdapter
 import pekko.grpc.GrpcProtocol.GrpcProtocolReader
 import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, GrpcSingleResponse, ProtobufSerializer }
 import pekko.http.scaladsl.model.HttpEntity.{ Chunk, Chunked, LastChunk, Strict }
-import pekko.http.scaladsl.{ ClientTransport, ConnectionContext, Http }
+import pekko.http.scaladsl.{ ClientTransport, ConnectionContext, Http, HttpsConnectionContext }
 import pekko.http.scaladsl.model._
 import pekko.http.scaladsl.model.headers.RawHeader
 import pekko.http.scaladsl.settings.ClientConnectionSettings
@@ -34,7 +34,7 @@ import pekko.stream.scaladsl.{ Keep, Sink, Source }
 import pekko.util.ByteString
 import io.grpc.{ CallOptions, MethodDescriptor, Status, StatusRuntimeException }
 
-import javax.net.ssl.{ KeyManager, SSLContext, TrustManager }
+import javax.net.ssl.{ KeyManager, SSLContext, SSLEngine, TrustManager }
 import scala.collection.immutable
 import scala.concurrent.{ ExecutionContext, Future, Promise }
 import scala.concurrent.duration.DurationLong
@@ -97,36 +97,7 @@ object PekkoHttpClientUtils {
 
     val http2client =
       if (settings.useTls) {
-        if (!settings.verifyHostname) {
-          log.warning(
-            "TLS hostname verification is disabled for pekko-http client '{}'. " +
-            "This is insecure and should only be used for testing. " +
-            "Set verify-hostname = true in your configuration (now the default). " +
-            "Note: the netty backend always verifies hostnames.",
-            settings.serviceName)
-        }
-        val sslContext =
-          settings.sslContext.getOrElse {
-            settings.trustManager match {
-              case None               => SSLContext.getDefault
-              case Some(trustManager) =>
-                val ctx: SSLContext = SSLContext.getInstance("TLS")
-                ctx.init(Array[KeyManager](), Array[TrustManager](trustManager), new SecureRandom)
-                ctx
-            }
-          }
-        val connectionContext =
-          ConnectionContext.httpsClient((hostname, port) => {
-            val engine = sslContext.createSSLEngine(hostname, port)
-            if (settings.verifyHostname) {
-              val sslParams = engine.getSSLParameters
-              sslParams.setEndpointIdentificationAlgorithm("HTTPS")
-              engine.setSSLParameters(sslParams)
-            }
-            engine
-          })
-
-        builder.withCustomHttpsConnectionContext(connectionContext).managedPersistentHttp2()
+        builder.withCustomHttpsConnectionContext(connectionContext(settings, log)).managedPersistentHttp2()
       } else {
         builder.managedPersistentHttp2WithPriorKnowledge()
       }
@@ -246,6 +217,67 @@ object PekkoHttpClientUtils {
               Source.failed(ex)
           })
       }
+    }
+  }
+
+  /**
+   * INTERNAL API
+   *
+   * The `SSLContext` to use for the pekko-http backend, from the explicitly configured context,
+   * the configured trust manager, or the JVM default.
+   */
+  @InternalApi
+  private[grpc] def sslContextFor(settings: GrpcClientSettings): SSLContext =
+    settings.sslContext.getOrElse {
+      settings.trustManager match {
+        case None               => SSLContext.getDefault
+        case Some(trustManager) =>
+          val ctx: SSLContext = SSLContext.getInstance("TLS")
+          ctx.init(Array[KeyManager](), Array[TrustManager](trustManager), new SecureRandom)
+          ctx
+      }
+    }
+
+  /**
+   * INTERNAL API
+   *
+   * Builds the `SSLEngine` used when hostname verification is switched off.
+   *
+   * Client mode has to be set here: `Http.sslTlsStage` leaves the engine entirely to this
+   * function, so nothing downstream would set it on the HTTP/1.1 path.
+   */
+  @InternalApi
+  private[grpc] def insecureSslEngineCreator(sslContext: SSLContext): (String, Int) => SSLEngine =
+    (hostname, port) => {
+      val engine = sslContext.createSSLEngine(hostname, port)
+      engine.setUseClientMode(true)
+      engine
+    }
+
+  /**
+   * INTERNAL API
+   *
+   * The HTTPS connection context for the pekko-http backend.
+   *
+   * When hostname verification is on (the default) this delegates to
+   * `ConnectionContext.httpsClient(SSLContext)`, which sets both client mode and the `https`
+   * endpoint identification algorithm. Hand-rolling that is what the opt-out path is for:
+   * `ConnectionContext.httpsClient((host, port) => ...)` is `@ApiMayChange` and documented as
+   * leaving SNI and hostname verification to the caller, so the secure default should not
+   * depend on us reproducing it correctly.
+   */
+  @InternalApi
+  private[grpc] def connectionContext(settings: GrpcClientSettings, log: LoggingAdapter): HttpsConnectionContext = {
+    val sslContext = sslContextFor(settings)
+    if (settings.verifyHostname) ConnectionContext.httpsClient(sslContext)
+    else {
+      log.warning(
+        "TLS hostname verification is disabled for pekko-http client '{}'. " +
+        "This is insecure and should only be used for testing. " +
+        "Remove verify-hostname = false from your configuration to restore the default. " +
+        "Note: the netty backend always verifies hostnames.",
+        settings.serviceName)
+      ConnectionContext.httpsClient(insecureSslEngineCreator(sslContext))
     }
   }
 

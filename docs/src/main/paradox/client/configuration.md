@@ -36,6 +36,52 @@ Clients defined in configuration pick up defaults from `reference.conf`:
 `reference.conf`
 :  @@snip [reference](/runtime/src/main/resources/reference.conf) { #defaults }
 
+## TLS hostname verification
+
+When TLS is enabled the client verifies that the server's certificate matches the hostname it
+connected to (RFC 2818), so a certificate that is otherwise valid and trusted is still rejected if
+it was issued for a different host. This is controlled by `verify-hostname`, which defaults to
+`true`:
+
+```hocon
+pekko.grpc.client."*" {
+  verify-hostname = true
+}
+```
+
+or programmatically:
+
+Scala
+:   ```scala
+    val settings = GrpcClientSettings.connectToServiceAt("localhost", 8080)
+      .withVerifyHostname(true)
+    ```
+
+Java
+:   ```java
+    GrpcClientSettings settings = GrpcClientSettings.connectToServiceAt("localhost", 8080, system)
+        .withVerifyHostname(true);
+    ```
+
+The hostname that is checked is the authority the client connects to — that is
+`override-authority` when it is set, otherwise the service name — not the address that service
+discovery resolved to. This matches how gRPC treats an overridden authority, and it is what lets a
+client reach a server by IP while still verifying the certificate it expects.
+
+@@@ warning
+
+Setting `verify-hostname = false` accepts any trusted certificate regardless of which host it was
+issued for, which removes the protection against a man-in-the-middle that holds any certificate
+your trust store accepts. It exists for testing against certificates that do not carry a matching
+name, and should not be used in production. The client logs a warning on every channel it creates
+while it is disabled.
+
+The setting only applies to the `pekko-http` backend. The `netty` backend always verifies the
+hostname and offers no switch to turn it off, so setting `verify-hostname = false` there has no
+effect and is logged as a warning.
+
+@@@
+
 ## Using Pekko Discovery for Endpoint Discovery
 
 The examples above all use a hard coded host and port for the location of the gRPC service which is the default if you do not configure a `service-discovery-mechanism`.
