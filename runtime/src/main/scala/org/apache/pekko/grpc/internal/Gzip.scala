@@ -13,7 +13,6 @@
 
 package org.apache.pekko.grpc.internal
 
-import java.io.ByteArrayOutputStream
 import java.util.zip.{ GZIPInputStream, GZIPOutputStream }
 
 import org.apache.pekko.util.ByteString
@@ -25,28 +24,15 @@ object Gzip extends Codec {
   override val name: String = "gzip"
 
   override def compress(uncompressed: ByteString): ByteString = {
-    val baos = new ByteArrayOutputStream(uncompressed.size)
-    val gzos = new GZIPOutputStream(baos)
+    val bsos = new ByteStringOutputStream(uncompressed.size)
+    val gzos = new GZIPOutputStream(bsos)
     try gzos.write(uncompressed.toArrayUnsafe())
     finally gzos.close()
-    ByteString.fromArrayUnsafe(baos.toByteArray)
+    bsos.toByteStringUnsafe
   }
 
   @deprecated("Use uncompress(bytes, maxDecompressedSize), which bounds the decompressed size", "2.0.0")
-  override def uncompress(compressed: ByteString): ByteString = {
-    val gzis = new GZIPInputStream(compressed.asInputStream)
-
-    val baos = new ByteArrayOutputStream(compressed.size)
-    val buffer = new Array[Byte](32 * 1024)
-    try {
-      var read = gzis.read(buffer)
-      while (read != -1) {
-        baos.write(buffer, 0, read)
-        read = gzis.read(buffer)
-      }
-    } finally gzis.close()
-    ByteString.fromArrayUnsafe(baos.toByteArray)
-  }
+  override def uncompress(compressed: ByteString): ByteString = uncompress(compressed, Int.MaxValue)
 
   /**
    * Decompress with a maximum decompressed size limit.
@@ -60,7 +46,7 @@ object Gzip extends Codec {
     // make ByteArrayOutputStream throw IllegalArgumentException rather than a gRPC status.
     val initialSize = Math.max(0L, Math.min(compressed.size.toLong, limit)).toInt
     val gzis = new GZIPInputStream(compressed.asInputStream)
-    val baos = new ByteArrayOutputStream(initialSize)
+    val bsos = new ByteStringOutputStream(initialSize)
     val buffer = new Array[Byte](32 * 1024)
     // Long, so that a limit close to Int.MaxValue cannot be passed by an overflowing counter
     var totalBytes = 0L
@@ -72,11 +58,11 @@ object Gzip extends Codec {
           throw new StatusException(
             Status.RESOURCE_EXHAUSTED.withDescription(
               s"Decompressed message size exceeds maximum allowed $maxDecompressedSize bytes"))
-        baos.write(buffer, 0, read)
+        bsos.write(buffer, 0, read)
         read = gzis.read(buffer)
       }
     } finally gzis.close()
-    ByteString.fromArrayUnsafe(baos.toByteArray)
+    bsos.toByteStringUnsafe
   }
 
   @deprecated(
