@@ -14,6 +14,8 @@
 package org.apache.pekko.grpc
 
 import scala.concurrent.Await
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
 import scala.concurrent.duration.Duration
 
 import com.google.protobuf.{ Any => JavaAny, ByteString => JavaByteString }
@@ -52,6 +54,7 @@ class GrpcMarshallingBenchmark extends CommonBenchmark {
         isTrailer = false))
 
   val mat = SystemMaterializer(system).materializer
+  implicit val ec: ExecutionContext = mat.executionContext
 
   @Benchmark
   def marshall(): HttpResponse = {
@@ -66,6 +69,17 @@ class GrpcMarshallingBenchmark extends CommonBenchmark {
   @Benchmark
   def unmarshallStrict(): ServerReflectionRequest = {
     Await.result(GrpcMarshalling.unmarshal(entity), Duration.Inf)
+  }
+
+  // Unmarshalling a strict entity and then chaining the transforms a generated handler applies to it.
+  // This is the shape of the call chain in generated (and hand written) unary handlers.
+  @Benchmark
+  def unmarshallStrictChained(): ServerReflectionRequest = {
+    val result = GrpcMarshalling
+      .unmarshal(entity)
+      .flatMap(req => Future.successful(req))
+      .map(identity)
+    Await.result(result, Duration.Inf)
   }
 
   @Benchmark
