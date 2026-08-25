@@ -40,8 +40,8 @@ object Dependencies {
     // Even referenced explicitly in the sbt-plugin's sbt-tests
     // If changing this, remember to update protoc plugin version to align in
     // maven-plugin/src/main/maven/plugin.xml and org.apache.pekko.grpc.sbt.PekkoGrpcPlugin
-    val googleProtoc = "4.35.1" // checked synced by VersionSyncCheckPlugin
-    val googleProtobufJava = "4.35.1"
+    val googleProtoc = "4.36.0" // checked synced by VersionSyncCheckPlugin
+    val googleProtobufJava = "4.36.0"
 
     val scalaTest = "3.2.20"
 
@@ -136,6 +136,9 @@ object Dependencies {
   lazy val interopTests = l ++= Seq(
     Compile.grpcInteropTesting,
     Compile.grpcInteropTesting % "protobuf", // gets the proto files for interop tests
+    // grpc drags in an older protobuf-java; make sure the google/protobuf/*.proto we compile
+    // against match the protobuf-java we run against
+    Protobuf.googleCommonProtos,
     Runtime.logback,
     Test.scalaTest.withConfigurations(Some("compile"))) ++ Def.setting {
     Seq(
