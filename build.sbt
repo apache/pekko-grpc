@@ -194,6 +194,7 @@ lazy val sbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
     scriptedSbt := (pluginCrossBuild / sbtVersion).value,
     scriptedLaunchOpts += ("-Dproject.version=" + version.value),
     scriptedLaunchOpts += ("-Dpekko.grpc.scala3.next.version=" + Dependencies.Versions.scala3Next),
+    scriptedLaunchOpts += ("-Dgoogle.protobuf.version=" + Dependencies.Versions.googleProtobufJava),
     scriptedLaunchOpts ++= sys.props.collect { case (k @ "sbt.ivy.home", v) => s"-D$k=$v" }.toSeq,
     scriptedDependencies := {
       val p1 = publishLocal.value

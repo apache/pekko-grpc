@@ -136,6 +136,9 @@ object Dependencies {
   lazy val interopTests = l ++= Seq(
     Compile.grpcInteropTesting,
     Compile.grpcInteropTesting % "protobuf", // gets the proto files for interop tests
+    // grpc drags in an older protobuf-java; make sure the google/protobuf/*.proto we compile
+    // against match the protobuf-java we run against
+    Protobuf.googleCommonProtos,
     Runtime.logback,
     Test.scalaTest.withConfigurations(Some("compile"))) ++ Def.setting {
     Seq(

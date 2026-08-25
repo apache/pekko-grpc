@@ -15,6 +15,10 @@ val grpcVersion = "1.83.1" // checked synced by VersionSyncCheckPlugin
 
 libraryDependencies ++= Seq(
   "io.grpc" % "grpc-interop-testing" % grpcVersion % "protobuf-src",
+  // grpc-interop-testing pulls in an older protobuf-java. Since Java sources are generated
+  // here, its google/protobuf/*.proto would be compiled into com.google.protobuf gencode
+  // that shadows the protobuf-java runtime on the classpath. Pin the version we run against.
+  "com.google.protobuf" % "protobuf-java" % sys.props("google.protobuf.version") % "protobuf-src",
   "org.apache.pekko" %% "pekko-grpc-interop-tests" % sys.props("project.version") % "test",
   "org.scalatest" %% "scalatest" % "3.2.20" % Test,
   "org.junit.jupiter" % "junit-jupiter-api" % "6.1.3" % Test)
@@ -22,6 +26,13 @@ libraryDependencies ++= Seq(
 scalacOptions ++= List("-unchecked", "-deprecation", "-language:_", "-encoding", "UTF-8")
 
 enablePlugins(PekkoGrpcPlugin)
+
+// Java sources are generated here, so protoc also emits gencode for the google/protobuf/*.proto
+// that come in via "protobuf-src". Those classes duplicate the ones in protobuf-java and shadow
+// them on the classpath, so keep them out of the compilation - same as the interop-tests project.
+Compile / sources := (Compile / sources).value.filterNot { f =>
+  f.getPath.replace('\\', '/').contains("/com/google/protobuf/")
+}
 
 // proto files from "io.grpc" % "grpc-interop-testing" contain duplicate Empty definitions;
 // * google/protobuf/empty.proto
