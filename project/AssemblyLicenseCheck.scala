@@ -48,7 +48,7 @@ object AssemblyLicenseCheck {
   /** A module id as listed in the assembly LICENSE file: `organization:name`, optionally `:version`. */
   private val ModuleId = """^([a-zA-Z0-9][\w.\-]*):([a-zA-Z0-9][\w.\-]*)(?::.*)?$""".r
 
-  lazy val settings: Seq[Setting[_]] = Seq(
+  lazy val settings: Seq[Setting[?]] = Seq(
     assemblyBundledModules := {
       val suffix = "_" + CrossVersion.binaryScalaVersion(scalaVersion.value)
       val modules = (assembly / fullClasspath).value.flatMap(_.get(moduleID.key))
