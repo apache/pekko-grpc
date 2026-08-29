@@ -110,6 +110,10 @@ object Dependencies {
     Compile.grpcProtobuf,
     Test.scalaTest)
 
+  lazy val scalapbProtocPlugin = l ++= Seq(
+    Compile.scalapbCompilerPlugin,
+    Protobuf.protobufJava) // or else scalapb pulls older version in transitively
+
   lazy val runtime = l ++= Seq(
     Compile.scalapbRuntime,
     Protobuf.protobufJava, // or else scalapb pulls older version in transitively
