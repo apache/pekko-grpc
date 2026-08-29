@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+import java.io.{ ByteArrayOutputStream, InputStream }
 import java.util.zip.ZipFile
 
 import sbt._
@@ -97,7 +98,7 @@ object AssemblyLicenseCheck {
                 case Some(entry) =>
                   val actual = {
                     val in = zip.getInputStream(entry)
-                    try in.readAllBytes()
+                    try readAll(in)
                     finally in.close()
                   }
                   if (actual.sameElements(IO.readBytes(file))) None
@@ -112,5 +113,17 @@ object AssemblyLicenseCheck {
         log.info(s"${archive.getName} ships ${expected.map(_._1).mkString(" and ")}")
       }
     })
+
+  /** `InputStream.readAllBytes` is Java 9+, and this build still compiles on Java 8. */
+  private def readAll(in: InputStream): Array[Byte] = {
+    val out = new ByteArrayOutputStream()
+    val buffer = new Array[Byte](8192)
+    var read = in.read(buffer)
+    while (read >= 0) {
+      out.write(buffer, 0, read)
+      read = in.read(buffer)
+    }
+    out.toByteArray
+  }
 
 }
