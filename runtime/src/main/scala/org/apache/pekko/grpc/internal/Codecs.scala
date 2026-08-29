@@ -23,8 +23,9 @@ import scala.collection.immutable
 import scala.util.{ Failure, Success, Try }
 
 object Codecs {
-  // TODO should this list be made user-extensible?
-  val supportedCodecs = immutable.Seq(Gzip, Identity)
+  // Codecs supported by this server. The selection order is determined by the
+  // client's grpc-accept-encoding header preference, not by this sequence order.
+  val supportedCodecs = immutable.Seq(Identity, Gzip)
   private val supportedByName: Map[String, Codec] = supportedCodecs.map(c => c.name -> c).toMap
 
   private def extractHeaders(request: jm.HttpMessage): Iterable[jm.HttpHeader] = {
