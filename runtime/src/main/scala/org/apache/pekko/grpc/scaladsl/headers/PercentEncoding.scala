@@ -79,7 +79,12 @@ private[grpc] object PercentEncoding {
 
   // Copied with slight adaptations from https://github.com/grpc/grpc-java/blob/79e75bace40cea7e4be72e7dcd1f41c3ad6ee857/api/src/main/java/io/grpc/Status.java#L626
   object Decoder {
-    private val TransferEncoding = StandardCharsets.US_ASCII
+    // A conforming value is pure ASCII, for which this is identical to US-ASCII. It matters for
+    // a non-conforming one: `getBytes(US_ASCII)` turns every non-ASCII character into '?', and
+    // the protocol requires that an invalid value is neither errored on nor thrown away.
+    // grpc-java decodes straight off the wire, where the bytes are ASCII by construction; here
+    // the input is already a String, so it can carry characters that ASCII cannot represent.
+    private val TransferEncoding = StandardCharsets.UTF_8
 
     def decode(value: String): String =
       if (value.indexOf('%') > -1)

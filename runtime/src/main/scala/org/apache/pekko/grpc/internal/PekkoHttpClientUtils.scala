@@ -23,6 +23,7 @@ import pekko.actor.ClassicActorSystemProvider
 import pekko.annotation.InternalApi
 import pekko.event.LoggingAdapter
 import pekko.grpc.GrpcProtocol.GrpcProtocolReader
+import pekko.grpc.scaladsl.headers.PercentEncoding
 import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, GrpcSingleResponse, ProtobufSerializer }
 import pekko.http.scaladsl.model.HttpEntity.{ Chunk, Chunked, LastChunk, Strict }
 import pekko.http.scaladsl.{ ClientTransport, ConnectionContext, Http, HttpsConnectionContext }
@@ -380,7 +381,10 @@ object PekkoHttpClientUtils {
       case None =>
         new StatusRuntimeException(mapHttpStatus(response).withDescription("No grpc-status found"), metadata)
       case Some(statusCode) =>
-        val description = allHeaders.find(_.name == "grpc-message").map(_.value)
+        // grpc-message travels UTF-8 percent-encoded on the wire, so it has to be decoded
+        // before it reaches the caller. The server side encodes it in `Status-Message`.
+        val description =
+          allHeaders.find(_.name == "grpc-message").map(h => PercentEncoding.Decoder.decode(h.value))
         new StatusRuntimeException(Status.fromCodeValue(statusCode.toInt).withDescription(description.orNull), metadata)
     }
   }
