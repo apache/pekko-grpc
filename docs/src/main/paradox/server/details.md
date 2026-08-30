@@ -112,3 +112,36 @@ configuration, so they fall back on the 4 MiB default and `pekko.grpc.server.max
 has no effect on them. Regenerate your sources against 2.0.0 to make the setting apply.
 
 @@@
+
+## Deadlines
+
+A client can tell the server how long it is prepared to wait by sending the `grpc-timeout`
+request header. Generated handlers honour it: when the deadline passes before the service has
+replied, the call is completed with `DEADLINE_EXCEEDED` — the same status the client reports for
+the same call.
+
+Without this the server would keep working on a reply nobody is going to read, since the client
+stops waiting when its own deadline expires.
+
+Both clients send the header when a call has a deadline:
+
+Scala
+:   ```scala
+    import io.grpc.{ CallOptions, Deadline }
+    import java.util.concurrent.TimeUnit
+
+    val settings = GrpcClientSettings.connectToServiceAt("localhost", 8080)
+      .withDeadline(5.seconds)
+    ```
+
+@@@ note
+
+The deadline bounds the response, not the work behind it. A service that has already started an
+expensive operation keeps running it; only the reply is abandoned. To stop the work itself, have
+the service observe cancellation of the `Future` or `Source` it returned.
+
+@@@
+
+A request that carries no `grpc-timeout`, or one whose value is malformed, is served without a
+deadline. A malformed value is deliberately ignored rather than rejected: the timeout is a hint
+from the peer, and refusing the request outright would be a worse outcome than serving it.
