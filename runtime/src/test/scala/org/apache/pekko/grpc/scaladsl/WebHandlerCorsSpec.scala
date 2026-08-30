@@ -60,9 +60,9 @@ class WebHandlerCorsSpec
         .withFallback(ConfigFactory.load()))
 
   private def respond(sys: ActorSystem, settings: CorsSettings, request: HttpRequest): HttpResponse = {
-    val handler = WebHandler.grpcWebHandler({
+    val handler = WebHandler.grpcWebHandler {
       case _: HttpRequest => Future.successful(HttpResponse())
-    })(sys, settings)
+    }(sys, settings)
     handler(request).futureValue
   }
 
