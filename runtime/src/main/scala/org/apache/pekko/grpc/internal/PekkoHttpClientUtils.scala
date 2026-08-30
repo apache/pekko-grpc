@@ -41,6 +41,7 @@ import scala.concurrent.{ ExecutionContext, Future, Promise }
 import scala.concurrent.duration.DurationLong
 import scala.jdk.FutureConverters._
 import scala.util.{ Failure, Success }
+import scala.util.control.NonFatal
 
 /**
  * INTERNAL API
@@ -382,7 +383,7 @@ object PekkoHttpClientUtils {
 
   private def mapToStatusException(response: HttpResponse, trailers: Seq[HttpHeader]): StatusRuntimeException = {
     val allHeaders = response.headers ++ trailers
-    val metadata: io.grpc.Metadata = new MetadataImpl(new HeaderMetadataImpl(allHeaders).asList).toGoogleGrpcMetadata()
+    val metadata: io.grpc.Metadata = metadataOf(allHeaders)
     allHeaders.find(_.name == "grpc-status").map(_.value) match {
       case None =>
         new StatusRuntimeException(mapHttpStatus(response).withDescription("No grpc-status found"), metadata)
@@ -391,9 +392,37 @@ object PekkoHttpClientUtils {
         // before it reaches the caller. The server side encodes it in `Status-Message`.
         val description =
           allHeaders.find(_.name == "grpc-message").map(h => PercentEncoding.Decoder.decode(h.value))
-        new StatusRuntimeException(Status.fromCodeValue(statusCode.toInt).withDescription(description.orNull), metadata)
+        statusCodeOf(statusCode) match {
+          case Some(code) =>
+            new StatusRuntimeException(Status.fromCodeValue(code).withDescription(description.orNull), metadata)
+          case None =>
+            // a peer that sends a non-numeric grpc-status is broken, but that is a protocol
+            // error to report, not an exception to throw at the caller
+            new StatusRuntimeException(
+              Status.INTERNAL.withDescription(s"Invalid grpc-status [$statusCode] in response"),
+              metadata)
+        }
     }
   }
+
+  /**
+   * The response metadata, or empty metadata if a header cannot be represented.
+   *
+   * Binary headers are base64-decoded here, which throws on a malformed value. That is
+   * reachable from any peer, and it happens while building the metadata for an error that is
+   * already being reported, so it must not replace that error with an exception of its own.
+   */
+  private def metadataOf(allHeaders: Seq[HttpHeader]): io.grpc.Metadata =
+    try new MetadataImpl(new HeaderMetadataImpl(allHeaders).asList).toGoogleGrpcMetadata()
+    catch {
+      case NonFatal(_) => new io.grpc.Metadata()
+    }
+
+  private def statusCodeOf(value: String): Option[Int] =
+    try Some(value.toInt)
+    catch {
+      case _: NumberFormatException => None
+    }
 
   /**
    * See https://github.com/grpc/grpc/blob/master/doc/http-grpc-status-mapping.md
