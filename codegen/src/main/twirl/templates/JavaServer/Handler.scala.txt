@@ -218,7 +218,7 @@ public class @{serviceName}HandlerFactory {
           }
           default:
             CompletableFuture<org.apache.pekko.http.javadsl.model.HttpResponse> result = new CompletableFuture<>();
-            result.completeExceptionally(new UnsupportedOperationException("Not implemented: " + method));
+            result.completeExceptionally(new org.apache.pekko.grpc.GrpcServiceException(io.grpc.Status.UNIMPLEMENTED.withDescription("Not implemented: " + method)));
             response = result;
         }
         return response.exceptionally(e -> GrpcExceptionHandler.standard(e, eHandler, writer, system));

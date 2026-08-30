@@ -140,7 +140,7 @@ object @{serviceName}Handler {
                   .recoverWith(GrpcExceptionHandler.from(eHandler(system.classicSystem))(system, writer))
                 }
             }
-            case m => GrpcExceptionHandler.from(eHandler(system.classicSystem))(system, writer)(new NotImplementedError(s"Not implemented: $m"))
+            case m => GrpcExceptionHandler.from(eHandler(system.classicSystem))(system, writer)(new pekko.grpc.GrpcServiceException(io.grpc.Status.UNIMPLEMENTED.withDescription(s"Not implemented: $m")))
           }
       ).getOrElse(unsupportedMediaType)
 
@@ -185,7 +185,7 @@ object @{serviceName}Handler {
                   .recoverWith(GrpcExceptionHandler.from(eHandler(system.classicSystem))(system, writer))
                 }
             }
-            case m => GrpcExceptionHandler.from(eHandler(system.classicSystem))(system, writer)(new NotImplementedError(s"Not implemented: $m"))
+            case m => GrpcExceptionHandler.from(eHandler(system.classicSystem))(system, writer)(new pekko.grpc.GrpcServiceException(io.grpc.Status.UNIMPLEMENTED.withDescription(s"Not implemented: $m")))
           }
       ).getOrElse(unsupportedMediaType)
 
