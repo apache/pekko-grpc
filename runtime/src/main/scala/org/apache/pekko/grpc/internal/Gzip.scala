@@ -19,6 +19,8 @@ import java.util.zip.{ GZIPInputStream, GZIPOutputStream }
 import org.apache.pekko.util.ByteString
 import io.grpc.{ Status, StatusException }
 
+import scala.annotation.nowarn
+
 object Gzip extends Codec {
   override val name: String = "gzip"
 
@@ -30,6 +32,7 @@ object Gzip extends Codec {
     ByteString.fromArrayUnsafe(baos.toByteArray)
   }
 
+  @deprecated("Use uncompress(bytes, maxDecompressedSize), which bounds the decompressed size", "2.0.0")
   override def uncompress(compressed: ByteString): ByteString = {
     val gzis = new GZIPInputStream(compressed.asInputStream)
 
@@ -76,6 +79,10 @@ object Gzip extends Codec {
     ByteString.fromArrayUnsafe(baos.toByteArray)
   }
 
+  @deprecated(
+    "Use uncompress(compressedBitSet, bytes, maxDecompressedSize), which bounds the decompressed size",
+    "2.0.0")
+  @nowarn("cat=deprecation")
   override def uncompress(compressedBitSet: Boolean, bytes: ByteString): ByteString =
     if (compressedBitSet) uncompress(bytes)
     else bytes

@@ -21,8 +21,12 @@ object Identity extends Codec {
 
   override def compress(bytes: ByteString): ByteString = bytes
 
+  @deprecated("Use uncompress(bytes, maxDecompressedSize), which bounds the decompressed size", "2.0.0")
   override def uncompress(bytes: ByteString): ByteString = bytes
 
+  @deprecated(
+    "Use uncompress(compressedBitSet, bytes, maxDecompressedSize), which bounds the decompressed size",
+    "2.0.0")
   override def uncompress(compressedBitSet: Boolean, bytes: ByteString): ByteString =
     if (compressedBitSet)
       throw new StatusException(
