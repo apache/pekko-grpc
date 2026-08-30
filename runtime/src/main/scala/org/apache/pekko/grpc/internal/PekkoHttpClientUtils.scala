@@ -23,6 +23,7 @@ import pekko.actor.ClassicActorSystemProvider
 import pekko.annotation.InternalApi
 import pekko.event.LoggingAdapter
 import pekko.grpc.GrpcProtocol.GrpcProtocolReader
+import pekko.grpc.scaladsl.headers
 import pekko.grpc.scaladsl.headers.PercentEncoding
 import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, GrpcSingleResponse, ProtobufSerializer }
 import pekko.http.scaladsl.model.HttpEntity.{ Chunk, Chunked, LastChunk, Strict }
@@ -38,7 +39,8 @@ import io.grpc.{ CallOptions, MethodDescriptor, Status, StatusRuntimeException }
 import javax.net.ssl.{ KeyManager, SSLContext, SSLEngine, TrustManager }
 import scala.collection.immutable
 import scala.concurrent.{ ExecutionContext, Future, Promise }
-import scala.concurrent.duration.DurationLong
+import scala.concurrent.duration.{ DurationLong, FiniteDuration }
+import java.util.concurrent.TimeUnit
 import scala.jdk.FutureConverters._
 import scala.util.{ Failure, Success }
 
@@ -185,7 +187,7 @@ object PekkoHttpClientUtils {
           Uri(
             s"${scheme}://${settings.overrideAuthority.getOrElse(settings.serviceName)}/" +
             descriptor.getFullMethodName),
-          GrpcEntityHelpers.metadataHeaders(headers.entries),
+          GrpcEntityHelpers.metadataHeaders(headers.entries) ++ timeoutHeader(options),
           source)
         applyDeadline(
           responseToSource(singleRequest(httpRequest), deserializer, settings.maxInboundMessageSize),
@@ -193,6 +195,26 @@ object PekkoHttpClientUtils {
       }
     }
   }
+
+  /**
+   * INTERNAL API
+   *
+   * The `grpc-timeout` header for a call, so the server can stop work the client has given up
+   * on. `applyDeadline` only bounds the wait on this side; without this header the server has
+   * no way to know there is a deadline at all.
+   *
+   * An expired deadline sends no header: `applyDeadline` fails such a call outright, and a
+   * zero or negative timeout is not representable on the wire.
+   */
+  @InternalApi
+  private[internal] def timeoutHeader(options: CallOptions): List[HttpHeader] =
+    Option(options.getDeadline) match {
+      case None           => Nil
+      case Some(deadline) =>
+        val remaining = deadline.timeRemaining(TimeUnit.NANOSECONDS)
+        if (remaining <= 0) Nil
+        else List(headers.`Timeout`(FiniteDuration(remaining, TimeUnit.NANOSECONDS)))
+    }
 
   /**
    * INTERNAL API

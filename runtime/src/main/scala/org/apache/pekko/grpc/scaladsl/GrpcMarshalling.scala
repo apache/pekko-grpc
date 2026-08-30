@@ -54,6 +54,33 @@ object GrpcMarshalling {
       }).getOrElse(throw new GrpcServiceException(Status.UNIMPLEMENTED))
   }
 
+  /**
+   * INTERNAL API
+   *
+   * Bounds `response` by the deadline the client asked for in `grpc-timeout`.
+   *
+   * The client stops waiting when its own deadline expires, but without this the server keeps
+   * working on a reply nobody will read. On expiry the call is completed with
+   * `DEADLINE_EXCEEDED`, matching what the client reports for the same call.
+   *
+   * A request with no `grpc-timeout`, or an unparseable one, is left unbounded.
+   */
+  @InternalApi
+  def withServerDeadline(request: HttpRequest, response: Future[HttpResponse])(
+      implicit system: ClassicActorSystemProvider,
+      writer: GrpcProtocolWriter,
+      ec: ExecutionContext): Future[HttpResponse] =
+    headers.`Timeout`.findIn(request.headers) match {
+      case None           => response
+      case Some(deadline) =>
+        val timedOut = pekko.pattern.after(deadline)(
+          FastFuture.successful(
+            GrpcResponseHelpers.status(
+              Trailers(Status.DEADLINE_EXCEEDED.withDescription(s"Deadline of $deadline exceeded")))))(
+          system.classicSystem)
+        Future.firstCompletedOf(List(response, timedOut))
+    }
+
   def negotiated[T](req: HttpRequest, f: (GrpcProtocolReader, GrpcProtocolWriter) => Future[T]): Option[Future[T]] =
     GrpcProtocol.negotiate(req).map {
       case (Success(reader), writer) => f(reader, writer)

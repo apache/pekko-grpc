@@ -67,6 +67,31 @@ object GrpcMarshalling {
       }
       .fold(Optional.empty[CompletionStage[T]])(Optional.of)
 
+  /**
+   * INTERNAL API
+   *
+   * Java API: bounds `response` by the deadline the client asked for in `grpc-timeout`.
+   *
+   * See the scaladsl `GrpcMarshalling.withServerDeadline`.
+   */
+  @InternalApi
+  def withServerDeadline(
+      request: HttpRequest,
+      response: CompletionStage[HttpResponse],
+      system: ClassicActorSystemProvider,
+      writer: GrpcProtocolWriter): CompletionStage[HttpResponse] = {
+    import scala.jdk.FutureConverters._
+    implicit val ec: scala.concurrent.ExecutionContext = system.classicSystem.dispatcher
+    val scalaRequest = request.asInstanceOf[pekko.http.scaladsl.model.HttpRequest]
+    scaladsl.GrpcMarshalling
+      .withServerDeadline(scalaRequest, response.asScala.map(_.asInstanceOf[pekko.http.scaladsl.model.HttpResponse]))(
+        system,
+        writer,
+        ec)
+      .map(r => r: HttpResponse)
+      .asJava
+  }
+
   def unmarshal[T](
       data: Source[ByteString, AnyRef],
       u: ProtobufSerializer[T],
