@@ -25,7 +25,7 @@ import pekko.stream.impl.io.ByteStringParser.{ ByteReader, ParseResult, ParseSte
 import pekko.stream.scaladsl.Flow
 import pekko.stream.stage.GraphStageLogic
 import pekko.util.ByteString
-import io.grpc.StatusException
+import io.grpc.{ Status, StatusException }
 
 import scala.collection.immutable
 
@@ -38,7 +38,17 @@ abstract class AbstractGrpcProtocol(subType: String) extends GrpcProtocol {
     Set(contentType.mediaType, MediaType.applicationBinary(subType, MediaType.Compressible))
 
   private lazy val knownWriters = Codecs.supportedCodecs.map(c => c -> writer(c)).toMap.withDefault(writer)
-  private lazy val knownReaders = Codecs.supportedCodecs.map(c => c -> reader(c)).toMap.withDefault(reader)
+
+  /**
+   * Readers for the default message size limit. `newReader` is called once per inbound request, so
+   * the common case (no per-service override) is served from this cache rather than rebuilding the
+   * reader, its framing stage and the surrounding flows every time.
+   */
+  private lazy val knownReaders =
+    Codecs.supportedCodecs
+      .map(c => c -> reader(c, AbstractGrpcProtocol.DefaultMaxInboundMessageSize))
+      .toMap
+      .withDefault(reader(_, AbstractGrpcProtocol.DefaultMaxInboundMessageSize))
 
   /**
    * Obtains a writer for this protocol:
@@ -50,12 +60,17 @@ abstract class AbstractGrpcProtocol(subType: String) extends GrpcProtocol {
    * Obtains a reader for this protocol.
    *
    * @param codec the codec to use for compressed frames.
+   * @param maxInboundMessageSize the maximum allowed inbound message size in bytes.
    */
-  override def newReader(codec: Codec): GrpcProtocolReader = knownReaders(codec)
+  override def newReader(
+      codec: Codec,
+      maxInboundMessageSize: Int = AbstractGrpcProtocol.DefaultMaxInboundMessageSize): GrpcProtocolReader =
+    if (maxInboundMessageSize == AbstractGrpcProtocol.DefaultMaxInboundMessageSize) knownReaders(codec)
+    else reader(codec, maxInboundMessageSize)
 
   protected def writer(codec: Codec): GrpcProtocolWriter
 
-  protected def reader(codec: Codec): GrpcProtocolReader
+  protected def reader(codec: Codec, maxInboundMessageSize: Int): GrpcProtocolReader
 
 }
 object AbstractGrpcProtocol {
@@ -118,11 +133,17 @@ object AbstractGrpcProtocol {
       encodeDataToResponse,
       Flow[Frame].map(encodeFrame))
 
+  /**
+   * The default maximum inbound message size (4 MiB), matching grpc-java's default.
+   */
+  val DefaultMaxInboundMessageSize: Int = 4 * 1024 * 1024
+
   def reader(
       codec: Codec,
       decodeFrame: (Int, ByteString) => Frame,
       preDecodeStrict: ByteString => ByteString = null,
-      preDecodeFlow: Flow[ByteString, ByteString, NotUsed] = null): GrpcProtocolReader = {
+      preDecodeFlow: Flow[ByteString, ByteString, NotUsed] = null,
+      maxInboundMessageSize: Int = DefaultMaxInboundMessageSize): GrpcProtocolReader = {
     val strictAdapter: ByteString => ByteString = if (preDecodeStrict eq null) identity else preDecodeStrict
     val adapter: Flow[ByteString, Frame, NotUsed] => Flow[ByteString, Frame, NotUsed] =
       if (preDecodeFlow eq null) identity
@@ -134,30 +155,51 @@ object AbstractGrpcProtocol {
         val reader = new ByteReader(strictAdapter(bs))
         val frameType = reader.readByte()
         val length = reader.readIntBE()
-        if (length < 0) throw new IllegalStateException(s"Frame length must not be negative, was $length")
+        if (length < 0)
+          throw new StatusException(Status.INTERNAL.withDescription(s"Frame length must not be negative, was $length"))
+        if (length > maxInboundMessageSize)
+          throw new StatusException(
+            Status.RESOURCE_EXHAUSTED.withDescription(
+              s"Frame length $length exceeds maximum inbound message size $maxInboundMessageSize"))
         val data = reader.take(length)
         if (reader.hasRemaining) throw new IllegalStateException("Unexpected data")
-        if ((frameType & 0x80) == 0) codec.uncompress((frameType & 1) == 1, data)
+        if ((frameType & 0x80) == 0) codec.uncompress((frameType & 1) == 1, data, maxInboundMessageSize)
         else throw new IllegalStateException("Cannot read unknown frame")
       } catch { case ByteStringParser.NeedMoreData => throw new MissingParameterException }
 
-    GrpcProtocolReader(codec, decoder, adapter(Flow.fromGraph(new GrpcFramingDecoderStage(codec, decodeFrame))))
+    GrpcProtocolReader(
+      codec,
+      decoder,
+      adapter(Flow.fromGraph(new GrpcFramingDecoderStage(codec, decodeFrame, maxInboundMessageSize))))
   }
 
-  class GrpcFramingDecoderStage(codec: Codec, deframe: (Int, ByteString) => Frame) extends ByteStringParser[Frame] {
+  class GrpcFramingDecoderStage(codec: Codec, deframe: (Int, ByteString) => Frame, maxInboundMessageSize: Int)
+      extends ByteStringParser[Frame] {
     override def createLogic(inheritedAttributes: Attributes): GraphStageLogic =
       new ParsingLogic {
         startWith(ReadFrameHeader)
 
         trait Step extends ParseStep[Frame]
 
+        // handle explicitly to avoid noisy log: a peer sending oversized or malformed frame
+        // headers should not cost us a stack trace per attempt
+        private def failWith(status: Status): ParseResult[Frame] = {
+          failStage(new StatusException(status))
+          ParseResult(None, Failed)
+        }
+
         object ReadFrameHeader extends Step {
           override def parse(reader: ByteReader): ParseResult[Frame] = {
             val frameType = reader.readByte()
             val length = reader.readIntBE()
-            if (length < 0) throw new IllegalStateException(s"Frame length must not be negative, was $length")
 
-            if (length == 0) ParseResult(Some(deframe(frameType, ByteString.empty)), ReadFrameHeader)
+            if (length < 0)
+              failWith(Status.INTERNAL.withDescription(s"Frame length must not be negative, was $length"))
+            else if (length > maxInboundMessageSize)
+              failWith(
+                Status.RESOURCE_EXHAUSTED.withDescription(
+                  s"Frame length $length exceeds maximum inbound message size $maxInboundMessageSize"))
+            else if (length == 0) ParseResult(Some(deframe(frameType, ByteString.empty)), ReadFrameHeader)
             else ParseResult(None, ReadFrame(frameType, length), acceptUpstreamFinish = false)
           }
         }
@@ -167,7 +209,7 @@ object AbstractGrpcProtocol {
 
           override def parse(reader: ByteReader): ParseResult[Frame] =
             try ParseResult(
-                Some(deframe(frameType, codec.uncompress(compression, reader.take(length)))),
+                Some(deframe(frameType, codec.uncompress(compression, reader.take(length), maxInboundMessageSize))),
                 ReadFrameHeader)
             catch {
               case s: StatusException =>

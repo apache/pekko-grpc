@@ -18,7 +18,7 @@ import pekko.actor.ClassicActorSystemProvider
 import pekko.annotation.{ ApiMayChange, InternalApi }
 import pekko.discovery.{ Discovery, ServiceDiscovery }
 import pekko.discovery.ServiceDiscovery.{ Resolved, ResolvedTarget }
-import pekko.grpc.internal.HardcodedServiceDiscovery
+import pekko.grpc.internal.{ AbstractGrpcProtocol, HardcodedServiceDiscovery }
 import pekko.util.Helpers
 import com.typesafe.config.{ Config, ConfigValueFactory }
 import io.grpc.CallCredentials
@@ -159,7 +159,16 @@ object GrpcClientSettings {
       clientConfiguration.getBoolean("use-tls"),
       getOptionalString(clientConfiguration, "load-balancing-policy"),
       clientConfiguration.getString("backend"),
+      maxInboundMessageSize = getIntWithDefault(
+        clientConfiguration,
+        "max-inbound-message-size",
+        AbstractGrpcProtocol.DefaultMaxInboundMessageSize),
       verifyHostname = clientConfiguration.getBoolean("verify-hostname"))
+
+  // `fromConfig(Config)` is public API and is called with hand-assembled Configs that do not
+  // necessarily fall back on `pekko.grpc.client."*"`, so a missing key must not fail.
+  private def getIntWithDefault(config: Config, path: String, default: Int): Int =
+    if (config.hasPath(path)) config.getInt(path) else default
 
   private def getOptionalString(config: Config, path: String): Option[String] =
     config.getString(path) match {
@@ -208,6 +217,7 @@ final class GrpcClientSettings private (
     val loadBalancingPolicy: Option[String],
     val backend: String,
     val channelBuilderOverrides: NettyChannelBuilder => NettyChannelBuilder = identity,
+    val maxInboundMessageSize: Int,
     val verifyHostname: Boolean) {
   require(
     sslContext.isEmpty || trustManager.isEmpty,
@@ -216,6 +226,9 @@ final class GrpcClientSettings private (
     if (sslContext.isDefined) sslProvider.forall(_ == SslProvider.JDK) else true,
     "When sslContext is configured, sslProvider must not set to something different than JDK")
   require(backend == "netty" || backend == "pekko-http", "backend should be 'netty' or 'pekko-http'")
+  require(
+    maxInboundMessageSize > 0,
+    s"maxInboundMessageSize must be positive, was [$maxInboundMessageSize]")
 
   /**
    * If using ServiceDiscovery and no port is returned use this one.
@@ -292,6 +305,15 @@ final class GrpcClientSettings private (
     copy(backend = value)
 
   /**
+   * Maximum allowed size for inbound gRPC messages (in bytes).
+   * Applies to the decompressed message size. Messages exceeding this limit
+   * will be rejected with RESOURCE_EXHAUSTED status.
+   * @since 2.0.0
+   */
+  def withMaxInboundMessageSize(value: Int): GrpcClientSettings =
+    copy(maxInboundMessageSize = value)
+
+  /**
    * Whether to verify the server's hostname against its TLS certificate (RFC 2818).
    * When false, the client accepts any valid certificate regardless of hostname.
    * This is insecure and should only be used for testing.
@@ -319,6 +341,7 @@ final class GrpcClientSettings private (
       loadBalancingPolicy: Option[String] = loadBalancingPolicy,
       backend: String = backend,
       channelBuilderOverrides: NettyChannelBuilder => NettyChannelBuilder = channelBuilderOverrides,
+      maxInboundMessageSize: Int = maxInboundMessageSize,
       verifyHostname: Boolean = verifyHostname)
       : GrpcClientSettings =
     new GrpcClientSettings(
@@ -340,5 +363,6 @@ final class GrpcClientSettings private (
       loadBalancingPolicy = loadBalancingPolicy,
       backend = backend,
       channelBuilderOverrides = channelBuilderOverrides,
+      maxInboundMessageSize = maxInboundMessageSize,
       verifyHostname = verifyHostname)
 }

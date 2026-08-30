@@ -21,11 +21,32 @@ object Identity extends Codec {
 
   override def compress(bytes: ByteString): ByteString = bytes
 
+  @deprecated("Use uncompress(bytes, maxDecompressedSize), which bounds the decompressed size", "2.0.0")
   override def uncompress(bytes: ByteString): ByteString = bytes
 
+  @deprecated(
+    "Use uncompress(compressedBitSet, bytes, maxDecompressedSize), which bounds the decompressed size",
+    "2.0.0")
   override def uncompress(compressedBitSet: Boolean, bytes: ByteString): ByteString =
     if (compressedBitSet)
       throw new StatusException(
         Status.INTERNAL.withDescription("Compressed-Flag bit is set, but a compression encoding is not specified"))
+    else bytes
+
+  override def uncompress(bytes: ByteString, maxDecompressedSize: Int): ByteString =
+    if (bytes.length > maxDecompressedSize)
+      throw new StatusException(
+        Status.RESOURCE_EXHAUSTED.withDescription(
+          s"Message size ${bytes.length} exceeds maximum allowed $maxDecompressedSize bytes"))
+    else bytes
+
+  override def uncompress(compressedBitSet: Boolean, bytes: ByteString, maxDecompressedSize: Int): ByteString =
+    if (compressedBitSet)
+      throw new StatusException(
+        Status.INTERNAL.withDescription("Compressed-Flag bit is set, but a compression encoding is not specified"))
+    else if (bytes.length > maxDecompressedSize)
+      throw new StatusException(
+        Status.RESOURCE_EXHAUSTED.withDescription(
+          s"Message size ${bytes.length} exceeds maximum allowed $maxDecompressedSize bytes"))
     else bytes
 }
