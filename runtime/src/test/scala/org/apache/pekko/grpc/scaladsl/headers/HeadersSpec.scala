@@ -72,6 +72,23 @@ class HeadersSpec extends AnyWordSpec with Matchers {
         actual.get.unencodedValue should equal(expected)
       }
     }
+
+    "not replace non-ASCII characters when the value also contains a percent" in {
+      // A conforming grpc-message is pure ASCII, so this only arises for a non-conforming value.
+      // The protocol requires that such a value is neither errored on nor thrown away, but
+      // decoding through US-ASCII turned every non-ASCII character into '?'. Without a percent
+      // the value is returned as is, so a percent is what it takes to reach the slow path.
+      val inAndExpectedOut = Table(
+        ("raw input", "expected decoded value"),
+        ("100% café", "100% café"),
+        ("50% µs", "50% µs"),
+        ("%41 café", "A café"),
+        ("Καλημέρα 100%", "Καλημέρα 100%"))
+
+      forAll(inAndExpectedOut) { (in, expected) =>
+        `Status-Message`.parse(in).get.unencodedValue should equal(expected)
+      }
+    }
   }
 
   "Status-Message.value() and Status-Message.parse()" should {

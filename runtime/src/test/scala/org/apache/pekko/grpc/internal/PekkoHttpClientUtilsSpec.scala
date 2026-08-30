@@ -19,6 +19,7 @@ import scala.concurrent.duration._
 import org.apache.pekko
 import pekko.actor.ActorSystem
 import pekko.grpc.GrpcResponseMetadata
+import pekko.grpc.scaladsl.headers.PercentEncoding
 import pekko.http.scaladsl.model.HttpEntity.Strict
 import pekko.http.scaladsl.model._
 import pekko.http.scaladsl.model.StatusCodes._
@@ -62,6 +63,44 @@ class PekkoHttpClientUtilsSpec extends TestKit(ActorSystem()) with AnyWordSpecLi
       failure shouldBe a[StatusRuntimeException]
       failure.asInstanceOf[StatusRuntimeException].getStatus.getCode should be(Status.Code.FAILED_PRECONDITION)
       failure.asInstanceOf[StatusRuntimeException].getTrailers.get(key) should be("custom-value-in-header")
+    }
+
+    "percent-decode the grpc-message of a failed response" in {
+      // grpc-message travels UTF-8 percent-encoded on the wire; the server side encodes it with
+      // `PercentEncoding.Encoder`, so an undecoded client hands the caller the raw escapes
+      val message = "quota exceeded: 100% of 5 µs — café"
+      val encoded = PercentEncoding.Encoder.encode(message)
+      encoded should not be message
+
+      val responseHeaders = RawHeader("grpc-status", "9") :: RawHeader("grpc-message", encoded) :: Nil
+      val response =
+        Future.successful(HttpResponse(OK, responseHeaders, Strict(GrpcProtocolNative.contentType, ByteString.empty)))
+
+      val failure = PekkoHttpClientUtils.responseToSource(response, null).run().failed.futureValue
+
+      failure.asInstanceOf[StatusRuntimeException].getStatus.getDescription should be(message)
+    }
+
+    "leave an unencoded grpc-message alone" in {
+      val message = "plain ascii failure"
+      val responseHeaders = RawHeader("grpc-status", "9") :: RawHeader("grpc-message", message) :: Nil
+      val response =
+        Future.successful(HttpResponse(OK, responseHeaders, Strict(GrpcProtocolNative.contentType, ByteString.empty)))
+
+      val failure = PekkoHttpClientUtils.responseToSource(response, null).run().failed.futureValue
+
+      failure.asInstanceOf[StatusRuntimeException].getStatus.getDescription should be(message)
+    }
+
+    "not throw away a grpc-message with a broken escape" in {
+      // the spec requires implementations not to error on invalid values
+      val responseHeaders = RawHeader("grpc-status", "9") :: RawHeader("grpc-message", "broken %ZZ escape") :: Nil
+      val response =
+        Future.successful(HttpResponse(OK, responseHeaders, Strict(GrpcProtocolNative.contentType, ByteString.empty)))
+
+      val failure = PekkoHttpClientUtils.responseToSource(response, null).run().failed.futureValue
+
+      failure.asInstanceOf[StatusRuntimeException].getStatus.getDescription should be("broken %ZZ escape")
     }
 
     "map a strict 200 response with non-0 gRPC error code with a trailer to a failed stream with trailer metadata" in {
