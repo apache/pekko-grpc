@@ -14,6 +14,7 @@
 package org.apache.pekko.grpc.internal
 
 import org.apache.pekko.util.ByteString
+import io.grpc.{ Status, StatusException }
 
 abstract class Codec {
   val name: String
@@ -26,6 +27,42 @@ abstract class Codec {
    * codec will fail with a `io.grpc.StatusException` if the compressedBit is set.
    */
   def uncompress(compressedBitSet: Boolean, bytes: ByteString): ByteString
+
+  /**
+   * Decompress the given bytes, enforcing a maximum decompressed size.
+   * Throws a `StatusException` with `RESOURCE_EXHAUSTED` if the decompressed
+   * output exceeds `maxDecompressedSize`.
+   *
+   * @param bytes the compressed bytes
+   * @param maxDecompressedSize the maximum allowed decompressed size in bytes
+   */
+  def uncompress(bytes: ByteString, maxDecompressedSize: Int): ByteString = {
+    val result = uncompress(bytes)
+    if (result.length > maxDecompressedSize)
+      throw new StatusException(
+        Status.RESOURCE_EXHAUSTED.withDescription(
+          s"Decompressed message size ${result.length} exceeds maximum allowed $maxDecompressedSize"))
+    result
+  }
+
+  /**
+   * Process the given frame bytes, uncompress if the compression bit is set,
+   * enforcing a maximum decompressed size.
+   *
+   * Delegates to `uncompress(bytes, maxDecompressedSize)` so that codecs which can enforce
+   * the limit while decompressing (rather than after) get the chance to fail fast.
+   *
+   * @param compressedBitSet whether the compression bit is set
+   * @param bytes the frame bytes
+   * @param maxDecompressedSize the maximum allowed decompressed size in bytes
+   */
+  def uncompress(compressedBitSet: Boolean, bytes: ByteString, maxDecompressedSize: Int): ByteString =
+    if (compressedBitSet) uncompress(bytes, maxDecompressedSize)
+    else if (bytes.length > maxDecompressedSize)
+      throw new StatusException(
+        Status.RESOURCE_EXHAUSTED.withDescription(
+          s"Message size ${bytes.length} exceeds maximum allowed $maxDecompressedSize bytes"))
+    else bytes
 
   def isCompressed: Boolean = this != Identity
 }

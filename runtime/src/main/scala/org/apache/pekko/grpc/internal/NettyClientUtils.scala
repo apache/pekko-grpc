@@ -101,6 +101,8 @@ object NettyClientUtils {
     builder = settings.loadBalancingPolicy.map(builder.defaultLoadBalancingPolicy(_)).getOrElse(builder)
     builder = settings.overrideAuthority.map(builder.overrideAuthority(_)).getOrElse(builder)
     builder = settings.userAgent.map(builder.userAgent(_)).getOrElse(builder)
+    builder = builder.maxInboundMessageSize(settings.maxInboundMessageSize)
+    // applied last so that explicit overrides win over anything derived from settings
     builder = settings.channelBuilderOverrides(builder)
 
     val connectionAttempts = settings.loadBalancingPolicy match {

@@ -122,6 +122,49 @@ class GrpcClientSettingsSpec extends AnyWordSpec with Matchers with ScalaFutures
       ActorSystem("test", clientConfig.withFallback(defaultConfig).withFallback(clientWithServiceDiscovery))
     }
 
+    "default to the same maximum inbound message size as grpc-java" in {
+      GrpcClientSettings.connectToServiceAt("host.com", 8080).maxInboundMessageSize should be(4 * 1024 * 1024)
+    }
+
+    "support overriding the maximum inbound message size" in {
+      GrpcClientSettings
+        .connectToServiceAt("host.com", 8080)
+        .withMaxInboundMessageSize(8388608)
+        .maxInboundMessageSize should be(8388608)
+    }
+
+    "reject a non-positive maximum inbound message size" in {
+      intercept[IllegalArgumentException](
+        GrpcClientSettings.connectToServiceAt("host.com", 8080).withMaxInboundMessageSize(0))
+      intercept[IllegalArgumentException](
+        GrpcClientSettings.connectToServiceAt("host.com", 8080).withMaxInboundMessageSize(-1))
+    }
+
+    "read the maximum inbound message size from config" in {
+      val config = ConfigFactory
+        .parseString("""
+          host = "host.com"
+          port = 8080
+          max-inbound-message-size = 8388608
+        """)
+        .withFallback(sys.settings.config.getConfig("""pekko.grpc.client."*""""))
+
+      GrpcClientSettings.fromConfig(config).maxInboundMessageSize should be(8388608)
+    }
+
+    "fall back on the default maximum inbound message size for a Config without the key" in {
+      // fromConfig(Config) is public API and is called with hand-assembled Configs
+      val config = ConfigFactory
+        .parseString("""
+          host = "host.com"
+          port = 8080
+        """)
+        .withFallback(sys.settings.config.getConfig("""pekko.grpc.client."*""""))
+        .withoutPath("max-inbound-message-size")
+
+      GrpcClientSettings.fromConfig(config).maxInboundMessageSize should be(4 * 1024 * 1024)
+    }
+
     "use static service discovery for connectToServiceAt" in {
       val settings = GrpcClientSettings.connectToServiceAt("host.com", 8080)
       val resolved = settings.serviceDiscovery.lookup("any", 1.second).futureValue
