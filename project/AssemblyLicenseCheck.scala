@@ -16,6 +16,7 @@
  */
 
 import java.io.{ ByteArrayOutputStream, IOException, InputStream }
+import java.nio.charset.StandardCharsets
 
 import sbt._
 import sbt.io.Using
@@ -45,6 +46,25 @@ object AssemblyLicenseCheck {
     taskKey[Seq[File]]("The published archives that should carry the assembly LICENSE and NOTICE files")
   val assemblyMetaInfCheck =
     taskKey[Unit]("Check that the published archives ship the assembly LICENSE and NOTICE files in META-INF")
+
+  /**
+   * Text that has to appear in the shipped files. Matching the curated file byte for byte only says
+   * the merge strategy picked our copy; these markers say that copy is still the file it should be,
+   * and not one that has been emptied or truncated.
+   */
+  private val requiredContent = Map(
+    "META-INF/LICENSE" -> Seq(
+      "Apache License",
+      "Version 2.0, January 2004",
+      "TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION",
+      // the 3rd party section this file exists for, see legal/AssemblyLicense.txt
+      "contain classes from 3rd party projects",
+      "Apache License Version 2.0:"),
+    "META-INF/NOTICE" -> Seq(
+      "Apache Pekko gRPC",
+      "The Apache Software Foundation",
+      // the 3rd party section this file exists for, see legal/AssemblyNotice.txt
+      "contain classes from 3rd party projects"))
 
   /** A module id as listed in the assembly LICENSE file: `organization:name`, optionally `:version`. */
   private val ModuleId = """^([a-zA-Z0-9][\w.\-]*):([a-zA-Z0-9][\w.\-]*)(?::.*)?$""".r
@@ -97,8 +117,13 @@ object AssemblyLicenseCheck {
                     Some(s"$path is missing, expected a copy of $file")
                   case Some(entry) =>
                     val actual = Using.zipEntry(zip)(entry)(readAll)
-                    if (actual.sameElements(IO.readBytes(file))) None
-                    else Some(s"$path does not match $file")
+                    if (!actual.sameElements(IO.readBytes(file))) Some(s"$path does not match $file")
+                    else {
+                      val text = new String(actual, StandardCharsets.UTF_8)
+                      val absent = requiredContent.getOrElse(path, Nil).filterNot(text.contains)
+                      if (absent.isEmpty) None
+                      else Some(s"$path does not mention ${absent.map(marker => s"'$marker'").mkString(", ")}")
+                    }
                 }
               }
             }
