@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-import java.io.{ ByteArrayOutputStream, InputStream }
-import java.util.zip.ZipFile
+import java.io.{ ByteArrayOutputStream, IOException, InputStream }
 
 import sbt._
+import sbt.io.Using
 import sbt.Keys._
 import sbtassembly.AssemblyKeys._
 import org.mdedetrich.apache.sonatype.ApacheSonatypePlugin.autoImport.{
@@ -89,23 +89,23 @@ object AssemblyLicenseCheck {
         Seq("META-INF/LICENSE" -> apacheSonatypeLicenseFile.value, "META-INF/NOTICE" -> apacheSonatypeNoticeFile.value)
 
       assemblyMetaInfArchives.value.foreach { archive =>
-        val zip = new ZipFile(archive)
         val problems =
-          try expected.flatMap { case (path, file) =>
-              Option(zip.getEntry(path)) match {
-                case None =>
-                  Some(s"$path is missing, expected a copy of $file")
-                case Some(entry) =>
-                  val actual = {
-                    val in = zip.getInputStream(entry)
-                    try readAll(in)
-                    finally in.close()
-                  }
-                  if (actual.sameElements(IO.readBytes(file))) None
-                  else Some(s"$path does not match $file")
+          try Using.zipFile(archive) { zip =>
+              expected.flatMap { case (path, file) =>
+                Option(zip.getEntry(path)) match {
+                  case None =>
+                    Some(s"$path is missing, expected a copy of $file")
+                  case Some(entry) =>
+                    val actual = Using.zipEntry(zip)(entry)(readAll)
+                    if (actual.sameElements(IO.readBytes(file))) None
+                    else Some(s"$path does not match $file")
+                }
               }
             }
-          finally zip.close()
+          catch {
+            // the archive name is not part of the messages the zip classes throw
+            case e: IOException => sys.error(s"${archive.getName} could not be read as a zip archive: $e")
+          }
 
         if (problems.nonEmpty)
           sys.error(s"${archive.getName} has license problems: ${problems.mkString("; ")}")
