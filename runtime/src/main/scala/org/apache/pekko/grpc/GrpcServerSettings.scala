@@ -11,11 +11,19 @@ package org.apache.pekko.grpc
 
 import org.apache.pekko
 import pekko.actor.ClassicActorSystemProvider
-import pekko.annotation.ApiMayChange
+import pekko.annotation.{ ApiMayChange, InternalApi }
 import pekko.grpc.internal.AbstractGrpcProtocol
-import com.typesafe.config.Config
+import com.typesafe.config.{ Config, ConfigFactory }
 
 object GrpcServerSettings {
+
+  /**
+   * INTERNAL API
+   *
+   * The built-in defaults, for entry points that have no access to the actor system's configuration.
+   */
+  @InternalApi
+  private[grpc] lazy val defaults: GrpcServerSettings = fromConfig(ConfigFactory.empty())
 
   /**
    * Scala API: Create settings from the actor system's default configuration (`pekko.grpc.server`).

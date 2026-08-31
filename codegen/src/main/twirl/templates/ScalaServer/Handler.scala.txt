@@ -117,7 +117,7 @@ object @{serviceName}Handler {
 
     private def handler(implementation: @serviceName, prefix: String, eHandler: ActorSystem => PartialFunction[Throwable, Trailers], settings: Option[GrpcServerSettings] = None)(@{service.scalaCompatConstants.ImplicitParameter} system: ClassicActorSystemProvider): model.HttpRequest => scala.concurrent.Future[model.HttpResponse] = {
       // resolved once, outside the returned function, so config is not re-read per request
-      val maxInboundMessageSize = settings.getOrElse(GrpcServerSettings.create(system)).maxInboundMessageSize
+      val serverSettings = settings.getOrElse(GrpcServerSettings.create(system))
       @{service.scalaCompatConstants.ImplicitVal} mat: Materializer = SystemMaterializer(system).materializer
       @{service.scalaCompatConstants.ImplicitVal} ec: ExecutionContext = mat.executionContext
       val spi = TelemetryExtension(system).spi
@@ -125,7 +125,7 @@ object @{serviceName}Handler {
       import @{service.name}.Serializers.@{service.scalaCompatConstants.WildcardImport}
 
       def handle(request: model.HttpRequest, method: String): scala.concurrent.Future[model.HttpResponse] =
-        GrpcMarshalling.negotiatedWithMaxSize(request, maxInboundMessageSize, (reader, writer) =>
+        GrpcMarshalling.negotiated(request, serverSettings, (reader, writer) =>
           method match {
             @for(method <- service.methods) {
             case "@method.grpcName" =>
@@ -162,7 +162,7 @@ object @{serviceName}Handler {
      */
     def partial(implementation: @serviceName, prefix: String = @{service.name}.name, eHandler: ActorSystem => PartialFunction[Throwable, Trailers] = GrpcExceptionHandler.defaultMapper, settings: Option[GrpcServerSettings] = None)(@{service.scalaCompatConstants.ImplicitParameter} system: ClassicActorSystemProvider): PartialFunction[model.HttpRequest, scala.concurrent.Future[model.HttpResponse]] = {
       // resolved once, outside the returned partial function, so config is not re-read per request
-      val maxInboundMessageSize = settings.getOrElse(GrpcServerSettings.create(system)).maxInboundMessageSize
+      val serverSettings = settings.getOrElse(GrpcServerSettings.create(system))
       @{service.scalaCompatConstants.ImplicitVal} mat: Materializer = SystemMaterializer(system).materializer
       @{service.scalaCompatConstants.ImplicitVal} ec: ExecutionContext = mat.executionContext
       val spi = TelemetryExtension(system).spi
@@ -170,7 +170,7 @@ object @{serviceName}Handler {
       import @{service.name}.Serializers.@{service.scalaCompatConstants.WildcardImport}
 
       def handle(request: model.HttpRequest, method: String): scala.concurrent.Future[model.HttpResponse] =
-        GrpcMarshalling.negotiatedWithMaxSize(request, maxInboundMessageSize, (reader, writer) =>
+        GrpcMarshalling.negotiated(request, serverSettings, (reader, writer) =>
           method match {
             @for(method <- service.methods) {
             case "@method.grpcName" =>

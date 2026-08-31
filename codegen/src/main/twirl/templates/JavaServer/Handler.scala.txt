@@ -157,15 +157,13 @@ public class @{serviceName}HandlerFactory {
      */
     public static Function<org.apache.pekko.http.javadsl.model.HttpRequest, CompletionStage<org.apache.pekko.http.javadsl.model.HttpResponse>> partial(@serviceName implementation, String prefix, Materializer mat, org.apache.pekko.japi.function.Function<ActorSystem, org.apache.pekko.japi.function.Function<Throwable, Trailers>> eHandler, GrpcServerSettings settings, ClassicActorSystemProvider system) {
       TelemetrySpi spi = TelemetryExtension.get(system).spi();
-      // resolved once, outside the returned function, so config is not re-read per request
-      int maxInboundMessageSize = settings.maxInboundMessageSize();
       return (req -> {
         Iterator<String> segments = req.getUri().pathSegments().iterator();
         if (segments.hasNext() && segments.next().equals(prefix) && segments.hasNext()) {
           String method = segments.next();
           if (segments.hasNext()) return notFound; // we don't allow any random `/prefix/Method/anything/here
           else {
-            return handle(spi.onRequest(prefix, method, req), method, implementation, mat, eHandler, maxInboundMessageSize, system);
+            return handle(spi.onRequest(prefix, method, req), method, implementation, mat, eHandler, settings, system);
           }
         } else {
           return notFound;
@@ -177,8 +175,8 @@ public class @{serviceName}HandlerFactory {
       return @{service.name}.name;
     }
 
-    private static CompletionStage<org.apache.pekko.http.javadsl.model.HttpResponse> handle(org.apache.pekko.http.javadsl.model.HttpRequest request, String method, @serviceName implementation, Materializer mat, org.apache.pekko.japi.function.Function<ActorSystem, org.apache.pekko.japi.function.Function<Throwable, Trailers>> eHandler, int maxInboundMessageSize, ClassicActorSystemProvider system) {
-      return GrpcMarshalling.negotiatedWithMaxSize(request, maxInboundMessageSize, (reader, writer) -> {
+    private static CompletionStage<org.apache.pekko.http.javadsl.model.HttpResponse> handle(org.apache.pekko.http.javadsl.model.HttpRequest request, String method, @serviceName implementation, Materializer mat, org.apache.pekko.japi.function.Function<ActorSystem, org.apache.pekko.japi.function.Function<Throwable, Trailers>> eHandler, GrpcServerSettings settings, ClassicActorSystemProvider system) {
+      return GrpcMarshalling.negotiated(request, settings, (reader, writer) -> {
         CompletionStage<org.apache.pekko.http.javadsl.model.HttpResponse> response;
         @{if(powerApis) { "Metadata metadata = MetadataBuilder.fromHeaders(request.getHeaders());" } else { "" }}
         switch(method) {
