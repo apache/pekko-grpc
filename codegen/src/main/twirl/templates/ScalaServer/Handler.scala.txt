@@ -126,6 +126,9 @@ object @{serviceName}Handler {
 
       def handle(request: model.HttpRequest, method: String): scala.concurrent.Future[model.HttpResponse] =
         GrpcMarshalling.negotiatedWithMaxSize(request, maxInboundMessageSize, (reader, writer) =>
+          // the client stops waiting once its deadline expires; without this the server keeps
+          // working on a reply nobody is going to read
+          GrpcMarshalling.withServerDeadline(request,
           method match {
             @for(method <- service.methods) {
             case "@method.grpcName" =>
@@ -141,7 +144,7 @@ object @{serviceName}Handler {
                 }
             }
             case m => GrpcExceptionHandler.from(eHandler(system.classicSystem))(system, writer)(new NotImplementedError(s"Not implemented: $m"))
-          }
+          })(system, writer, ec)
       ).getOrElse(unsupportedMediaType)
 
       request => {
@@ -171,6 +174,9 @@ object @{serviceName}Handler {
 
       def handle(request: model.HttpRequest, method: String): scala.concurrent.Future[model.HttpResponse] =
         GrpcMarshalling.negotiatedWithMaxSize(request, maxInboundMessageSize, (reader, writer) =>
+          // the client stops waiting once its deadline expires; without this the server keeps
+          // working on a reply nobody is going to read
+          GrpcMarshalling.withServerDeadline(request,
           method match {
             @for(method <- service.methods) {
             case "@method.grpcName" =>
@@ -186,7 +192,7 @@ object @{serviceName}Handler {
                 }
             }
             case m => GrpcExceptionHandler.from(eHandler(system.classicSystem))(system, writer)(new NotImplementedError(s"Not implemented: $m"))
-          }
+          })(system, writer, ec)
       ).getOrElse(unsupportedMediaType)
 
       Function.unlift((req: model.HttpRequest) => {

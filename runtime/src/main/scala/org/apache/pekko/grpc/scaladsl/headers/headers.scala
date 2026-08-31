@@ -23,6 +23,8 @@ import scala.collection.compat.immutable.ArraySeq
 import scala.collection.immutable
 import scala.annotation.nowarn
 import scala.util.Try
+import scala.concurrent.duration.FiniteDuration
+import java.util.concurrent.TimeUnit
 
 /**
  * Simple CSV parser for HTTP header values. Not meant to be a full CSV parser,
@@ -106,6 +108,71 @@ object `Status` extends ModeledCustomHeaderCompanion[`Status`] {
 
   def findIn(headers: immutable.Seq[HttpHeader]): Option[Int] =
     headers.collectFirst { case h if h.is(name) => Integer.parseInt(h.value()) }
+}
+
+/**
+ * The `grpc-timeout` request header: how long the client is prepared to wait for a reply.
+ *
+ * The wire format is a positive integer of at most 8 digits followed by a unit character, as
+ * per https://github.com/grpc/grpc/blob/master/doc/PROTOCOL-HTTP2.md - `H`ours, `M`inutes,
+ * `S`econds, `m`illiseconds, `u`microseconds, `n`anoseconds.
+ */
+@ApiMayChange
+final class `Timeout`(val timeout: FiniteDuration) extends ModeledCustomHeader[`Timeout`] {
+  override def renderInRequests = true
+  override def renderInResponses = false
+  @nowarn("msg=the inferred type changes")
+  override val companion = `Timeout`
+
+  // Nanoseconds keep the value exact for any duration the client can express, but the field is
+  // capped at 8 digits, so fall back to coarser units as the value grows.
+  override def value(): String = {
+    val nanos = timeout.toNanos
+    if (nanos < `Timeout`.MaxValue) s"${nanos}n"
+    else if (timeout.toMicros < `Timeout`.MaxValue) s"${timeout.toMicros}u"
+    else if (timeout.toMillis < `Timeout`.MaxValue) s"${timeout.toMillis}m"
+    else if (timeout.toSeconds < `Timeout`.MaxValue) s"${timeout.toSeconds}S"
+    else if (timeout.toMinutes < `Timeout`.MaxValue) s"${timeout.toMinutes}M"
+    else s"${timeout.toHours}H"
+  }
+}
+
+@ApiMayChange
+object `Timeout` extends ModeledCustomHeaderCompanion[`Timeout`] {
+  override val name = "grpc-timeout"
+  override val lowercaseName: String = super.lowercaseName
+
+  /** The wire format allows at most 8 digits. */
+  private[grpc] final val MaxValue = 100000000L
+
+  def apply(timeout: FiniteDuration): `Timeout` = new `Timeout`(timeout)
+
+  override def parse(value: String): Try[`Timeout`] = Try {
+    require(value.length >= 2, s"Invalid grpc-timeout [$value]")
+    val digits = value.substring(0, value.length - 1)
+    require(digits.length <= 8, s"Invalid grpc-timeout [$value], at most 8 digits allowed")
+    val amount = digits.toLong
+    require(amount >= 0, s"Invalid grpc-timeout [$value], must not be negative")
+    val unit = value.charAt(value.length - 1) match {
+      case 'H'   => TimeUnit.HOURS
+      case 'M'   => TimeUnit.MINUTES
+      case 'S'   => TimeUnit.SECONDS
+      case 'm'   => TimeUnit.MILLISECONDS
+      case 'u'   => TimeUnit.MICROSECONDS
+      case 'n'   => TimeUnit.NANOSECONDS
+      case other => throw new IllegalArgumentException(s"Invalid grpc-timeout unit [$other] in [$value]")
+    }
+    new `Timeout`(FiniteDuration(amount, unit))
+  }
+
+  /**
+   * The timeout requested in these headers, if any.
+   *
+   * A malformed value yields `None` rather than failing the request: the timeout is a hint from
+   * the peer, and refusing to serve a request over it would be worse than ignoring it.
+   */
+  def findIn(headers: immutable.Seq[HttpHeader]): Option[FiniteDuration] =
+    headers.collectFirst { case h if h.is(name) => parse(h.value()).toOption.map(_.timeout) }.flatten
 }
 
 // grpc-message must be percent encoded: https://github.com/grpc/grpc/issues/4672
