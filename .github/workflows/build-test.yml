@@ -47,6 +47,11 @@ jobs:
           cp .jvmopts-ci .jvmopts
           sbt grpcVersionSyncCheck googleProtobufVersionSyncCheck +mimaReportBinaryIssues
 
+      - name: Assembly license check
+        run: |-
+          cp .jvmopts-ci .jvmopts
+          sbt checkAssemblyLicenses
+
   compile-benchmarks:
     name: Compile Benchmarks
     runs-on: ubuntu-latest
