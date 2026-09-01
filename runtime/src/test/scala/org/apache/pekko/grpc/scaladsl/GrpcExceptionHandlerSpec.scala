@@ -41,9 +41,11 @@ class GrpcExceptionHandlerSpec extends AnyWordSpec with Matchers with ScalaFutur
       else expected(e.getCause)
     case grpcException: GrpcServiceException => grpcException.status
     case e: StatusRuntimeException           => e.getStatus
-    case e: NotImplementedError              => Status.UNIMPLEMENTED.withDescription(e.getMessage)
-    case e: UnsupportedOperationException    => Status.UNIMPLEMENTED.withDescription(e.getMessage)
-    case _                                   => Status.INTERNAL
+    // the message is not returned to the caller: it is whatever the service implementation
+    // happened to throw with, so it is logged instead
+    case _: NotImplementedError           => Status.UNIMPLEMENTED
+    case _: UnsupportedOperationException => Status.UNIMPLEMENTED
+    case _                                => Status.INTERNAL
   }
 
   val otherTypes: Seq[Throwable] = Seq(
@@ -67,6 +69,34 @@ class GrpcExceptionHandlerSpec extends AnyWordSpec with Matchers with ScalaFutur
         status.getCode shouldBe exp.getCode
         status.getDescription shouldBe exp.getDescription
       }
+    }
+  }
+
+  "defaultMapper" should {
+
+    "not return the message of a NotImplementedError to the caller" in {
+      val status = defaultMapper(system)(new NotImplementedError("internal detail")).status
+
+      status.getCode shouldBe Status.UNIMPLEMENTED.getCode
+      status.getDescription shouldBe null
+    }
+
+    "not return the message of an UnsupportedOperationException to the caller" in {
+      val status = defaultMapper(system)(new UnsupportedOperationException("internal detail")).status
+
+      status.getCode shouldBe Status.UNIMPLEMENTED.getCode
+      status.getDescription shouldBe null
+    }
+
+    "still return a description that was set deliberately" in {
+      // a GrpcServiceException is how a service says what to tell the caller, and is what the
+      // generated handlers raise for an unknown method
+      val deliberate = new GrpcServiceException(Status.UNIMPLEMENTED.withDescription("Not implemented: SayHello"))
+
+      val status = defaultMapper(system)(deliberate).status
+
+      status.getCode shouldBe Status.UNIMPLEMENTED.getCode
+      status.getDescription shouldBe "Not implemented: SayHello"
     }
   }
 

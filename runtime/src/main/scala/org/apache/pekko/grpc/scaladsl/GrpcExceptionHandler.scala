@@ -31,6 +31,7 @@ import pekko.event.Logging
 object GrpcExceptionHandler {
   private val INTERNAL = Trailers(Status.INTERNAL)
   private val INVALID_ARGUMENT = Trailers(Status.INVALID_ARGUMENT)
+  private val UNIMPLEMENTED = Trailers(Status.UNIMPLEMENTED)
 
   private def log(system: ActorSystem) = Logging(system, "org.apache.pekko.grpc.scaladsl.GrpcExceptionHandler")
 
@@ -39,10 +40,17 @@ object GrpcExceptionHandler {
       if (e.getCause == null) INTERNAL
       else defaultMapper(system)(e.getCause)
     case grpcException: GrpcServiceException => Trailers(grpcException.status, grpcException.metadata)
-    case e: NotImplementedError              => Trailers(Status.UNIMPLEMENTED.withDescription(e.getMessage))
-    case e: UnsupportedOperationException    => Trailers(Status.UNIMPLEMENTED.withDescription(e.getMessage))
-    case _: MissingParameterException        => INVALID_ARGUMENT
-    case e: StatusRuntimeException           =>
+    case e: NotImplementedError              =>
+      // the message is whatever the service implementation happened to throw with, so it is
+      // logged rather than returned. Throw a GrpcServiceException to send a description on
+      // purpose; that is what the generated handlers do for an unknown method.
+      log(system).warning(e, "Unimplemented: [{}]", e.getMessage)
+      UNIMPLEMENTED
+    case e: UnsupportedOperationException =>
+      log(system).warning(e, "Unimplemented: [{}]", e.getMessage)
+      UNIMPLEMENTED
+    case _: MissingParameterException => INVALID_ARGUMENT
+    case e: StatusRuntimeException    =>
       val meta = Option(e.getTrailers).getOrElse(new io.grpc.Metadata())
       Trailers(e.getStatus, new GrpcMetadataImpl(meta))
     case e: PeerClosedStreamException =>

@@ -35,6 +35,7 @@ import scala.concurrent.ExecutionException
 object GrpcExceptionHandler {
   private val INTERNAL = Trailers(Status.INTERNAL)
   private val INVALID_ARGUMENT = Trailers(Status.INVALID_ARGUMENT)
+  private val UNIMPLEMENTED = Trailers(Status.UNIMPLEMENTED)
 
   def defaultMapper: jFunction[ActorSystem, jFunction[Throwable, Trailers]] =
     new jFunction[ActorSystem, jFunction[Throwable, Trailers]] {
@@ -58,10 +59,17 @@ object GrpcExceptionHandler {
             else default(system)(e.getCause)
           case grpcException: GrpcServiceException => Trailers(grpcException.status, grpcException.metadata)
           case _: MissingParameterException        => INVALID_ARGUMENT
-          case e: NotImplementedError              => Trailers(Status.UNIMPLEMENTED.withDescription(e.getMessage))
-          case e: UnsupportedOperationException    => Trailers(Status.UNIMPLEMENTED.withDescription(e.getMessage))
-          case e: StatusRuntimeException           => Trailers(e.getStatus, new GrpcMetadataImpl(e.getTrailers))
-          case e: PeerClosedStreamException        =>
+          case e: NotImplementedError              =>
+            // the message is whatever the service implementation happened to throw with, so it
+            // is logged rather than returned. Throw a GrpcServiceException to send a description
+            // on purpose; that is what the generated handlers do for an unknown method.
+            log(system).warning(e, "Unimplemented: [{}]", e.getMessage)
+            UNIMPLEMENTED
+          case e: UnsupportedOperationException =>
+            log(system).warning(e, "Unimplemented: [{}]", e.getMessage)
+            UNIMPLEMENTED
+          case e: StatusRuntimeException    => Trailers(e.getStatus, new GrpcMetadataImpl(e.getTrailers))
+          case e: PeerClosedStreamException =>
             log(system).warning(e, "Peer closed the stream: [{}]", e.getMessage)
             INTERNAL
           case other =>
