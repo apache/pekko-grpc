@@ -30,6 +30,7 @@ import pekko.http.scaladsl.{ ClientTransport, ConnectionContext, Http, HttpsConn
 import pekko.http.scaladsl.model._
 import pekko.http.scaladsl.model.headers.RawHeader
 import pekko.http.scaladsl.settings.ClientConnectionSettings
+import pekko.http.scaladsl.util.FastFuture
 import pekko.stream.{ Materializer, QueueOfferResult }
 import pekko.stream.scaladsl.{ Keep, Sink, Source }
 import pekko.util.ByteString
@@ -317,7 +318,7 @@ object PekkoHttpClientUtils {
           if (response.status != StatusCodes.OK) {
             response.entity.discardBytes()
             val failure = mapToStatusException(response, immutable.Seq.empty)
-            Source.failed(failure).mapMaterializedValue(_ => Future.failed(failure))
+            Source.failed(failure).mapMaterializedValue(_ => FastFuture.failed(failure))
           } else {
             Codecs.detect(response) match {
               case Success(codec) =>
@@ -362,7 +363,7 @@ object PekkoHttpClientUtils {
                   .via(reader.dataFrameDecoder)
                   .map(deserializer.deserialize)
                   .mapMaterializedValue(_ =>
-                    Future.successful(new GrpcResponseMetadata() {
+                    FastFuture.successful(new GrpcResponseMetadata() {
                       override def headers: pekko.grpc.scaladsl.Metadata =
                         new HeaderMetadataImpl(response.headers)
 
@@ -379,7 +380,7 @@ object PekkoHttpClientUtils {
                           .asJava
                     }))
               case Failure(e) =>
-                Source.failed[O](e).mapMaterializedValue(_ => Future.failed(e))
+                Source.failed[O](e).mapMaterializedValue(_ => FastFuture.failed(e))
             }
           }
         }
@@ -391,9 +392,9 @@ object PekkoHttpClientUtils {
     val allHeaders = response.headers ++ trailers
     allHeaders.find(_.name == "grpc-status").map(_.value) match {
       case Some("0") =>
-        Future.successful(())
+        FastFuture.successful(())
       case _ =>
-        Future.failed(mapToStatusException(response, trailers))
+        FastFuture.failed(mapToStatusException(response, trailers))
     }
   }
 

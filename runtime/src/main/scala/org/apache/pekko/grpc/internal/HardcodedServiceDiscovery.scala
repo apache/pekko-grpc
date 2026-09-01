@@ -16,11 +16,12 @@ package org.apache.pekko.grpc.internal
 import org.apache.pekko
 import pekko.discovery.{ Lookup, ServiceDiscovery }
 import pekko.discovery.ServiceDiscovery.Resolved
+import pekko.http.scaladsl.util.FastFuture
 
 import scala.concurrent.Future
 import scala.concurrent.duration.FiniteDuration
 
 class HardcodedServiceDiscovery(resolved: Resolved) extends ServiceDiscovery {
   override def lookup(lookup: Lookup, resolveTimeout: FiniteDuration): Future[Resolved] =
-    Future.successful(resolved)
+    FastFuture.successful(resolved)
 }
