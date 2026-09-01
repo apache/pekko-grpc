@@ -24,7 +24,7 @@ import pekko.annotation.InternalApi
 import pekko.event.LoggingAdapter
 import pekko.grpc.GrpcProtocol.GrpcProtocolReader
 import pekko.grpc.scaladsl.headers.PercentEncoding
-import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, GrpcSingleResponse, ProtobufSerializer }
+import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, GrpcSingleResponse, ProtobufSerializer, SSLContextUtils }
 import pekko.http.scaladsl.model.HttpEntity.{ Chunk, Chunked, LastChunk, Strict }
 import pekko.http.scaladsl.{ ClientTransport, ConnectionContext, Http, HttpsConnectionContext }
 import pekko.http.scaladsl.model._
@@ -247,10 +247,15 @@ object PekkoHttpClientUtils {
    *
    * The `SSLContext` to use for the pekko-http backend, from the explicitly configured context,
    * the configured trust manager, or the JVM default.
+   *
+   * When `minimum-tls-version` is set the context is wrapped so that every `SSLEngine` it
+   * creates enables only protocols at or above that version. Applying it here rather than at
+   * one of the call sites means both the verifying and the `verify-hostname = false`
+   * connection contexts inherit the floor.
    */
   @InternalApi
-  private[grpc] def sslContextFor(settings: GrpcClientSettings): SSLContext =
-    settings.sslContext.getOrElse {
+  private[grpc] def sslContextFor(settings: GrpcClientSettings): SSLContext = {
+    val base = settings.sslContext.getOrElse {
       settings.trustManager match {
         case None               => SSLContext.getDefault
         case Some(trustManager) =>
@@ -259,6 +264,8 @@ object PekkoHttpClientUtils {
           ctx
       }
     }
+    settings.minimumTlsVersion.fold(base)(SSLContextUtils.withMinimumTlsVersion(base, _))
+  }
 
   /**
    * INTERNAL API
