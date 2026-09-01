@@ -18,7 +18,7 @@ import scala.concurrent.duration._
 
 import org.apache.pekko
 import pekko.actor.ActorSystem
-import pekko.grpc.GrpcResponseMetadata
+import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata }
 import pekko.grpc.scaladsl.headers.PercentEncoding
 import pekko.http.scaladsl.model.HttpEntity.Strict
 import pekko.http.scaladsl.model._
@@ -37,6 +37,34 @@ class PekkoHttpClientUtilsSpec extends TestKit(ActorSystem()) with AnyWordSpecLi
   implicit val ec: ExecutionContext = system.dispatcher
   implicit val patience: PatienceConfig =
     PatienceConfig(5.seconds, Span(100, org.scalatest.time.Millis))
+
+  "checkAuthority" should {
+
+    "accept the configured override-authority" in {
+      val settings = GrpcClientSettings.connectToServiceAt("example.com", 443).withOverrideAuthority("auth.example")
+
+      noException should be thrownBy PekkoHttpClientUtils.checkAuthority("auth.example", settings)
+    }
+
+    "accept any host when no authority is configured" in {
+      val settings = GrpcClientSettings.connectToServiceAt("example.com", 443)
+
+      noException should be thrownBy PekkoHttpClientUtils.checkAuthority("anything.example", settings)
+    }
+
+    "reject a mismatched host with an Exception, not an Error" in {
+      // `assert` threw AssertionError, which is an Error and so passes straight through a
+      // `catch NonFatal` or `catch Exception` handler
+      val settings = GrpcClientSettings.connectToServiceAt("example.com", 443).withOverrideAuthority("auth.example")
+
+      val thrown = the[IllegalArgumentException] thrownBy
+        PekkoHttpClientUtils.checkAuthority("other.example", settings)
+
+      thrown shouldBe a[Exception]
+      thrown.getMessage should include("other.example")
+      thrown.getMessage should include("auth.example")
+    }
+  }
 
   "The conversion from HttpResponse to Source" should {
     "map a strict 404 response to a failed stream" in {

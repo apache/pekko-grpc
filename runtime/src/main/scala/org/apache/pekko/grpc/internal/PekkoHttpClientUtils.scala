@@ -72,9 +72,7 @@ object PekkoHttpClientUtils {
     @volatile var roundRobin: Int = 0
     val clientConnectionSettings =
       ClientConnectionSettings(sys).withTransport(ClientTransport.withCustomResolver((host, _) => {
-        settings.overrideAuthority.foreach { authority =>
-          assert(host == authority)
-        }
+        checkAuthority(host, settings)
         settings.serviceDiscovery.lookup(settings.serviceName, settings.resolveTimeout).map { resolved =>
           if (resolved.addresses.isEmpty)
             throw new IllegalStateException(
@@ -222,6 +220,25 @@ object PekkoHttpClientUtils {
       }
     }
   }
+
+  /**
+   * INTERNAL API
+   *
+   * Checks that the host being resolved is the authority this client was configured for.
+   *
+   * An `IllegalArgumentException` rather than `assert`: an `AssertionError` is an `Error`, so it
+   * passes through handlers that catch `Exception`, and `assert` is elided entirely under
+   * `-Xdisable-assertions`, which is the calling application's compiler flag to set rather than
+   * ours. The message names both hosts, where `assert` reported only "assertion failed".
+   */
+  @InternalApi
+  private[internal] def checkAuthority(host: String, settings: GrpcClientSettings): Unit =
+    settings.overrideAuthority.foreach { authority =>
+      if (host != authority)
+        throw new IllegalArgumentException(
+          s"Unexpected host [$host] for gRPC client '${settings.serviceName}', " +
+          s"expected the configured override-authority [$authority]")
+    }
 
   /**
    * INTERNAL API
