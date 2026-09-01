@@ -131,6 +131,38 @@ class PekkoHttpClientUtilsSpec extends TestKit(ActorSystem()) with AnyWordSpecLi
       failure.asInstanceOf[StatusRuntimeException].getStatus.getDescription should be("broken %ZZ escape")
     }
 
+    "report a non-numeric grpc-status as INTERNAL rather than throwing" in {
+      // a broken peer must not surface as a NumberFormatException to the caller
+      val responseHeaders = RawHeader("grpc-status", "abc") :: Nil
+      val response =
+        Future.successful(HttpResponse(OK, responseHeaders, Strict(GrpcProtocolNative.contentType, ByteString.empty)))
+
+      val failure = PekkoHttpClientUtils.responseToSource(response, null).run().failed.futureValue
+
+      failure shouldBe a[StatusRuntimeException]
+      val status = failure.asInstanceOf[StatusRuntimeException].getStatus
+      status.getCode should be(Status.Code.INTERNAL)
+      status.getDescription should include("abc")
+    }
+
+    "still report the gRPC status when a binary header is not valid base64" in {
+      // building the metadata base64-decodes `-bin` headers, which throws on a malformed value.
+      // That must not replace the error already being reported with an exception of its own.
+      val responseHeaders = RawHeader("grpc-status", "9") ::
+        RawHeader("grpc-message", "the real failure") ::
+        RawHeader("custom-key-bin", "!!!not valid base64!!!") ::
+        Nil
+      val response =
+        Future.successful(HttpResponse(OK, responseHeaders, Strict(GrpcProtocolNative.contentType, ByteString.empty)))
+
+      val failure = PekkoHttpClientUtils.responseToSource(response, null).run().failed.futureValue
+
+      failure shouldBe a[StatusRuntimeException]
+      val status = failure.asInstanceOf[StatusRuntimeException].getStatus
+      status.getCode should be(Status.Code.FAILED_PRECONDITION)
+      status.getDescription should be("the real failure")
+    }
+
     "map a strict 200 response with non-0 gRPC error code with a trailer to a failed stream with trailer metadata" in {
       val responseHeaders = List(RawHeader("grpc-status", "9"))
       val responseTrailers = Trailer(
