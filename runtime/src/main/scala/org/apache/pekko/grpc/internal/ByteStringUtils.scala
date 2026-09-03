@@ -34,26 +34,44 @@ private[grpc] object ByteStringUtils {
     val initialBytes = stream.read(buffer, 0, buffer.length)
     val nextByte = if (initialBytes < 0) -1 else stream.read() // Test for EOF
 
-    if (nextByte == -1) {
-      if (initialBytes < 1) ByteString.empty // EOF immediately
-      else if (initialBytes > (buffer.length >> 1))
-        // Most of the buffer is used — reuse it to avoid a copy
-        ByteString.fromArrayUnsafe(buffer, 0, initialBytes)
-      else
-        // Small read from a large buffer — copy to right-size so the rest can be GC'd
-        ByteString.fromArray(buffer, 0, initialBytes)
-    } else {
-      val baos = new ByteArrayOutputStream(buffer.length * 2) // To avoid immediate resize
-      baos.write(buffer, 0, initialBytes)
-      baos.write(nextByte)
+    if (nextByte == -1)
+      toByteStringUnsafe(buffer, initialBytes)
+    else {
+      val bsos = new ByteStringOutputStream(buffer.length * 2) // To avoid immediate resize
+      bsos.write(buffer, 0, initialBytes)
+      bsos.write(nextByte)
 
       var bytesRead = stream.read(buffer)
       while (bytesRead >= 0) {
-        baos.write(buffer, 0, bytesRead)
+        bsos.write(buffer, 0, bytesRead)
         bytesRead = stream.read(buffer)
       }
 
-      ByteString.fromArrayUnsafe(baos.toByteArray)
+      bsos.toByteStringUnsafe
     }
   }
+
+  def toByteStringUnsafe(buf: Array[Byte], count: Int): ByteString =
+    if (count < 1)
+      ByteString.empty
+    else if (count > (buf.length >> 1))
+      // Most of the buffer is used — reuse it to avoid a copy
+      ByteString.fromArrayUnsafe(buf, 0, count)
+    else
+      // Small read from a large buffer — copy to right-size so the rest can be GC'd
+      ByteString.fromArray(buf, 0, count)
+}
+
+/**
+ * OutputStream to ByteString adapter, avoiding copying of the buffered data where possible.
+ */
+private class ByteStringOutputStream(capacity: Int) extends ByteArrayOutputStream(capacity) {
+
+  /**
+   * Wraps contents of the buffer in a ByteString.
+   *
+   * This can wrap an unsafe reference to the internal buffer of this output stream.
+   * The caller must ensure that the output stream is not modified after this method is called.
+   */
+  def toByteStringUnsafe: ByteString = ByteStringUtils.toByteStringUnsafe(buf, count)
 }
