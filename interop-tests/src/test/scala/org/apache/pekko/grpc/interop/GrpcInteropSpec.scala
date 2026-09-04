@@ -50,7 +50,7 @@ class GrpcInteropPekkoJavaWithPekkoHttpJavaSpec extends GrpcInteropTests(Servers
 object Servers {
   val IoGrpc = IoGrpcJavaServerProvider
   object Pekko {
-    val Java = PekkoHttpServerProviderJava$
+    val Java = PekkoHttpServerProviderJava
     val Scala = PekkoHttpServerProviderScala
   }
 }
@@ -73,7 +73,7 @@ object Clients {
 
 //--- Some more providers
 
-object PekkoHttpServerProviderJava$ extends PekkoHttpServerProvider {
+object PekkoHttpServerProviderJava extends PekkoHttpServerProvider {
   val label: String = "pekko-grpc java server"
 
   val pendingCases =
