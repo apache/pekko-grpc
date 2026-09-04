@@ -18,9 +18,9 @@ object Dependencies {
   object Versions {
     // Update the .github workflows when these scala versions change
     val scala212 = "2.12.21"
-    val scala213 = "3.9.0"
+    val scala213 = "2.13.18"
     val scala3 = "3.3.8"
-    val scala3Next = "3.8.4"
+    val scala3Next = "3.9.0"
 
     // the order in the list is important because the head will be considered the default.
     val CrossScalaForLib = Seq(scala213, scala3)

@@ -7,6 +7,6 @@
  * This file is part of the Apache Pekko project, which was derived from Akka.
  */
 
-scalaVersion := "3.9.0"
+scalaVersion := "2.13.18"
 
 enablePlugins(PekkoGrpcPlugin)

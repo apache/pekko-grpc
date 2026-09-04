@@ -10,7 +10,7 @@
 //#setup
 import scalapb.GeneratorOption._
 
-scalaVersion := "3.9.0"
+scalaVersion := "2.13.18"
 
 // ScalaPB Validate sbt plugin does not have a release that supports ScalaPB 1.0.0
 Global / evictionErrorLevel := Level.Info

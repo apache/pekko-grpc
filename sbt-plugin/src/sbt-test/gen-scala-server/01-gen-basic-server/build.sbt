@@ -9,7 +9,7 @@
 
 scalacOptions += "-Xfatal-warnings"
 
-scalaVersion := "3.9.0"
+scalaVersion := "2.13.18"
 
 enablePlugins(PekkoGrpcPlugin)
 
