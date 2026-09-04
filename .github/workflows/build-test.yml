@@ -127,7 +127,7 @@ jobs:
           - test-set: gen-scala-server
             scala-version: 2.13
           - test-set: scala3
-            scala-version: next
+            scala-version: sbt-plugin-scala3
           - test-set: gen-java
             scala-version: 2.13
     steps:
@@ -159,7 +159,7 @@ jobs:
       - name: Scripted ${{ matrix.test-set }}
         run: |-
           cp .jvmopts-ci .jvmopts
-          if [ "${{ matrix.scala-version }}" = "next" ]; then
+          if [ "${{ matrix.scala-version }}" = "sbt-plugin-scala3" ]; then
             scala_version="$(bash .github/scripts/resolve-scala-version.sh "${{ matrix.scala-version }}")"
             sbt "++${scala_version}!" "sbt-plugin/scripted ${{ matrix.test-set }}/*"
           else
