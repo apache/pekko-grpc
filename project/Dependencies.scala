@@ -20,12 +20,17 @@ object Dependencies {
     val scala212 = "2.12.21"
     val scala213 = "2.13.18"
     val scala3 = "3.3.8"
-    val scala3Next = "3.8.4"
+    val scala3Next = "3.9.0"
+    // The Scala 3 version used to build the sbt 2.x plugin. It must not be newer than the
+    // Scala version sbt 2.x itself is built with (sbt 2.0.x uses 3.8.4), otherwise sbt cannot
+    // read the plugin's TASTy files and loading a build that uses the plugin fails with
+    // "Forward incompatible TASTy file". Keep in sync with sbt 2.x, not with scala3Next.
+    val scala3ForSbtPlugin = "3.8.4"
 
     // the order in the list is important because the head will be considered the default.
     val CrossScalaForLib = Seq(scala213, scala3)
     val CrossScalaForPlugin = Seq(scala212, scala3)
-    val CrossScalaForSbtPlugin = Seq(scala212, scala3Next)
+    val CrossScalaForSbtPlugin = Seq(scala212, scala3ForSbtPlugin)
     val CrossScalaAll = Seq(scala212, scala213, scala3)
 
     // We don't force Pekko updates because downstream projects can upgrade

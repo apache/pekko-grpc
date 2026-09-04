@@ -45,6 +45,9 @@ case "$scala_version" in
   next)
     resolve_from_build 's/.*val scala3Next = "\(.*\)".*/\1/p'
     ;;
+  sbt-plugin-scala3)
+    resolve_from_build 's/.*val scala3ForSbtPlugin = "\(.*\)".*/\1/p'
+    ;;
   *)
     printf '%s\n' "$scala_version"
     ;;
