@@ -9,6 +9,6 @@
 
 enablePlugins(ProtocGoPlugin) // enable it first to test possibility of getting overridden
 
-scalaVersion := "2.13.18"
+scalaVersion := "3.9.0"
 
 enablePlugins(PekkoGrpcPlugin)
