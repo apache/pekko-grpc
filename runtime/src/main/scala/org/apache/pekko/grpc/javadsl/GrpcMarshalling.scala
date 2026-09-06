@@ -38,29 +38,20 @@ object GrpcMarshalling {
   def negotiated[T](
       req: HttpRequest,
       f: (GrpcProtocolReader, GrpcProtocolWriter) => CompletionStage[T]): Optional[CompletionStage[T]] =
-    GrpcProtocol
-      .negotiate(req)
-      .map {
-        case (maybeReader, writer) =>
-          maybeReader.map(reader => f(reader, writer)).fold[CompletionStage[T]](failure, identity)
-      }
-      .fold(Optional.empty[CompletionStage[T]])(Optional.of)
+    negotiated(req, GrpcServerSettings.defaults, f)
 
   /**
-   * INTERNAL API
+   * Negotiates the gRPC protocol for a server handler with the given settings.
    *
-   * Negotiates the gRPC protocol with a custom maximum inbound message size.
-   *
-   * Deliberately not an overload of `negotiated`: a second overload would stop Scala from
-   * inferring the parameter types of the `(reader, writer) => ...` lambda at existing call sites.
+   * The settings carry the handler-scoped configuration (currently the maximum inbound
+   * message size), so that further configuration can be added without another entry point here.
    */
-  @InternalApi
-  def negotiatedWithMaxSize[T](
+  def negotiated[T](
       req: HttpRequest,
-      maxInboundMessageSize: Int,
+      settings: GrpcServerSettings,
       f: (GrpcProtocolReader, GrpcProtocolWriter) => CompletionStage[T]): Optional[CompletionStage[T]] =
     GrpcProtocol
-      .negotiate(req, maxInboundMessageSize)
+      .negotiate(req, settings)
       .map {
         case (maybeReader, writer) =>
           maybeReader.map(reader => f(reader, writer)).fold[CompletionStage[T]](failure, identity)
