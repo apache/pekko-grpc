@@ -1,21 +1,5 @@
 # Server Reflection
 
-@@@note
-
-This feature is **experimental** [Issue #850](https://github.com/akka/akka-grpc/issues/850).
-
-It implements version v1 of the [upstream standard](https://github.com/grpc/grpc/blob/master/src/proto/grpc/reflection/v1/reflection.proto),
-so we might expect subsequent versions of the service to emerge. Also,
-the Java/Scala API's to enable this feature may still change in further
-versions of Pekko gRPC, and future versions of this feature may not work with
-services generated with older versions of Pekko gRPC.
-
-There may be missing features and bugs in the current implementation. If you
-encounter any, you are welcome to share a reproducer in our
-[issue tracker](https://github.com/apache/pekko-grpc/issues).
-
-@@@
-
 Server Reflection is a [gRPC feature](https://github.com/grpc/grpc/blob/master/doc/server-reflection.md)
 that allows 'dynamic' clients, such as command-line tools for debugging, to
 discover the protocol used by a gRPC server at run time. They can then use
