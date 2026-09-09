@@ -16,7 +16,6 @@ package org.apache.pekko.grpc.javadsl
 import org.apache.pekko
 import pekko.annotation.ApiMayChange
 import pekko.grpc.ProtobufFrameSerializer
-import pekko.grpc.internal.AbstractGrpcProtocol
 import pekko.util.ByteString
 import com.google.protobuf.CodedOutputStream
 import com.google.protobuf.Parser
@@ -28,17 +27,16 @@ class GoogleProtobufSerializer[T <: com.google.protobuf.Message](parser: Parser[
 
   override def serialize(t: T): ByteString =
     ByteString.fromArrayUnsafe(t.toByteArray)
-  override private[grpc] def serializeDataFrame(t: T): ByteString = {
-    val dataLength = t.getSerializedSize
-    val frame = new Array[Byte](AbstractGrpcProtocol.FrameHeaderSize + dataLength)
-    AbstractGrpcProtocol.writeFrameHeader(frame, 0, dataLength, isCompressed = false, isTrailer = false)
 
-    val output = CodedOutputStream.newInstance(frame, AbstractGrpcProtocol.FrameHeaderSize, dataLength)
+  override def serializedSize(t: T): Int = t.getSerializedSize
+
+  override def serializeTo(t: T, frame: Array[Byte], offset: Int): Unit = {
+    val dataLength = t.getSerializedSize
+    val output = CodedOutputStream.newInstance(frame, offset, dataLength)
     t.writeTo(output)
     output.checkNoSpaceLeft()
-
-    ByteString.fromArrayUnsafe(frame)
   }
+
   override def deserialize(bytes: ByteString): T = {
     val inputStream = bytes.asInputStream
     try parser.parseFrom(inputStream)

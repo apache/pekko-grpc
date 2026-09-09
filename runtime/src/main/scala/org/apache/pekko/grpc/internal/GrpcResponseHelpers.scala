@@ -19,21 +19,11 @@ import pekko.actor.{ ActorSystem, ClassicActorSystemProvider }
 import pekko.annotation.InternalApi
 import pekko.grpc.GrpcProtocol.{ GrpcProtocolWriter, TrailerFrame }
 import pekko.grpc.scaladsl.{ headers, GrpcExceptionHandler }
-import pekko.grpc.{ ProtobufFrameSerializer, ProtobufSerializer, Trailers }
+import pekko.grpc.{ ProtobufSerializer, Trailers }
 import pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
-import pekko.http.scaladsl.model.{
-  AttributeKey,
-  AttributeKeys,
-  HttpEntity,
-  HttpHeader,
-  HttpProtocols,
-  HttpResponse,
-  StatusCodes,
-  Trailer
-}
+import pekko.http.scaladsl.model.{ HttpEntity, HttpHeader, HttpResponse, Trailer }
 import pekko.stream.Materializer
 import pekko.stream.scaladsl.Source
-import pekko.util.ByteString
 import io.grpc.Status
 
 import scala.collection.immutable
@@ -49,8 +39,6 @@ import scala.util.control.NonFatal
 object GrpcResponseHelpers {
   private val TrailerOk = GrpcEntityHelpers.trailer(Status.OK)
   private val TrailerOkAttribute = Trailer(TrailerOk.trailers)
-  private val TrailerOkAttributes =
-    Map.empty[AttributeKey[?], Any].updated(AttributeKeys.trailer, TrailerOkAttribute)
   private val IdentityResponseHeaders: immutable.Seq[HttpHeader] =
     headers.`Message-Encoding`(Identity.name) :: Nil
 
@@ -72,16 +60,7 @@ object GrpcResponseHelpers {
       system: ClassicActorSystemProvider): HttpResponse = {
     val responseHeaders = responseHeadersFor(writer)
     try {
-      if ((writer.messageEncoding eq Identity) && writer.contentType == GrpcProtocolNative.contentType) {
-        m match {
-          case frameSerializer: ProtobufFrameSerializer[T @unchecked] =>
-            nativeResponse(writer, frameSerializer.serializeDataFrame(e), responseHeaders)
-          case _ =>
-            writer.encodeDataToResponse(m.serialize(e), responseHeaders, TrailerOkAttribute)
-        }
-      } else {
-        writer.encodeDataToResponse(m.serialize(e), responseHeaders, TrailerOkAttribute)
-      }
+      writer.encodeDataToResponse(GrpcEntityHelpers.outboundDataFrame(e), responseHeaders, TrailerOkAttribute)
     } catch {
       case NonFatal(ex) => status(GrpcEntityHelpers.handleException(ex, eHandler))
     }
@@ -90,17 +69,6 @@ object GrpcResponseHelpers {
   private def responseHeadersFor(writer: GrpcProtocolWriter): immutable.Seq[HttpHeader] =
     if (writer.messageEncoding eq Identity) IdentityResponseHeaders
     else headers.`Message-Encoding`(writer.messageEncoding.name) :: Nil
-
-  private def nativeResponse(
-      writer: GrpcProtocolWriter,
-      encodedData: ByteString,
-      responseHeaders: immutable.Seq[HttpHeader]): HttpResponse =
-    new HttpResponse(
-      status = StatusCodes.OK,
-      headers = responseHeaders,
-      entity = HttpEntity(writer.contentType, encodedData),
-      protocol = HttpProtocols.`HTTP/1.1`,
-      attributes = TrailerOkAttributes)
 
   def apply[T](e: Source[T, NotUsed], status: Future[Status])(
       implicit m: ProtobufSerializer[T],
