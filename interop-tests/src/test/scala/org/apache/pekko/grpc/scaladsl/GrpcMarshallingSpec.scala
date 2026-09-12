@@ -29,7 +29,6 @@ import io.grpc.testing.integration.test.TestService
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-import scala.collection.immutable
 import scala.concurrent.{ Await, Future, Promise }
 import scala.concurrent.duration._
 
@@ -47,7 +46,7 @@ class GrpcMarshallingSpec extends AnyWordSpec with Matchers {
 
     "correctly unmarshal a zipped object" in {
       val request = HttpRequest(
-        headers = immutable.Seq(`Message-Encoding`("gzip")),
+        headers = Seq(`Message-Encoding`("gzip")),
         entity = HttpEntity.Strict(GrpcProtocolNative.contentType, zippedBytes))
 
       val marshalled = Await.result(GrpcMarshalling.unmarshal(request), 10.seconds)
@@ -58,7 +57,7 @@ class GrpcMarshallingSpec extends AnyWordSpec with Matchers {
     "not cancel the input stream after reading the first parameter for a non-streaming request" in {
       val sourceProbe = Promise[TestPublisher.Probe[ChunkStreamPart]]()
       val request = HttpRequest(
-        headers = immutable.Seq(`Message-Encoding`("gzip")),
+        headers = Seq(`Message-Encoding`("gzip")),
         entity = HttpEntity.Chunked(
           GrpcProtocolNative.contentType,
           TestSource[ChunkStreamPart]()
@@ -82,7 +81,7 @@ class GrpcMarshallingSpec extends AnyWordSpec with Matchers {
 
     "correctly unmarshal a zipped stream" in {
       val request = HttpRequest(
-        headers = immutable.Seq(`Message-Encoding`("gzip")),
+        headers = Seq(`Message-Encoding`("gzip")),
         entity = HttpEntity.Strict(GrpcProtocolNative.contentType, zippedBytes ++ zippedBytes))
 
       val stream = Await.result(GrpcMarshalling.unmarshalStream(request), 10.seconds)
@@ -95,7 +94,7 @@ class GrpcMarshallingSpec extends AnyWordSpec with Matchers {
     // test case 6
     "fail with INTERNAL when the compressed bit is on but the encoding is identity" in {
       val request = HttpRequest(
-        headers = immutable.Seq(`Message-Encoding`("identity")),
+        headers = Seq(`Message-Encoding`("identity")),
         entity = HttpEntity.Strict(GrpcProtocolNative.contentType, zippedBytes))
 
       assertFailure(GrpcMarshalling.unmarshal(request), Status.Code.INTERNAL, "encoding")

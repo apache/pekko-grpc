@@ -21,7 +21,6 @@ import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.Future
 import scala.concurrent.Promise
 import scala.concurrent.duration._
-import scala.collection.immutable
 
 import io.grpc.Attributes
 import io.grpc.NameResolver.Listener
@@ -55,7 +54,7 @@ class PekkoDiscoveryNameResolverProviderSpec
       val discovery = new ServiceDiscovery() {
         override def lookup(lookup: Lookup, resolveTimeout: FiniteDuration): Future[Resolved] = {
           lookup.serviceName should be(serviceName)
-          Future.successful(Resolved(serviceName, immutable.Seq(ResolvedTarget("10.0.0.3", Some(4312), None))))
+          Future.successful(Resolved(serviceName, Seq(ResolvedTarget("10.0.0.3", Some(4312), None))))
         }
       }
       val provider = new PekkoDiscoveryNameResolverProvider(

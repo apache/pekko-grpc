@@ -37,7 +37,6 @@ import pekko.util.ByteString
 import io.grpc.{ CallOptions, MethodDescriptor, Status, StatusRuntimeException }
 
 import javax.net.ssl.{ KeyManager, SSLContext, SSLEngine, TrustManager }
-import scala.collection.immutable
 import scala.concurrent.{ ExecutionContext, Future, Promise }
 import scala.concurrent.duration.DurationLong
 import scala.jdk.FutureConverters._
@@ -318,14 +317,14 @@ object PekkoHttpClientUtils {
         {
           if (response.status != StatusCodes.OK) {
             response.entity.discardBytes()
-            val failure = mapToStatusException(response, immutable.Seq.empty)
+            val failure = mapToStatusException(response, Seq.empty)
             Source.failed(failure).mapMaterializedValue(_ => FastFuture.failed(failure))
           } else {
             Codecs.detect(response) match {
               case Success(codec) =>
                 implicit val reader: GrpcProtocolReader =
                   GrpcProtocolNative.newReader(codec, maxInboundMessageSize)
-                val trailerPromise = Promise[immutable.Seq[HttpHeader]]()
+                val trailerPromise = Promise[Seq[HttpHeader]]()
                 // Completed with success or failure based on grpc-status and grpc-message trailing headers
                 val completionFuture: Future[Unit] =
                   trailerPromise.future.flatMap(trailers => parseResponseStatus(response, trailers))
@@ -342,10 +341,10 @@ object PekkoHttpClientUtils {
                             ByteString.empty
                         }
                         .watchTermination((_, done) =>
-                          done.onComplete(_ => trailerPromise.trySuccess(immutable.Seq.empty)))
+                          done.onComplete(_ => trailerPromise.trySuccess(Seq.empty)))
                     case Strict(_, data) =>
                       val rawTrailers =
-                        response.attribute(AttributeKeys.trailer).map(_.headers).getOrElse(immutable.Seq.empty)
+                        response.attribute(AttributeKeys.trailer).map(_.headers).getOrElse(Seq.empty)
                       val trailers = rawTrailers.map(h => RawHeader(h._1, h._2))
                       trailerPromise.success(trailers)
                       Source.single[ByteString](data)

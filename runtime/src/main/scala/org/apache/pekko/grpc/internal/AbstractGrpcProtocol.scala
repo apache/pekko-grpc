@@ -27,8 +27,6 @@ import pekko.stream.stage.GraphStageLogic
 import pekko.util.ByteString
 import io.grpc.{ Status, StatusException }
 
-import scala.collection.immutable
-
 abstract class AbstractGrpcProtocol(subType: String) extends GrpcProtocol {
 
   override val contentType: ContentType.Binary =
@@ -125,7 +123,7 @@ object AbstractGrpcProtocol {
       protocol: GrpcProtocol,
       codec: Codec,
       encodeFrame: Frame => ChunkStreamPart,
-      encodeDataToResponse: (ByteString, immutable.Seq[HttpHeader], Trailer) => HttpResponse): GrpcProtocolWriter =
+      encodeDataToResponse: (ByteString, Seq[HttpHeader], Trailer) => HttpResponse): GrpcProtocolWriter =
     GrpcProtocolWriter(
       adjustCompressibility(protocol.contentType, codec),
       codec,

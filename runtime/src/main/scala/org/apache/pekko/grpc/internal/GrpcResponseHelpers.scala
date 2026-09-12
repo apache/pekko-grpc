@@ -36,7 +36,6 @@ import pekko.stream.scaladsl.Source
 import pekko.util.ByteString
 import io.grpc.Status
 
-import scala.collection.immutable
 import scala.concurrent.{ ExecutionContext, Future }
 import scala.util.control.NonFatal
 
@@ -51,7 +50,7 @@ object GrpcResponseHelpers {
   private val TrailerOkAttribute = Trailer(TrailerOk.trailers)
   private val TrailerOkAttributes =
     Map.empty[AttributeKey[?], Any].updated(AttributeKeys.trailer, TrailerOkAttribute)
-  private val IdentityResponseHeaders: immutable.Seq[HttpHeader] =
+  private val IdentityResponseHeaders: Seq[HttpHeader] =
     headers.`Message-Encoding`(Identity.name) :: Nil
 
   def apply[T](e: Source[T, NotUsed])(
@@ -87,14 +86,14 @@ object GrpcResponseHelpers {
     }
   }
 
-  private def responseHeadersFor(writer: GrpcProtocolWriter): immutable.Seq[HttpHeader] =
+  private def responseHeadersFor(writer: GrpcProtocolWriter): Seq[HttpHeader] =
     if (writer.messageEncoding eq Identity) IdentityResponseHeaders
     else headers.`Message-Encoding`(writer.messageEncoding.name) :: Nil
 
   private def nativeResponse(
       writer: GrpcProtocolWriter,
       encodedData: ByteString,
-      responseHeaders: immutable.Seq[HttpHeader]): HttpResponse =
+      responseHeaders: Seq[HttpHeader]): HttpResponse =
     new HttpResponse(
       status = StatusCodes.OK,
       headers = responseHeaders,
@@ -136,7 +135,7 @@ object GrpcResponseHelpers {
 
   private def response(entity: Source[ChunkStreamPart, NotUsed])(implicit writer: GrpcProtocolWriter) = {
     HttpResponse(
-      headers = immutable.Seq(
+      headers = Seq(
         headers.`Message-Encoding`(writer.messageEncoding.name),
         // Pre-announcing trailers: See https://www.rfc-editor.org/rfc/rfc7230 #Section 4.4
         headers.`Trailer`(headers.`Status`.name)

@@ -26,7 +26,6 @@ import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslProvider
 import javax.net.ssl.{ SSLContext, TrustManager }
 
-import scala.collection.immutable
 import scala.concurrent.duration.{ Duration, _ }
 import scala.jdk.DurationConverters._
 
@@ -193,7 +192,7 @@ object GrpcClientSettings {
    */
   @InternalApi
   private[grpc] def staticServiceDiscovery(host: String, port: Int) =
-    new HardcodedServiceDiscovery(Resolved(host, immutable.Seq(ResolvedTarget(host, Some(port), None))))
+    new HardcodedServiceDiscovery(Resolved(host, Seq(ResolvedTarget(host, Some(port), None))))
 
 }
 
