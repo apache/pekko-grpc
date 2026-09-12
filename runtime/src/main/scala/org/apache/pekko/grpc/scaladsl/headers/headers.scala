@@ -20,7 +20,6 @@ import pekko.http.scaladsl.model.headers.{ ModeledCustomHeader, ModeledCustomHea
 import pekko.http.javadsl.{ model => jm }
 
 import scala.collection.compat.immutable.ArraySeq
-import scala.collection.immutable
 import scala.annotation.nowarn
 import scala.util.Try
 
@@ -104,7 +103,7 @@ object `Status` extends ModeledCustomHeaderCompanion[`Status`] {
 
   override def parse(value: String): Try[`Status`] = Try(new `Status`(Integer.parseInt(value)))
 
-  def findIn(headers: immutable.Seq[HttpHeader]): Option[Int] =
+  def findIn(headers: Seq[HttpHeader]): Option[Int] =
     headers.collectFirst { case h if h.is(name) => Integer.parseInt(h.value()) }
 }
 
@@ -124,11 +123,11 @@ object `Status-Message` extends ModeledCustomHeaderCompanion[`Status-Message`] {
   override def parse(value: String): Try[`Status-Message`] = Try(
     new `Status-Message`(PercentEncoding.Decoder.decode(value)))
 
-  def findIn(headers: immutable.Seq[HttpHeader]): Option[String] =
+  def findIn(headers: Seq[HttpHeader]): Option[String] =
     headers.collectFirst { case h if h.is(name) => h.value() }
 }
 
-private[grpc] final class `Trailer` private (values: immutable.Seq[String]) extends ModeledCustomHeader[`Trailer`] {
+private[grpc] final class `Trailer` private (values: Seq[String]) extends ModeledCustomHeader[`Trailer`] {
 
   override def companion: ModeledCustomHeaderCompanion[`Trailer`] = `Trailer`
 
@@ -140,7 +139,7 @@ private[grpc] final class `Trailer` private (values: immutable.Seq[String]) exte
 }
 
 private[grpc] object `Trailer` extends ModeledCustomHeaderCompanion[`Trailer`] {
-  def apply(values: immutable.Seq[String]): `Trailer` = new `Trailer`(values.map(_.trim))
+  def apply(values: Seq[String]): `Trailer` = new `Trailer`(values.map(_.trim))
 
   override val name = "trailer"
 
@@ -149,7 +148,7 @@ private[grpc] object `Trailer` extends ModeledCustomHeaderCompanion[`Trailer`] {
   override def parse(value: String): Try[`Trailer`] =
     Try(`Trailer`(ArraySeq.unsafeWrapArray(SimpleCSVParser.parse(value))))
 
-  def findIn(headers: immutable.Seq[HttpHeader]): Option[immutable.Seq[String]] =
+  def findIn(headers: Seq[HttpHeader]): Option[Seq[String]] =
     headers.collectFirst {
       case header if header.is(name) => ArraySeq.unsafeWrapArray(SimpleCSVParser.parse(header.value()))
     }

@@ -13,7 +13,6 @@
 
 package org.apache.pekko.grpc.scaladsl
 
-import scala.collection.immutable
 import scala.concurrent.Future
 import com.typesafe.config.ConfigFactory
 import org.apache.pekko
@@ -34,8 +33,8 @@ object WebHandler {
   /** Default CORS settings to use for grpc-web */
   val defaultCorsSettings: CorsSettings = CorsSettings(ConfigFactory.load())
     .withAllowCredentials(true)
-    .withAllowedMethods(immutable.Seq(HttpMethods.POST, HttpMethods.OPTIONS))
-    .withExposedHeaders(immutable.Seq(headers.`Status`.name, headers.`Status-Message`.name, `Content-Encoding`.name))
+    .withAllowedMethods(Seq(HttpMethods.POST, HttpMethods.OPTIONS))
+    .withExposedHeaders(Seq(headers.`Status`.name, headers.`Status-Message`.name, `Content-Encoding`.name))
     .withAllowedHeaders(
       HttpHeaderRange(
         "x-user-agent",
