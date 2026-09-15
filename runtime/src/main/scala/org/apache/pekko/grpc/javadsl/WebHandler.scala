@@ -22,6 +22,7 @@ import pekko.actor.ClassicActorSystemProvider
 import pekko.annotation.ApiMayChange
 import pekko.grpc.javadsl.ServiceHandler.{ concatOrNotFound, unsupportedMediaType }
 import pekko.http.cors.javadsl.settings.CorsSettings
+import pekko.http.cors.scaladsl.settings.{ CorsSettings => sCorsSettings }
 import pekko.http.cors.javadsl.CorsDirectives
 import pekko.http.javadsl.marshalling.Marshaller
 import pekko.http.javadsl.model.{ HttpRequest, HttpResponse }
@@ -79,7 +80,13 @@ object WebHandler {
 
     val servicesHandler = concatOrNotFound(handlers.asScala.toList *)
     val servicesRoute = RouteAdapter(MarshallingDirectives.handleWith(servicesHandler.apply(_)))
-    val handler = asyncHandler(CorsDirectives.cors(corsSettings, () => servicesRoute), as, mat)
+    // scaladsl.CorsSettings extends the javadsl one, and every settings instance in practice is
+    // a scaladsl one, so this reaches the credentials policy without a javadsl-side conversion
+    val settings = corsSettings match {
+      case s: sCorsSettings => scaladsl.WebHandler.withCredentialsPolicy(s, as.classicSystem)
+      case other            => other
+    }
+    val handler = asyncHandler(CorsDirectives.cors(settings, () => servicesRoute), as, mat)
     (req: HttpRequest) =>
       if (scaladsl.ServiceHandler.isGrpcWebRequest(req) /*|| scaladsl.WebHandler.isCorsPreflightRequest(req)*/ )
         handler(req)
