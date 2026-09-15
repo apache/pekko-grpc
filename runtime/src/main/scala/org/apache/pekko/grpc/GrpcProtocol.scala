@@ -157,20 +157,20 @@ object GrpcProtocol {
    * @return the protocol reader for the request, and a protocol writer for the response.
    */
   def negotiate(request: jmodel.HttpRequest): Option[(Try[GrpcProtocolReader], GrpcProtocolWriter)] =
-    negotiate(request, AbstractGrpcProtocol.DefaultMaxInboundMessageSize)
+    negotiate(request, GrpcServerSettings.defaults)
 
   /**
    * Calculates the gRPC protocol encoding to use for an interaction with a gRPC client.
    *
    * @param request the client request to respond to.
-   * @param maxInboundMessageSize the maximum allowed inbound message size in bytes.
+   * @param settings the settings of the server handling the request.
    * @return the protocol reader for the request, and a protocol writer for the response.
    */
   def negotiate(
       request: jmodel.HttpRequest,
-      maxInboundMessageSize: Int): Option[(Try[GrpcProtocolReader], GrpcProtocolWriter)] =
+      settings: GrpcServerSettings): Option[(Try[GrpcProtocolReader], GrpcProtocolWriter)] =
     detect(request).map { variant =>
-      (Codecs.detect(request).map(variant.newReader(_, maxInboundMessageSize)),
+      (Codecs.detect(request).map(variant.newReader(_, settings.maxInboundMessageSize)),
         variant.newWriter(Codecs.negotiate(request)))
     }
 
