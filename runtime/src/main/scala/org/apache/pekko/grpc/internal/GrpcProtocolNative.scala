@@ -29,7 +29,6 @@ import pekko.http.scaladsl.model.{
 import pekko.util.ByteString
 
 import scala.annotation.nowarn
-import scala.collection.immutable
 
 /**
  * Implementation of the gRPC (`application/grpc+proto`) protocol:
@@ -57,7 +56,7 @@ object GrpcProtocolNative extends AbstractGrpcProtocol("grpc") {
       case TrailerFrame(headers) => LastChunk(trailer = headers)
     }
   private def encodeDataToResponse(
-      codec: Codec)(data: ByteString, headers: immutable.Seq[HttpHeader], trailer: Trailer): HttpResponse =
+      codec: Codec)(data: ByteString, headers: Seq[HttpHeader], trailer: Trailer): HttpResponse =
     new HttpResponse(
       status = StatusCodes.OK,
       headers = headers,

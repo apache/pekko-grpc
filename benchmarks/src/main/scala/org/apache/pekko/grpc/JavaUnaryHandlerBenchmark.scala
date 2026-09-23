@@ -23,7 +23,6 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CompletionStage
 
 import scala.annotation.nowarn
-import scala.collection.immutable
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
@@ -77,7 +76,7 @@ class JavaUnaryHandlerBenchmark extends CommonBenchmark {
     HttpRequest(
       method = HttpMethods.POST,
       uri = Uri("https://unused.example/benchmark/Unary"),
-      headers = immutable.Seq(
+      headers = Seq(
         `Message-Encoding`(writer.messageEncoding.name),
         `Message-Accept-Encoding`(Codecs.supportedCodecs.map(_.name).mkString(",")),
         pekko.http.scaladsl.model.headers.TE(TransferEncodings.trailers)),

@@ -19,7 +19,6 @@
 
 package org.apache.pekko.grpc
 
-import scala.collection.immutable
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
@@ -83,7 +82,7 @@ class ScalaUnaryHandlerBenchmark extends CommonBenchmark {
     HttpRequest(
       method = HttpMethods.POST,
       uri = Uri("https://unused.example/" + GreeterService.name + "/SayHello"),
-      headers = immutable.Seq(
+      headers = Seq(
         `Message-Encoding`(writer.messageEncoding.name),
         `Message-Accept-Encoding`(Codecs.supportedCodecs.map(_.name).mkString(",")),
         pekko.http.scaladsl.model.headers.TE(TransferEncodings.trailers)),

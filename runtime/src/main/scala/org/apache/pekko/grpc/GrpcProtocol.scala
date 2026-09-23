@@ -32,7 +32,6 @@ import pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
 import pekko.stream.scaladsl.Flow
 import pekko.util.ByteString
 
-import scala.collection.immutable
 import scala.util.Try
 
 /**
@@ -107,7 +106,7 @@ object GrpcProtocol {
       /** Encodes a frame as a part in a chunk stream. */
       encodeFrame: Frame => ChunkStreamPart,
       /** A shortcut to encode a data frame directly into a Response */
-      encodeDataToResponse: (ByteString, immutable.Seq[HttpHeader], Trailer) => HttpResponse,
+      encodeDataToResponse: (ByteString, Seq[HttpHeader], Trailer) => HttpResponse,
       /** A Flow over a stream of Frame using this frame encoding */
       frameEncoder: Flow[Frame, ChunkStreamPart, NotUsed])
 

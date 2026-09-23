@@ -17,7 +17,6 @@ import java.util.{ List => jList, Locale, Map => jMap, Optional }
 
 import scala.jdk.CollectionConverters._
 import scala.jdk.OptionConverters._
-import scala.collection.immutable
 
 import org.apache.pekko
 import pekko.annotation.InternalApi
@@ -152,7 +151,7 @@ class EntryMetadataImpl(entries: List[(String, MetadataEntry)] = Nil) extends Me
  * @param headers The list of HTTP response headers.
  */
 @InternalApi
-class HeaderMetadataImpl(headers: immutable.Seq[HttpHeader] = immutable.Seq.empty) extends Metadata {
+class HeaderMetadataImpl(headers: Seq[HttpHeader] = Seq.empty) extends Metadata {
   private lazy val map: Map[String, List[MetadataEntry]] =
     MetadataImpl.toMap(asList)
 
