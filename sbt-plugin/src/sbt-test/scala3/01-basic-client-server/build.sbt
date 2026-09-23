@@ -19,5 +19,15 @@ scalacOptions ++= Seq(
 
 enablePlugins(PekkoGrpcPlugin)
 
+lazy val checkResourceDirectories = taskKey[Unit]("Check that resource directories are unique")
+
+checkResourceDirectories := {
+  val compileDirectories = (Compile / unmanagedResourceDirectories).value
+  val testDirectories = (Test / unmanagedResourceDirectories).value
+  assert(compileDirectories == compileDirectories.distinct,
+    s"Duplicate Compile resource directories: $compileDirectories")
+  assert(testDirectories == testDirectories.distinct, s"Duplicate Test resource directories: $testDirectories")
+}
+
 libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.2.20" % Test)
