@@ -132,7 +132,8 @@ object PekkoGrpcPlugin extends AutoPlugin {
               else (mapping :: soFar, seen + path)
           }._1.reverse
         },
-        unmanagedResourceDirectories ++= (PB.recompile / unmanagedResourceDirectories).value,
+        unmanagedResourceDirectories :=
+          (unmanagedResourceDirectories.value ++ (PB.recompile / unmanagedResourceDirectories).value).distinct,
         Defaults.ConfigZero / watchSources ++= Def.uncached {
           (PB.recompile / sources).value.map(f => WatchSource(f))
         },
