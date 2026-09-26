@@ -27,5 +27,22 @@ class GoogleProtobufSerializerSpec extends AnyWordSpec with Matchers {
       val deserialized = anySerializer.deserialize(serialized)
       deserialized should be(obj)
     }
+
+    "serialize into buffer at offset" in {
+      val anySerializer = new GoogleProtobufSerializer(ProtobufAny.parser())
+
+      val obj = ProtobufAny.newBuilder().setTypeUrl("asdf").setValue(ByteString.copyFromUtf8("ASDF")).build()
+      val serialized = anySerializer.serialize(obj).toByteBuffer.array()
+
+      val prefixLength = 27
+      val frame = new Array[Byte](serialized.length + prefixLength)
+      anySerializer.serializeTo(obj, frame, prefixLength)
+
+      println(serialized.mkString(","))
+      println(frame.mkString(","))
+
+      (0 until prefixLength).foreach(frame(_) shouldBe 0)
+      (prefixLength until frame.length).foreach(i => frame(i) shouldBe serialized(i - prefixLength))
+    }
   }
 }

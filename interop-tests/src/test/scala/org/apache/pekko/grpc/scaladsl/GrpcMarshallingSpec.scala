@@ -16,13 +16,16 @@ package org.apache.pekko.grpc.scaladsl
 import org.apache.pekko
 import pekko.NotUsed
 import pekko.actor.ActorSystem
-import pekko.grpc.internal.{ AbstractGrpcProtocol, GrpcProtocolNative, Gzip }
+import pekko.grpc.GrpcProtocol.{ GrpcProtocolReader, GrpcProtocolWriter }
+import pekko.grpc.Trailers
+import pekko.grpc.internal.{ AbstractGrpcProtocol, GrpcEntityHelpers, GrpcProtocolNative, Gzip, Identity }
 import pekko.grpc.scaladsl.headers.`Message-Encoding`
 import pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
 import pekko.http.scaladsl.model.{ HttpEntity, HttpRequest }
-import pekko.stream.scaladsl.Sink
+import pekko.stream.scaladsl.{ Sink, Source }
 import pekko.stream.testkit.TestPublisher
 import pekko.stream.testkit.scaladsl.TestSource
+import pekko.util.ByteString
 import io.grpc.{ Status, StatusException }
 import io.grpc.testing.integration.messages.{ BoolValue, SimpleRequest }
 import io.grpc.testing.integration.test.TestService
@@ -30,7 +33,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 import scala.collection.immutable
-import scala.concurrent.{ Await, Future, Promise }
+import scala.concurrent.{ Await, ExecutionContext, Future, Promise }
 import scala.concurrent.duration._
 
 class GrpcMarshallingSpec extends AnyWordSpec with Matchers {
@@ -107,6 +110,30 @@ class GrpcMarshallingSpec extends AnyWordSpec with Matchers {
       val request = HttpRequest(entity = HttpEntity.Strict(GrpcProtocolNative.contentType, zippedBytes))
 
       assertFailure(GrpcMarshalling.unmarshal(request), Status.Code.INTERNAL, "encoding")
+    }
+
+    "Custom error handler is used for marshalling errors in unary handler" in {
+      implicit val writer: GrpcProtocolWriter = GrpcProtocolNative.newWriter(Identity)
+      implicit val reader: GrpcProtocolReader = GrpcProtocolNative.newReader(Identity)
+      implicit val ec: ExecutionContext = ExecutionContext.global
+
+      implicit val brokenSerializer: ScalapbProtobufSerializer[BoolValue] =
+        new ScalapbProtobufSerializer[BoolValue](BoolValue) {
+          override def serialize(t: BoolValue): ByteString = throw new RuntimeException("broken-serializer")
+          override def serializeTo(t: BoolValue, frame: Array[Byte], offset: Int): Unit =
+            throw new RuntimeException("broken-serializer")
+        }
+      val eHandler: ActorSystem => PartialFunction[Throwable, Trailers] = (_: ActorSystem) => {
+        case r: RuntimeException => Trailers(Status.FAILED_PRECONDITION.withDescription(r.getMessage))
+      }
+
+      val entity = HttpEntity.Chunked(GrpcProtocolNative.contentType,
+        GrpcEntityHelpers(Source.single(SimpleRequest()), Source.empty, GrpcExceptionHandler.defaultMapper))
+      val response = Await.result(GrpcMarshalling.handleUnary[SimpleRequest, BoolValue](entity,
+        _ => Future.successful(BoolValue(true)), eHandler), awaitTimeout)
+
+      headers.`Status`.findIn(response.headers) shouldBe Some(Status.FAILED_PRECONDITION.getCode.value())
+      headers.`Status-Message`.findIn(response.headers) shouldBe Some("broken-serializer")
     }
 
     def assertFailure(failure: Future[?], expectedStatusCode: Status.Code, expectedMessageFragment: String): Unit = {
