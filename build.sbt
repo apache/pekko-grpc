@@ -39,6 +39,11 @@ val pekkoGrpcRuntimeName = s"$pekkoPrefix-runtime"
 
 lazy val mkBatAssemblyTask = taskKey[File]("Create a Windows bat assembly")
 
+addCommandAlias(
+  "checkAssemblyLicenses",
+  "codegen/assemblyLicenseCheck; codegen/assemblyMetaInfCheck; " +
+  "scalapb-protoc-plugin/assemblyLicenseCheck; scalapb-protoc-plugin/assemblyMetaInfCheck")
+
 // gradle plugin compatibility (avoid `+` in snapshot versions)
 (ThisBuild / dynverSeparator) := "-"
 
@@ -50,12 +55,14 @@ lazy val codegen = Project(id = "codegen", base = file("codegen"))
   .settings(Dependencies.codegen)
   .settings(resolvers += Resolver.sbtPluginRepo("releases"))
   .settings(MetaInfLicenseNoticeCopy.assemblySettings)
+  .settings(AssemblyLicenseCheck.settings)
   .settings(
     name := s"$pekkoPrefix-codegen",
     mkBatAssemblyTask := {
       val file = assembly.value
       Assemblies.mkBatAssembly(file)
     },
+    AssemblyLicenseCheck.assemblyMetaInfArchives += mkBatAssemblyTask.value,
     buildInfoKeys ++= Seq[BuildInfoKey](organization, name, version, scalaVersion, sbtVersion),
     buildInfoKeys += "runtimeArtifactName" -> pekkoGrpcRuntimeName,
     buildInfoKeys += "pekkoVersion" -> Dependencies.Versions.pekko,
@@ -72,7 +79,9 @@ lazy val codegen = Project(id = "codegen", base = file("codegen"))
     (assembly / assemblyOption) := (assembly / assemblyOption).value.withPrependShellScript(
       Some(sbtassembly.AssemblyPlugin.defaultUniversalScript(shebang = true))),
     (assembly / assemblyMergeStrategy) := {
-      case PathList("META-INF", "LICENSE")                          => MergeStrategy.concat
+      // our own META-INF/LICENSE and META-INF/NOTICE cover the bundled 3rd party classes,
+      // so they win over the ones the dependencies bring in
+      case PathList("META-INF", "LICENSE" | "NOTICE")               => MergeStrategy.preferProject
       case PathList("META-INF", "MANIFEST.MF")                      => MergeStrategy.discard
       case PathList("META-INF", "versions", _, "module-info.class") => MergeStrategy.discard
       case "LICENSE" | "LICENSE.txt" | "NOTICE"                     => MergeStrategy.discard
@@ -124,15 +133,15 @@ val pekkoGrpcProtocPluginId = s"$pekkoPrefix-scalapb-protoc-plugin"
 lazy val scalapbProtocPlugin = Project(id = "scalapb-protoc-plugin", base = file("scalapb-protoc-plugin"))
   .disablePlugins(MimaPlugin)
   .settings(MetaInfLicenseNoticeCopy.assemblySettings)
+  .settings(AssemblyLicenseCheck.settings)
+  .settings(Dependencies.scalapbProtocPlugin)
   .settings(
     name := s"$pekkoPrefix-scalapb-protoc-plugin",
-    libraryDependencies += {
-      Dependencies.Compile.scalapbCompilerPlugin
-    },
     mkBatAssemblyTask := {
       val file = assembly.value
       Assemblies.mkBatAssembly(file)
     },
+    AssemblyLicenseCheck.assemblyMetaInfArchives += mkBatAssemblyTask.value,
     (Compile / assembly / artifact) := {
       val art = (Compile / assembly / artifact).value
       art.withClassifier(Some("assembly"))
@@ -141,6 +150,9 @@ lazy val scalapbProtocPlugin = Project(id = "scalapb-protoc-plugin", base = file
     (assembly / assemblyOption) := (assembly / assemblyOption).value.withPrependShellScript(
       Some(sbtassembly.AssemblyPlugin.defaultUniversalScript(shebang = true))),
     (assembly / assemblyMergeStrategy) := {
+      // our own META-INF/LICENSE and META-INF/NOTICE cover the bundled 3rd party classes,
+      // so they win over the ones the dependencies bring in
+      case PathList("META-INF", "LICENSE" | "NOTICE")               => MergeStrategy.preferProject
       case PathList("META-INF", "MANIFEST.MF")                      => MergeStrategy.discard
       case PathList("META-INF", "versions", _, "module-info.class") => MergeStrategy.discard
       case "LICENSE" | "LICENSE.txt" | "NOTICE"                     => MergeStrategy.discard
