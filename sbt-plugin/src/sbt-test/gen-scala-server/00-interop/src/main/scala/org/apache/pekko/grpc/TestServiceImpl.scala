@@ -12,7 +12,6 @@ package org.apache.pekko.grpc.interop
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
 import scala.reflect.ClassTag
-import scala.collection.immutable
 
 import org.apache.pekko
 import pekko.grpc.scaladsl.GrpcMarshalling

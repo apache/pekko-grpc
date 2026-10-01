@@ -22,7 +22,6 @@ import pekko.http.scaladsl.model.headers.RawHeader
 import pekko.stream.scaladsl.Flow
 import pekko.util.{ ByteString, ByteStringBuilder }
 import io.grpc.{ Status, StatusException }
-import scala.collection.immutable
 
 abstract class GrpcProtocolWebBase(subType: String) extends AbstractGrpcProtocol(subType) {
   protected def postEncode(frame: ByteString): ByteString
@@ -39,7 +38,7 @@ abstract class GrpcProtocolWebBase(subType: String) extends AbstractGrpcProtocol
     Chunk(postEncode(encodeFrameToBytes(codec, frame)))
 
   private def encodeDataToResponse(
-      codec: Codec)(data: ByteString, headers: immutable.Seq[HttpHeader], trailer: Trailer): HttpResponse =
+      codec: Codec)(data: ByteString, headers: Seq[HttpHeader], trailer: Trailer): HttpResponse =
     HttpResponse(
       status = StatusCodes.OK,
       headers = headers,

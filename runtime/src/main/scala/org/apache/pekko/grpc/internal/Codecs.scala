@@ -19,12 +19,11 @@ import pekko.http.scaladsl.{ model => sm }
 import pekko.grpc.GrpcServiceException
 import pekko.grpc.scaladsl.headers.{ `Message-Accept-Encoding`, `Message-Encoding` }
 import io.grpc.Status
-import scala.collection.immutable
 import scala.util.{ Failure, Success, Try }
 
 object Codecs {
   // TODO should this list be made user-extensible?
-  val supportedCodecs = immutable.Seq(Gzip, Identity)
+  val supportedCodecs = Seq(Gzip, Identity)
   private val supportedByName: Map[String, Codec] = supportedCodecs.map(c => c.name -> c).toMap
 
   private def extractHeaders(request: jm.HttpMessage): Iterable[jm.HttpHeader] = {

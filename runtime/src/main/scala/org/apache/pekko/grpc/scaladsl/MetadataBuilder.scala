@@ -13,7 +13,6 @@
 
 package org.apache.pekko.grpc.scaladsl
 
-import scala.collection.immutable
 import org.apache.pekko
 import pekko.annotation.{ ApiMayChange, DoNotInherit }
 import pekko.http.scaladsl.model.HttpHeader
@@ -86,6 +85,6 @@ object MetadataBuilder {
    * @param headers The headers.
    * @return The new Metadata instance.
    */
-  def fromHeaders(headers: immutable.Seq[HttpHeader]): Metadata =
+  def fromHeaders(headers: Seq[HttpHeader]): Metadata =
     new HeaderMetadataImpl(headers)
 }

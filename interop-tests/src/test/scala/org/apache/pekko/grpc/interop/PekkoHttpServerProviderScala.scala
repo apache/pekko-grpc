@@ -34,7 +34,6 @@ import io.grpc.testing.integration.messages.{
 }
 import io.grpc.testing.integration.test.{ TestService, TestServiceHandler, TestServiceMarshallers }
 
-import scala.collection.immutable
 import scala.concurrent.{ ExecutionContext, Promise }
 
 object PekkoHttpServerProviderScala extends PekkoHttpServerProvider with Directives {
@@ -126,7 +125,7 @@ object PekkoHttpServerProviderScala extends PekkoHttpServerProvider with Directi
   }
 
   // TODO move to runtime library or even pekko-http
-  def mapTrailingResponseHeaders(f: immutable.Seq[HttpHeader] => immutable.Seq[HttpHeader]): Directive0 =
+  def mapTrailingResponseHeaders(f: Seq[HttpHeader] => Seq[HttpHeader]): Directive0 =
     mapResponse(response =>
       response.entity match {
         case HttpEntity.Chunked(contentType, data) =>
