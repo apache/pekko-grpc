@@ -18,7 +18,7 @@ import pekko.annotation.InternalApi
 import pekko.util.ByteString
 import io.grpc.KnownLength
 
-import java.io.{ ByteArrayOutputStream, InputStream }
+import java.io.InputStream
 
 @InternalApi
 private[grpc] object ByteStringUtils {
@@ -47,7 +47,7 @@ private[grpc] object ByteStringUtils {
         bytesRead = stream.read(buffer)
       }
 
-      bsos.toByteStringUnsafe
+      bsos.takeByteString()
     }
   }
 
@@ -60,18 +60,4 @@ private[grpc] object ByteStringUtils {
     else
       // Small read from a large buffer — copy to right-size so the rest can be GC'd
       ByteString.fromArray(buf, 0, count)
-}
-
-/**
- * OutputStream to ByteString adapter, avoiding copying of the buffered data where possible.
- */
-private class ByteStringOutputStream(capacity: Int) extends ByteArrayOutputStream(capacity) {
-
-  /**
-   * Wraps contents of the buffer in a ByteString.
-   *
-   * This can wrap an unsafe reference to the internal buffer of this output stream.
-   * The caller must ensure that the output stream is not modified after this method is called.
-   */
-  def toByteStringUnsafe: ByteString = ByteStringUtils.toByteStringUnsafe(buf, count)
 }

@@ -28,7 +28,7 @@ object Gzip extends Codec {
     val gzos = new GZIPOutputStream(bsos)
     try gzos.write(uncompressed.toArrayUnsafe())
     finally gzos.close()
-    bsos.toByteStringUnsafe
+    bsos.takeByteString()
   }
 
   @deprecated("Use uncompress(bytes, maxDecompressedSize), which bounds the decompressed size", "2.0.0")
@@ -43,7 +43,7 @@ object Gzip extends Codec {
     val limit = maxDecompressedSize.toLong
     // clamp: maxDecompressedSize is validated to be positive by the settings classes, but this
     // method is also reachable with a hand-constructed limit, and a negative initial size would
-    // make ByteArrayOutputStream throw IllegalArgumentException rather than a gRPC status.
+    // make ByteStringOutputStream throw IllegalArgumentException rather than a gRPC status.
     val initialSize = Math.max(0L, Math.min(compressed.size.toLong, limit)).toInt
     val gzis = new GZIPInputStream(compressed.asInputStream)
     val bsos = new ByteStringOutputStream(initialSize)
@@ -62,7 +62,7 @@ object Gzip extends Codec {
         read = gzis.read(buffer)
       }
     } finally gzis.close()
-    bsos.toByteStringUnsafe
+    bsos.takeByteString()
   }
 
   @deprecated(
