@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-# improve unary handlers
+# encode data frames through GrpcProtocolWriter, with deferred writes into the frame buffer
 ProblemFilters.exclude[IncompatibleSignatureProblem]("org.apache.pekko.grpc.GrpcProtocol#GrpcProtocolReader.frameDecoder")
 ProblemFilters.exclude[IncompatibleSignatureProblem]("org.apache.pekko.grpc.GrpcProtocol#GrpcProtocolReader.copy")
 ProblemFilters.exclude[IncompatibleSignatureProblem]("org.apache.pekko.grpc.GrpcProtocol#GrpcProtocolReader.copy$default$3")
@@ -36,3 +36,8 @@ ProblemFilters.exclude[IncompatibleSignatureProblem]("org.apache.pekko.grpc.Grpc
 ProblemFilters.exclude[IncompatibleSignatureProblem]("org.apache.pekko.grpc.internal.AbstractGrpcProtocol.writer")
 ProblemFilters.exclude[IncompatibleClassSignatureProblem]("org.apache.pekko.grpc.GrpcProtocol$GrpcProtocolReader$")
 ProblemFilters.exclude[IncompatibleClassSignatureProblem]("org.apache.pekko.grpc.internal.AbstractGrpcProtocol$GrpcFramingDecoderStage")
+# Scala 3 positional accessors of the changed GrpcProtocolReader and GrpcProtocolWriter fields
+ProblemFilters.exclude[IncompatibleSignatureProblem]("org.apache.pekko.grpc.GrpcProtocol#GrpcProtocolReader._3")
+ProblemFilters.exclude[IncompatibleSignatureProblem]("org.apache.pekko.grpc.GrpcProtocol#GrpcProtocolWriter._3")
+ProblemFilters.exclude[IncompatibleSignatureProblem]("org.apache.pekko.grpc.GrpcProtocol#GrpcProtocolWriter._4")
+ProblemFilters.exclude[DirectMissingMethodProblem]("org.apache.pekko.grpc.GrpcProtocol#GrpcProtocolWriter._5")

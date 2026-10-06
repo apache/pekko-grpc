@@ -119,7 +119,7 @@ object GrpcProtocol {
       /**
        * Compute the size of the serialized form of the given element.
        */
-      def serializedSize(t: T): Int
+      private[grpc] def serializedSize(t: T): Int
 
       /**
        * Serialize the given element into the given frame, starting at the given offset.
@@ -127,7 +127,7 @@ object GrpcProtocol {
        * @param frame a preallocated frame buffer, which will be at least of size offset + serializedSize(t)
        * @param offset the offset to place the serialized data of the element at.
        */
-      def serializeTo(t: T, frame: Array[Byte], offset: Int): Unit
+      private[grpc] def serializeTo(t: T, frame: Array[Byte], offset: Int): Unit
     }
   }
 
