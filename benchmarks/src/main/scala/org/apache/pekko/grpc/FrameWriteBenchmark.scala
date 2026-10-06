@@ -36,17 +36,17 @@ import org.openjdk.jmh.infra.Blackhole
 // Encoding of response data frames, for the native and gRPC-Web protocols without compression.
 class FrameWriteBenchmark extends CommonBenchmark {
   @Param(Array("native", "web"))
-  var protocol: String = _
+  var protocol: String = "native"
 
   @Param(Array("16", "1024", "65536"))
-  var size: Int = _
+  var size: Int = 0
 
   implicit val system: ActorSystem = ActorSystem("bench")
   implicit val mat: Materializer = SystemMaterializer(system).materializer
   implicit val serializer: ScalapbProtobufSerializer[ScalapbAny] = new ScalapbProtobufSerializer(ScalapbAny)
 
-  implicit var writer: GrpcProtocol.GrpcProtocolWriter = _
-  var message: ScalapbAny = _
+  implicit var writer: GrpcProtocol.GrpcProtocolWriter = GrpcProtocolNative.newWriter(Identity)
+  var message: ScalapbAny = ScalapbAny.defaultInstance
 
   @Setup
   def setup(): Unit = {
@@ -72,7 +72,7 @@ class FrameWriteBenchmark extends CommonBenchmark {
   private def consume(entity: HttpEntity, blackhole: Blackhole): Unit =
     entity match {
       case HttpEntity.Strict(_, data) => blackhole.consume(data)
-      case _ =>
+      case _                          =>
         blackhole.consume(
           Await.result(entity.dataBytes.runWith(Sink.fold(0)((n, b: ByteString) => n + b.length)), Duration.Inf))
     }
