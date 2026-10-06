@@ -14,7 +14,6 @@
 package org.apache.pekko.grpc
 
 import org.apache.pekko
-import org.apache.pekko.grpc.GrpcProtocol.DeferredDataFrame.DeferredDataWriter
 import pekko.NotUsed
 import pekko.annotation.InternalApi
 import pekko.annotation.InternalStableApi
@@ -94,41 +93,30 @@ object GrpcProtocol {
   /** A frame received from a peer system. */
   sealed trait InboundFrame extends Frame
 
+  /** An outbound data (or message) frame, which is encoded as a gRPC data frame rather than a trailer */
+  sealed trait OutboundDataFrame extends OutboundFrame {
+
+    /** The serialized message carried by this frame. */
+    def data: ByteString
+  }
+
   /** A data (or message) frame in a gRPC protocol stream */
-  case class DataFrame(data: ByteString) extends InboundFrame with OutboundFrame
+  case class DataFrame(data: ByteString) extends InboundFrame with OutboundDataFrame
 
   /** A trailer (status headers) frame in a gRPC protocol stream */
   case class TrailerFrame(trailers: List[HttpHeader]) extends InboundFrame with OutboundFrame
 
   /** An outbound write of a data frame, deferred to allow optimized write into a pre-allocated buffer */
-  case class DeferredDataFrame[T](element: T, writer: DeferredDataWriter[T]) extends OutboundFrame {
+  case class DeferredDataFrame[T](element: T, writer: DeferredDataWriter[T]) extends OutboundDataFrame {
     type Element = T
 
     /** Fallback to DataFrame style write, when optimized framed write is not possible. */
-    def data: ByteString = {
+    override def data: ByteString = {
       val data = new Array[Byte](writer.serializedSize(element))
       writer.serializeTo(element, data, 0)
       ByteString.fromArrayUnsafe(data)
     }
 
-  }
-
-  object DeferredDataFrame {
-    trait DeferredDataWriter[T] {
-
-      /**
-       * Compute the size of the serialized form of the given element.
-       */
-      def serializedSize(t: T): Int
-
-      /**
-       * Serialize the given element into the given frame, starting at the given offset.
-       * @param t the element to serialize.
-       * @param frame a preallocated frame buffer, which will be at least of size offset + serializedSize(t)
-       * @param offset the offset to place the serialized data of the element at.
-       */
-      def serializeTo(t: T, frame: Array[Byte], offset: Int): Unit
-    }
   }
 
   /**
@@ -144,7 +132,7 @@ object GrpcProtocol {
       /** Encodes a frame as a part in a chunk stream. */
       encodeFrame: OutboundFrame => ChunkStreamPart,
       /** A shortcut to encode a data frame directly into a Response */
-      encodeDataToResponse: (OutboundFrame, Seq[HttpHeader], Trailer) => HttpResponse)
+      encodeDataToResponse: (OutboundDataFrame, Seq[HttpHeader], Trailer) => HttpResponse)
 
   /**
    * Implements the decoding of the gRPC framing from a physical/transport layer.

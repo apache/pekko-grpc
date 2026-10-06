@@ -128,8 +128,13 @@ class GrpcMarshallingSpec extends AnyWordSpec with Matchers {
 
       val entity = HttpEntity.Chunked(GrpcProtocolNative.contentType,
         GrpcEntityHelpers(Source.single(SimpleRequest()), Source.empty, GrpcExceptionHandler.defaultMapper))
-      val response = Await.result(GrpcMarshalling.handleUnary[SimpleRequest, BoolValue](entity,
-        _ => Future.successful(BoolValue(true)), eHandler), awaitTimeout)
+      val response = Await.result(
+        GrpcExceptionHandler.recover(
+          GrpcMarshalling.unmarshal[SimpleRequest](entity)
+            .flatMap(_ => Future.successful(BoolValue(true)))
+            .map(e => GrpcMarshalling.marshal(e, eHandler)),
+          eHandler),
+        awaitTimeout)
 
       headers.`Status`.findIn(response.headers) shouldBe Some(Status.FAILED_PRECONDITION.getCode.value())
       headers.`Status-Message`.findIn(response.headers) shouldBe Some("broken-serializer")

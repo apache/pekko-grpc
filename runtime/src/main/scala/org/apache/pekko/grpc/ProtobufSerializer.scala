@@ -14,7 +14,6 @@
 package org.apache.pekko.grpc
 
 import org.apache.pekko
-import org.apache.pekko.grpc.GrpcProtocol.DeferredDataFrame
 import pekko.annotation.ApiMayChange
 import pekko.grpc.internal.ByteStringUtils
 import pekko.util.ByteString
@@ -36,4 +35,4 @@ trait ProtobufSerializer[T] {
  * @since 2.0.0
  */
 @ApiMayChange
-trait ProtobufFrameSerializer[T] extends ProtobufSerializer[T] with DeferredDataFrame.DeferredDataWriter[T]
+trait ProtobufFrameSerializer[T] extends ProtobufSerializer[T] with DeferredDataWriter[T]

@@ -51,23 +51,17 @@ object GrpcProtocolNative extends AbstractGrpcProtocol("grpc") {
   @inline
   private def encodeFrame(codec: Codec, frame: OutboundFrame): ChunkStreamPart =
     frame match {
-      case ef @ DeferredDataFrame(element, dataWriter) =>
-        if (codec eq Identity)
-          Chunk(AbstractGrpcProtocol.encodeFrameData(element, dataWriter, codec.isCompressed, isTrailer = false))
-        else
-          Chunk(AbstractGrpcProtocol.encodeFrameData(codec.compress(ef.data), codec.isCompressed, isTrailer = false))
-      case DataFrame(data) =>
-        Chunk(AbstractGrpcProtocol.encodeFrameData(codec.compress(data), codec.isCompressed, isTrailer = false))
-      case TrailerFrame(headers) => LastChunk(trailer = headers)
+      case data: OutboundDataFrame => Chunk(AbstractGrpcProtocol.encodeDataFrame(codec, data))
+      case TrailerFrame(headers)   => LastChunk(trailer = headers)
     }
 
   @inline
   private def encodeDataToResponse(
-      codec: Codec)(frame: OutboundFrame, headers: Seq[HttpHeader], trailer: Trailer): HttpResponse =
+      codec: Codec)(frame: OutboundDataFrame, headers: Seq[HttpHeader], trailer: Trailer): HttpResponse =
     new HttpResponse(
       status = StatusCodes.OK,
       headers = headers,
-      entity = HttpEntity(contentType, encodeFrame(codec, frame).data),
+      entity = HttpEntity(contentType, AbstractGrpcProtocol.encodeDataFrame(codec, frame)),
       protocol = HttpProtocols.`HTTP/1.1`,
       attributes = Map.empty[AttributeKey[?], Any].updated(AttributeKeys.trailer, trailer))
 

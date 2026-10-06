@@ -15,8 +15,16 @@ package org.apache.pekko.grpc.internal
 import org.apache.pekko
 import pekko.NotUsed
 import pekko.grpc.GrpcProtocol
-import pekko.grpc.GrpcProtocol.{ GrpcProtocolReader, GrpcProtocolWriter, InboundFrame, OutboundFrame }
-import pekko.grpc.GrpcProtocol.DeferredDataFrame.DeferredDataWriter
+import pekko.grpc.GrpcProtocol.{
+  DataFrame,
+  DeferredDataFrame,
+  GrpcProtocolReader,
+  GrpcProtocolWriter,
+  InboundFrame,
+  OutboundDataFrame,
+  OutboundFrame
+}
+import pekko.grpc.DeferredDataWriter
 import pekko.http.javadsl.{ model => jmodel }
 import pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
 import pekko.http.scaladsl.model.{ ContentType, HttpHeader, HttpResponse, MediaType, Trailer }
@@ -114,6 +122,20 @@ object AbstractGrpcProtocol {
       })
       .toContentType
 
+  /**
+   * Encodes a data frame in gRPC framing, serializing a deferred frame directly into the frame buffer when no
+   * compression is applied.
+   */
+  def encodeDataFrame(codec: Codec, frame: OutboundDataFrame): ByteString =
+    frame match {
+      case DeferredDataFrame(element, dataWriter) if codec eq Identity =>
+        encodeFrameData(element, dataWriter, codec.isCompressed, isTrailer = false)
+      case DataFrame(data) =>
+        encodeFrameData(codec.compress(data), codec.isCompressed, isTrailer = false)
+      case deferred: DeferredDataFrame[?] =>
+        encodeFrameData(codec.compress(deferred.data), codec.isCompressed, isTrailer = false)
+    }
+
   def encodeFrameData[T](element: T, elementDataWriter: DeferredDataWriter[T], isCompressed: Boolean,
       isTrailer: Boolean): ByteString = {
     val dataLength = elementDataWriter.serializedSize(element)
@@ -133,7 +155,7 @@ object AbstractGrpcProtocol {
       protocol: GrpcProtocol,
       codec: Codec,
       encodeFrame: OutboundFrame => ChunkStreamPart,
-      encodeDataToResponse: (OutboundFrame, Seq[HttpHeader], Trailer) => HttpResponse): GrpcProtocolWriter =
+      encodeDataToResponse: (OutboundDataFrame, Seq[HttpHeader], Trailer) => HttpResponse): GrpcProtocolWriter =
     GrpcProtocolWriter(
       adjustCompressibility(protocol.contentType, codec),
       codec,
