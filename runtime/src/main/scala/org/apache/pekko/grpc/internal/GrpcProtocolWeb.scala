@@ -38,11 +38,11 @@ abstract class GrpcProtocolWebBase(subType: String) extends AbstractGrpcProtocol
     Chunk(postEncode(encodeFrameToBytes(codec, frame)))
 
   private def encodeDataToResponse(
-      codec: Codec)(frane: OutboundFrame, headers: Seq[HttpHeader], trailer: Trailer): HttpResponse =
+      codec: Codec)(frame: OutboundFrame, headers: Seq[HttpHeader], trailer: Trailer): HttpResponse =
     HttpResponse(
       status = StatusCodes.OK,
       headers = headers,
-      entity = HttpEntity(contentType, encodeDataToFrameBytes(codec, frane, trailer)),
+      entity = HttpEntity(contentType, encodeDataToFrameBytes(codec, frame, trailer)),
       protocol = HttpProtocols.`HTTP/1.1`)
 
   private def encodeDataToFrameBytes(codec: Codec, frame: OutboundFrame, trailer: Trailer): ByteString = {
