@@ -33,7 +33,7 @@ import org.openjdk.jmh.annotations.Benchmark
 import org.openjdk.jmh.infra.Blackhole
 
 import scala.concurrent.duration.Duration
-import scala.concurrent.{ Await, ExecutionContext, Future }
+import scala.concurrent.{ Await, Future }
 
 class ScalaHandlerBenchmark extends AbstractHandlerBenchmark {
   private val responseMessage: HelloReply = HelloReply("Hello, Alice")
@@ -52,17 +52,20 @@ class ScalaHandlerBenchmark extends AbstractHandlerBenchmark {
 
   // Minimal handler bypassing handler composition, negotiation and path matching overheads
   private val syntheticSayHelloHandler: HttpRequest => Future[HttpResponse] = (request: HttpRequest) => {
-    GrpcMarshalling.handleUnary(request.entity, implementation.sayHello, eHandler)(
-      HelloRequestSerializer, HelloReplySerializer, mat, reader, writer, system, ec)
+    GrpcExceptionHandler.recover(
+      GrpcMarshalling.unmarshal(request.entity)(HelloRequestSerializer, mat, reader).fast
+        .flatMap(implementation.sayHello).fast
+        .map(e => GrpcMarshalling.marshal(e, eHandler)(HelloReplySerializer, writer, system)),
+      eHandler)(system, writer, ec)
   }
 
   // Minimal handler bypassing handler composition, negotiation and path matching overheads
   private val syntheticItKeepsTalkingHandler: HttpRequest => Future[HttpResponse] = (request: HttpRequest) => {
-    GrpcMarshalling.unmarshalStream(request.entity)(HelloRequestSerializer, mat, reader)
-      .flatMap(implementation.itKeepsTalking)
-      .map(e => GrpcMarshalling.marshal(e, eHandler)(HelloReplySerializer, writer, system))(ExecutionContext.parasitic)
-      .recoverWith(GrpcExceptionHandler.from(eHandler(system.classicSystem))(system, writer))(
-        ExecutionContext.parasitic)
+    GrpcExceptionHandler.recover(
+      GrpcMarshalling.unmarshalStream(request.entity)(HelloRequestSerializer, mat, reader).fast
+        .flatMap(implementation.itKeepsTalking).fast
+        .map(e => GrpcMarshalling.marshal(e, eHandler)(HelloReplySerializer, writer, system)),
+      eHandler)(system, writer, ec)
   }
 
   // Pre 2.0 generated code handler

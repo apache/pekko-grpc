@@ -23,6 +23,7 @@ import pekko.grpc.internal.{ AbstractGrpcProtocol, GrpcProtocolNative, Identity 
 import pekko.grpc.scaladsl.{ GrpcExceptionHandler, GrpcMarshalling, ScalapbProtobufSerializer }
 import pekko.http.scaladsl.model.{ HttpEntity, HttpResponse }
 import pekko.http.scaladsl.util.FastFuture
+import pekko.http.scaladsl.util.FastFuture.EnhancedFuture
 import pekko.stream.SystemMaterializer
 import pekko.stream.scaladsl.Source
 import io.grpc.reflection.v1.reflection._
@@ -75,8 +76,13 @@ class GrpcMarshallingBenchmark extends CommonBenchmark {
     implicit val ec: ExecutionContext = ExecutionContext.parasitic
     val eHandler = GrpcExceptionHandler.defaultMapper _
 
-    Await.result(GrpcMarshalling.handleUnary[ServerReflectionRequest, ServerReflectionRequest](entity,
-      FastFuture.successful(_), eHandler), Duration.Inf)
+    Await.result(
+      GrpcExceptionHandler.recover(
+        GrpcMarshalling.unmarshal[ServerReflectionRequest](entity).fast
+          .flatMap(FastFuture.successful(_)).fast
+          .map(e => GrpcMarshalling.marshal(e, eHandler)),
+        eHandler),
+      Duration.Inf)
   }
 
   // Unmarshalling a strict entity and then chaining the transforms a generated handler applies to it.

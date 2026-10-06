@@ -31,7 +31,6 @@ import pekko.grpc.internal._
 import pekko.http.scaladsl.model.{ HttpEntity, HttpRequest, HttpResponse, Uri }
 import pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
 import pekko.http.scaladsl.util.FastFuture
-import pekko.http.scaladsl.util.FastFuture.EnhancedFuture
 import pekko.stream.Materializer
 import pekko.stream.scaladsl.Source
 import pekko.util.ByteString
@@ -190,23 +189,6 @@ object GrpcMarshalling {
       system: ClassicActorSystemProvider): HttpResponse = {
     GrpcResponseHelpers(e, eHandler)
   }
-
-  @InternalApi
-  def handleUnary[In, Out](
-      entity: HttpEntity,
-      implementation: In => Future[Out],
-      eHandler: ActorSystem => PartialFunction[Throwable, Trailers])(
-      implicit u: ProtobufSerializer[In],
-      m: ProtobufSerializer[Out],
-      mat: Materializer,
-      reader: GrpcProtocolReader,
-      writer: GrpcProtocolWriter,
-      system: ClassicActorSystemProvider,
-      ec: ExecutionContext): Future[HttpResponse] =
-    unmarshal[In](entity).fast
-      .flatMap(implementation).fast
-      .map(e => marshal[Out](e, eHandler))(ExecutionContext.parasitic)
-      .recoverWith(GrpcExceptionHandler.from(eHandler(system.classicSystem)))(ExecutionContext.parasitic)
 
   @InternalApi
   def marshalRequest[T](

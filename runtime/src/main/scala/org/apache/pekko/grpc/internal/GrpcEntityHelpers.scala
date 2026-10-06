@@ -18,7 +18,14 @@ import pekko.NotUsed
 import pekko.actor.{ ActorSystem, ClassicActorSystemProvider }
 import pekko.annotation.InternalApi
 import pekko.grpc.{ GrpcServiceException, ProtobufFrameSerializer, ProtobufSerializer, Trailers }
-import pekko.grpc.GrpcProtocol.{ DataFrame, DeferredDataFrame, GrpcProtocolWriter, OutboundFrame, TrailerFrame }
+import pekko.grpc.GrpcProtocol.{
+  DataFrame,
+  DeferredDataFrame,
+  GrpcProtocolWriter,
+  OutboundDataFrame,
+  OutboundFrame,
+  TrailerFrame
+}
 import pekko.grpc.scaladsl.{ headers, BytesEntry, Metadata, MetadataEntry, StringEntry }
 import pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
 import pekko.http.scaladsl.model.HttpHeader
@@ -70,7 +77,7 @@ object GrpcEntityHelpers {
       writer: GrpcProtocolWriter): Source[ChunkStreamPart, NotUsed] =
     e.map(msg => writer.encodeFrame(outboundDataFrame(msg))).via(concatCheap(trail.map(writer.encodeFrame)))
 
-  def outboundDataFrame[T](t: T)(implicit m: ProtobufSerializer[T]): OutboundFrame = {
+  def outboundDataFrame[T](t: T)(implicit m: ProtobufSerializer[T]): OutboundDataFrame = {
     m match {
       case fm: ProtobufFrameSerializer[T] => DeferredDataFrame(t, fm)
       case _                              => DataFrame(m.serialize(t))
