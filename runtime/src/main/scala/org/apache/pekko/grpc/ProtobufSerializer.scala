@@ -14,6 +14,7 @@
 package org.apache.pekko.grpc
 
 import org.apache.pekko
+import pekko.grpc.GrpcProtocol.DeferredDataFrame
 import pekko.grpc.internal.ByteStringUtils
 import pekko.util.ByteString
 
@@ -21,10 +22,15 @@ import java.io.InputStream
 
 trait ProtobufSerializer[T] {
   def serialize(t: T): ByteString
+
   def deserialize(bytes: ByteString): T
+
   def deserialize(stream: InputStream): T = deserialize(ByteStringUtils.fromInputStream(stream))
 }
 
-private[grpc] trait ProtobufFrameSerializer[T] extends ProtobufSerializer[T] {
-  private[grpc] def serializeDataFrame(t: T): ByteString
-}
+/**
+ * Optional optimisation of ProtobufSerializer, which allows for more efficient serialization into a frame where the
+ * serialized size of the encoded element can be determined in advance.
+ */
+private[grpc] trait ProtobufFrameSerializer[T] extends ProtobufSerializer[T]
+    with DeferredDataFrame.DeferredDataWriter[T]
