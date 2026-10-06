@@ -39,9 +39,6 @@ class ScalapbProtobufSerializerSpec extends AnyWordSpec with Matchers {
       val frame = new Array[Byte](serialized.length + prefixLength)
       anySerializer.serializeTo(obj, frame, prefixLength)
 
-      println(serialized.mkString(","))
-      println(frame.mkString(","))
-
       (0 until prefixLength).foreach(frame(_) shouldBe 0)
       (prefixLength until frame.length).foreach(i => frame(i) shouldBe serialized(i - prefixLength))
     }
