@@ -15,7 +15,16 @@ package org.apache.pekko.grpc.internal
 import org.apache.pekko
 import pekko.NotUsed
 import pekko.grpc.GrpcProtocol
-import pekko.grpc.GrpcProtocol.{ Frame, GrpcProtocolReader, GrpcProtocolWriter }
+import pekko.grpc.GrpcProtocol.{
+  DataFrame,
+  DeferredDataFrame,
+  GrpcProtocolReader,
+  GrpcProtocolWriter,
+  InboundFrame,
+  OutboundDataFrame,
+  OutboundFrame
+}
+import pekko.grpc.DeferredDataWriter
 import pekko.http.javadsl.{ model => jmodel }
 import pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
 import pekko.http.scaladsl.model.{ ContentType, HttpHeader, HttpResponse, MediaType, Trailer }
@@ -113,6 +122,29 @@ object AbstractGrpcProtocol {
       })
       .toContentType
 
+  /**
+   * Encodes a data frame in gRPC framing, serializing a deferred frame directly into the frame buffer when no
+   * compression is applied.
+   */
+  def encodeDataFrame(codec: Codec, frame: OutboundDataFrame): ByteString =
+    frame match {
+      case DeferredDataFrame(element, dataWriter) if codec eq Identity =>
+        encodeFrameData(element, dataWriter, codec.isCompressed, isTrailer = false)
+      case DataFrame(data) =>
+        encodeFrameData(codec.compress(data), codec.isCompressed, isTrailer = false)
+      case deferred: DeferredDataFrame[?] =>
+        encodeFrameData(codec.compress(deferred.data), codec.isCompressed, isTrailer = false)
+    }
+
+  def encodeFrameData[T](element: T, elementDataWriter: DeferredDataWriter[T], isCompressed: Boolean,
+      isTrailer: Boolean): ByteString = {
+    val dataLength = elementDataWriter.serializedSize(element)
+    val frame = new Array[Byte](AbstractGrpcProtocol.FrameHeaderSize + dataLength)
+    writeFrameHeader(frame, 0, dataLength, isCompressed, isTrailer)
+    elementDataWriter.serializeTo(element, frame, AbstractGrpcProtocol.FrameHeaderSize)
+    ByteString.fromArrayUnsafe(frame)
+  }
+
   def encodeFrameData(data: ByteString, isCompressed: Boolean, isTrailer: Boolean): ByteString = {
     val header = new Array[Byte](FrameHeaderSize)
     writeFrameHeader(header, 0, data.length, isCompressed, isTrailer)
@@ -122,14 +154,13 @@ object AbstractGrpcProtocol {
   def writer(
       protocol: GrpcProtocol,
       codec: Codec,
-      encodeFrame: Frame => ChunkStreamPart,
-      encodeDataToResponse: (ByteString, Seq[HttpHeader], Trailer) => HttpResponse): GrpcProtocolWriter =
+      encodeFrame: OutboundFrame => ChunkStreamPart,
+      encodeDataToResponse: (OutboundDataFrame, Seq[HttpHeader], Trailer) => HttpResponse): GrpcProtocolWriter =
     GrpcProtocolWriter(
       adjustCompressibility(protocol.contentType, codec),
       codec,
       encodeFrame,
-      encodeDataToResponse,
-      Flow[Frame].map(encodeFrame))
+      encodeDataToResponse)
 
   /**
    * The default maximum inbound message size (4 MiB), matching grpc-java's default.
@@ -138,12 +169,12 @@ object AbstractGrpcProtocol {
 
   def reader(
       codec: Codec,
-      decodeFrame: (Int, ByteString) => Frame,
+      decodeFrame: (Int, ByteString) => InboundFrame,
       preDecodeStrict: ByteString => ByteString = null,
       preDecodeFlow: Flow[ByteString, ByteString, NotUsed] = null,
       maxInboundMessageSize: Int = DefaultMaxInboundMessageSize): GrpcProtocolReader = {
     val strictAdapter: ByteString => ByteString = if (preDecodeStrict eq null) identity else preDecodeStrict
-    val adapter: Flow[ByteString, Frame, NotUsed] => Flow[ByteString, Frame, NotUsed] =
+    val adapter: Flow[ByteString, InboundFrame, NotUsed] => Flow[ByteString, InboundFrame, NotUsed] =
       if (preDecodeFlow eq null) identity
       else x => Flow[ByteString].via(preDecodeFlow).via(x)
 
@@ -171,23 +202,23 @@ object AbstractGrpcProtocol {
       adapter(Flow.fromGraph(new GrpcFramingDecoderStage(codec, decodeFrame, maxInboundMessageSize))))
   }
 
-  class GrpcFramingDecoderStage(codec: Codec, deframe: (Int, ByteString) => Frame, maxInboundMessageSize: Int)
-      extends ByteStringParser[Frame] {
+  class GrpcFramingDecoderStage(codec: Codec, deframe: (Int, ByteString) => InboundFrame, maxInboundMessageSize: Int)
+      extends ByteStringParser[InboundFrame] {
     override def createLogic(inheritedAttributes: Attributes): GraphStageLogic =
       new ParsingLogic {
         startWith(ReadFrameHeader)
 
-        trait Step extends ParseStep[Frame]
+        trait Step extends ParseStep[InboundFrame]
 
         // handle explicitly to avoid noisy log: a peer sending oversized or malformed frame
         // headers should not cost us a stack trace per attempt
-        private def failWith(status: Status): ParseResult[Frame] = {
+        private def failWith(status: Status): ParseResult[InboundFrame] = {
           failStage(new StatusException(status))
           ParseResult(None, Failed)
         }
 
         object ReadFrameHeader extends Step {
-          override def parse(reader: ByteReader): ParseResult[Frame] = {
+          override def parse(reader: ByteReader): ParseResult[InboundFrame] = {
             val frameType = reader.readByte()
             val length = reader.readIntBE()
 
@@ -205,7 +236,7 @@ object AbstractGrpcProtocol {
         sealed case class ReadFrame(frameType: Int, length: Int) extends Step {
           private val compression = (frameType & 0x01) == 1
 
-          override def parse(reader: ByteReader): ParseResult[Frame] =
+          override def parse(reader: ByteReader): ParseResult[InboundFrame] =
             try ParseResult(
                 Some(deframe(frameType, codec.uncompress(compression, reader.take(length), maxInboundMessageSize))),
                 ReadFrameHeader)
@@ -217,7 +248,7 @@ object AbstractGrpcProtocol {
         }
 
         case object Failed extends Step {
-          override def parse(reader: ByteReader): ParseResult[Frame] = ParseResult(None, Failed)
+          override def parse(reader: ByteReader): ParseResult[InboundFrame] = ParseResult(None, Failed)
         }
       }
   }

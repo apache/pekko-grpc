@@ -296,13 +296,21 @@ lazy val interopTests = Project(id = "interop-tests", base = file("interop-tests
 
 lazy val benchmarks = Project(id = "benchmarks", base = file("benchmarks"))
   .dependsOn(runtime)
-  .dependsOn(pluginTesterScala)
+  .enablePlugins(ReflectiveCodeGen)
   .enablePlugins(JmhPlugin)
   .disablePlugins(MimaPlugin)
+  .settings(Dependencies.benchmarks)
   .settings(
     name := s"$pekkoPrefix-benchmarks",
     crossScalaVersions := Dependencies.Versions.CrossScalaForLib,
-    scalaVersion := Dependencies.Versions.CrossScalaForLib.head)
+    scalaVersion := Dependencies.Versions.CrossScalaForLib.head,
+    ReflectiveCodeGen.generatedLanguages := Seq("Scala", "Java"),
+    ReflectiveCodeGen.codeGeneratorSettings ++= Seq("flat_package", "server_power_apis"),
+    PB.generate / excludeFilter := new SimpleFileFilter(f => {
+      f.getAbsolutePath.contains("envoy") || f.getAbsolutePath.contains("google/protobuf")
+    }),
+    PB.protocVersion := Dependencies.Versions.googleProtoc
+  )
   .enablePlugins(NoPublish)
 
 lazy val docs = Project(id = "docs", base = file("docs"))

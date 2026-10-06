@@ -17,10 +17,27 @@
 
 package org.apache.pekko.grpc
 
-import com.github.pjfanning.pekkobuild.PekkoDependency
+import org.apache.pekko.annotation.ApiMayChange
 
-object PekkoHttpDependency extends PekkoDependency {
-  override val checkProject: String = "pekko-http-testkit"
-  override val module: Option[String] = Some("http")
-  override val currentVersion: String = "2.0.0-M2"
+/**
+ * Writes an element directly into a pre-allocated frame buffer, so that the serialized form does not have to be
+ * copied into the frame after serialization.
+ *
+ * @since 2.0.0
+ */
+@ApiMayChange
+trait DeferredDataWriter[T] {
+
+  /**
+   * Compute the size of the serialized form of the given element.
+   */
+  def serializedSize(t: T): Int
+
+  /**
+   * Serialize the given element into the given frame, starting at the given offset.
+   * @param t the element to serialize.
+   * @param frame a preallocated frame buffer, which will be at least of size offset + serializedSize(t)
+   * @param offset the offset to place the serialized data of the element at.
+   */
+  def serializeTo(t: T, frame: Array[Byte], offset: Int): Unit
 }

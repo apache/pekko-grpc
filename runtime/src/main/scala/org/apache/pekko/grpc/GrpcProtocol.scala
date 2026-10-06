@@ -87,11 +87,37 @@ object GrpcProtocol {
   /** A frame in a logical gRPC protocol stream */
   sealed trait Frame
 
-  /** A data (or message) frame in a gRPC protocol stream. */
-  case class DataFrame(data: ByteString) extends Frame
+  /** An outbound data frame to be encoded in a gRPC protocol stream */
+  sealed trait OutboundFrame extends Frame
+
+  /** A frame received from a peer system. */
+  sealed trait InboundFrame extends Frame
+
+  /** An outbound data (or message) frame, which is encoded as a gRPC data frame rather than a trailer */
+  sealed trait OutboundDataFrame extends OutboundFrame {
+
+    /** The serialized message carried by this frame. */
+    def data: ByteString
+  }
+
+  /** A data (or message) frame in a gRPC protocol stream */
+  case class DataFrame(data: ByteString) extends InboundFrame with OutboundDataFrame
 
   /** A trailer (status headers) frame in a gRPC protocol stream */
-  case class TrailerFrame(trailers: List[HttpHeader]) extends Frame
+  case class TrailerFrame(trailers: List[HttpHeader]) extends InboundFrame with OutboundFrame
+
+  /** An outbound write of a data frame, deferred to allow optimized write into a pre-allocated buffer */
+  case class DeferredDataFrame[T](element: T, writer: DeferredDataWriter[T]) extends OutboundDataFrame {
+    type Element = T
+
+    /** Fallback to DataFrame style write, when optimized framed write is not possible. */
+    override def data: ByteString = {
+      val data = new Array[Byte](writer.serializedSize(element))
+      writer.serializeTo(element, data, 0)
+      ByteString.fromArrayUnsafe(data)
+    }
+
+  }
 
   /**
    * Implements the encoding of a stream of gRPC Frames into a physical/transport layer.
@@ -104,11 +130,9 @@ object GrpcProtocol {
       /** The compression codec to be used for data frame bodies */
       messageEncoding: Codec,
       /** Encodes a frame as a part in a chunk stream. */
-      encodeFrame: Frame => ChunkStreamPart,
+      encodeFrame: OutboundFrame => ChunkStreamPart,
       /** A shortcut to encode a data frame directly into a Response */
-      encodeDataToResponse: (ByteString, Seq[HttpHeader], Trailer) => HttpResponse,
-      /** A Flow over a stream of Frame using this frame encoding */
-      frameEncoder: Flow[Frame, ChunkStreamPart, NotUsed])
+      encodeDataToResponse: (OutboundDataFrame, Seq[HttpHeader], Trailer) => HttpResponse)
 
   /**
    * Implements the decoding of the gRPC framing from a physical/transport layer.
@@ -118,7 +142,7 @@ object GrpcProtocol {
       messageEncoding: Codec,
       decodeSingleFrame: ByteString => ByteString,
       /** A Flow of Frames over a stream of messages encoded in gRPC framing. */
-      frameDecoder: Flow[ByteString, Frame, NotUsed]) {
+      frameDecoder: Flow[ByteString, InboundFrame, NotUsed]) {
 
     /**
      * A Flow of Frames over a stream of messages encoded in gRPC framing that only

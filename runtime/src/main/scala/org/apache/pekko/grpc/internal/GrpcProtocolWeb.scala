@@ -34,36 +34,35 @@ abstract class GrpcProtocolWebBase(subType: String) extends AbstractGrpcProtocol
   override protected def reader(codec: Codec, maxInboundMessageSize: Int): GrpcProtocolReader =
     AbstractGrpcProtocol.reader(codec, decodeFrame, preDecodeStrict, preDecodeFlow, maxInboundMessageSize)
 
-  private def encodeFrame(codec: Codec, frame: Frame): ChunkStreamPart =
+  private def encodeFrame(codec: Codec, frame: OutboundFrame): ChunkStreamPart =
     Chunk(postEncode(encodeFrameToBytes(codec, frame)))
 
   private def encodeDataToResponse(
-      codec: Codec)(data: ByteString, headers: Seq[HttpHeader], trailer: Trailer): HttpResponse =
+      codec: Codec)(frame: OutboundDataFrame, headers: Seq[HttpHeader], trailer: Trailer): HttpResponse =
     HttpResponse(
       status = StatusCodes.OK,
       headers = headers,
-      entity = HttpEntity(contentType, encodeDataToFrameBytes(codec, data, trailer)),
+      entity = HttpEntity(contentType, encodeDataToFrameBytes(codec, frame, trailer)),
       protocol = HttpProtocols.`HTTP/1.1`)
 
-  private def encodeDataToFrameBytes(codec: Codec, data: ByteString, trailer: Trailer): ByteString = {
+  private def encodeDataToFrameBytes(codec: Codec, frame: OutboundDataFrame, trailer: Trailer): ByteString = {
     val trailerData = encodeTrailerHeaders(trailer.headers.iterator)
     val trailerFrame =
       AbstractGrpcProtocol.encodeFrameData(codec.compress(trailerData), codec.isCompressed, isTrailer = true)
-    postEncode(encodeFrameToBytes(codec, DataFrame(data)) ++ trailerFrame)
+    postEncode(AbstractGrpcProtocol.encodeDataFrame(codec, frame) ++ trailerFrame)
   }
 
-  private def encodeFrameToBytes(codec: Codec, frame: Frame): ByteString =
+  private def encodeFrameToBytes(codec: Codec, frame: OutboundFrame): ByteString =
     frame match {
-      case DataFrame(data) =>
-        AbstractGrpcProtocol.encodeFrameData(codec.compress(data), codec.isCompressed, isTrailer = false)
-      case TrailerFrame(trailer) =>
+      case data: OutboundDataFrame => AbstractGrpcProtocol.encodeDataFrame(codec, data)
+      case TrailerFrame(trailer)   =>
         AbstractGrpcProtocol.encodeFrameData(
           codec.compress(encodeTrailerHeaders(trailer.iterator.map(h => h.lowercaseName -> h.value))),
           codec.isCompressed,
           isTrailer = true)
     }
 
-  private final def decodeFrame(frameHeader: Int, data: ByteString): Frame = {
+  private final def decodeFrame(frameHeader: Int, data: ByteString): InboundFrame = {
     (frameHeader & 0x80) match {
       case 0    => DataFrame(data)
       case 0x80 => TrailerFrame(decodeTrailer(data))

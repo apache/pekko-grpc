@@ -49,21 +49,20 @@ object GrpcProtocolNative extends AbstractGrpcProtocol("grpc") {
   private def decodeFrame(@nowarn("msg=is never used") frameType: Int, data: ByteString) = DataFrame(data)
 
   @inline
-  private def encodeFrame(codec: Codec, frame: Frame): ChunkStreamPart =
+  private def encodeFrame(codec: Codec, frame: OutboundFrame): ChunkStreamPart =
     frame match {
-      case DataFrame(data) =>
-        Chunk(AbstractGrpcProtocol.encodeFrameData(codec.compress(data), codec.isCompressed, isTrailer = false))
-      case TrailerFrame(headers) => LastChunk(trailer = headers)
+      case data: OutboundDataFrame => Chunk(AbstractGrpcProtocol.encodeDataFrame(codec, data))
+      case TrailerFrame(headers)   => LastChunk(trailer = headers)
     }
+
+  @inline
   private def encodeDataToResponse(
-      codec: Codec)(data: ByteString, headers: Seq[HttpHeader], trailer: Trailer): HttpResponse =
+      codec: Codec)(frame: OutboundDataFrame, headers: Seq[HttpHeader], trailer: Trailer): HttpResponse =
     new HttpResponse(
       status = StatusCodes.OK,
       headers = headers,
-      entity = HttpEntity(contentType, encodeDataToFrameBytes(codec, data)),
+      entity = HttpEntity(contentType, AbstractGrpcProtocol.encodeDataFrame(codec, frame)),
       protocol = HttpProtocols.`HTTP/1.1`,
       attributes = Map.empty[AttributeKey[?], Any].updated(AttributeKeys.trailer, trailer))
 
-  private def encodeDataToFrameBytes(codec: Codec, data: ByteString): ByteString =
-    AbstractGrpcProtocol.encodeFrameData(codec.compress(data), codec.isCompressed, isTrailer = false)
 }

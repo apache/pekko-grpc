@@ -16,9 +16,8 @@ package org.apache.pekko.grpc.scaladsl
 import io.grpc.Status
 
 import scala.annotation.nowarn
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.Future
 import scala.util.{ Failure, Success, Try }
-import scala.util.control.NonFatal
 
 import org.apache.pekko
 import pekko.NotUsed
@@ -88,7 +87,7 @@ object GrpcMarshalling {
       entity: HttpEntity)(implicit u: ProtobufSerializer[T], mat: Materializer, reader: GrpcProtocolReader): Future[T] =
     entity match {
       case HttpEntity.Strict(_, data) => FastFuture(Try(u.deserialize(reader.decodeSingleFrame(data))))
-      case _                          => unmarshal(entity.dataBytes)
+      case _                          => unmarshal(entity.dataBytes) // HttpEntity.toStrict is slower than source.runFold
     }
 
   def unmarshalStream[T](data: Source[ByteString, Any])(
@@ -127,84 +126,6 @@ object GrpcMarshalling {
       system: ClassicActorSystemProvider): HttpResponse = {
     GrpcResponseHelpers(e, eHandler)
   }
-
-  @InternalApi
-  def handleUnary[In, Out](
-      entity: HttpEntity,
-      implementation: In => Future[Out],
-      eHandler: ActorSystem => PartialFunction[Throwable, Trailers])(
-      implicit u: ProtobufSerializer[In],
-      m: ProtobufSerializer[Out],
-      mat: Materializer,
-      reader: GrpcProtocolReader,
-      writer: GrpcProtocolWriter,
-      system: ClassicActorSystemProvider,
-      ec: ExecutionContext): Future[HttpResponse] = {
-    entity match {
-      case HttpEntity.Strict(_, data) =>
-        try {
-          val in = u.deserialize(reader.decodeSingleFrame(data))
-          invokeUnary(in, implementation, eHandler)
-        } catch {
-          case NonFatal(ex) => unaryExceptionHandler(eHandler)(system, writer)(ex)
-        }
-      case _ =>
-        val requestFuture = unmarshal[In](entity)(u, mat, reader)
-        requestFuture.value match {
-          case Some(Success(in)) => invokeUnary(in, implementation, eHandler)
-          case Some(Failure(ex)) => unaryExceptionHandler(eHandler)(system, writer)(ex)
-          case None              =>
-            val exceptionHandler = unaryExceptionHandler(eHandler)
-            requestFuture
-              .flatMap(in => invokeUnary(in, implementation, eHandler))
-              .recoverWith(exceptionHandler)
-        }
-    }
-  }
-
-  @inline private def invokeUnary[In, Out](
-      in: In,
-      implementation: In => Future[Out],
-      eHandler: ActorSystem => PartialFunction[Throwable, Trailers])(
-      implicit m: ProtobufSerializer[Out],
-      writer: GrpcProtocolWriter,
-      system: ClassicActorSystemProvider,
-      ec: ExecutionContext): Future[HttpResponse] =
-    try handleUnaryResponse(implementation(in), eHandler)
-    catch {
-      case NonFatal(ex) => unaryExceptionHandler(eHandler)(system, writer)(ex)
-    }
-
-  @inline private def handleUnaryResponse[Out](
-      responseFuture: Future[Out],
-      eHandler: ActorSystem => PartialFunction[Throwable, Trailers])(
-      implicit m: ProtobufSerializer[Out],
-      writer: GrpcProtocolWriter,
-      system: ClassicActorSystemProvider,
-      ec: ExecutionContext): Future[HttpResponse] =
-    responseFuture.value match {
-      case Some(Success(out)) => marshalUnaryResponse(out, eHandler)
-      case Some(Failure(ex))  => unaryExceptionHandler(eHandler)(system, writer)(ex)
-      case None               =>
-        val exceptionHandler = unaryExceptionHandler(eHandler)
-        responseFuture.map(out => marshal[Out](out, eHandler)(m, writer, system)).recoverWith(exceptionHandler)
-    }
-
-  @inline private def marshalUnaryResponse[Out](
-      out: Out,
-      eHandler: ActorSystem => PartialFunction[Throwable, Trailers])(
-      implicit m: ProtobufSerializer[Out],
-      writer: GrpcProtocolWriter,
-      system: ClassicActorSystemProvider): Future[HttpResponse] =
-    try FastFuture.successful(marshal[Out](out, eHandler)(m, writer, system))
-    catch {
-      case NonFatal(ex) => unaryExceptionHandler(eHandler)(system, writer)(ex)
-    }
-
-  @inline private def unaryExceptionHandler(eHandler: ActorSystem => PartialFunction[Throwable, Trailers])(
-      implicit system: ClassicActorSystemProvider,
-      writer: GrpcProtocolWriter): PartialFunction[Throwable, Future[HttpResponse]] =
-    GrpcExceptionHandler.from(eHandler(system.classicSystem))
 
   @InternalApi
   def marshalRequest[T](
