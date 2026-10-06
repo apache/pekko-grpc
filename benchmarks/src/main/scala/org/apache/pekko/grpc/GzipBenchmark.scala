@@ -29,11 +29,11 @@ import org.openjdk.jmh.annotations._
 // Microbenchmarks for the buffers used by gzip compression and by reading a message from an InputStream.
 class GzipBenchmark extends CommonBenchmark {
   @Param(Array("1024", "65536", "1048576"))
-  var size: Int = _
+  var size: Int = 0
 
-  private var uncompressed: ByteString = _
-  private var compressed: ByteString = _
-  private var uncompressedArray: Array[Byte] = _
+  private var uncompressed: ByteString = ByteString.empty
+  private var compressed: ByteString = ByteString.empty
+  private var uncompressedArray: Array[Byte] = Array.emptyByteArray
 
   @Setup
   def setup(): Unit = {
