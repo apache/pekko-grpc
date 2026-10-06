@@ -50,7 +50,7 @@ jobs:
       - name: Binary-compatibility check
         run: |-
           cp .jvmopts-ci .jvmopts
-          sbt grpcVersionSyncCheck googleProtobufVersionSyncCheck mimaReportBinaryIssues
+          sbt grpcVersionSyncCheck googleProtobufVersionSyncCheck +runtime/mimaReportBinaryIssues
 
       - name: Assembly license check
         run: |-
