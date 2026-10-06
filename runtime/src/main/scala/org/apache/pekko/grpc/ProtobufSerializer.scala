@@ -14,7 +14,7 @@
 package org.apache.pekko.grpc
 
 import org.apache.pekko
-import org.apache.pekko.grpc.GrpcProtocol.DeferredDataFrame
+import pekko.grpc.GrpcProtocol.DeferredDataFrame
 import pekko.grpc.internal.ByteStringUtils
 import pekko.util.ByteString
 

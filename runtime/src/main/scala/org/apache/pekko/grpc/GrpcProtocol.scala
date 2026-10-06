@@ -14,11 +14,11 @@
 package org.apache.pekko.grpc
 
 import org.apache.pekko
-import org.apache.pekko.grpc.GrpcProtocol.DeferredDataFrame.DeferredDataWriter
 import pekko.NotUsed
 import pekko.annotation.InternalApi
 import pekko.annotation.InternalStableApi
 import pekko.grpc.GrpcProtocol.{ GrpcProtocolReader, GrpcProtocolWriter }
+import pekko.grpc.GrpcProtocol.DeferredDataFrame.DeferredDataWriter
 import pekko.grpc.internal.{
   AbstractGrpcProtocol,
   Codec,
