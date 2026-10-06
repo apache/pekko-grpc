@@ -34,7 +34,7 @@ abstract class GrpcProtocolWebBase(subType: String) extends AbstractGrpcProtocol
   override protected def reader(codec: Codec, maxInboundMessageSize: Int): GrpcProtocolReader =
     AbstractGrpcProtocol.reader(codec, decodeFrame, preDecodeStrict, preDecodeFlow, maxInboundMessageSize)
 
-  private def encodeFrame(codec: Codec, frame: Frame): ChunkStreamPart =
+  private def encodeFrame(codec: Codec, frame: OutboundFrame): ChunkStreamPart =
     Chunk(postEncode(encodeFrameToBytes(codec, frame)))
 
   private def encodeDataToResponse(
@@ -52,7 +52,7 @@ abstract class GrpcProtocolWebBase(subType: String) extends AbstractGrpcProtocol
     postEncode(encodeFrameToBytes(codec, frame) ++ trailerFrame)
   }
 
-  private def encodeFrameToBytes(codec: Codec, frame: Frame): ByteString =
+  private def encodeFrameToBytes(codec: Codec, frame: OutboundFrame): ByteString =
     frame match {
       case ef @ DeferredDataFrame(element, dataWriter) =>
         if (codec eq Identity)
