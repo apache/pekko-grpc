@@ -19,7 +19,6 @@ import pekko.http.scaladsl.model.HttpHeader
 import pekko.http.scaladsl.model.headers.{ ModeledCustomHeader, ModeledCustomHeaderCompanion }
 import pekko.http.javadsl.{ model => jm }
 
-import scala.collection.compat.immutable.ArraySeq
 import scala.annotation.nowarn
 import scala.util.Try
 
@@ -125,31 +124,4 @@ object `Status-Message` extends ModeledCustomHeaderCompanion[`Status-Message`] {
 
   def findIn(headers: Seq[HttpHeader]): Option[String] =
     headers.collectFirst { case h if h.is(name) => h.value() }
-}
-
-private[grpc] final class `Trailer` private (values: Seq[String]) extends ModeledCustomHeader[`Trailer`] {
-
-  override def companion: ModeledCustomHeaderCompanion[`Trailer`] = `Trailer`
-
-  override def value(): String = values.mkString(", ")
-
-  override def renderInRequests(): Boolean = true
-
-  override def renderInResponses(): Boolean = true
-}
-
-private[grpc] object `Trailer` extends ModeledCustomHeaderCompanion[`Trailer`] {
-  def apply(values: Seq[String]): `Trailer` = new `Trailer`(values.map(_.trim))
-
-  override val name = "trailer"
-
-  override val lowercaseName: String = super.lowercaseName
-
-  override def parse(value: String): Try[`Trailer`] =
-    Try(`Trailer`(ArraySeq.unsafeWrapArray(SimpleCSVParser.parse(value))))
-
-  def findIn(headers: Seq[HttpHeader]): Option[Seq[String]] =
-    headers.collectFirst {
-      case header if header.is(name) => ArraySeq.unsafeWrapArray(SimpleCSVParser.parse(header.value()))
-    }
 }

@@ -22,6 +22,7 @@ import io.grpc.Status
 import org.apache.pekko.actor.ActorSystem
 import org.apache.pekko.grpc.GrpcProtocol
 import org.apache.pekko.grpc.scaladsl.{ headers, ScalapbProtobufSerializer }
+import org.apache.pekko.http.scaladsl.model.headers.Trailer
 import org.apache.pekko.stream.scaladsl.Source
 import org.apache.pekko.testkit.TestKit
 import org.scalatest.matchers.should.Matchers._
@@ -45,7 +46,7 @@ final class GrpcResponseHelpersSpec extends TestKit(ActorSystem("GrpcResponseHel
           trail = Source.single(GrpcEntityHelpers.trailer(Status.OK))
         )
 
-      val preAnnouncedTrailers = headers.`Trailer`.findIn(response.headers)
+      val preAnnouncedTrailers = response.header[Trailer].map(_.values)
 
       preAnnouncedTrailers shouldBe Some(Seq(headers.`Status`.name))
     }
