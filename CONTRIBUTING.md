@@ -110,7 +110,7 @@ indeed break binary compatibility in a problematic way.  Situations when it may 
 
 If it turns out that the change can be safely ignored, please add the filter to a new file in the submodule's `src/main/mima-filters/<last-released-version>.backwards.excludes` directory.
 
-You can run `mimaReportBinaryIssues` on the sbt console to check if you introduced a binary incompatibility or whether an
+You can run `+runtime/mimaReportBinaryIssues` on the sbt console to check if you introduced a binary incompatibility or whether an
 incompatibility has been successfully ignored after adding it to the filter file.
 
 ### Generated code

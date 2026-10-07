@@ -143,7 +143,7 @@ PR_TARGET_BRANCH=origin/example sbt validatePullRequest
 - Run MiMa for public API, binary shape, serialization, or MiMa-sensitive internal changes.
 
 ```shell
-sbt +mimaReportBinaryIssues
+sbt +runtime/mimaReportBinaryIssues
 ```
 
 - Current MiMa baseline is 1.0.2.
