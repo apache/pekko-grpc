@@ -20,6 +20,7 @@ import pekko.annotation.InternalApi
 import pekko.grpc.GrpcProtocol.{ GrpcProtocolWriter, TrailerFrame }
 import pekko.grpc.scaladsl.{ headers, GrpcExceptionHandler }
 import pekko.grpc.{ ProtobufFrameSerializer, ProtobufSerializer, Trailers }
+import pekko.http.scaladsl.model.headers.{ Trailer => TrailerHeader }
 import pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
 import pekko.http.scaladsl.model.{
   AttributeKey,
@@ -138,7 +139,7 @@ object GrpcResponseHelpers {
       headers = Seq(
         headers.`Message-Encoding`(writer.messageEncoding.name),
         // Pre-announcing trailers: See https://www.rfc-editor.org/rfc/rfc7230 #Section 4.4
-        headers.`Trailer`(headers.`Status`.name)
+        TrailerHeader(List(headers.`Status`.name))
       ),
       entity = HttpEntity.Chunked(writer.contentType, entity))
   }
