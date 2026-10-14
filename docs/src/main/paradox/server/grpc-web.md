@@ -49,3 +49,50 @@ Scala
 
 Java
 :  @@snip [Main.java](/plugin-tester-java/src/main/java/example/myapp/CombinedServer.java) { #grpc-web }
+
+## CORS and credentials
+
+@@@ warning
+
+`WebHandler.defaultCorsSettings` allows **any** origin and sets
+`Access-Control-Allow-Credentials: true`. A browser will therefore send cookies and HTTP
+authentication on a cross-origin call to your service, and let the calling page read the
+response. For a service authenticated that way, any web page your users visit can act as
+them — a CSRF vector.
+
+@@@
+
+Restrict the origins that may use credentials:
+
+Scala
+:   ```scala
+    import org.apache.pekko.http.cors.scaladsl.model.HttpOriginMatcher
+    import org.apache.pekko.http.scaladsl.model.headers.HttpOrigin
+
+    implicit val corsSettings: CorsSettings =
+      WebHandler.defaultCorsSettings
+        .withAllowedOrigins(HttpOriginMatcher(HttpOrigin("https://example.com")))
+    ```
+
+Java
+:   ```java
+    CorsSettings corsSettings = WebHandler.defaultCorsSettings()
+        .withAllowedOrigins(HttpOriginMatcher.create(HttpOrigin.parse("https://example.com")));
+    ```
+
+If your service does not need credentials at all, drop the permission instead:
+
+```hocon
+pekko.grpc.server.grpc-web {
+  allow-credentials-from-any-origin = false
+}
+```
+
+That makes the handler answer with `Access-Control-Allow-Origin: *` and no
+`Access-Control-Allow-Credentials`, so browsers withhold cookies on cross-origin calls. It
+defaults to `true`, preserving the existing behaviour; while it is `true` and the origins are
+unrestricted, a warning is logged for each handler created. Restricting the origins silences
+the warning and keeps credentials working.
+
+`reference.conf`
+:  @@snip [reference](/runtime/src/main/resources/reference.conf) { #grpc-web-cors }
