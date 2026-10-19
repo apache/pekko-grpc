@@ -105,8 +105,7 @@ object Common extends AutoPlugin {
           "templates")
       }),
     Compile / doc / scalacOptions -= "-Xfatal-warnings",
-    apiURL := Some(
-      url(s"https://pekko.apache.org/api/pekko-grpc/${projectInfoVersion.value}/org/apache/pekko/grpc/index.html")),
+    apiURL := Some(url(s"https://pekko.apache.org/api/pekko-grpc/${projectInfoVersion.value}/")),
     (Test / testOptions) += Tests.Argument(TestFrameworks.ScalaTest, "-oDF"),
     crossScalaVersions := Seq(scala212, scala213, scala3),
     mimaReportSignatureProblems := true)
