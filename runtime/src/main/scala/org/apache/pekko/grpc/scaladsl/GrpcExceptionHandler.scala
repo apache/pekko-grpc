@@ -25,7 +25,9 @@ import pekko.http.scaladsl.util.FastFuture
 import io.grpc.{ Status, StatusRuntimeException }
 import org.apache.pekko.http.scaladsl.model.http2.PeerClosedStreamException
 
-import scala.concurrent.{ ExecutionException, Future }
+import scala.concurrent.{ ExecutionContext, ExecutionException, Future }
+import scala.util.{ Failure, Success }
+import scala.util.control.NonFatal
 import pekko.event.Logging
 
 @ApiMayChange
@@ -74,5 +76,33 @@ object GrpcExceptionHandler {
       writer: GrpcProtocolWriter): PartialFunction[Throwable, Future[HttpResponse]] =
     mapper.orElse(defaultMapper(system.classicSystem)).andThen(s =>
       FastFuture.successful(GrpcResponseHelpers.status(s)))
+
+  /**
+   * Turns a failed response into a gRPC error response, using `eHandler` and falling back to the
+   * [[defaultMapper]].
+   *
+   * Unlike `recoverWith(from(...))`, the exception handler is only constructed when the response has failed, and a
+   * response that has already completed successfully is returned as is, so the successful path allocates nothing.
+   * A response that has not completed yet is recovered on `ec`.
+   */
+  @InternalStableApi
+  def recover(response: Future[HttpResponse], eHandler: ActorSystem => PartialFunction[Throwable, Trailers])(
+      implicit system: ClassicActorSystemProvider,
+      writer: GrpcProtocolWriter,
+      ec: ExecutionContext): Future[HttpResponse] =
+    response.value match {
+      case Some(Success(_)) => response
+      case Some(Failure(t)) =>
+        try FastFuture.successful(errorResponse(t, eHandler))
+        catch { case NonFatal(e) => FastFuture.failed(e) }
+      case None => response.recover { case t => errorResponse(t, eHandler) }
+    }
+
+  private def errorResponse(t: Throwable, eHandler: ActorSystem => PartialFunction[Throwable, Trailers])(
+      implicit system: ClassicActorSystemProvider,
+      writer: GrpcProtocolWriter): HttpResponse = {
+    val classicSystem = system.classicSystem
+    GrpcResponseHelpers.status(eHandler(classicSystem).applyOrElse(t, defaultMapper(classicSystem)))
+  }
 
 }

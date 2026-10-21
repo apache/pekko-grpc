@@ -94,18 +94,25 @@ object GrpcProtocol {
   /** A frame received from a peer system. */
   sealed trait InboundFrame extends Frame
 
+  /** An outbound data (or message) frame, which is encoded as a gRPC data frame rather than a trailer */
+  sealed trait OutboundDataFrame extends OutboundFrame {
+
+    /** The serialized message carried by this frame. */
+    def data: ByteString
+  }
+
   /** A data (or message) frame in a gRPC protocol stream */
-  case class DataFrame(data: ByteString) extends InboundFrame with OutboundFrame
+  case class DataFrame(data: ByteString) extends InboundFrame with OutboundDataFrame
 
   /** A trailer (status headers) frame in a gRPC protocol stream */
   case class TrailerFrame(trailers: List[HttpHeader]) extends InboundFrame with OutboundFrame
 
   /** An outbound write of a data frame, deferred to allow optimized write into a pre-allocated buffer */
-  case class DeferredDataFrame[T](element: T, writer: DeferredDataWriter[T]) extends OutboundFrame {
+  case class DeferredDataFrame[T](element: T, writer: DeferredDataWriter[T]) extends OutboundDataFrame {
     type Element = T
 
     /** Fallback to DataFrame style write, when optimized framed write is not possible. */
-    def data: ByteString = {
+    override def data: ByteString = {
       val data = new Array[Byte](writer.serializedSize(element))
       writer.serializeTo(element, data, 0)
       ByteString.fromArrayUnsafe(data)
@@ -144,7 +151,7 @@ object GrpcProtocol {
       /** Encodes a frame as a part in a chunk stream. */
       encodeFrame: OutboundFrame => ChunkStreamPart,
       /** A shortcut to encode a data frame directly into a Response */
-      encodeDataToResponse: (OutboundFrame, Seq[HttpHeader], Trailer) => HttpResponse)
+      encodeDataToResponse: (OutboundDataFrame, Seq[HttpHeader], Trailer) => HttpResponse)
 
   /**
    * Implements the decoding of the gRPC framing from a physical/transport layer.
