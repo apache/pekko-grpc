@@ -18,7 +18,7 @@
 package org.apache.pekko.grpc.internal
 
 import java.io.ByteArrayOutputStream
-import java.util.zip.GZIPOutputStream
+import java.util.zip.{ DeflaterOutputStream, GZIPOutputStream, Inflater }
 
 import org.apache.pekko
 import pekko.actor.ActorSystem
@@ -59,10 +59,20 @@ class MaxInboundMessageSizeSpec extends TestKit(ActorSystem()) with AnyWordSpecL
     ByteString.fromArrayUnsafe(baos.toByteArray)
   }
 
+  private def deflated(bytes: ByteString): ByteString = {
+    val baos = new ByteArrayOutputStream()
+    val dos = new DeflaterOutputStream(baos)
+    try dos.write(bytes.toArrayUnsafe())
+    finally dos.close()
+    ByteString.fromArrayUnsafe(baos.toByteArray)
+  }
+
   /** Highly compressible payload. */
   private def zeros(size: Int): ByteString = ByteString.fromArrayUnsafe(new Array[Byte](size))
 
   private def bomb: ByteString = gzipped(zeros(BombSize))
+
+  private def deflateBomb: ByteString = deflated(zeros(BombSize))
 
   private def streamingError(codec: Codec, bytes: ByteString): StatusException =
     Source
@@ -120,6 +130,27 @@ class MaxInboundMessageSizeSpec extends TestKit(ActorSystem()) with AnyWordSpecL
     }
   }
 
+  "The streaming frame decoder with deflate" should {
+
+    "reject a deflate bomb while decompressing rather than after" in {
+      val compressed = deflateBomb
+      compressed.length should be < Limit
+
+      val status = streamingError(Deflate, frameHeader(1, compressed.length) ++ compressed).getStatus
+
+      status.getCode shouldBe Status.Code.RESOURCE_EXHAUSTED
+      status.getDescription shouldBe TooLargeWhenDecompressed
+    }
+
+    "reject a deflate bomb in a strict frame while decompressing rather than after" in {
+      val compressed = deflateBomb
+      val status = strictError(Deflate, frameHeader(1, compressed.length) ++ compressed).getStatus
+
+      status.getCode shouldBe Status.Code.RESOURCE_EXHAUSTED
+      status.getDescription shouldBe TooLargeWhenDecompressed
+    }
+  }
+
   "The strict frame decoder" should {
 
     "reject a frame whose declared length exceeds the limit" in {
@@ -173,6 +204,50 @@ class MaxInboundMessageSizeSpec extends TestKit(ActorSystem()) with AnyWordSpecL
       val status = intercept[StatusException](Gzip.uncompress(gzipped(zeros(16)), -1)).getStatus
 
       status.getCode shouldBe Status.Code.RESOURCE_EXHAUSTED
+    }
+  }
+
+  "Deflate" should {
+
+    "route the compression-bit overload to the size-bounded decoder" in {
+      val status =
+        intercept[StatusException](Deflate.uncompress(compressedBitSet = true, deflateBomb, Limit)).getStatus
+
+      status.getCode shouldBe Status.Code.RESOURCE_EXHAUSTED
+      status.getDescription shouldBe TooLargeWhenDecompressed
+    }
+
+    "decompress payloads within the limit" in {
+      val data = zeros(Limit)
+
+      Deflate.uncompress(compressedBitSet = true, deflated(data), Limit) shouldBe data
+    }
+
+    "report a non-positive limit as a gRPC status rather than IllegalArgumentException" in {
+      val status = intercept[StatusException](Deflate.uncompress(deflated(zeros(16)), -1)).getStatus
+
+      status.getCode shouldBe Status.Code.RESOURCE_EXHAUSTED
+    }
+
+    "compress to the zlib format" in {
+      val data = ByteString("Hello, deflate! " * 100)
+      val compressed = Deflate.compress(data)
+
+      // zlib header (RFC 1950): CM = 8 (deflate), and the header checksum is a multiple of 31
+      (compressed(0) & 0x0F) shouldBe 8
+      (((compressed(0) & 0xFF) << 8) | (compressed(1) & 0xFF)) % 31 shouldBe 0
+
+      // decodable by a plain zlib inflater
+      val inflater = new Inflater()
+      try {
+        inflater.setInput(compressed.toArrayUnsafe())
+        val out = new Array[Byte](data.length)
+        inflater.inflate(out) shouldBe data.length
+        inflater.finished() shouldBe true
+        ByteString.fromArrayUnsafe(out) shouldBe data
+      } finally inflater.end()
+
+      Deflate.uncompress(compressed, Limit) shouldBe data
     }
   }
 
