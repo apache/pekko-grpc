@@ -111,6 +111,36 @@ Java
         .withMaxInboundMessageSize(8 * 1024 * 1024);
     ```
 
+## Request compression
+
+By default the client does not compress requests: a client can't know which message encodings a server
+supports, so it should only compress requests to servers known to support the encoding. The `gzip` and
+`deflate` encodings are supported, with both the `netty` and the `pekko-http` backend.
+
+Set it in configuration:
+
+```hocon
+pekko.grpc.client."*" {
+  compression = "gzip"
+}
+```
+
+or programmatically:
+
+Scala
+:   ```scala
+    val settings = GrpcClientSettings.connectToServiceAt("localhost", 8080)
+      .withCompression("gzip")
+    ```
+
+Java
+:   ```java
+    GrpcClientSettings settings = GrpcClientSettings.connectToServiceAt("localhost", 8080, system)
+        .withCompression("gzip");
+    ```
+
+Responses are decompressed whichever encoding the server chooses from the ones the client accepts.
+
 ## Using Pekko Discovery for Endpoint Discovery
 
 The examples above all use a hard coded host and port for the location of the gRPC service which is the default if you do not configure a `service-discovery-mechanism`.

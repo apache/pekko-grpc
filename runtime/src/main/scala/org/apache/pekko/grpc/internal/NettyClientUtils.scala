@@ -13,7 +13,9 @@
 
 package org.apache.pekko.grpc.internal
 
+import java.io.{ InputStream, OutputStream }
 import java.util.concurrent.TimeUnit
+import java.util.zip.{ DeflaterOutputStream, InflaterInputStream }
 
 import javax.net.ssl.SSLContext
 import org.apache.pekko
@@ -22,7 +24,7 @@ import pekko.annotation.InternalApi
 import pekko.event.LoggingAdapter
 import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, GrpcSingleResponse }
 import pekko.stream.scaladsl.{ Flow, Keep, Source }
-import io.grpc.{ CallOptions, MethodDescriptor }
+import io.grpc.{ CallOptions, Codec => GrpcCodec, CompressorRegistry, MethodDescriptor }
 import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts
 import io.grpc.netty.shaded.io.grpc.netty.NegotiationType
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder
@@ -102,6 +104,7 @@ object NettyClientUtils {
     builder = settings.overrideAuthority.map(builder.overrideAuthority(_)).getOrElse(builder)
     builder = settings.userAgent.map(builder.userAgent(_)).getOrElse(builder)
     builder = builder.maxInboundMessageSize(settings.maxInboundMessageSize)
+    builder = builder.compressorRegistry(compressorRegistry)
     // applied last so that explicit overrides win over anything derived from settings
     builder = settings.channelBuilderOverrides(builder)
 
@@ -218,8 +221,28 @@ object NettyClientUtils {
   /**
    * INTERNAL API
    */
-  @InternalApi def callOptions(settings: GrpcClientSettings): CallOptions =
-    settings.callCredentials.map(CallOptions.DEFAULT.withCallCredentials).getOrElse(CallOptions.DEFAULT)
+  @InternalApi def callOptions(settings: GrpcClientSettings): CallOptions = {
+    val options =
+      settings.callCredentials.map(CallOptions.DEFAULT.withCallCredentials).getOrElse(CallOptions.DEFAULT)
+    settings.compression.map(options.withCompression).getOrElse(options)
+  }
+
+  /**
+   * grpc-java only ships gzip, so deflate is added for the `compression` client setting
+   */
+  private object DeflateCodec extends GrpcCodec {
+    override def getMessageEncoding: String = Deflate.name
+    override def compress(os: OutputStream): OutputStream = new DeflaterOutputStream(os)
+    override def decompress(is: InputStream): InputStream = new InflaterInputStream(is)
+  }
+
+  private lazy val compressorRegistry: CompressorRegistry = {
+    val registry = CompressorRegistry.newEmptyInstance()
+    registry.register(new GrpcCodec.Gzip())
+    registry.register(GrpcCodec.Identity.NONE)
+    registry.register(DeflateCodec)
+    registry
+  }
 
   /**
    * INTERNAL API

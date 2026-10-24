@@ -165,6 +165,48 @@ class GrpcClientSettingsSpec extends AnyWordSpec with Matchers with ScalaFutures
       GrpcClientSettings.fromConfig(config).maxInboundMessageSize should be(4 * 1024 * 1024)
     }
 
+    "default to no request compression" in {
+      GrpcClientSettings.connectToServiceAt("host.com", 8080).compression should be(None)
+    }
+
+    "support setting the request compression" in {
+      val settings = GrpcClientSettings.connectToServiceAt("host.com", 8080)
+      settings.withCompression("gzip").compression should be(Some("gzip"))
+      settings.withCompression("deflate").compression should be(Some("deflate"))
+      settings.withCompression("gzip").withCompression("identity").compression should be(None)
+    }
+
+    "reject an unsupported request compression" in {
+      val e = intercept[IllegalArgumentException] {
+        GrpcClientSettings.connectToServiceAt("host.com", 8080).withCompression("snappy")
+      }
+      e.getMessage should include("snappy")
+    }
+
+    "read the request compression from config" in {
+      val config = ConfigFactory
+        .parseString("""
+          host = "host.com"
+          port = 8080
+          compression = "deflate"
+        """)
+        .withFallback(sys.settings.config.getConfig("""pekko.grpc.client."*""""))
+
+      GrpcClientSettings.fromConfig(config).compression should be(Some("deflate"))
+    }
+
+    "fall back on no request compression for a Config without the key" in {
+      val config = ConfigFactory
+        .parseString("""
+          host = "host.com"
+          port = 8080
+        """)
+        .withFallback(sys.settings.config.getConfig("""pekko.grpc.client."*""""))
+        .withoutPath("compression")
+
+      GrpcClientSettings.fromConfig(config).compression should be(None)
+    }
+
     "use static service discovery for connectToServiceAt" in {
       val settings = GrpcClientSettings.connectToServiceAt("host.com", 8080)
       val resolved = settings.serviceDiscovery.lookup("any", 1.second).futureValue
