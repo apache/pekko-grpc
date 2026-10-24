@@ -18,7 +18,7 @@ import pekko.actor.ClassicActorSystemProvider
 import pekko.annotation.{ ApiMayChange, InternalApi }
 import pekko.discovery.{ Discovery, ServiceDiscovery }
 import pekko.discovery.ServiceDiscovery.{ Resolved, ResolvedTarget }
-import pekko.grpc.internal.{ AbstractGrpcProtocol, HardcodedServiceDiscovery }
+import pekko.grpc.internal.{ AbstractGrpcProtocol, Codecs, HardcodedServiceDiscovery, Identity }
 import pekko.util.Helpers
 import com.typesafe.config.{ Config, ConfigValueFactory }
 import io.grpc.CallCredentials
@@ -162,7 +162,19 @@ object GrpcClientSettings {
         clientConfiguration,
         "max-inbound-message-size",
         AbstractGrpcProtocol.DefaultMaxInboundMessageSize),
-      verifyHostname = clientConfiguration.getBoolean("verify-hostname"))
+      verifyHostname = clientConfiguration.getBoolean("verify-hostname"),
+      compression = getCompression(clientConfiguration))
+
+  // like max-inbound-message-size, a missing key must not fail for a hand-assembled Config
+  private def getCompression(config: Config): Option[String] =
+    if (config.hasPath("compression")) compressionName(config.getString("compression")) else None
+
+  /** No compression is expressed as `None`, whether it was configured as "" or as "identity". */
+  private def compressionName(value: String): Option[String] =
+    value match {
+      case "" | Identity.name => None
+      case other              => Some(other)
+    }
 
   // `fromConfig(Config)` is public API and is called with hand-assembled Configs that do not
   // necessarily fall back on `pekko.grpc.client."*"`, so a missing key must not fail.
@@ -217,7 +229,8 @@ final class GrpcClientSettings private (
     val backend: String,
     val channelBuilderOverrides: NettyChannelBuilder => NettyChannelBuilder = identity,
     val maxInboundMessageSize: Int,
-    val verifyHostname: Boolean) {
+    val verifyHostname: Boolean,
+    val compression: Option[String]) {
   require(
     sslContext.isEmpty || trustManager.isEmpty,
     "Configuring the sslContext or the trustManager is mutually exclusive")
@@ -228,6 +241,10 @@ final class GrpcClientSettings private (
   require(
     maxInboundMessageSize > 0,
     s"maxInboundMessageSize must be positive, was [$maxInboundMessageSize]")
+  require(
+    compression.forall(c => Codecs.supportedCodecs.exists(_.name == c)),
+    s"compression should be one of ${Codecs.supportedCodecs.map(_.name).mkString("'", "', '", "'")}, " +
+    s"but was [${compression.getOrElse("")}]")
 
   /**
    * If using ServiceDiscovery and no port is returned use this one.
@@ -322,6 +339,16 @@ final class GrpcClientSettings private (
   def withVerifyHostname(value: Boolean): GrpcClientSettings =
     copy(verifyHostname = value)
 
+  /**
+   * The message encoding to compress requests with: `gzip`, `deflate`, or `identity` for no compression,
+   * which is the default. A client can't know which encodings a server supports, so only enable compression
+   * for servers known to support it.
+   * Applies to both the netty and the pekko-http backend.
+   * @since 2.0.0
+   */
+  def withCompression(value: String): GrpcClientSettings =
+    copy(compression = GrpcClientSettings.compressionName(value))
+
   private def copy(
       serviceName: String = serviceName,
       servicePortName: Option[String] = servicePortName,
@@ -341,7 +368,8 @@ final class GrpcClientSettings private (
       backend: String = backend,
       channelBuilderOverrides: NettyChannelBuilder => NettyChannelBuilder = channelBuilderOverrides,
       maxInboundMessageSize: Int = maxInboundMessageSize,
-      verifyHostname: Boolean = verifyHostname)
+      verifyHostname: Boolean = verifyHostname,
+      compression: Option[String] = compression)
       : GrpcClientSettings =
     new GrpcClientSettings(
       callCredentials = callCredentials,
@@ -363,5 +391,6 @@ final class GrpcClientSettings private (
       backend = backend,
       channelBuilderOverrides = channelBuilderOverrides,
       maxInboundMessageSize = maxInboundMessageSize,
-      verifyHostname = verifyHostname)
+      verifyHostname = verifyHostname,
+      compression = compression)
 }

@@ -60,11 +60,11 @@ object PekkoHttpClientUtils {
     log.debug("Creating gRPC client channel")
 
     // https://github.com/grpc/grpc/blob/master/doc/compression.md
-    // since a client can't assume what algorithms a server supports, we
-    // must default to no compression.
-    // Configuring a different default could be a future feature.
+    // since a client can't assume what algorithms a server supports, the
+    // compression setting defaults to no compression.
     // Configuring compression per call could be a future power API feature.
-    implicit val writer = GrpcProtocolNative.newWriter(Identity)
+    implicit val writer = GrpcProtocolNative.newWriter(
+      settings.compression.flatMap(name => Codecs.supportedCodecs.find(_.name == name)).getOrElse(Identity))
 
     // TODO FIXME adapt to new API's for discovery, loadbalancing etc
     // https://github.com/akka/akka-grpc/issues/1196
