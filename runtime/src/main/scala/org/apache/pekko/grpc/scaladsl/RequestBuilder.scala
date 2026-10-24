@@ -21,6 +21,7 @@ import pekko.stream.scaladsl.Source
 import pekko.util.ByteString
 
 import scala.concurrent.Future
+import scala.concurrent.duration.Duration
 
 /**
  * Request builder for requests providing per call specific metadata capabilities in
@@ -58,6 +59,13 @@ trait SingleResponseRequestBuilder[Req, Res] {
    * Invoke the gRPC method with the additional metadata added and provide access to response metadata
    */
   def invokeWithMetadata(request: Req): Future[GrpcSingleResponse[Res]]
+
+  /**
+   * Set the deadline for this call, counted from when the call is invoked. It replaces the deadline of the
+   * [[GrpcClientSettings]] the client was created with. `Duration.Inf` means no deadline.
+   * @return A new request builder, that will use the supplied deadline when invoked
+   */
+  def setDeadline(deadline: Duration): SingleResponseRequestBuilder[Req, Res]
 }
 
 /**
@@ -98,4 +106,11 @@ trait StreamResponseRequestBuilder[Req, Res] {
    * Invoke the gRPC method with the additional metadata added and provide access to response metadata
    */
   def invokeWithMetadata(request: Req): Source[Res, Future[GrpcResponseMetadata]]
+
+  /**
+   * Set the deadline for this call, counted from when the call is invoked. It replaces the deadline of the
+   * [[GrpcClientSettings]] the client was created with. `Duration.Inf` means no deadline.
+   * @return A new request builder, that will use the supplied deadline when invoked
+   */
+  def setDeadline(deadline: Duration): StreamResponseRequestBuilder[Req, Res]
 }
