@@ -53,7 +53,7 @@ abstract class Codec {
    *
    * This default implementation decompresses in full and checks afterwards, so it bounds
    * what a caller receives but not what is allocated along the way. Codecs that can enforce
-   * the limit while decompressing should override it; `Gzip` does.
+   * the limit while decompressing should override it; `Gzip` and `Deflate` do.
    *
    * @param bytes the compressed bytes
    * @param maxDecompressedSize the maximum allowed decompressed size in bytes

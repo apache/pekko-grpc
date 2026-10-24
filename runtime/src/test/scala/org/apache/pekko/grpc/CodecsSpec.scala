@@ -13,7 +13,7 @@
 
 package org.apache.pekko.grpc
 import org.apache.pekko
-import pekko.grpc.internal.{ Codecs, Gzip, Identity }
+import pekko.grpc.internal.{ Codecs, Deflate, Gzip, Identity }
 import pekko.grpc.scaladsl.headers
 import pekko.http.scaladsl.model.HttpRequest
 import pekko.http.scaladsl.model.headers.RawHeader
@@ -71,8 +71,42 @@ class CodecsSpec extends AnyWordSpec with Matchers with TryValues {
     }
 
     "negotiate gzip when grpc-accept-encoding uses comma+space separators (as sent by grpc-go/grpc-python/grpcurl)" in {
-      val request = HttpRequest(headers = Seq(RawHeader("grpc-accept-encoding", "deflate, gzip")))
+      val request = HttpRequest(headers = Seq(RawHeader("grpc-accept-encoding", "snappy, gzip")))
       Codecs.negotiate(request) should be(Gzip)
+    }
+
+    "accept explicit Deflate" in {
+      Codecs.negotiate(accept(Deflate.name)) should be(Deflate)
+    }
+
+    "respect the order of the client's encodings" in {
+      Codecs.negotiate(accept(Deflate.name, Gzip.name)) should be(Deflate)
+      Codecs.negotiate(accept(Gzip.name, Deflate.name)) should be(Gzip)
+      // as sent by gRPC C-core based clients
+      Codecs.negotiate(accept(Identity.name, Deflate.name, Gzip.name)) should be(Identity)
+      Codecs.negotiate(accept("xxxxx", Deflate.name, Gzip.name)) should be(Deflate)
+    }
+
+    "respect the order of the client's encodings with comma+space separators" in {
+      val request = HttpRequest(headers = Seq(RawHeader("grpc-accept-encoding", "deflate, gzip")))
+      Codecs.negotiate(request) should be(Deflate)
+    }
+
+    "respect the order of encodings across multiple grpc-accept-encoding headers" in {
+      val gzipInSecondHeader = HttpRequest(headers = Seq(
+        RawHeader("grpc-accept-encoding", "xxxxx"),
+        RawHeader("grpc-accept-encoding", "gzip")))
+      Codecs.negotiate(gzipInSecondHeader) should be(Gzip)
+
+      val request = HttpRequest(headers = Seq(
+        RawHeader("grpc-accept-encoding", "xxxxx"),
+        RawHeader("grpc-accept-encoding", "deflate, gzip")))
+      Codecs.negotiate(request) should be(Deflate)
+
+      val gzipFirst = HttpRequest(headers = Seq(
+        RawHeader("grpc-accept-encoding", "gzip"),
+        RawHeader("grpc-accept-encoding", "deflate")))
+      Codecs.negotiate(gzipFirst) should be(Gzip)
     }
 
   }
@@ -89,6 +123,10 @@ class CodecsSpec extends AnyWordSpec with Matchers with TryValues {
 
     "accept explicit Gzip" in {
       Codecs.detect(enc(Gzip.name)).success.value should be(Gzip)
+    }
+
+    "accept explicit Deflate" in {
+      Codecs.detect(enc(Deflate.name)).success.value should be(Deflate)
     }
 
     "fail with unknown encoding" in {
