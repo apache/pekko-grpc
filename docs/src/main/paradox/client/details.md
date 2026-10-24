@@ -74,6 +74,22 @@ Scala
 Java
 :  @@snip [GreeterClient.java](/plugin-tester-java/src/main/java/example/myapp/helloworld/LiftedGreeterClient.java) { #with-metadata }
 
+## Deadlines
+
+A default deadline for every call can be set with `withDeadline` on the @apidoc[GrpcClientSettings]
+(or the `deadline` setting in the client configuration).
+
+A deadline for a single call can be set with `setDeadline` on the request builder of the "lifted" client API.
+It replaces the deadline of the client settings for that call, and is counted from when the call is invoked.
+A call that does not complete in time fails with a `StatusRuntimeException` with status `DEADLINE_EXCEEDED`.
+`Duration.Inf` (Scala) or `null` (Java) means no deadline for the call.
+
+Scala
+:  @@snip [PerCallDeadlineSpec.scala](/interop-tests/src/test/scala/org/apache/pekko/grpc/scaladsl/PerCallDeadlineSpec.scala) { #per-call-deadline }
+
+Java
+:  @@snip [PerCallDeadlineTest.java](/interop-tests/src/test/java/example/myapp/helloworld/grpc/PerCallDeadlineTest.java) { #per-call-deadline }
+
 ## Rich error model
 
 Beyond status codes you can also use the [Rich error model](https://grpc.io/docs/guides/error/#richer-error-model). Currently there is no particular support for consuming such error objects (such as the ones based on the [common protobuf](https://google.aip.dev/193), but you can obtain them 'manually'.
