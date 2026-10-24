@@ -13,6 +13,7 @@
 
 package org.apache.pekko.grpc.javadsl
 
+import java.time.Duration
 import java.util.concurrent.CompletionStage
 
 import org.apache.pekko
@@ -58,6 +59,13 @@ trait SingleResponseRequestBuilder[Req, Res] {
    * Invoke the gRPC method with the additional metadata added and provide access to response metadata
    */
   def invokeWithMetadata(request: Req): CompletionStage[GrpcSingleResponse[Res]]
+
+  /**
+   * Set the deadline for this call, counted from when the call is invoked. It replaces the deadline of the
+   * [[GrpcClientSettings]] the client was created with. `null` means no deadline.
+   * @return A new request builder, that will use the supplied deadline when invoked
+   */
+  def setDeadline(deadline: Duration): SingleResponseRequestBuilder[Req, Res]
 }
 
 /**
@@ -96,4 +104,11 @@ trait StreamResponseRequestBuilder[Req, Res] {
    * Invoke the gRPC method with the additional metadata added and provide access to response metadata
    */
   def invokeWithMetadata(request: Req): Source[Res, CompletionStage[GrpcResponseMetadata]]
+
+  /**
+   * Set the deadline for this call, counted from when the call is invoked. It replaces the deadline of the
+   * [[GrpcClientSettings]] the client was created with. `null` means no deadline.
+   * @return A new request builder, that will use the supplied deadline when invoked
+   */
+  def setDeadline(deadline: Duration): StreamResponseRequestBuilder[Req, Res]
 }

@@ -13,6 +13,7 @@
 
 package org.apache.pekko.grpc.internal
 
+import java.time.{ Duration => JDuration }
 import java.util.concurrent.CompletionStage
 
 import org.apache.pekko
@@ -27,6 +28,7 @@ import pekko.util.ByteString
 import io.grpc._
 
 import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.duration.Duration
 import scala.jdk.FutureConverters._
 
 /**
@@ -53,7 +55,7 @@ final class ScalaUnaryRequestBuilder[I, O](
     NettyClientUtils.callOptionsWithDeadline(defaultOptions, settings)
 
   override def invoke(request: I): Future[O] =
-    channel.invoke(request, headers, descriptor, defaultOptions).recoverWith(RequestBuilderImpl.richError)
+    channel.invoke(request, headers, descriptor, callOptionsWithDeadline()).recoverWith(RequestBuilderImpl.richError)
 
   override def invokeWithMetadata(request: I): Future[GrpcSingleResponse[O]] =
     channel
@@ -62,6 +64,9 @@ final class ScalaUnaryRequestBuilder[I, O](
 
   override def withHeaders(headers: MetadataImpl): ScalaUnaryRequestBuilder[I, O] =
     new ScalaUnaryRequestBuilder[I, O](descriptor, channel, defaultOptions, settings, headers)
+
+  override def setDeadline(deadline: Duration): ScalaUnaryRequestBuilder[I, O] =
+    new ScalaUnaryRequestBuilder[I, O](descriptor, channel, defaultOptions, settings.withDeadline(deadline), headers)
 }
 
 /**
@@ -94,6 +99,14 @@ final class JavaUnaryRequestBuilder[I, O](
 
   override def withHeaders(headers: MetadataImpl): JavaUnaryRequestBuilder[I, O] =
     new JavaUnaryRequestBuilder[I, O](descriptor, channel, defaultOptions, settings, headers)
+
+  override def setDeadline(deadline: JDuration): JavaUnaryRequestBuilder[I, O] =
+    new JavaUnaryRequestBuilder[I, O](
+      descriptor,
+      channel,
+      defaultOptions,
+      settings.withDeadline(RequestBuilderImpl.toScalaDeadline(deadline)),
+      headers)
 }
 
 /**
@@ -152,6 +165,10 @@ final class ScalaClientStreamingRequestBuilder[I, O](
 
   override def withHeaders(headers: MetadataImpl): ScalaClientStreamingRequestBuilder[I, O] =
     new ScalaClientStreamingRequestBuilder[I, O](descriptor, channel, defaultOptions, settings, headers)
+
+  override def setDeadline(deadline: Duration): ScalaClientStreamingRequestBuilder[I, O] =
+    new ScalaClientStreamingRequestBuilder[I, O](descriptor, channel, defaultOptions, settings.withDeadline(deadline),
+      headers)
 }
 
 /**
@@ -185,6 +202,14 @@ final class JavaClientStreamingRequestBuilder[I, O](
 
   override def withHeaders(headers: MetadataImpl): JavaClientStreamingRequestBuilder[I, O] =
     new JavaClientStreamingRequestBuilder[I, O](descriptor, channel, defaultOptions, settings, headers)
+
+  override def setDeadline(deadline: JDuration): JavaClientStreamingRequestBuilder[I, O] =
+    new JavaClientStreamingRequestBuilder[I, O](
+      descriptor,
+      channel,
+      defaultOptions,
+      settings.withDeadline(RequestBuilderImpl.toScalaDeadline(deadline)),
+      headers)
 }
 
 /**
@@ -222,6 +247,10 @@ final class ScalaServerStreamingRequestBuilder[I, O](
 
   override def withHeaders(headers: MetadataImpl): ScalaServerStreamingRequestBuilder[I, O] =
     new ScalaServerStreamingRequestBuilder[I, O](descriptor, channel, defaultOptions, settings, headers)
+
+  override def setDeadline(deadline: Duration): ScalaServerStreamingRequestBuilder[I, O] =
+    new ScalaServerStreamingRequestBuilder[I, O](descriptor, channel, defaultOptions, settings.withDeadline(deadline),
+      headers)
 }
 
 /**
@@ -255,6 +284,14 @@ final class JavaServerStreamingRequestBuilder[I, O](
 
   override def withHeaders(headers: MetadataImpl): JavaServerStreamingRequestBuilder[I, O] =
     new JavaServerStreamingRequestBuilder[I, O](descriptor, channel, defaultOptions, settings, headers)
+
+  override def setDeadline(deadline: JDuration): JavaServerStreamingRequestBuilder[I, O] =
+    new JavaServerStreamingRequestBuilder[I, O](
+      descriptor,
+      channel,
+      defaultOptions,
+      settings.withDeadline(RequestBuilderImpl.toScalaDeadline(deadline)),
+      headers)
 }
 
 /**
@@ -293,6 +330,10 @@ final class ScalaBidirectionalStreamingRequestBuilder[I, O](
 
   override def withHeaders(headers: MetadataImpl): ScalaBidirectionalStreamingRequestBuilder[I, O] =
     new ScalaBidirectionalStreamingRequestBuilder[I, O](descriptor, channel, defaultOptions, settings, headers)
+
+  override def setDeadline(deadline: Duration): ScalaBidirectionalStreamingRequestBuilder[I, O] =
+    new ScalaBidirectionalStreamingRequestBuilder[I, O](descriptor, channel, defaultOptions,
+      settings.withDeadline(deadline), headers)
 }
 
 /**
@@ -327,6 +368,14 @@ final class JavaBidirectionalStreamingRequestBuilder[I, O](
 
   override def withHeaders(headers: MetadataImpl): JavaBidirectionalStreamingRequestBuilder[I, O] =
     new JavaBidirectionalStreamingRequestBuilder[I, O](descriptor, channel, defaultOptions, settings, headers)
+
+  override def setDeadline(deadline: JDuration): JavaBidirectionalStreamingRequestBuilder[I, O] =
+    new JavaBidirectionalStreamingRequestBuilder[I, O](
+      descriptor,
+      channel,
+      defaultOptions,
+      settings.withDeadline(RequestBuilderImpl.toScalaDeadline(deadline)),
+      headers)
 }
 
 /**
@@ -345,6 +394,13 @@ trait MetadataOperations[T <: MetadataOperations[T]] {
 }
 
 object RequestBuilderImpl {
+
+  /**
+   * A null deadline means no deadline, as with `Duration.Inf` in the Scala API
+   */
+  def toScalaDeadline(deadline: JDuration): Duration =
+    if (deadline == null) Duration.Inf else Duration.fromNanos(deadline.toNanos)
+
   def richErrorStream[U]: PartialFunction[Throwable, Graph[SourceShape[U], NotUsed]] = {
     case item => Source.failed(RequestBuilderImpl.lift(item))
   }
