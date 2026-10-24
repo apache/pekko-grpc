@@ -23,7 +23,7 @@ import scala.util.{ Failure, Success, Try }
 
 object Codecs {
   // TODO should this list be made user-extensible?
-  val supportedCodecs = Seq(Gzip, Identity)
+  val supportedCodecs = Seq(Gzip, Deflate, Identity)
   private val supportedByName: Map[String, Codec] = supportedCodecs.map(c => c.name -> c).toMap
 
   private def extractHeaders(request: jm.HttpMessage): Iterable[jm.HttpHeader] = {
@@ -40,19 +40,14 @@ object Codecs {
    * Determines the message encoding to use for a server response to a client.
    *
    * @param request the gRPC client request.
-   * @return a codec to compress data frame bodies with, which will be [[Identity]] unless the client specifies support for another supported encoding.
+   * @return a codec to compress data frame bodies with: the first supported encoding in the order of the client's
+   *         `grpc-accept-encoding` headers, or [[Identity]] if the client specifies no supported encoding.
    */
-  def negotiate(request: jm.HttpRequest): Codec = {
-    val headers = extractHeaders(request)
-    val accepted = `Message-Accept-Encoding`.findIn(headers)
-    if (accepted.isEmpty) {
-      Identity
-    } else if (accepted.length == 1) {
-      supportedByName.getOrElse(accepted.head, Identity)
-    } else {
-      accepted.collectFirst { case a if supportedByName.contains(a) => supportedByName(a) }.getOrElse(Identity)
-    }
-  }
+  def negotiate(request: jm.HttpRequest): Codec =
+    `Message-Accept-Encoding`
+      .findIn(extractHeaders(request))
+      .collectFirst { case a if supportedByName.contains(a) => supportedByName(a) }
+      .getOrElse(Identity)
 
   /**
    * Determines the `Message-Encoding` specified in a message.
