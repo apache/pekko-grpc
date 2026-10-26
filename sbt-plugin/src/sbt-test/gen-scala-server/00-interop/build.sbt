@@ -9,7 +9,7 @@
 
 organization := "org.apache.pekko"
 
-scalaVersion := "2.13.18"
+scalaVersion := "3.10.0"
 
 val grpcVersion = "1.85.1" // checked synced by VersionSyncCheckPlugin
 
