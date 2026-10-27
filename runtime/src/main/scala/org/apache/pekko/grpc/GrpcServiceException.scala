@@ -30,7 +30,7 @@ object GrpcServiceException {
   def create(
       code: com.google.rpc.Code,
       message: String,
-      details: java.util.List[scalapb.GeneratedMessage]): GrpcServiceException = {
+      details: java.lang.Iterable[? <: scalapb.GeneratedMessage]): GrpcServiceException = {
     apply(code, message, details.asScala.toVector)
   }
 

@@ -76,7 +76,7 @@ object MetadataBuilder {
    * @param headers The headers.
    * @return The metadata instance.
    */
-  def fromHeaders(headers: jIterable[HttpHeader]): Metadata =
+  def fromHeaders(headers: jIterable[? <: HttpHeader]): Metadata =
     new JavaMetadataImpl(scaladsl.MetadataBuilder.fromHeaders(headers.asScala.map(asScala).toList))
 
   /**

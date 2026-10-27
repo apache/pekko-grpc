@@ -249,6 +249,11 @@ final class GrpcClientSettings private (
   def withResolveTimeout(value: FiniteDuration): GrpcClientSettings = copy(resolveTimeout = value)
 
   /**
+   * Java API: How long to wait for service discovery to resolve the service.
+   */
+  def withResolveTimeout(value: java.time.Duration): GrpcClientSettings = copy(resolveTimeout = value.toScala)
+
+  /**
    * When using service discovery, port name is the optional parameter to filter the requests. Looking up a service
    * may return multiple ports (http/https/...) if the remote process only serves the grpc service on a specific port
    * you must use this setting.
