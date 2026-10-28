@@ -19,7 +19,7 @@ object Dependencies {
     // Update the .github workflows when these scala versions change
     val scala212 = "2.12.21"
     val scala213 = "2.13.18"
-    val scala3 = "3.3.8"
+    val scala3 = "3.3.9"
     val scala3Next = "3.9.0"
     // The Scala 3 version used to build the sbt 2.x plugin. It must not be newer than the
     // Scala version sbt 2.x itself is built with (sbt 2.0.x uses 3.8.4), otherwise sbt cannot
