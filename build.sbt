@@ -31,7 +31,6 @@ commands := commands.value.filterNot { command =>
 }
 
 ThisBuild / reproducibleBuildsCheckResolver := Resolver.ApacheMavenStagingRepo
-ThisBuild / resolvers += Resolver.ApacheMavenStagingRepo
 
 // So that gRPC is properly styled
 ThisBuild / apacheSonatypeArtifactNameProcessor := apacheSonatypeArtifactNameProcessor.value.andThen {
