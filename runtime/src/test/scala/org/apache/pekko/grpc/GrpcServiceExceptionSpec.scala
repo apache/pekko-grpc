@@ -47,6 +47,9 @@ class GrpcServiceExceptionSpec
 
       exception.status.getCode shouldBe Status.Code.UNAVAILABLE
       exception.metadata.asList shouldBe empty
+      exception.metadata.asMap shouldBe empty
+      exception.metadata.getText("key") shouldBe None
+      exception.metadata.getBinary("key-bin") shouldBe None
       // used to fail with a NullPointerException when writing the trailers
       GrpcResponseHelpers.status(Trailers(exception.status, exception.metadata))
     }

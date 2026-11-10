@@ -68,9 +68,7 @@ object GrpcExceptionHandler {
           case e: UnsupportedOperationException =>
             log(system).warning(e, "Unimplemented: [{}]", e.getMessage)
             UNIMPLEMENTED
-          case e: StatusRuntimeException =>
-            val meta = Option(e.getTrailers).getOrElse(new io.grpc.Metadata())
-            Trailers(e.getStatus, new GrpcMetadataImpl(meta))
+          case e: StatusRuntimeException    => Trailers(e.getStatus, new GrpcMetadataImpl(e.getTrailers))
           case e: PeerClosedStreamException =>
             log(system).warning(e, "Peer closed the stream: [{}]", e.getMessage)
             INTERNAL

@@ -61,12 +61,7 @@ object GrpcServiceException {
   }
 
   def apply(ex: StatusRuntimeException): GrpcServiceException = {
-    ex.getTrailers match {
-      case null =>
-        new GrpcServiceException(ex.getStatus)
-      case trailers =>
-        new GrpcServiceException(ex.getStatus, new RichGrpcMetadataImpl(ex.getStatus, trailers))
-    }
+    new GrpcServiceException(ex.getStatus, new RichGrpcMetadataImpl(ex.getStatus, ex.getTrailers))
   }
 }
 
