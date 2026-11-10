@@ -187,7 +187,7 @@ object PekkoHttpClientUtils {
           GrpcEntityHelpers.metadataHeaders(headers.entries),
           source)
         applyDeadline(
-          responseToSource(singleRequest(httpRequest), deserializer, settings.maxInboundMessageSize),
+          responseToSource(singleRequest(httpRequest), deserializer, settings.maxInboundMessageSize, streamingResponse),
           options)
       }
     }
@@ -309,7 +309,8 @@ object PekkoHttpClientUtils {
   def responseToSource[O](
       response: Future[HttpResponse],
       deserializer: ProtobufSerializer[O],
-      maxInboundMessageSize: Int = AbstractGrpcProtocol.DefaultMaxInboundMessageSize)(
+      maxInboundMessageSize: Int = AbstractGrpcProtocol.DefaultMaxInboundMessageSize,
+      streamingResponse: Boolean = false)(
       implicit ec: ExecutionContext,
       mat: Materializer): Source[O, Future[GrpcResponseMetadata]] = {
     Source.lazyFutureSource[O, Future[GrpcResponseMetadata]](() => {
@@ -352,14 +353,21 @@ object PekkoHttpClientUtils {
                       response.entity.discardBytes()
                       throw mapToStatusException(response, Seq.empty)
                   }
-                responseData
+                val baseFlow = responseData
                   // This never adds any data to the stream, but makes sure it fails with the correct error code if applicable
                   .concat(
                     Source
                       .maybe[ByteString]
                       .mapMaterializedValue(promise => promise.completeWith(completionFuture.map(_ => None))))
-                  // Make sure we continue reading to get the trailing header even if we're no longer interested in the rest of the body
-                  .via(new CancellationBarrierGraphStage)
+                val flow =
+                  if (streamingResponse) {
+                    // Cancellation must reach the server, otherwise the server stream is never stopped
+                    baseFlow
+                  } else {
+                    // Make sure we continue reading to get the trailing header even if we're no longer interested in the rest of the body
+                    baseFlow.via(new CancellationBarrierGraphStage)
+                  }
+                flow
                   .via(reader.dataFrameDecoder)
                   .map(deserializer.deserialize)
                   .mapMaterializedValue(_ =>
