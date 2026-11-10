@@ -49,6 +49,13 @@ object ServiceHandler {
     handler(handlers *)
 
   /**
+   * This is an alias for handler.
+   */
+  def concatOrNotFound(handlers: java.lang.Iterable[JFunction[HttpRequest, CompletionStage[HttpResponse]]])
+      : JFunction[HttpRequest, CompletionStage[HttpResponse]] =
+    handler(handlers)
+
+  /**
    * Creates a `HttpRequest` to `HttpResponse` handler for gRPC services that can be used in
    * for example `Http().bindAndHandleAsync` for the generated partial function handlers:
    *  - If the request is not handled by one of the provided handlers, a _404: Not Found_ response is produced.
@@ -58,6 +65,17 @@ object ServiceHandler {
       : JFunction[HttpRequest, CompletionStage[HttpResponse]] = {
     val servicesHandler = concat(handlers *)
     (req: HttpRequest) => servicesHandler(req)
+  }
+
+  /**
+   * Creates a `HttpRequest` to `HttpResponse` handler for gRPC services that can be used in
+   * for example `Http().bindAndHandleAsync` for the generated partial function handlers:
+   *  - If the request is not handled by one of the provided handlers, a _404: Not Found_ response is produced.
+   */
+  def handler(handlers: java.lang.Iterable[JFunction[HttpRequest, CompletionStage[HttpResponse]]])
+      : JFunction[HttpRequest, CompletionStage[HttpResponse]] = {
+    import scala.jdk.CollectionConverters._
+    handler(handlers.asScala.toList *)
   }
 
   private[javadsl] def concat(handlers: JFunction[HttpRequest, CompletionStage[HttpResponse]]*)

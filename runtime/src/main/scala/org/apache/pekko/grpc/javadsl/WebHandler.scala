@@ -13,7 +13,6 @@
 
 package org.apache.pekko.grpc.javadsl
 
-import java.util
 import java.util.concurrent.CompletionStage
 
 import org.apache.pekko
@@ -47,7 +46,7 @@ object WebHandler {
    *  - Otherwise if the request is not handled by one of the provided handlers, a _404: Not Found_ response is produced.
    */
   def grpcWebHandler(
-      handlers: util.List[JFunction[HttpRequest, CompletionStage[HttpResponse]]],
+      handlers: java.lang.Iterable[JFunction[HttpRequest, CompletionStage[HttpResponse]]],
       as: ClassicActorSystemProvider,
       mat: Materializer): JFunction[HttpRequest, CompletionStage[HttpResponse]] =
     grpcWebHandler(handlers, as, mat, scaladsl.WebHandler.defaultCorsSettings)
@@ -71,7 +70,7 @@ object WebHandler {
    *  - Otherwise if the request is not handled by one of the provided handlers, a _404: Not Found_ response is produced.
    */
   def grpcWebHandler(
-      handlers: util.List[JFunction[HttpRequest, CompletionStage[HttpResponse]]],
+      handlers: java.lang.Iterable[JFunction[HttpRequest, CompletionStage[HttpResponse]]],
       as: ClassicActorSystemProvider,
       mat: Materializer,
       corsSettings: CorsSettings): JFunction[HttpRequest, CompletionStage[HttpResponse]] = {

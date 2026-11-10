@@ -13,7 +13,6 @@
 
 package org.apache.pekko.grpc.javadsl
 
-import java.util.Collection
 import java.util.concurrent.CompletionStage
 
 import org.apache.pekko
@@ -29,7 +28,7 @@ import io.grpc.reflection.v1.reflection.ServerReflectionHandler
 object ServerReflection {
   @ApiMayChange(issue = "https://github.com/akka/akka-grpc/issues/850")
   def create(
-      objects: Collection[ServiceDescription],
+      objects: java.lang.Iterable[? <: ServiceDescription],
       sys: ClassicActorSystemProvider): pekko.japi.function.Function[HttpRequest, CompletionStage[HttpResponse]] = {
     import scala.jdk.CollectionConverters._
     implicit val system: ClassicActorSystemProvider = sys

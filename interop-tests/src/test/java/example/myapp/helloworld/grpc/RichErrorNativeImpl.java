@@ -15,7 +15,7 @@ package example.myapp.helloworld.grpc;
 
 import com.google.rpc.Code;
 import com.google.rpc.error_details.LocalizedMessage;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import org.apache.pekko.NotUsed;
@@ -28,11 +28,10 @@ public class RichErrorNativeImpl implements GreeterService {
   @Override
   public CompletionStage<HelloReply> sayHello(HelloRequest in) {
 
-    ArrayList<scalapb.GeneratedMessage> ar = new ArrayList<>();
-    ar.add(LocalizedMessage.of("EN", "The password!"));
+    List<LocalizedMessage> details = List.of(LocalizedMessage.of("EN", "The password!"));
 
     GrpcServiceException exception =
-        GrpcServiceException.create(Code.INVALID_ARGUMENT, "What is wrong?", ar);
+        GrpcServiceException.create(Code.INVALID_ARGUMENT, "What is wrong?", details);
 
     CompletableFuture<HelloReply> future = new CompletableFuture<>();
     future.completeExceptionally(exception);
