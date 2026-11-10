@@ -92,7 +92,7 @@ class JavaUnaryHandlerBenchmark extends CommonBenchmark {
   private val generatedStyleHandler: JHttpRequest => CompletionStage[JHttpResponse] =
     request =>
       JGrpcMarshalling
-        .negotiated[JHttpResponse](
+        .negotiated(
           request,
           (reader, writer) => {
             request.entity() match {
@@ -123,7 +123,7 @@ class JavaUnaryHandlerBenchmark extends CommonBenchmark {
   private val oldStyleHandler: JHttpRequest => CompletionStage[JHttpResponse] =
     request =>
       JGrpcMarshalling
-        .negotiated[JHttpResponse](
+        .negotiated(
           request,
           (reader, writer) =>
             JGrpcMarshalling
