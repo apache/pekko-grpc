@@ -17,14 +17,21 @@ import org.apache.pekko
 import pekko.http.javadsl.{ model => jm }
 import pekko.http.scaladsl.{ model => sm }
 import pekko.grpc.GrpcServiceException
+import pekko.grpc.scaladsl.{ Metadata, MetadataBuilder }
 import pekko.grpc.scaladsl.headers.{ `Message-Accept-Encoding`, `Message-Encoding` }
 import io.grpc.Status
 import scala.util.{ Failure, Success, Try }
 
 object Codecs {
   // TODO should this list be made user-extensible?
-  val supportedCodecs = Seq(Gzip, Identity)
+  val supportedCodecs = Seq(Gzip, Deflate, Identity)
   private val supportedByName: Map[String, Codec] = supportedCodecs.map(c => c.name -> c).toMap
+
+  /** The `grpc-accept-encoding` value listing every supported encoding. */
+  private[grpc] val acceptEncoding: String = supportedCodecs.map(_.name).mkString(",")
+
+  private lazy val acceptEncodingMetadata: Metadata =
+    new MetadataBuilder().addText(`Message-Accept-Encoding`.name, acceptEncoding).build()
 
   private def extractHeaders(request: jm.HttpMessage): Iterable[jm.HttpHeader] = {
     request match {
@@ -40,19 +47,14 @@ object Codecs {
    * Determines the message encoding to use for a server response to a client.
    *
    * @param request the gRPC client request.
-   * @return a codec to compress data frame bodies with, which will be [[Identity]] unless the client specifies support for another supported encoding.
+   * @return a codec to compress data frame bodies with: the first supported encoding in the order of the client's
+   *         `grpc-accept-encoding` headers, or [[Identity]] if the client specifies no supported encoding.
    */
-  def negotiate(request: jm.HttpRequest): Codec = {
-    val headers = extractHeaders(request)
-    val accepted = `Message-Accept-Encoding`.findIn(headers)
-    if (accepted.isEmpty) {
-      Identity
-    } else if (accepted.length == 1) {
-      supportedByName.getOrElse(accepted.head, Identity)
-    } else {
-      accepted.collectFirst { case a if supportedByName.contains(a) => supportedByName(a) }.getOrElse(Identity)
-    }
-  }
+  def negotiate(request: jm.HttpRequest): Codec =
+    `Message-Accept-Encoding`
+      .findIn(extractHeaders(request))
+      .collectFirst { case a if supportedByName.contains(a) => supportedByName(a) }
+      .getOrElse(Identity)
 
   /**
    * Determines the `Message-Encoding` specified in a message.
@@ -76,7 +78,9 @@ object Codecs {
           .get(codec)
           .map(Success(_))
           .getOrElse(Failure(new GrpcServiceException(
-            Status.UNIMPLEMENTED.withDescription(s"Message Encoding $encoding is not supported"))))
+            Status.UNIMPLEMENTED.withDescription(s"Message Encoding $codec is not supported"),
+            // the spec asks for the supported encodings here, so a client can fall back to one of them
+            acceptEncodingMetadata)))
       }
       .getOrElse(Success(Identity))
 }

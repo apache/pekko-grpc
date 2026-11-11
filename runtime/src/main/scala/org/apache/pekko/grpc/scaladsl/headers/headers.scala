@@ -49,10 +49,11 @@ object `Message-Accept-Encoding` extends ModeledCustomHeaderCompanion[`Message-A
   override def parse(value: String): Try[`Message-Accept-Encoding`] =
     Try(new `Message-Accept-Encoding`(value))
 
+  /**
+   * The accepted encodings of all `grpc-accept-encoding` headers, in the order the peer sent them
+   */
   def findIn(headers: Iterable[jm.HttpHeader]): Array[String] =
-    headers.collectFirst {
-      case h if h.is(name) => SimpleCSVParser.parse(h.value())
-    }.getOrElse(Array.empty)
+    headers.iterator.filter(_.is(name)).flatMap(h => SimpleCSVParser.parse(h.value())).toArray
 
   /** Java API */
   def findIn(headers: java.lang.Iterable[jm.HttpHeader]): Array[String] = {

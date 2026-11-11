@@ -15,10 +15,13 @@ package org.apache.pekko.grpc.internal
 
 import com.typesafe.config.ConfigFactory
 import org.apache.pekko.actor.ActorSystem
+import org.apache.pekko.util.ByteString
 import org.scalatest._
 import org.scalatest.concurrent._
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+
+import scala.jdk.CollectionConverters._
 
 class NettyClientUtilsSpec extends AnyWordSpec with Matchers with ScalaFutures with BeforeAndAfterAll {
   implicit val system: ActorSystem = ActorSystem(
@@ -32,6 +35,20 @@ class NettyClientUtilsSpec extends AnyWordSpec with Matchers with ScalaFutures w
       .withFallback(ConfigFactory.load()))
 
   "The Netty client-utilities" should {
+    "accept and advertise the same response encodings as the pekko-http client" in {
+      NettyClientUtils.decompressorRegistry.getAdvertisedMessageEncodings.asScala.toSeq should be(
+        Codecs.supportedCodecs.filterNot(_ == Identity).map(_.name))
+      NettyClientUtils.decompressorRegistry.lookupDecompressor("deflate") should be(
+        NettyClientUtils.DeflateDecompressor)
+    }
+
+    "decompress a deflate message" in {
+      val message = ByteString("Hello, Alice " * 100)
+      val in = NettyClientUtils.DeflateDecompressor.decompress(Deflate.compress(message).iterator.asInputStream)
+      try ByteString(in.readAllBytes()) should be(message)
+      finally in.close()
+    }
+
 //    The channel can now retry service discovery as needed itself,
 //    I guess we should test that instead?
 //    "fail to create a channel when service discovery times out" in {

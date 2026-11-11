@@ -56,6 +56,18 @@ Java
 
 Please look @ref[here](../client/details.md) how to handle this on the client.
 
+## Message compression
+
+The server supports the `gzip` and `deflate` message encodings of the
+[gRPC compression spec](https://github.com/grpc/grpc/blob/master/doc/compression.md), as well as `identity`.
+
+* Requests compressed with a supported encoding (`grpc-encoding`) are decompressed. Other encodings are rejected
+  with an `UNIMPLEMENTED` status.
+* Responses are compressed with the first supported encoding in the order the client lists them in its
+  `grpc-accept-encoding` headers, or not compressed when the client lists none. For example,
+  `grpc-accept-encoding: deflate, gzip` gives `deflate` responses, and `identity, deflate, gzip` gives uncompressed
+  responses.
+
 ## Maximum inbound message size
 
 Inbound gRPC messages are limited to 4 MiB by default, matching the grpc-java default. A frame whose
