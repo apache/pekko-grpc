@@ -328,6 +328,20 @@ class MinimumTlsVersionSpec
         .withMinimumTlsVersion("TLSv1.3")
         .minimumTlsVersion shouldBe Some("TLSv1.3")
     }
+
+    "reject an unknown version in withMinimumTlsVersion" in {
+      val e = intercept[IllegalArgumentException] {
+        GrpcClientSettings.connectToServiceAt("example.com", 443).withMinimumTlsVersion("TLSv1.1")
+      }
+      e.getMessage should include("Unknown TLS version 'TLSv1.1'")
+    }
+
+    "reject an unknown version in configuration" in {
+      val e = intercept[IllegalArgumentException] {
+        settingsFromConfig("""minimum-tls-version = "TLS1.3"""")
+      }
+      e.getMessage should include("Unknown TLS version 'TLS1.3'")
+    }
   }
 
   override def afterAll(): Unit = {

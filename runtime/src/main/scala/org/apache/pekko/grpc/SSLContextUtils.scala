@@ -17,6 +17,8 @@ import java.io.{ BufferedInputStream, IOException, InputStream }
 import java.security.KeyStore
 import java.security.cert.{ CertificateFactory, X509Certificate }
 
+import org.apache.pekko.annotation.InternalApi
+
 import javax.net.ssl.{ SSLContext, SSLContextSpi, SSLEngine, SSLParameters, TrustManager, TrustManagerFactory }
 
 object SSLContextUtils {
@@ -53,6 +55,30 @@ object SSLContextUtils {
     List("TLSv1.2", "TLSv1.3")
 
   /**
+   * INTERNAL API
+   *
+   * Returns `version` if it is a minimum TLS version this library accepts, so that a typo fails
+   * when the settings are built rather than when a channel is first created.
+   *
+   * @throws IllegalArgumentException if `version` is not one of the accepted names
+   */
+  @InternalApi
+  private[grpc] def requireKnownTlsVersion(version: String): String = {
+    tlsVersionIndex(version)
+    version
+  }
+
+  private def tlsVersionIndex(minimumVersion: String): Int = {
+    val minIndex = TlsVersionOrder.indexOf(minimumVersion)
+    if (minIndex < 0)
+      throw new IllegalArgumentException(
+        s"Unknown TLS version '$minimumVersion'. Expected one of: ${TlsVersionOrder.mkString(", ")}")
+    minIndex
+  }
+
+  /**
+   * INTERNAL API
+   *
    * Returns the TLS protocols supported by the given SSLContext that are at or above
    * the specified minimum version. Throws IllegalArgumentException if the minimum
    * version is not a known TLS protocol name.
@@ -61,23 +87,21 @@ object SSLContextUtils {
    * version is a floor on what may be negotiated, so a version the JDK supports but does not
    * enable by default should still be reachable by configuring it explicitly.
    */
-  def enabledProtocols(sslContext: SSLContext, minimumVersion: String): Array[String] = {
-    val minIndex = TlsVersionOrder.indexOf(minimumVersion)
-    if (minIndex < 0)
-      throw new IllegalArgumentException(
-        s"Unknown TLS version '$minimumVersion'. Expected one of: ${TlsVersionOrder.mkString(", ")}")
+  @InternalApi
+  private[grpc] def enabledProtocols(sslContext: SSLContext, minimumVersion: String): Array[String] = {
+    val minIndex = tlsVersionIndex(minimumVersion)
     val supported = sslContext.getSupportedSSLParameters.getProtocols
     filterProtocols(supported, minIndex)
   }
 
   /**
+   * INTERNAL API
+   *
    * Returns TLS protocols from the given list that are at or above the specified minimum version.
    */
-  def enabledProtocols(supportedProtocols: Array[String], minimumVersion: String): Array[String] = {
-    val minIndex = TlsVersionOrder.indexOf(minimumVersion)
-    if (minIndex < 0)
-      throw new IllegalArgumentException(
-        s"Unknown TLS version '$minimumVersion'. Expected one of: ${TlsVersionOrder.mkString(", ")}")
+  @InternalApi
+  private[grpc] def enabledProtocols(supportedProtocols: Array[String], minimumVersion: String): Array[String] = {
+    val minIndex = tlsVersionIndex(minimumVersion)
     filterProtocols(supportedProtocols, minIndex)
   }
 
@@ -92,10 +116,13 @@ object SSLContextUtils {
   }
 
   /**
+   * INTERNAL API
+   *
    * Wraps an SSLContext so that all SSLEngines created from it will only allow
    * protocols at or above the specified minimum TLS version.
    */
-  def withMinimumTlsVersion(sslContext: SSLContext, minimumVersion: String): SSLContext = {
+  @InternalApi
+  private[grpc] def withMinimumTlsVersion(sslContext: SSLContext, minimumVersion: String): SSLContext = {
     val protocols = enabledProtocols(sslContext, minimumVersion)
     new SSLContext(new SSLContextSpi {
         override def engineCreateSSLEngine(): SSLEngine = {
