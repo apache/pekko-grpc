@@ -47,7 +47,7 @@ class JavaHandlerBenchmark extends AbstractHandlerBenchmark {
 
     request =>
       GrpcMarshalling
-        .negotiated[HttpResponse](
+        .negotiated(
           request,
           (reader, writer) =>
             GrpcMarshalling

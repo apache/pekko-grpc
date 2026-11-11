@@ -20,7 +20,6 @@ import org.apache.pekko
 import pekko.NotUsed
 import pekko.actor.ActorSystem
 import pekko.actor.ClassicActorSystemProvider
-import pekko.annotation.InternalApi
 import pekko.grpc._
 import pekko.grpc.internal._
 import pekko.grpc.GrpcProtocol.{ GrpcProtocolReader, GrpcProtocolWriter }
