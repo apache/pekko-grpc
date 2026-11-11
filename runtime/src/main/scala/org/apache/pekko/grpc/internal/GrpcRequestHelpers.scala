@@ -48,7 +48,7 @@ object GrpcRequestHelpers {
       // FIXME issue #1382 gzip shouldn't be included by default in Message-Accept-Encoding.
       headers = Seq(
         `Message-Encoding`(writer.messageEncoding.name),
-        `Message-Accept-Encoding`(Codecs.supportedCodecs.map(_.name).mkString(",")),
+        `Message-Accept-Encoding`(Codecs.acceptEncoding),
         model.headers.TE(TransferEncodings.trailers)) ++ headers,
       entity = HttpEntity.Chunked(writer.contentType, entity))
   }

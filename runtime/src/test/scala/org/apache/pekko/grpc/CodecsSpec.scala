@@ -13,7 +13,7 @@
 
 package org.apache.pekko.grpc
 import org.apache.pekko
-import pekko.grpc.internal.{ Codecs, Deflate, Gzip, Identity }
+import pekko.grpc.internal.{ Codecs, Deflate, GrpcProtocolNative, GrpcResponseHelpers, Gzip, Identity }
 import pekko.grpc.scaladsl.headers
 import pekko.http.scaladsl.model.HttpRequest
 import pekko.http.scaladsl.model.headers.RawHeader
@@ -134,6 +134,17 @@ class CodecsSpec extends AnyWordSpec with Matchers with TryValues {
       detected.failure.exception shouldBe a[GrpcServiceException]
       detected.failure.exception.asInstanceOf[GrpcServiceException].status.getCode should be(
         Status.UNIMPLEMENTED.getCode)
+    }
+
+    "list the supported encodings when failing with an unknown encoding" in {
+      val exception = Codecs.detect(enc("xxxxxxx")).failure.exception.asInstanceOf[GrpcServiceException]
+
+      exception.status.getDescription should include("xxxxxxx")
+      exception.metadata.getText("grpc-accept-encoding") should be(Some("gzip,deflate,identity"))
+      // and they reach the response the client gets
+      val response = GrpcResponseHelpers.status(Trailers(exception.status, exception.metadata))(
+        GrpcProtocolNative.newWriter(Identity))
+      headers.`Message-Accept-Encoding`.findIn(response.headers).toSeq should be(Seq("gzip", "deflate", "identity"))
     }
 
     // Regression test: same as akka-grpc #1897 but for detect path

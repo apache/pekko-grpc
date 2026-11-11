@@ -17,6 +17,7 @@ import org.apache.pekko
 import pekko.http.javadsl.{ model => jm }
 import pekko.http.scaladsl.{ model => sm }
 import pekko.grpc.GrpcServiceException
+import pekko.grpc.scaladsl.{ Metadata, MetadataBuilder }
 import pekko.grpc.scaladsl.headers.{ `Message-Accept-Encoding`, `Message-Encoding` }
 import io.grpc.Status
 import scala.util.{ Failure, Success, Try }
@@ -25,6 +26,12 @@ object Codecs {
   // TODO should this list be made user-extensible?
   val supportedCodecs = Seq(Gzip, Deflate, Identity)
   private val supportedByName: Map[String, Codec] = supportedCodecs.map(c => c.name -> c).toMap
+
+  /** The `grpc-accept-encoding` value listing every supported encoding. */
+  private[grpc] val acceptEncoding: String = supportedCodecs.map(_.name).mkString(",")
+
+  private lazy val acceptEncodingMetadata: Metadata =
+    new MetadataBuilder().addText(`Message-Accept-Encoding`.name, acceptEncoding).build()
 
   private def extractHeaders(request: jm.HttpMessage): Iterable[jm.HttpHeader] = {
     request match {
@@ -71,7 +78,9 @@ object Codecs {
           .get(codec)
           .map(Success(_))
           .getOrElse(Failure(new GrpcServiceException(
-            Status.UNIMPLEMENTED.withDescription(s"Message Encoding $encoding is not supported"))))
+            Status.UNIMPLEMENTED.withDescription(s"Message Encoding $codec is not supported"),
+            // the spec asks for the supported encodings here, so a client can fall back to one of them
+            acceptEncodingMetadata)))
       }
       .getOrElse(Success(Identity))
 }

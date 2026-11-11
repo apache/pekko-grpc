@@ -22,7 +22,7 @@ import pekko.annotation.InternalApi
 import pekko.event.LoggingAdapter
 import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, GrpcSingleResponse }
 import pekko.stream.scaladsl.{ Flow, Keep, Source }
-import io.grpc.{ CallOptions, MethodDescriptor }
+import io.grpc.{ CallOptions, Codec, Decompressor, DecompressorRegistry, MethodDescriptor }
 import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts
 import io.grpc.netty.shaded.io.grpc.netty.NegotiationType
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder
@@ -102,6 +102,8 @@ object NettyClientUtils {
     builder = settings.overrideAuthority.map(builder.overrideAuthority(_)).getOrElse(builder)
     builder = settings.userAgent.map(builder.userAgent(_)).getOrElse(builder)
     builder = builder.maxInboundMessageSize(settings.maxInboundMessageSize)
+    // accept the same response encodings as the pekko-http backend
+    builder = builder.decompressorRegistry(decompressorRegistry)
     // applied last so that explicit overrides win over anything derived from settings
     builder = settings.channelBuilderOverrides(builder)
 
@@ -224,6 +226,31 @@ object NettyClientUtils {
   /**
    * INTERNAL API
    */
+  /**
+   * INTERNAL API
+   *
+   * The `deflate` message encoding (zlib format, RFC 1950) for grpc-java, which only ships `gzip`.
+   */
+  @InternalApi
+  private[grpc] object DeflateDecompressor extends Decompressor {
+    override def getMessageEncoding: String = Deflate.name
+    override def decompress(is: java.io.InputStream): java.io.InputStream = new java.util.zip.InflaterInputStream(is)
+  }
+
+  /**
+   * INTERNAL API
+   *
+   * The response encodings the netty client accepts and advertises in `grpc-accept-encoding`, in the
+   * same order as the pekko-http client (`Codecs.supportedCodecs`).
+   */
+  @InternalApi
+  private[grpc] lazy val decompressorRegistry: DecompressorRegistry =
+    DecompressorRegistry
+      .emptyInstance()
+      .`with`(new Codec.Gzip, true)
+      .`with`(DeflateDecompressor, true)
+      .`with`(Codec.Identity.NONE, false)
+
   @InternalApi private[pekko] def callOptionsWithDeadline(
       defaultOptions: CallOptions,
       settings: GrpcClientSettings): CallOptions =
