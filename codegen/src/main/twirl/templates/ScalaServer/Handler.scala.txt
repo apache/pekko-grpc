@@ -126,8 +126,8 @@ object @{serviceName}Handler {
 
       def handle(request: model.HttpRequest, method: String): scala.concurrent.Future[model.HttpResponse] =
         GrpcMarshalling.negotiated(request, serverSettings, (reader, writer) =>
-          // the client stops waiting once its deadline expires; without this the server keeps
-          // working on a reply nobody is going to read
+          // bounds the call by the client's grpc-timeout, so a reply the client has stopped
+          // waiting for is not kept open
           GrpcMarshalling.withServerDeadline(request,
           method match {
             @for(method <- service.methods) {
@@ -174,8 +174,8 @@ object @{serviceName}Handler {
 
       def handle(request: model.HttpRequest, method: String): scala.concurrent.Future[model.HttpResponse] =
         GrpcMarshalling.negotiated(request, serverSettings, (reader, writer) =>
-          // the client stops waiting once its deadline expires; without this the server keeps
-          // working on a reply nobody is going to read
+          // bounds the call by the client's grpc-timeout, so a reply the client has stopped
+          // waiting for is not kept open
           GrpcMarshalling.withServerDeadline(request,
           method match {
             @for(method <- service.methods) {

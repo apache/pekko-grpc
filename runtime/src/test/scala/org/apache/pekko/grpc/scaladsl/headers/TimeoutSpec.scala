@@ -49,6 +49,11 @@ class TimeoutSpec extends AnyWordSpec with Matchers {
       `Timeout`.parse("999999999S").isFailure shouldBe true
     }
 
+    "reject a signed value" in {
+      `Timeout`.parse("+5S").isFailure shouldBe true
+      `Timeout`.parse("-5S").isFailure shouldBe true
+    }
+
     "reject an unknown unit" in {
       `Timeout`.parse("10X").isFailure shouldBe true
     }

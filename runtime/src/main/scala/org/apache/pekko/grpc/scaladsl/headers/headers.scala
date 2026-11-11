@@ -149,8 +149,8 @@ object `Timeout` extends ModeledCustomHeaderCompanion[`Timeout`] {
     require(value.length >= 2, s"Invalid grpc-timeout [$value]")
     val digits = value.substring(0, value.length - 1)
     require(digits.length <= 8, s"Invalid grpc-timeout [$value], at most 8 digits allowed")
+    require(digits.forall(c => c >= '0' && c <= '9'), s"Invalid grpc-timeout [$value], digits expected")
     val amount = digits.toLong
-    require(amount >= 0, s"Invalid grpc-timeout [$value], must not be negative")
     val unit = value.charAt(value.length - 1) match {
       case 'H'   => TimeUnit.HOURS
       case 'M'   => TimeUnit.MINUTES
@@ -169,7 +169,7 @@ object `Timeout` extends ModeledCustomHeaderCompanion[`Timeout`] {
    * A malformed value yields `None` rather than failing the request: the timeout is a hint from
    * the peer, and refusing to serve a request over it would be worse than ignoring it.
    */
-  def findIn(headers: immutable.Seq[HttpHeader]): Option[FiniteDuration] =
+  def findIn(headers: Seq[HttpHeader]): Option[FiniteDuration] =
     headers.collectFirst { case h if h.is(name) => parse(h.value()).toOption.map(_.timeout) }.flatten
 }
 
