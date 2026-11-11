@@ -84,24 +84,29 @@ import scalapb.{ GeneratedMessage, GeneratedMessageCompanion }
 
 /**
  * This class wraps a mutable Metadata from io.grpc with the Scala Metadata interface.
- * @param delegate The underlying mutable metadata.
+ * @param delegate The underlying mutable metadata, or null for empty metadata
+ *                 (e.g. the trailers of a `StatusRuntimeException` created without any).
  */
 @InternalApi
 class GrpcMetadataImpl(delegate: io.grpc.Metadata) extends Metadata {
-  private lazy val map = delegate.keys.iterator.asScala.map(key => key -> getEntries(key)).toMap
+  private lazy val map: Map[String, List[MetadataEntry]] =
+    if (delegate == null) Map.empty
+    else delegate.keys.iterator.asScala.map(key => key -> getEntries(key)).toMap
 
   override def getText(key: String): Option[String] =
-    Option(delegate.get(textKey(key)))
+    if (delegate == null) None
+    else Option(delegate.get(textKey(key)))
 
   override def getBinary(key: String): Option[ByteString] =
-    Option(delegate.get(binaryKey(key))).map(ByteString.fromArray)
+    if (delegate == null) None
+    else Option(delegate.get(binaryKey(key))).map(ByteString.fromArray)
 
   override def asMap: Map[String, List[MetadataEntry]] =
     map
 
-  override def asList: List[(String, MetadataEntry)] = {
-    delegate.keys.iterator.asScala.flatMap(key => getEntries(key).map(entry => (key, entry))).toList
-  }
+  override def asList: List[(String, MetadataEntry)] =
+    if (delegate == null) Nil
+    else delegate.keys.iterator.asScala.flatMap(key => getEntries(key).map(entry => (key, entry))).toList
 
   override def toString: String =
     MetadataImpl.niceStringRep(map)
@@ -239,7 +244,7 @@ class JavaMetadataImpl(val delegate: Metadata) extends javadsl.Metadata with jav
 class RichGrpcMetadataImpl(delegate: io.grpc.Status, meta: io.grpc.Metadata)
     extends GrpcMetadataImpl(meta)
     with MetadataStatus {
-  override val raw: Option[io.grpc.Metadata] = Some(meta)
+  override val raw: Option[io.grpc.Metadata] = Option(meta)
   override lazy val status: com.google.rpc.Status =
     io.grpc.protobuf.StatusProto.fromStatusAndTrailers(delegate, meta)
 
