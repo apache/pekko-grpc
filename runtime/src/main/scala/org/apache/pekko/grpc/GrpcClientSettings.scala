@@ -162,7 +162,9 @@ object GrpcClientSettings {
         clientConfiguration,
         "max-inbound-message-size",
         AbstractGrpcProtocol.DefaultMaxInboundMessageSize),
-      verifyHostname = clientConfiguration.getBoolean("verify-hostname"))
+      verifyHostname = clientConfiguration.getBoolean("verify-hostname"),
+      minimumTlsVersion =
+        getOptionalString(clientConfiguration, "minimum-tls-version").map(SSLContextUtils.requireKnownTlsVersion))
 
   // `fromConfig(Config)` is public API and is called with hand-assembled Configs that do not
   // necessarily fall back on `pekko.grpc.client."*"`, so a missing key must not fail.
@@ -217,7 +219,8 @@ final class GrpcClientSettings private (
     val backend: String,
     val channelBuilderOverrides: NettyChannelBuilder => NettyChannelBuilder = identity,
     val maxInboundMessageSize: Int,
-    val verifyHostname: Boolean) {
+    val verifyHostname: Boolean,
+    val minimumTlsVersion: Option[String]) {
   require(
     sslContext.isEmpty || trustManager.isEmpty,
     "Configuring the sslContext or the trustManager is mutually exclusive")
@@ -289,6 +292,15 @@ final class GrpcClientSettings private (
     copy(loadBalancingPolicy = Some(loadBalancingPolicy))
 
   /**
+   * Set the minimum TLS protocol version to use. Accepted values: "TLSv1.2", "TLSv1.3".
+   * On older JDKs that do not support the specified version, the connection will fail.
+   * @throws IllegalArgumentException if `version` is not one of the accepted values
+   * @since 2.0.0
+   */
+  def withMinimumTlsVersion(version: String): GrpcClientSettings =
+    copy(minimumTlsVersion = Some(SSLContextUtils.requireKnownTlsVersion(version)))
+
+  /**
    * How many times to retry establishing a connection before failing the client
    * Failure can be monitored using client.stopped and monitoring the Future/CompletionStage.
    * An exponentially increasing backoff is used between attempts.
@@ -346,7 +358,8 @@ final class GrpcClientSettings private (
       backend: String = backend,
       channelBuilderOverrides: NettyChannelBuilder => NettyChannelBuilder = channelBuilderOverrides,
       maxInboundMessageSize: Int = maxInboundMessageSize,
-      verifyHostname: Boolean = verifyHostname)
+      verifyHostname: Boolean = verifyHostname,
+      minimumTlsVersion: Option[String] = minimumTlsVersion)
       : GrpcClientSettings =
     new GrpcClientSettings(
       callCredentials = callCredentials,
@@ -368,5 +381,6 @@ final class GrpcClientSettings private (
       backend = backend,
       channelBuilderOverrides = channelBuilderOverrides,
       maxInboundMessageSize = maxInboundMessageSize,
-      verifyHostname = verifyHostname)
+      verifyHostname = verifyHostname,
+      minimumTlsVersion = minimumTlsVersion)
 }
