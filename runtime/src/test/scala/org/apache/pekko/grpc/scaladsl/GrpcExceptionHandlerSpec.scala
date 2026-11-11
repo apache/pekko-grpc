@@ -15,7 +15,7 @@ package org.apache.pekko.grpc.scaladsl
 
 import org.apache.pekko
 import pekko.actor.ActorSystem
-import pekko.grpc.{ GrpcProtocol, GrpcServiceException }
+import pekko.grpc.{ GrpcProtocol, GrpcServiceException, Trailers }
 import pekko.grpc.internal.{ GrpcProtocolNative, GrpcResponseHelpers, Identity }
 import pekko.grpc.scaladsl.GrpcExceptionHandler.defaultMapper
 import pekko.http.scaladsl.model.HttpEntity._
@@ -28,7 +28,9 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.time.{ Millis, Seconds, Span }
 import org.scalatest.wordspec.AnyWordSpec
 
-import scala.concurrent.{ ExecutionException, Future }
+import java.util.concurrent.atomic.AtomicInteger
+
+import scala.concurrent.{ ExecutionContext, ExecutionException, Future, Promise }
 
 class GrpcExceptionHandlerSpec extends AnyWordSpec with Matchers with ScalaFutures with BeforeAndAfterAll {
   implicit val system: ActorSystem = ActorSystem("Test")
@@ -112,6 +114,89 @@ class GrpcExceptionHandlerSpec extends AnyWordSpec with Matchers with ScalaFutur
         act.status shouldBe exp.status
         actChunks.toString shouldEqual expChunks.toString
       }
+    }
+  }
+
+  "recover" should {
+    implicit val ec: ExecutionContext = system.dispatcher
+
+    val ok = HttpResponse()
+
+    /** An exception handler that counts how often it is constructed. */
+    class CountingHandler(mapper: PartialFunction[Throwable, Trailers]) extends (ActorSystem => PartialFunction[
+              Throwable,
+              Trailers]) {
+      val constructed = new AtomicInteger()
+      override def apply(sys: ActorSystem): PartialFunction[Throwable, Trailers] = {
+        constructed.incrementAndGet()
+        mapper
+      }
+    }
+
+    val aborted: PartialFunction[Throwable, Trailers] = {
+      case _: IllegalStateException => Trailers(Status.ABORTED)
+    }
+
+    def grpcStatus(response: HttpResponse): Option[String] =
+      response.headers.collectFirst { case h if h.is("grpc-status") => h.value }
+
+    "return an already successful response as is, without constructing the exception handler" in {
+      val handler = new CountingHandler(aborted)
+      val response = Future.successful(ok)
+
+      (GrpcExceptionHandler.recover(response, handler) should be).theSameInstanceAs(response)
+      handler.constructed.get shouldBe 0
+    }
+
+    "map an already failed response with the exception handler" in {
+      val handler = new CountingHandler(aborted)
+
+      val recovered = GrpcExceptionHandler.recover(Future.failed(new IllegalStateException("boom")), handler)
+
+      recovered.isCompleted shouldBe true
+      grpcStatus(recovered.futureValue) shouldBe Some(Status.Code.ABORTED.value.toString)
+      handler.constructed.get shouldBe 1
+    }
+
+    "fall back on the default mapper for an already failed response the handler does not match" in {
+      val recovered =
+        GrpcExceptionHandler.recover(
+          Future.failed(new GrpcServiceException(Status.NOT_FOUND)),
+          new CountingHandler(aborted))
+
+      grpcStatus(recovered.futureValue) shouldBe Some(Status.Code.NOT_FOUND.value.toString)
+    }
+
+    "fail the response if the exception handler throws for an already failed response" in {
+      val throwing: ActorSystem => PartialFunction[Throwable, Trailers] = _ => throw new RuntimeException("bad handler")
+
+      val recovered = GrpcExceptionHandler.recover(Future.failed(new IllegalStateException("boom")), throwing)
+
+      recovered.failed.futureValue.getMessage shouldBe "bad handler"
+    }
+
+    "map a pending response that later fails" in {
+      val handler = new CountingHandler(aborted)
+      val pending = Promise[HttpResponse]()
+
+      val recovered = GrpcExceptionHandler.recover(pending.future, handler)
+      recovered.isCompleted shouldBe false
+      handler.constructed.get shouldBe 0
+
+      pending.failure(new IllegalStateException("boom"))
+      grpcStatus(recovered.futureValue) shouldBe Some(Status.Code.ABORTED.value.toString)
+      handler.constructed.get shouldBe 1
+    }
+
+    "pass through a pending response that later succeeds, without constructing the exception handler" in {
+      val handler = new CountingHandler(aborted)
+      val pending = Promise[HttpResponse]()
+
+      val recovered = GrpcExceptionHandler.recover(pending.future, handler)
+      pending.success(ok)
+
+      (recovered.futureValue should be).theSameInstanceAs(ok)
+      handler.constructed.get shouldBe 0
     }
   }
 
