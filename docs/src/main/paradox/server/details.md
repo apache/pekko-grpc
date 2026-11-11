@@ -118,27 +118,23 @@ has no effect on them. Regenerate your sources against 2.0.0 to make the setting
 A client can tell the server how long it is prepared to wait by sending the `grpc-timeout`
 request header. Generated handlers honour it: when the deadline passes before the service has
 replied, the call is completed with `DEADLINE_EXCEEDED` — the same status the client reports for
-the same call.
-
-Without this the server would keep working on a reply nobody is going to read, since the client
-stops waiting when its own deadline expires.
+the same call. For a streamed response, the stream is ended with `DEADLINE_EXCEEDED` trailers once
+the deadline passes, and the `Source` the service returned is cancelled.
 
 Both clients send the header when a call has a deadline:
 
 Scala
 :   ```scala
-    import io.grpc.{ CallOptions, Deadline }
-    import java.util.concurrent.TimeUnit
-
     val settings = GrpcClientSettings.connectToServiceAt("localhost", 8080)
       .withDeadline(5.seconds)
     ```
 
 @@@ note
 
-The deadline bounds the response, not the work behind it. A service that has already started an
-expensive operation keeps running it; only the reply is abandoned. To stop the work itself, have
-the service observe cancellation of the `Future` or `Source` it returned.
+A `Future` cannot be cancelled, so for a unary or client-streaming call the deadline bounds the
+reply, not the work behind it: a service that has already started an expensive operation keeps
+running it, and only its result is discarded. A streamed response is different, because its
+`Source` is cancelled at the deadline.
 
 @@@
 
