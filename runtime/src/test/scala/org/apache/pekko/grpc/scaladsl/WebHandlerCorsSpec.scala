@@ -17,6 +17,8 @@
 
 package org.apache.pekko.grpc.scaladsl
 
+import java.util.concurrent.ConcurrentLinkedQueue
+
 import scala.concurrent.Future
 import scala.concurrent.duration._
 
@@ -51,13 +53,19 @@ class WebHandlerCorsSpec
 
   private val foreignOrigin = HttpOrigin("https://evil.example")
 
-  private def systemWith(allowCredentialsFromAnyOrigin: Boolean): ActorSystem =
-    ActorSystem(
+  // systems created by systemWith, shut down in afterAll alongside the TestKit system
+  private val extraSystems = new ConcurrentLinkedQueue[ActorSystem]()
+
+  private def systemWith(allowCredentialsFromAnyOrigin: Boolean): ActorSystem = {
+    val sys = ActorSystem(
       "configured",
       ConfigFactory
         .parseString(
           s"pekko.grpc.server.grpc-web.allow-credentials-from-any-origin = $allowCredentialsFromAnyOrigin")
         .withFallback(ConfigFactory.load()))
+    extraSystems.add(sys)
+    sys
+  }
 
   private def respond(sys: ActorSystem, settings: CorsSettings, request: HttpRequest): HttpResponse = {
     val handler = WebHandler.grpcWebHandler {
@@ -161,6 +169,7 @@ class WebHandlerCorsSpec
   }
 
   override def afterAll(): Unit = {
+    extraSystems.forEach(sys => TestKit.shutdownActorSystem(sys))
     TestKit.shutdownActorSystem(system)
     super.afterAll()
   }
