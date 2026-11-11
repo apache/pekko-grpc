@@ -32,6 +32,22 @@ import scala.jdk.DurationConverters._
 object GrpcClientSettings {
 
   /**
+   * INTERNAL API
+   *
+   * Converts a Java API deadline. `null` means no deadline, as `Duration.Inf` does in the Scala API.
+   * A duration too long for a `FiniteDuration` (about 292 years) also means no deadline, and one too
+   * negative for it has already expired.
+   */
+  @InternalApi
+  private[grpc] def javaDeadline(deadline: java.time.Duration): Duration =
+    if (deadline == null) Duration.Inf
+    else
+      try deadline.toScala
+      catch {
+        case _: IllegalArgumentException => if (deadline.isNegative) Duration.Zero else Duration.Inf
+      }
+
+  /**
    * Create a client that uses a static host and port. Default configuration
    * is loaded from reference.conf
    */
@@ -269,7 +285,8 @@ final class GrpcClientSettings private (
   /**
    * Each call will have this deadline.
    */
-  def withDeadline(value: java.time.Duration): GrpcClientSettings = copy(deadline = Duration.fromNanos(value.toNanos))
+  def withDeadline(value: java.time.Duration): GrpcClientSettings =
+    copy(deadline = GrpcClientSettings.javaDeadline(value))
 
   /**
    * Provides a custom `User-Agent` for the application.

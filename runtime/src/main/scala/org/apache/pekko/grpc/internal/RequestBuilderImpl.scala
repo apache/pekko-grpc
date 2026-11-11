@@ -399,7 +399,7 @@ object RequestBuilderImpl {
    * A null deadline means no deadline, as with `Duration.Inf` in the Scala API
    */
   def toScalaDeadline(deadline: JDuration): Duration =
-    if (deadline == null) Duration.Inf else Duration.fromNanos(deadline.toNanos)
+    GrpcClientSettings.javaDeadline(deadline)
 
   def richErrorStream[U]: PartialFunction[Throwable, Graph[SourceShape[U], NotUsed]] = {
     case item => Source.failed(RequestBuilderImpl.lift(item))
