@@ -87,6 +87,8 @@ effect and is logged as a warning.
 By default the client negotiates whichever TLS versions the JDK enables, which on a supported JDK
 is TLSv1.2 and above. To require a higher floor, set `minimum-tls-version`. The accepted values are
 `TLSv1.2` and `TLSv1.3`; any other value is rejected when the settings are created.
+The setting only narrows the versions the JDK enables: it never re-enables a version the JDK has
+disabled, for example through `jdk.tls.client.protocols` or `jdk.tls.disabledAlgorithms`.
 
 ```hocon
 pekko.grpc.client."*" {

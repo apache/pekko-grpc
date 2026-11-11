@@ -23,7 +23,19 @@ import java.security.cert.CertificateFactory
 import java.security.spec.PKCS8EncodedKeySpec
 import java.util.Base64
 
-import javax.net.ssl.{ KeyManagerFactory, SSLContext, SSLEngine, SSLHandshakeException }
+import javax.net.ssl.{
+  KeyManager,
+  KeyManagerFactory,
+  SSLContext,
+  SSLContextSpi,
+  SSLEngine,
+  SSLHandshakeException,
+  SSLParameters,
+  SSLServerSocketFactory,
+  SSLSessionContext,
+  SSLSocketFactory,
+  TrustManager
+}
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
@@ -136,6 +148,33 @@ class MinimumTlsVersionSpec
     GrpcClientSettings.fromConfig(clientConfig)(system)
   }
 
+  /** An SSLContext that supports everything `delegate` does but enables only `enabled` by default. */
+  private def contextEnablingOnly(delegate: SSLContext, enabled: Array[String]): SSLContext =
+    new SSLContext(
+      new SSLContextSpi {
+        private def restrict(engine: SSLEngine): SSLEngine = {
+          engine.setEnabledProtocols(enabled)
+          engine
+        }
+        override def engineCreateSSLEngine(): SSLEngine = restrict(delegate.createSSLEngine())
+        override def engineCreateSSLEngine(host: String, port: Int): SSLEngine =
+          restrict(delegate.createSSLEngine(host, port))
+        override def engineInit(km: Array[KeyManager], tm: Array[TrustManager], random: SecureRandom): Unit =
+          delegate.init(km, tm, random)
+        override def engineGetSocketFactory: SSLSocketFactory = delegate.getSocketFactory
+        override def engineGetServerSocketFactory: SSLServerSocketFactory = delegate.getServerSocketFactory
+        override def engineGetServerSessionContext: SSLSessionContext = delegate.getServerSessionContext
+        override def engineGetClientSessionContext: SSLSessionContext = delegate.getClientSessionContext
+        override def engineGetDefaultSSLParameters: SSLParameters = {
+          val params = delegate.getDefaultSSLParameters
+          params.setProtocols(enabled)
+          params
+        }
+        override def engineGetSupportedSSLParameters: SSLParameters = delegate.getSupportedSSLParameters
+      },
+      delegate.getProvider,
+      delegate.getProtocol) {}
+
   "SSLContextUtils.enabledProtocols" should {
 
     "keep every known version at or above the floor" in {
@@ -147,18 +186,22 @@ class MinimumTlsVersionSpec
       SSLContextUtils.enabledProtocols(SSLContext.getDefault, "TLSv1.3").toSet shouldBe Set("TLSv1.3")
     }
 
-    "never widen to a version below TLSv1.2, even though it reads the supported set" in {
-      // It reads getSupportedSSLParameters rather than getDefaultSSLParameters, so that a
-      // version the JDK supports but does not enable by default stays reachable. That is not
-      // observable on a JDK whose default set is already TLSv1.2 + TLSv1.3, but the widening
-      // it allows must never reach below the floor: the supported set also carries TLSv1.1,
-      // TLSv1, SSLv3 and SSLv2Hello, and the known-version list is what keeps those out.
-      val supported = SSLContext.getDefault.getSupportedSSLParameters.getProtocols.toSet
-      withClue(s"supported: ${supported.mkString(", ")}") {
-        supported should contain("TLSv1.1")
+    "never re-enable a version the JDK has disabled" in {
+      // A JDK configured with e.g. -Djdk.tls.client.protocols=TLSv1.3 still *supports* TLSv1.2
+      // but does not enable it. A TLSv1.2 floor must not widen the enabled set back to TLSv1.2.
+      val ctx = contextEnablingOnly(SSLContext.getDefault, Array("TLSv1.3"))
+      ctx.getSupportedSSLParameters.getProtocols should contain("TLSv1.2")
+
+      SSLContextUtils.enabledProtocols(ctx, "TLSv1.2").toSeq shouldBe Seq("TLSv1.3")
+      SSLContextUtils.withMinimumTlsVersion(ctx, "TLSv1.2").createSSLEngine("example.com", 443)
+        .getEnabledProtocols.toSeq shouldBe Seq("TLSv1.3")
+    }
+
+    "fail when the JDK enables nothing at or above the floor" in {
+      val ctx = contextEnablingOnly(SSLContext.getDefault, Array("TLSv1.2"))
+      intercept[IllegalStateException] {
+        SSLContextUtils.enabledProtocols(ctx, "TLSv1.3")
       }
-      SSLContextUtils.enabledProtocols(SSLContext.getDefault, "TLSv1.2").toSet shouldBe
-      Set("TLSv1.2", "TLSv1.3")
     }
 
     "reject a version it does not know" in {

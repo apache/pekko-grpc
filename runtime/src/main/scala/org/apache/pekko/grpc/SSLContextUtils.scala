@@ -79,19 +79,19 @@ object SSLContextUtils {
   /**
    * INTERNAL API
    *
-   * Returns the TLS protocols supported by the given SSLContext that are at or above
+   * Returns the TLS protocols enabled by default on the given SSLContext that are at or above
    * the specified minimum version. Throws IllegalArgumentException if the minimum
    * version is not a known TLS protocol name.
    *
-   * Reads the *supported* parameters rather than the default (enabled) ones: the minimum
-   * version is a floor on what may be negotiated, so a version the JDK supports but does not
-   * enable by default should still be reachable by configuring it explicitly.
+   * Reads the *default* (enabled) parameters rather than the supported ones: the minimum
+   * version only narrows what may be negotiated, so a version the JDK has disabled (for example
+   * through `jdk.tls.client.protocols` or `jdk.tls.disabledAlgorithms`) stays disabled.
    */
   @InternalApi
   private[grpc] def enabledProtocols(sslContext: SSLContext, minimumVersion: String): Array[String] = {
     val minIndex = tlsVersionIndex(minimumVersion)
-    val supported = sslContext.getSupportedSSLParameters.getProtocols
-    filterProtocols(supported, minIndex)
+    val enabled = sslContext.getDefaultSSLParameters.getProtocols
+    filterProtocols(enabled, minIndex)
   }
 
   /**
