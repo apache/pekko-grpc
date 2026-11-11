@@ -25,10 +25,17 @@ import org.apache.pekko.grpc.scaladsl.{ headers, ScalapbProtobufSerializer }
 import org.apache.pekko.http.scaladsl.model.headers.Trailer
 import org.apache.pekko.stream.scaladsl.Source
 import org.apache.pekko.testkit.TestKit
+import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers._
 import org.scalatest.wordspec.AnyWordSpecLike
 
-final class GrpcResponseHelpersSpec extends TestKit(ActorSystem("GrpcResponseHelpersSpec")) with AnyWordSpecLike {
+final class GrpcResponseHelpersSpec extends TestKit(ActorSystem("GrpcResponseHelpersSpec")) with AnyWordSpecLike
+    with BeforeAndAfterAll {
+  override def afterAll(): Unit = {
+    TestKit.shutdownActorSystem(system)
+    super.afterAll()
+  }
+
   "GrpcResponseHelpers" should {
 
     /**

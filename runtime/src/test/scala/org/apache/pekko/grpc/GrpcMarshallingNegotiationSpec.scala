@@ -22,6 +22,7 @@ import java.util.concurrent.{ CompletableFuture, TimeUnit }
 import scala.concurrent.Future
 
 import io.grpc.{ Status, StatusException }
+import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 
@@ -33,7 +34,12 @@ import pekko.http.scaladsl.model.{ HttpEntity, HttpRequest }
 import pekko.testkit.TestKit
 import pekko.util.ByteString
 
-class GrpcMarshallingNegotiationSpec extends TestKit(ActorSystem()) with AnyWordSpecLike with Matchers {
+class GrpcMarshallingNegotiationSpec extends TestKit(ActorSystem()) with AnyWordSpecLike with Matchers
+    with BeforeAndAfterAll {
+  override def afterAll(): Unit = {
+    TestKit.shutdownActorSystem(system)
+    super.afterAll()
+  }
 
   private val Limit = 64 * 1024
 

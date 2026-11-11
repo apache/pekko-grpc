@@ -14,8 +14,10 @@
 package org.apache.pekko.grpc.internal
 
 import com.typesafe.config.ConfigFactory
-import org.apache.pekko.actor.ActorSystem
-import org.apache.pekko.util.ByteString
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.testkit.TestKit
+import pekko.util.ByteString
 import org.scalatest._
 import org.scalatest.concurrent._
 import org.scalatest.matchers.should.Matchers
@@ -59,7 +61,7 @@ class NettyClientUtilsSpec extends AnyWordSpec with Matchers with ScalaFutures w
   }
 
   override def afterAll(): Unit = {
+    TestKit.shutdownActorSystem(system)
     super.afterAll()
-    system.terminate()
   }
 }

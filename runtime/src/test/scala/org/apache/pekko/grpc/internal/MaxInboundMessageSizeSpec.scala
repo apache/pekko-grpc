@@ -28,10 +28,16 @@ import pekko.stream.testkit.scaladsl.TestSink
 import pekko.testkit.TestKit
 import pekko.util.ByteString
 import io.grpc.{ Status, StatusException }
+import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 
-class MaxInboundMessageSizeSpec extends TestKit(ActorSystem()) with AnyWordSpecLike with Matchers {
+class MaxInboundMessageSizeSpec extends TestKit(ActorSystem()) with AnyWordSpecLike with Matchers
+    with BeforeAndAfterAll {
+  override def afterAll(): Unit = {
+    TestKit.shutdownActorSystem(system)
+    super.afterAll()
+  }
 
   private val Limit = 64 * 1024
 

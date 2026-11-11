@@ -75,8 +75,11 @@ abstract class PowerApiSpec(backend: String)
     }
   }
   override protected def afterAll(): Unit = {
-    server.terminate(3.seconds)
-    super.afterAll()
+    try server.terminate(3.seconds).futureValue
+    finally {
+      TestKit.shutdownActorSystem(system)
+      super.afterAll()
+    }
   }
 
   "The power API" should {

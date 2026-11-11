@@ -150,7 +150,10 @@ class HostnameVerificationSpec
   }
 
   override def afterAll(): Unit = {
-    binding.terminate(5.seconds).futureValue
-    super.afterAll()
+    try binding.terminate(5.seconds).futureValue
+    finally {
+      TestKit.shutdownActorSystem(system)
+      super.afterAll()
+    }
   }
 }

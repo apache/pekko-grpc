@@ -25,6 +25,7 @@ import pekko.testkit.TestKit
 import pekko.util.ByteString
 import io.grpc.testing.integration.test.TestService
 import io.grpc.testing.integration.messages.SimpleRequest
+import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
@@ -35,7 +36,13 @@ class GrpcExceptionDefaultHandleSpec
     extends TestKit(ActorSystem("GrpcExceptionDefaultHandleSpec"))
     with AnyWordSpecLike
     with Matchers
-    with ScalaFutures {
+    with ScalaFutures
+    with BeforeAndAfterAll {
+  override def afterAll(): Unit = {
+    TestKit.shutdownActorSystem(system)
+    super.afterAll()
+  }
+
   implicit val ec: ExecutionContext = system.dispatcher
 
   "The default ExceptionHandler" should {

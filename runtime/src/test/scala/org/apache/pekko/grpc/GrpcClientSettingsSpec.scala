@@ -24,6 +24,7 @@ import pekko.actor.ActorSystem
 import pekko.discovery.{ Lookup, ServiceDiscovery }
 import pekko.discovery.ServiceDiscovery.{ Resolved, ResolvedTarget }
 import pekko.discovery.config.ConfigServiceDiscovery
+import pekko.testkit.TestKit
 
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest._
@@ -208,7 +209,7 @@ class GrpcClientSettingsSpec extends AnyWordSpec with Matchers with ScalaFutures
           GrpcClientSettings.fromConfig("project.WithSpecificConfiguration")(system)
         // We want a good message since missing classpath resources are difficult to debug
         thrown.getMessage should include("certs/no-such-cert.pem")
-      } finally system.terminate()
+      } finally TestKit.shutdownActorSystem(system)
     }
 
     "provide a useful error message if configuration missing" in {
@@ -245,13 +246,13 @@ class GrpcClientSettingsSpec extends AnyWordSpec with Matchers with ScalaFutures
         // that uses the ServiceDiscovery in the ActorSystem
         val settings = GrpcClientSettings.usingServiceDiscovery("a-downstream-service")(actorSystem)
         settings.serviceDiscovery should not be null
-      } finally actorSystem.terminate()
+      } finally TestKit.shutdownActorSystem(actorSystem)
     }
   }
 
   override def afterAll(): Unit = {
+    TestKit.shutdownActorSystem(sys)
     super.afterAll()
-    sys.terminate()
   }
 }
 class FakeServiceDiscovery extends ServiceDiscovery {
