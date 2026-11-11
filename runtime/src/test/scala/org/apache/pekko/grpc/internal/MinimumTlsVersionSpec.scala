@@ -387,8 +387,11 @@ class MinimumTlsVersionSpec
     }
   }
 
-  override def afterAll(): Unit = {
-    binding.terminate(5.seconds).futureValue
-    super.afterAll()
-  }
+  override def afterAll(): Unit =
+    try {
+      binding.terminate(5.seconds).futureValue
+    } finally {
+      try TestKit.shutdownActorSystem(system)
+      finally super.afterAll()
+    }
 }
