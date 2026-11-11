@@ -15,7 +15,6 @@ package org.apache.pekko.grpc.internal
 
 import java.io.{ InputStream, OutputStream }
 import java.util.concurrent.TimeUnit
-import java.util.zip.{ DeflaterOutputStream, InflaterInputStream }
 
 import javax.net.ssl.SSLContext
 import org.apache.pekko
@@ -24,7 +23,7 @@ import pekko.annotation.InternalApi
 import pekko.event.LoggingAdapter
 import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, GrpcSingleResponse, SSLContextUtils }
 import pekko.stream.scaladsl.{ Flow, Keep, Source }
-import io.grpc.{ CallOptions, Codec => GrpcCodec, CompressorRegistry, Decompressor, DecompressorRegistry, MethodDescriptor }
+import io.grpc.{ CallOptions, Codec => GrpcCodec, CompressorRegistry, DecompressorRegistry, MethodDescriptor }
 import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts
 import io.grpc.netty.shaded.io.grpc.netty.NegotiationType
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder
@@ -260,34 +259,26 @@ object NettyClientUtils {
   }
 
   /**
-   * grpc-java only ships gzip, so deflate is added for the `compression` client setting
+   * INTERNAL API
+   *
+   * The `deflate` message encoding (zlib format, RFC 1950) for grpc-java, which only ships `gzip`.
+   * It uses the same streams as the pekko-http backend's [[Deflate]] codec, for both request
+   * compression and response decompression.
    */
-  private object DeflateCodec extends GrpcCodec {
+  @InternalApi
+  private[grpc] object DeflateCodec extends GrpcCodec {
     override def getMessageEncoding: String = Deflate.name
-    override def compress(os: OutputStream): OutputStream = new DeflaterOutputStream(os)
-    override def decompress(is: InputStream): InputStream = new InflaterInputStream(is)
+    override def compress(os: OutputStream): OutputStream = Deflate.compressingStream(os)
+    override def decompress(is: InputStream): InputStream = Deflate.decompressingStream(is)
   }
 
+  /** The request encodings the `compression` client setting can choose from. */
   private lazy val compressorRegistry: CompressorRegistry = {
     val registry = CompressorRegistry.newEmptyInstance()
     registry.register(new GrpcCodec.Gzip())
     registry.register(GrpcCodec.Identity.NONE)
     registry.register(DeflateCodec)
     registry
-  }
-
-  /**
-   * INTERNAL API
-   */
-  /**
-   * INTERNAL API
-   *
-   * The `deflate` message encoding (zlib format, RFC 1950) for grpc-java, which only ships `gzip`.
-   */
-  @InternalApi
-  private[grpc] object DeflateDecompressor extends Decompressor {
-    override def getMessageEncoding: String = Deflate.name
-    override def decompress(is: java.io.InputStream): java.io.InputStream = new java.util.zip.InflaterInputStream(is)
   }
 
   /**
@@ -301,7 +292,7 @@ object NettyClientUtils {
     DecompressorRegistry
       .emptyInstance()
       .`with`(new GrpcCodec.Gzip, true)
-      .`with`(DeflateDecompressor, true)
+      .`with`(DeflateCodec, true)
       .`with`(GrpcCodec.Identity.NONE, false)
 
   @InternalApi private[pekko] def callOptionsWithDeadline(

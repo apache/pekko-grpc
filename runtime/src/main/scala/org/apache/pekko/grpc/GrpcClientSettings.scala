@@ -245,7 +245,7 @@ final class GrpcClientSettings private (
     maxInboundMessageSize > 0,
     s"maxInboundMessageSize must be positive, was [$maxInboundMessageSize]")
   require(
-    compression.forall(c => Codecs.supportedCodecs.exists(_.name == c)),
+    compression.forall(Codecs.byName(_).isDefined),
     s"compression should be one of ${Codecs.supportedCodecs.map(_.name).mkString("'", "', '", "'")}, " +
     s"but was [${compression.getOrElse("")}]")
 

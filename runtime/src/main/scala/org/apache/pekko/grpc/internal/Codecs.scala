@@ -27,6 +27,9 @@ object Codecs {
   val supportedCodecs = Seq(Gzip, Deflate, Identity)
   private val supportedByName: Map[String, Codec] = supportedCodecs.map(c => c.name -> c).toMap
 
+  /** The supported codec with this message encoding name, if any. */
+  private[grpc] def byName(name: String): Option[Codec] = supportedByName.get(name)
+
   /** The `grpc-accept-encoding` value listing every supported encoding. */
   private[grpc] val acceptEncoding: String = supportedCodecs.map(_.name).mkString(",")
 

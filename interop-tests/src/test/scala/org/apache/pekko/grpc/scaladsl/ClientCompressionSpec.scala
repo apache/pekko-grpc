@@ -41,14 +41,26 @@ import scala.concurrent.{ ExecutionContext, Future, Promise }
 import scala.concurrent.duration._
 
 object ClientCompressionSpec {
-  final case class ReceivedRequest(encoding: Option[String], compressedFlag: Byte)
+
+  /** The `grpc-encoding` header and the compressed flag of every request frame, in order. */
+  final case class ReceivedRequest(encoding: Option[String], compressedFlags: Seq[Byte])
+
+  /** The compressed flag of each complete gRPC frame in `buffer`, and the bytes left over. */
+  @scala.annotation.tailrec
+  def frameFlags(buffer: ByteString, flags: Vector[Byte]): (ByteString, Vector[Byte]) =
+    if (buffer.size < 5) (buffer, flags)
+    else {
+      val length = buffer.iterator.drop(1).getInt(java.nio.ByteOrder.BIG_ENDIAN)
+      if (buffer.size < 5 + length) (buffer, flags)
+      else frameFlags(buffer.drop(5 + length), flags :+ buffer(0))
+    }
 }
 
 class ClientCompressionSpecNetty extends ClientCompressionSpec("netty")
 class ClientCompressionSpecPekkoHttp extends ClientCompressionSpec("pekko-http")
 
 /**
- * Checks what the client sends: the `grpc-encoding` header and the compressed flag of the first
+ * Checks what the client sends: the `grpc-encoding` header and the compressed flag of every
  * request frame, as received by the server.
  */
 abstract class ClientCompressionSpec(backend: String)
@@ -60,7 +72,7 @@ abstract class ClientCompressionSpec(backend: String)
     with Matchers
     with BeforeAndAfterAll
     with ScalaFutures {
-  import ClientCompressionSpec.ReceivedRequest
+  import ClientCompressionSpec.{ frameFlags, ReceivedRequest }
 
   override implicit val patienceConfig: PatienceConfig = PatienceConfig(10.seconds, Span(10, org.scalatest.time.Millis))
 
@@ -81,11 +93,14 @@ abstract class ClientCompressionSpec(backend: String)
   private val recordingHandler: HttpRequest => Future[HttpResponse] = { request =>
     val encoding = `Message-Encoding`.findIn(request.headers)
     val promise = lastRequest.get()
-    val recordFirstByte = Flow[ByteString].map { bytes =>
-      if (bytes.nonEmpty) promise.trySuccess(ReceivedRequest(encoding, bytes(0)))
-      bytes
-    }
-    handler(request.withEntity(request.entity.transformDataBytes(recordFirstByte)))
+    // frames can be split across, or share, data chunks, so parse them rather than look at chunk starts
+    val recordFrameFlags = Flow[ByteString].statefulMap(() => (ByteString.empty, Vector.empty[Byte]))(
+      { case ((buffer, flags), bytes) => (frameFlags(buffer ++ bytes, flags), bytes) },
+      { case (_, flags) =>
+        promise.trySuccess(ReceivedRequest(encoding, flags))
+        None
+      })
+    handler(request.withEntity(request.entity.transformDataBytes(recordFrameFlags)))
   }
 
   private val binding = Http().newServerAt("127.0.0.1", 0).bind(recordingHandler).futureValue
@@ -119,7 +134,7 @@ abstract class ClientCompressionSpec(backend: String)
         val (reply, received) = expectRequest(greeter.sayHello(HelloRequest("Alice")))
         reply shouldBe HelloReply("Hello, Alice")
         received.encoding.getOrElse("identity") shouldBe "identity"
-        received.compressedFlag shouldBe 0
+        received.compressedFlags shouldBe Seq(0)
       } finally greeter.close().futureValue
     }
 
@@ -130,18 +145,18 @@ abstract class ClientCompressionSpec(backend: String)
           val (reply, received) = expectRequest(greeter.sayHello(HelloRequest("Alice")))
           reply shouldBe HelloReply("Hello, Alice")
           received.encoding shouldBe Some(encoding)
-          received.compressedFlag shouldBe 1
+          received.compressedFlags shouldBe Seq(1)
         } finally greeter.close().futureValue
       }
 
-      s"compress streamed requests with $encoding" in {
+      s"compress every frame of streamed requests with $encoding" in {
         val greeter = client(Some(encoding))
         try {
           val (reply, received) = expectRequest(
-            greeter.itKeepsTalking(Source(List("Alice", "Bob")).map(HelloRequest(_))))
-          reply shouldBe HelloReply("Hello, Alice, Bob")
+            greeter.itKeepsTalking(Source(List("Alice", "Bob", "Carol")).map(HelloRequest(_))))
+          reply shouldBe HelloReply("Hello, Alice, Bob, Carol")
           received.encoding shouldBe Some(encoding)
-          received.compressedFlag shouldBe 1
+          received.compressedFlags shouldBe Seq(1, 1, 1)
         } finally greeter.close().futureValue
       }
     }

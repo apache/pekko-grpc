@@ -66,7 +66,7 @@ object PekkoHttpClientUtils {
     // compression setting defaults to no compression.
     // Configuring compression per call could be a future power API feature.
     implicit val writer = GrpcProtocolNative.newWriter(
-      settings.compression.flatMap(name => Codecs.supportedCodecs.find(_.name == name)).getOrElse(Identity))
+      settings.compression.flatMap(Codecs.byName).getOrElse(Identity))
 
     // TODO FIXME adapt to new API's for discovery, loadbalancing etc
     // https://github.com/akka/akka-grpc/issues/1196

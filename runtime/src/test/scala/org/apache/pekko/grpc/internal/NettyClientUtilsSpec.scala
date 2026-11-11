@@ -38,13 +38,12 @@ class NettyClientUtilsSpec extends AnyWordSpec with Matchers with ScalaFutures w
     "accept and advertise the same response encodings as the pekko-http client" in {
       NettyClientUtils.decompressorRegistry.getAdvertisedMessageEncodings.asScala.toSeq should be(
         Codecs.supportedCodecs.filterNot(_ == Identity).map(_.name))
-      NettyClientUtils.decompressorRegistry.lookupDecompressor("deflate") should be(
-        NettyClientUtils.DeflateDecompressor)
+      NettyClientUtils.decompressorRegistry.lookupDecompressor("deflate") should be(NettyClientUtils.DeflateCodec)
     }
 
     "decompress a deflate message" in {
       val message = ByteString("Hello, Alice " * 100)
-      val in = NettyClientUtils.DeflateDecompressor.decompress(Deflate.compress(message).iterator.asInputStream)
+      val in = NettyClientUtils.DeflateCodec.decompress(Deflate.compress(message).iterator.asInputStream)
       try ByteString(in.readAllBytes()) should be(message)
       finally in.close()
     }
