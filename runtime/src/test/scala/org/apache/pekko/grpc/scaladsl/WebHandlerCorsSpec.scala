@@ -35,9 +35,9 @@ import org.scalatest.time.Span
 import org.scalatest.wordspec.AnyWordSpecLike
 
 /**
- * `defaultCorsSettings` allows any origin and sets `Access-Control-Allow-Credentials: true`,
- * so a browser will send cookies on a cross-origin call and let the calling page read the
- * response. `allow-credentials-from-any-origin = false` drops the credentials permission.
+ * `defaultCorsSettings` allows any origin and asks for credentials. Unless
+ * `allow-credentials-from-any-origin = true` (the 1.x behaviour), the credentials permission is
+ * dropped while the origins are unrestricted, so browsers withhold cookies on cross-origin calls.
  */
 class WebHandlerCorsSpec
     extends TestKit(ActorSystem("WebHandlerCorsSpec"))
@@ -98,10 +98,26 @@ class WebHandlerCorsSpec
     }
   }
 
-  "With allow-credentials-from-any-origin = true (the default)" should {
+  "With the default configuration" should {
+
+    "not allow credentials to a foreign origin" in {
+      val response = respond(system, WebHandler.defaultCorsSettings, actualRequest)
+
+      allowCredentials(response) shouldBe false
+      allowOrigin(response) shouldBe Some("*")
+    }
+
+    "not allow credentials on the preflight either" in {
+      val response = respond(system, WebHandler.defaultCorsSettings, preflightRequest)
+
+      allowCredentials(response) shouldBe false
+    }
+  }
+
+  "With allow-credentials-from-any-origin = true (the 1.x behaviour)" should {
     lazy val sys = systemWith(allowCredentialsFromAnyOrigin = true)
 
-    "echo a foreign origin and allow credentials, as before" in {
+    "echo a foreign origin and allow credentials" in {
       val response = respond(sys, WebHandler.defaultCorsSettings, actualRequest)
 
       allowOrigin(response) shouldBe Some(foreignOrigin.value)

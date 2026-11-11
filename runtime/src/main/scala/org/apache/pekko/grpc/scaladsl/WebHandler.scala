@@ -33,15 +33,14 @@ object WebHandler {
   /**
    * Default CORS settings to use for grpc-web.
    *
-   * These allow credentials from any origin, which lets any web page make credentialed
-   * cross-origin calls to your service and read the responses. Restrict the origins for
-   * anything authenticated by cookies or HTTP auth:
+   * These allow any origin. They also ask for credentials, but while the origins are
+   * unrestricted the credentials permission is dropped when a handler is built (see
+   * `pekko.grpc.server.grpc-web.allow-credentials-from-any-origin`), so browsers withhold
+   * cookies on cross-origin calls. To use credentials, restrict the origins:
    *
    * {{{
    * WebHandler.defaultCorsSettings.withAllowedOrigins(HttpOriginMatcher(HttpOrigin("https://example.com")))
    * }}}
-   *
-   * See `pekko.grpc.server.grpc-web.allow-credentials-from-any-origin`.
    */
   val defaultCorsSettings: CorsSettings = CorsSettings(ConfigFactory.load())
     .withAllowCredentials(true)
@@ -74,9 +73,10 @@ object WebHandler {
    *
    * Applies `pekko.grpc.server.grpc-web.allow-credentials-from-any-origin` to `settings`.
    *
-   * When the setting is off the credentials permission is dropped, so browsers withhold
-   * cookies on cross-origin calls. When it is on the settings are returned unchanged and the
-   * combination is logged, because it is only reachable by a peer we cannot vouch for.
+   * When the setting is off (the default) the credentials permission is dropped, so browsers
+   * withhold cookies on cross-origin calls. When it has been turned on the settings are
+   * returned unchanged and the combination is logged, because it lets any web page make
+   * credentialed calls.
    */
   @InternalApi
   private[grpc] def withCredentialsPolicy(settings: CorsSettings, system: ActorSystem): CorsSettings =
@@ -85,7 +85,7 @@ object WebHandler {
       system.log.warning(
         "grpc-web CORS allows credentials from any origin, so any web page can make " +
         "credentialed cross-origin calls to this service and read the responses. Restrict the " +
-        "origins with CorsSettings.withAllowedOrigins, or set {} = false to drop the " +
+        "origins with CorsSettings.withAllowedOrigins, or remove {} = true to drop the " +
         "credentials permission.",
         AllowCredentialsFromAnyOriginPath)
       settings

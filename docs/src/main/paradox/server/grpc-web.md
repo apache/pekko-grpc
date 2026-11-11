@@ -52,17 +52,17 @@ Java
 
 ## CORS and credentials
 
-@@@ warning
+`WebHandler.defaultCorsSettings` allows **any** origin. Allowing credentials as well would let
+a browser send cookies and HTTP authentication on a cross-origin call to your service, and let
+the calling page read the response. For a service authenticated that way, any web page your
+users visit could act as them — a CSRF vector.
 
-`WebHandler.defaultCorsSettings` allows **any** origin and sets
-`Access-Control-Allow-Credentials: true`. A browser will therefore send cookies and HTTP
-authentication on a cross-origin call to your service, and let the calling page read the
-response. For a service authenticated that way, any web page your users visit can act as
-them — a CSRF vector.
+So while the origins are unrestricted, the handler drops the credentials permission: it
+answers with `Access-Control-Allow-Origin: *` and no `Access-Control-Allow-Credentials`, and
+browsers withhold cookies on cross-origin calls.
 
-@@@
-
-Restrict the origins that may use credentials:
+If your gRPC-Web clients need credentials, restrict the origins that may use them. The
+credentials permission is kept for restricted origins:
 
 Scala
 :   ```scala
@@ -80,19 +80,20 @@ Java
         .withAllowedOrigins(HttpOriginMatcher.create(HttpOrigin.parse("https://example.com")));
     ```
 
-If your service does not need credentials at all, drop the permission instead:
+@@@ warning
+
+Pekko gRPC 1.x allowed credentials from any origin. To keep that behaviour, set:
 
 ```hocon
 pekko.grpc.server.grpc-web {
-  allow-credentials-from-any-origin = false
+  allow-credentials-from-any-origin = true
 }
 ```
 
-That makes the handler answer with `Access-Control-Allow-Origin: *` and no
-`Access-Control-Allow-Credentials`, so browsers withhold cookies on cross-origin calls. It
-defaults to `true`, preserving the existing behaviour; while it is `true` and the origins are
-unrestricted, a warning is logged for each handler created. Restricting the origins silences
-the warning and keeps credentials working.
+A warning is then logged for each handler created while the origins are unrestricted. Prefer
+restricting the origins instead.
+
+@@@
 
 `reference.conf`
 :  @@snip [reference](/runtime/src/main/resources/reference.conf) { #grpc-web-cors }
