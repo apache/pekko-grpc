@@ -17,18 +17,18 @@ import org.apache.pekko
 import pekko.actor.ActorSystem
 import pekko.actor.ClassicActorSystemProvider
 import pekko.annotation.{ ApiMayChange, InternalStableApi }
+import pekko.event.Logging
 import pekko.grpc.{ GrpcServiceException, Trailers }
 import pekko.grpc.GrpcProtocol.GrpcProtocolWriter
 import pekko.grpc.internal.{ GrpcMetadataImpl, GrpcResponseHelpers, MissingParameterException }
 import pekko.http.scaladsl.model.HttpResponse
+import pekko.http.scaladsl.model.http2.PeerClosedStreamException
 import pekko.http.scaladsl.util.FastFuture
 import io.grpc.{ Status, StatusRuntimeException }
-import org.apache.pekko.http.scaladsl.model.http2.PeerClosedStreamException
 
 import scala.concurrent.{ ExecutionContext, ExecutionException, Future }
 import scala.util.{ Failure, Success }
 import scala.util.control.NonFatal
-import pekko.event.Logging
 
 @ApiMayChange
 object GrpcExceptionHandler {

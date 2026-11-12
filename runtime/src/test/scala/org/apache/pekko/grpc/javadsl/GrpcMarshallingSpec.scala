@@ -32,8 +32,8 @@ import pekko.grpc.GrpcServiceException
 import pekko.grpc.internal.{ AbstractGrpcProtocol, GrpcProtocolNative, Identity }
 import pekko.http.javadsl.model.HttpResponse
 import pekko.http.scaladsl.model.HttpEntity
-import io.grpc.Status
 import pekko.stream.SystemMaterializer
+import io.grpc.Status
 
 class GrpcMarshallingSpec extends AnyWordSpec with Matchers {
   "The javadsl GrpcMarshalling" should {

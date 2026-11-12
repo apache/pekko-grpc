@@ -21,16 +21,16 @@ package org.apache.pekko.grpc
 
 import example.myapp.helloworld.grpc.{ GreeterService, HelloRequest }
 import org.apache.pekko
-import org.openjdk.jmh.annotations.TearDown
 import pekko.actor.ActorSystem
 import pekko.grpc.internal.{ GrpcProtocolNative, Identity }
 import pekko.grpc.scaladsl.GrpcMarshalling
 import pekko.http.scaladsl.model.{ HttpEntity, HttpRequest, Uri }
-import pekko.stream.scaladsl.Source
 import pekko.stream.{ Materializer, SystemMaterializer }
+import pekko.stream.scaladsl.Source
+import org.openjdk.jmh.annotations.TearDown
 
-import scala.concurrent.duration.DurationInt
 import scala.concurrent.{ Await, ExecutionContext }
+import scala.concurrent.duration.DurationInt
 
 abstract class AbstractHandlerBenchmark extends CommonBenchmark {
   val responseRepeats = 5

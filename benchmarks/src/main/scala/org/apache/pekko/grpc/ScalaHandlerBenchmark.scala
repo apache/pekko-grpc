@@ -32,8 +32,8 @@ import pekko.stream.scaladsl.{ Sink, Source }
 import org.openjdk.jmh.annotations.Benchmark
 import org.openjdk.jmh.infra.Blackhole
 
-import scala.concurrent.duration.Duration
 import scala.concurrent.{ Await, Future }
+import scala.concurrent.duration.Duration
 
 class ScalaHandlerBenchmark extends AbstractHandlerBenchmark {
   private val responseMessage: HelloReply = HelloReply("Hello, Alice")
