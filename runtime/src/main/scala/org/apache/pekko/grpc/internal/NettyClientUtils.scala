@@ -13,6 +13,7 @@
 
 package org.apache.pekko.grpc.internal
 
+import java.io.{ InputStream, OutputStream }
 import java.util.concurrent.TimeUnit
 
 import javax.net.ssl.SSLContext
@@ -22,7 +23,7 @@ import pekko.annotation.InternalApi
 import pekko.event.LoggingAdapter
 import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, GrpcSingleResponse, SSLContextUtils }
 import pekko.stream.scaladsl.{ Flow, Keep, Source }
-import io.grpc.{ CallOptions, Codec, Decompressor, DecompressorRegistry, MethodDescriptor }
+import io.grpc.{ CallOptions, Codec => GrpcCodec, CompressorRegistry, DecompressorRegistry, MethodDescriptor }
 import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts
 import io.grpc.netty.shaded.io.grpc.netty.NegotiationType
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder
@@ -89,6 +90,7 @@ object NettyClientUtils {
     builder = builder.maxInboundMessageSize(settings.maxInboundMessageSize)
     // accept the same response encodings as the pekko-http backend
     builder = builder.decompressorRegistry(decompressorRegistry)
+    builder = builder.compressorRegistry(compressorRegistry)
     // applied last so that explicit overrides win over anything derived from settings
     builder = settings.channelBuilderOverrides(builder)
 
@@ -250,21 +252,33 @@ object NettyClientUtils {
   /**
    * INTERNAL API
    */
-  @InternalApi def callOptions(settings: GrpcClientSettings): CallOptions =
-    settings.callCredentials.map(CallOptions.DEFAULT.withCallCredentials).getOrElse(CallOptions.DEFAULT)
+  @InternalApi def callOptions(settings: GrpcClientSettings): CallOptions = {
+    val options =
+      settings.callCredentials.map(CallOptions.DEFAULT.withCallCredentials).getOrElse(CallOptions.DEFAULT)
+    settings.compression.map(options.withCompression).getOrElse(options)
+  }
 
-  /**
-   * INTERNAL API
-   */
   /**
    * INTERNAL API
    *
    * The `deflate` message encoding (zlib format, RFC 1950) for grpc-java, which only ships `gzip`.
+   * It uses the same streams as the pekko-http backend's [[Deflate]] codec, for both request
+   * compression and response decompression.
    */
   @InternalApi
-  private[grpc] object DeflateDecompressor extends Decompressor {
+  private[grpc] object DeflateCodec extends GrpcCodec {
     override def getMessageEncoding: String = Deflate.name
-    override def decompress(is: java.io.InputStream): java.io.InputStream = new java.util.zip.InflaterInputStream(is)
+    override def compress(os: OutputStream): OutputStream = Deflate.compressingStream(os)
+    override def decompress(is: InputStream): InputStream = Deflate.decompressingStream(is)
+  }
+
+  /** The request encodings the `compression` client setting can choose from. */
+  private lazy val compressorRegistry: CompressorRegistry = {
+    val registry = CompressorRegistry.newEmptyInstance()
+    registry.register(new GrpcCodec.Gzip())
+    registry.register(GrpcCodec.Identity.NONE)
+    registry.register(DeflateCodec)
+    registry
   }
 
   /**
@@ -277,9 +291,9 @@ object NettyClientUtils {
   private[grpc] lazy val decompressorRegistry: DecompressorRegistry =
     DecompressorRegistry
       .emptyInstance()
-      .`with`(new Codec.Gzip, true)
-      .`with`(DeflateDecompressor, true)
-      .`with`(Codec.Identity.NONE, false)
+      .`with`(new GrpcCodec.Gzip, true)
+      .`with`(DeflateCodec, true)
+      .`with`(GrpcCodec.Identity.NONE, false)
 
   @InternalApi private[pekko] def callOptionsWithDeadline(
       defaultOptions: CallOptions,

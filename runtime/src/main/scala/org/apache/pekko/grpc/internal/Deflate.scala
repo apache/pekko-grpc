@@ -27,7 +27,8 @@ import java.util.zip.{ DeflaterOutputStream, InflaterInputStream }
 object Deflate extends StreamingZipCodec {
   override val name: String = "deflate"
 
-  override protected def compressingStream(out: OutputStream): OutputStream = new DeflaterOutputStream(out)
+  // also used by the netty backend's grpc-java codec, so both backends share one implementation
+  override protected[grpc] def compressingStream(out: OutputStream): OutputStream = new DeflaterOutputStream(out)
 
-  override protected def decompressingStream(in: InputStream): InputStream = new InflaterInputStream(in)
+  override protected[grpc] def decompressingStream(in: InputStream): InputStream = new InflaterInputStream(in)
 }
