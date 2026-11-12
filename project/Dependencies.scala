@@ -172,5 +172,4 @@ object Dependencies {
     Compile.scalapbRuntimeProtobuf,
     Protobuf.protobufJava
   )
-
 }

@@ -19,10 +19,8 @@ package org.apache.pekko.grpc.javadsl
 
 import java.util.concurrent.{ CompletableFuture, CompletionStage, TimeUnit }
 
-import scala.concurrent.Await
-import scala.concurrent.duration._
-
 import com.google.protobuf.{ Any => ProtobufAny, ByteString => ProtobufByteString }
+import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -33,33 +31,36 @@ import pekko.grpc.internal.{ AbstractGrpcProtocol, GrpcProtocolNative, Identity 
 import pekko.http.javadsl.model.HttpResponse
 import pekko.http.scaladsl.model.HttpEntity
 import pekko.stream.SystemMaterializer
+import pekko.testkit.TestKit
 import io.grpc.Status
 
-class GrpcMarshallingSpec extends AnyWordSpec with Matchers {
+class GrpcMarshallingSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll {
+  private val system = ActorSystem("GrpcMarshallingSpec")
+  private val mat = SystemMaterializer(system).materializer
+
+  override def afterAll(): Unit = {
+    TestKit.shutdownActorSystem(system)
+    super.afterAll()
+  }
+
   "The javadsl GrpcMarshalling" should {
     "unmarshal a strict unary entity" in {
-      val system = ActorSystem("GrpcMarshallingSpec")
-      try {
-        val mat = SystemMaterializer(system).materializer
-        val serializer = new GoogleProtobufSerializer(ProtobufAny.parser())
-        val message =
-          ProtobufAny.newBuilder().setTypeUrl("benchmark").setValue(ProtobufByteString.copyFromUtf8("payload")).build()
-        val entity =
-          HttpEntity.Strict(
-            GrpcProtocolNative.contentType,
-            AbstractGrpcProtocol.encodeFrameData(serializer.serialize(message), isCompressed = false,
-              isTrailer = false))
+      val serializer = new GoogleProtobufSerializer(ProtobufAny.parser())
+      val message =
+        ProtobufAny.newBuilder().setTypeUrl("benchmark").setValue(ProtobufByteString.copyFromUtf8("payload")).build()
+      val entity =
+        HttpEntity.Strict(
+          GrpcProtocolNative.contentType,
+          AbstractGrpcProtocol.encodeFrameData(serializer.serialize(message), isCompressed = false,
+            isTrailer = false))
 
-        val result =
-          GrpcMarshalling
-            .unmarshal(entity, serializer, mat, GrpcProtocolNative.newReader(Identity))
-            .toCompletableFuture
-            .get(10, TimeUnit.SECONDS)
+      val result =
+        GrpcMarshalling
+          .unmarshal(entity, serializer, mat, GrpcProtocolNative.newReader(Identity))
+          .toCompletableFuture
+          .get(10, TimeUnit.SECONDS)
 
-        result should be(message)
-      } finally {
-        Await.result(system.terminate(), 10.seconds)
-      }
+      result should be(message)
     }
 
     "turn a failed unary implementation into a gRPC error response" in {
@@ -79,33 +80,27 @@ class GrpcMarshallingSpec extends AnyWordSpec with Matchers {
    * handlers: `unmarshal(...).thenCompose(...).thenApply(...).exceptionally(GrpcExceptionHandler.standard)`.
    */
   private def handleFailedUnary(failure: Throwable): HttpResponse = {
-    val system = ActorSystem("GrpcMarshallingSpec")
-    try {
-      val mat = SystemMaterializer(system).materializer
-      val serializer = new GoogleProtobufSerializer(ProtobufAny.parser())
-      val reader = GrpcProtocolNative.newReader(Identity)
-      val writer = GrpcProtocolNative.newWriter(Identity)
-      val eHandler = GrpcExceptionHandler.defaultMapper
-      val entity =
-        HttpEntity.Strict(
-          GrpcProtocolNative.contentType,
-          AbstractGrpcProtocol.encodeFrameData(serializer.serialize(ProtobufAny.getDefaultInstance),
-            isCompressed = false, isTrailer = false))
-      val implementation: ProtobufAny => CompletionStage[ProtobufAny] = _ => {
-        val result = new CompletableFuture[ProtobufAny]()
-        result.completeExceptionally(failure)
-        result
-      }
-
-      GrpcMarshalling
-        .unmarshal(entity, serializer, mat, reader)
-        .thenCompose(in => implementation(in))
-        .thenApply(out => GrpcMarshalling.marshal(out, serializer, writer, system, eHandler))
-        .exceptionally(e => GrpcExceptionHandler.standard(e, eHandler, writer, system))
-        .toCompletableFuture
-        .get(10, TimeUnit.SECONDS)
-    } finally {
-      Await.result(system.terminate(), 10.seconds)
+    val serializer = new GoogleProtobufSerializer(ProtobufAny.parser())
+    val reader = GrpcProtocolNative.newReader(Identity)
+    val writer = GrpcProtocolNative.newWriter(Identity)
+    val eHandler = GrpcExceptionHandler.defaultMapper
+    val entity =
+      HttpEntity.Strict(
+        GrpcProtocolNative.contentType,
+        AbstractGrpcProtocol.encodeFrameData(serializer.serialize(ProtobufAny.getDefaultInstance),
+          isCompressed = false, isTrailer = false))
+    val implementation: ProtobufAny => CompletionStage[ProtobufAny] = _ => {
+      val result = new CompletableFuture[ProtobufAny]()
+      result.completeExceptionally(failure)
+      result
     }
+
+    GrpcMarshalling
+      .unmarshal(entity, serializer, mat, reader)
+      .thenCompose(in => implementation(in))
+      .thenApply(out => GrpcMarshalling.marshal(out, serializer, writer, system, eHandler))
+      .exceptionally(e => GrpcExceptionHandler.standard(e, eHandler, writer, system))
+      .toCompletableFuture
+      .get(10, TimeUnit.SECONDS)
   }
 }
