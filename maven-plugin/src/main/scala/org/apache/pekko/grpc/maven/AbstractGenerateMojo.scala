@@ -155,7 +155,7 @@ abstract class AbstractGenerateMojo @Inject() (buildContext: BuildContext) exten
     }
   }
 
-  lazy val normalizedProtoPaths: Seq[File] = {
+  def normalizedProtoPaths: Seq[File] = {
     import scala.jdk.CollectionConverters._
     protoPaths.asScala.map(normalize).toSeq
   }
