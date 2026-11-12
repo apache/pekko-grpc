@@ -49,3 +49,51 @@ Scala
 
 Java
 :  @@snip [Main.java](/plugin-tester-java/src/main/java/example/myapp/CombinedServer.java) { #grpc-web }
+
+## CORS and credentials
+
+`WebHandler.defaultCorsSettings` allows **any** origin. Allowing credentials as well would let
+a browser send cookies and HTTP authentication on a cross-origin call to your service, and let
+the calling page read the response. For a service authenticated that way, any web page your
+users visit could act as them — a CSRF vector.
+
+So while the origins are unrestricted, the handler drops the credentials permission: it
+answers with `Access-Control-Allow-Origin: *` and no `Access-Control-Allow-Credentials`, and
+browsers withhold cookies on cross-origin calls.
+
+If your gRPC-Web clients need credentials, restrict the origins that may use them. The
+credentials permission is kept for restricted origins:
+
+Scala
+:   ```scala
+    import org.apache.pekko.http.cors.scaladsl.model.HttpOriginMatcher
+    import org.apache.pekko.http.scaladsl.model.headers.HttpOrigin
+
+    implicit val corsSettings: CorsSettings =
+      WebHandler.defaultCorsSettings
+        .withAllowedOrigins(HttpOriginMatcher(HttpOrigin("https://example.com")))
+    ```
+
+Java
+:   ```java
+    CorsSettings corsSettings = WebHandler.defaultCorsSettings()
+        .withAllowedOrigins(HttpOriginMatcher.create(HttpOrigin.parse("https://example.com")));
+    ```
+
+@@@ warning
+
+Pekko gRPC 1.x allowed credentials from any origin. To keep that behaviour, set:
+
+```hocon
+pekko.grpc.server.grpc-web {
+  allow-credentials-from-any-origin = true
+}
+```
+
+A warning is then logged for each handler created while the origins are unrestricted. Prefer
+restricting the origins instead.
+
+@@@
+
+`reference.conf`
+:  @@snip [reference](/runtime/src/main/resources/reference.conf) { #grpc-web-cors }
