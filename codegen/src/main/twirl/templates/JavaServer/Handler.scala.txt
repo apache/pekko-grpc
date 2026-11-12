@@ -177,6 +177,15 @@ public class @{serviceName}HandlerFactory {
 
     private static CompletionStage<org.apache.pekko.http.javadsl.model.HttpResponse> handle(org.apache.pekko.http.javadsl.model.HttpRequest request, String method, @serviceName implementation, Materializer mat, org.apache.pekko.japi.function.Function<ActorSystem, org.apache.pekko.japi.function.Function<Throwable, Trailers>> eHandler, GrpcServerSettings settings, ClassicActorSystemProvider system) {
       return GrpcMarshalling.negotiated(request, settings, (reader, writer) -> {
+        // bounds the call by the client's grpc-timeout, so a reply the client has stopped
+        // waiting for is not kept open
+        return GrpcMarshalling.withServerDeadline(request, negotiate(request, method, implementation, mat, eHandler, system, reader, writer), system, writer);
+      })
+      .orElseGet(() -> unsupportedMediaType);
+    }
+
+    private static CompletionStage<org.apache.pekko.http.javadsl.model.HttpResponse> negotiate(org.apache.pekko.http.javadsl.model.HttpRequest request, String method, @serviceName implementation, Materializer mat, org.apache.pekko.japi.function.Function<ActorSystem, org.apache.pekko.japi.function.Function<Throwable, Trailers>> eHandler, ClassicActorSystemProvider system, org.apache.pekko.grpc.GrpcProtocol.GrpcProtocolReader reader, org.apache.pekko.grpc.GrpcProtocol.GrpcProtocolWriter writer) {
+      {
         CompletionStage<org.apache.pekko.http.javadsl.model.HttpResponse> response;
         @{if(powerApis) { "Metadata metadata = MetadataBuilder.fromHeaders(request.getHeaders());" } else { "" }}
         switch(method) {
@@ -220,8 +229,7 @@ public class @{serviceName}HandlerFactory {
             response = result;
         }
         return response.exceptionally(e -> GrpcExceptionHandler.standard(e, eHandler, writer, system));
-      })
-      .orElseGet(() -> unsupportedMediaType);
+      }
     }
   }
 }

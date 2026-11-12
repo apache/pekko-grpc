@@ -126,6 +126,9 @@ object @{serviceName}Handler {
 
       def handle(request: model.HttpRequest, method: String): scala.concurrent.Future[model.HttpResponse] =
         GrpcMarshalling.negotiated(request, serverSettings, (reader, writer) =>
+          // bounds the call by the client's grpc-timeout, so a reply the client has stopped
+          // waiting for is not kept open
+          GrpcMarshalling.withServerDeadline(request,
           method match {
             @for(method <- service.methods) {
             case "@method.grpcName" =>
@@ -141,7 +144,7 @@ object @{serviceName}Handler {
                 }
             }
             case m => GrpcExceptionHandler.from(eHandler(system.classicSystem))(system, writer)(new pekko.grpc.GrpcServiceException(io.grpc.Status.UNIMPLEMENTED.withDescription(s"Not implemented: $m")))
-          }
+          })(system, writer, ec)
       ).getOrElse(unsupportedMediaType)
 
       request => {
@@ -171,6 +174,9 @@ object @{serviceName}Handler {
 
       def handle(request: model.HttpRequest, method: String): scala.concurrent.Future[model.HttpResponse] =
         GrpcMarshalling.negotiated(request, serverSettings, (reader, writer) =>
+          // bounds the call by the client's grpc-timeout, so a reply the client has stopped
+          // waiting for is not kept open
+          GrpcMarshalling.withServerDeadline(request,
           method match {
             @for(method <- service.methods) {
             case "@method.grpcName" =>
@@ -186,7 +192,7 @@ object @{serviceName}Handler {
                 }
             }
             case m => GrpcExceptionHandler.from(eHandler(system.classicSystem))(system, writer)(new pekko.grpc.GrpcServiceException(io.grpc.Status.UNIMPLEMENTED.withDescription(s"Not implemented: $m")))
-          }
+          })(system, writer, ec)
       ).getOrElse(unsupportedMediaType)
 
       Function.unlift((req: model.HttpRequest) => {
