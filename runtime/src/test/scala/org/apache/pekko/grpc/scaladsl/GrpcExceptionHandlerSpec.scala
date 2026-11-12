@@ -179,7 +179,7 @@ class GrpcExceptionHandlerSpec extends AnyWordSpec with Matchers with ScalaFutur
     "not map an already failed response with a fatal error" in {
       val handler = new CountingHandler(aborted)
       // FastFuture keeps the fatal error as is, where a Promise would box it in an ExecutionException
-      val response = FastFuture.failed[HttpResponse](new InterruptedException("fatal"))
+      val response: Future[HttpResponse] = FastFuture.failed(new InterruptedException("fatal"))
 
       (GrpcExceptionHandler.recover(response, handler) should be).theSameInstanceAs(response)
       handler.constructed.get shouldBe 0
