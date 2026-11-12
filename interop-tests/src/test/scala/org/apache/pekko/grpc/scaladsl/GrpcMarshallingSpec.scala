@@ -122,7 +122,7 @@ class GrpcMarshallingSpec extends AnyWordSpec with Matchers with BeforeAndAfterA
     "Custom error handler is used for marshalling errors in unary handler" in {
       implicit val writer: GrpcProtocolWriter = GrpcProtocolNative.newWriter(Identity)
       implicit val reader: GrpcProtocolReader = GrpcProtocolNative.newReader(Identity)
-      implicit val ec: ExecutionContext = ExecutionContext.global
+      implicit val ec: ExecutionContext = system.dispatcher
 
       implicit val brokenSerializer: ScalapbProtobufSerializer[BoolValue] =
         new ScalapbProtobufSerializer[BoolValue](BoolValue) {

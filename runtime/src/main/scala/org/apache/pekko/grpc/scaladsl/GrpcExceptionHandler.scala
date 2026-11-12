@@ -83,7 +83,8 @@ object GrpcExceptionHandler {
    *
    * Unlike `recoverWith(from(...))`, the exception handler is only constructed when the response has failed, and a
    * response that has already completed successfully is returned as is, so the successful path allocates nothing.
-   * A response that has not completed yet is recovered on `ec`.
+   * A response that has not completed yet is recovered on `ec`. Fatal errors (see `scala.util.control.NonFatal`)
+   * are not turned into a gRPC response, and the returned future fails with them.
    */
   @InternalStableApi
   def recover(response: Future[HttpResponse], eHandler: ActorSystem => PartialFunction[Throwable, Trailers])(
@@ -91,11 +92,12 @@ object GrpcExceptionHandler {
       writer: GrpcProtocolWriter,
       ec: ExecutionContext): Future[HttpResponse] =
     response.value match {
-      case Some(Success(_)) => response
-      case Some(Failure(t)) =>
+      case Some(Success(_))           => response
+      case Some(Failure(NonFatal(t))) =>
         try FastFuture.successful(errorResponse(t, eHandler))
         catch { case NonFatal(e) => FastFuture.failed(e) }
-      case None => response.recover { case t => errorResponse(t, eHandler) }
+      case Some(Failure(_)) => response
+      case None             => response.recover { case NonFatal(t) => errorResponse(t, eHandler) }
     }
 
   private def errorResponse(t: Throwable, eHandler: ActorSystem => PartialFunction[Throwable, Trailers])(

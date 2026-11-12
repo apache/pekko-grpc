@@ -20,6 +20,7 @@ import pekko.grpc.internal.{ GrpcProtocolNative, GrpcResponseHelpers, Identity }
 import pekko.grpc.scaladsl.GrpcExceptionHandler.defaultMapper
 import pekko.http.scaladsl.model.HttpEntity._
 import pekko.http.scaladsl.model.HttpResponse
+import pekko.http.scaladsl.util.FastFuture
 import pekko.testkit.TestKit
 import io.grpc.{ Status, StatusRuntimeException }
 import org.scalatest._
@@ -173,6 +174,15 @@ class GrpcExceptionHandlerSpec extends AnyWordSpec with Matchers with ScalaFutur
       val recovered = GrpcExceptionHandler.recover(Future.failed(new IllegalStateException("boom")), throwing)
 
       recovered.failed.futureValue.getMessage shouldBe "bad handler"
+    }
+
+    "not map an already failed response with a fatal error" in {
+      val handler = new CountingHandler(aborted)
+      // FastFuture keeps the fatal error as is, where a Promise would box it in an ExecutionException
+      val response = FastFuture.failed[HttpResponse](new InterruptedException("fatal"))
+
+      (GrpcExceptionHandler.recover(response, handler) should be).theSameInstanceAs(response)
+      handler.constructed.get shouldBe 0
     }
 
     "map a pending response that later fails" in {
