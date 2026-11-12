@@ -26,7 +26,6 @@ import io.grpc.Status.Code
 import io.grpc.StatusRuntimeException
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.exceptions.TestFailedException
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.time.Span
 import org.scalatest.wordspec.AnyWordSpec
@@ -47,6 +46,9 @@ class NonBalancingIntegrationSpec(backend: String)
     ConfigFactory.parseString(s"""pekko.grpc.client."*".backend = "$backend" """).withFallback(ConfigFactory.load()))
   implicit val mat: Materializer = SystemMaterializer(system).materializer
   implicit val ec: ExecutionContext = system.dispatcher
+
+  // Exercise connection failures, not DNS failures. Port 0 cannot be a listening endpoint.
+  private val unreachableEndpoint = new InetSocketAddress("127.0.0.1", 0)
 
   override implicit val patienceConfig: PatienceConfig = PatienceConfig(10.seconds, Span(10, org.scalatest.time.Millis))
 
@@ -141,16 +143,16 @@ class NonBalancingIntegrationSpec(backend: String)
       service2.greetings.get should be(requestsPerServer)
     }
 
-    "select the right endpoint among invalid ones" in {
+    "select the reachable endpoint among unreachable ones" in {
       val service = new CountingGreeterServiceImpl()
       val server = Http().newServerAt("127.0.0.1", 0).bind(GreeterServiceHandler(service)).futureValue
 
       val discovery =
         new MutableServiceDiscovery(
           List(
-            new InetSocketAddress("example.invalid", 80),
+            unreachableEndpoint,
             server.localAddress,
-            new InetSocketAddress("example.invalid", 80)))
+            unreachableEndpoint))
       val client = GreeterServiceClient(GrpcClientSettings.usingServiceDiscovery("greeter", discovery).withTls(false))
 
       for (i <- 1 to 100) {
@@ -161,14 +163,14 @@ class NonBalancingIntegrationSpec(backend: String)
       service.greetings.get should be(100)
     }
 
-    "eventually fail when no valid endpoints are provided" in {
+    "eventually fail when no reachable endpoints are provided" in {
       // https://github.com/akka/akka-grpc/issues/1246
       if (backend == "pekko-http")
         pending
 
       val discovery =
         new MutableServiceDiscovery(
-          List(new InetSocketAddress("example.invalid", 80), new InetSocketAddress("example.invalid", 80)))
+          List(unreachableEndpoint, unreachableEndpoint))
       val client = GreeterServiceClient(
         GrpcClientSettings
           .usingServiceDiscovery("greeter", discovery)
@@ -181,18 +183,14 @@ class NonBalancingIntegrationSpec(backend: String)
       failure.getStatus.getCode should (equal(Code.UNKNOWN).or(equal(Code.UNAVAILABLE)))
     }
 
-    "not fail when no valid endpoints are provided but no limit on attempts is set" in {
+    "not fail when no reachable endpoints are provided but no limit on attempts is set" in {
       val discovery =
         new MutableServiceDiscovery(
-          List(new InetSocketAddress("example.invalid", 80), new InetSocketAddress("example.invalid", 80)))
+          List(unreachableEndpoint, unreachableEndpoint))
       val client = GreeterServiceClient(GrpcClientSettings.usingServiceDiscovery("greeter", discovery).withTls(false))
 
-      try {
-        client.closed.failed.futureValue
-        // Yes, we actually expect the future to timeout!
-        fail("The `client.closed`future should not have completed. A Timeout was expected instead.")
-      } catch {
-        case _: TestFailedException => // that's what we're hoping for.
+      intercept[java.util.concurrent.TimeoutException] {
+        Await.ready(client.closed, 10.seconds)
       }
     }
 

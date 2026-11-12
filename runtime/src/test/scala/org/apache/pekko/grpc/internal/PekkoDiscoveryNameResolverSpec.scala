@@ -54,7 +54,7 @@ class PekkoDiscoveryNameResolverSpec
 
       val exception = probe.future.failed.futureValue.asInstanceOf[GrpcServiceException]
       exception shouldBe an[GrpcServiceException]
-      exception.status.getCode == Status.UNKNOWN.getCode
+      exception.status.getCode shouldBe Status.UNKNOWN.getCode
       // FIXME: This description is not portable - it arises from native function response, which differs by OS
       // exception.status.getDescription should equal(host + ": Name or service not known")
     }

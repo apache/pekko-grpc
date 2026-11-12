@@ -28,7 +28,6 @@ import io.grpc.Status.Code
 import io.grpc.StatusRuntimeException
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.exceptions.TestFailedException
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.time.Span
 import org.scalatest.wordspec.AnyWordSpec
@@ -53,6 +52,9 @@ class LoadBalancingIntegrationSpec(config: Config = ConfigFactory.load())
   implicit val system: ActorSystem = ActorSystem("LoadBalancingIntegrationSpec", config)
   implicit val mat: Materializer = SystemMaterializer(system).materializer
   implicit val ec: ExecutionContext = system.dispatcher
+
+  // Exercise connection failures, not DNS failures. Port 0 cannot be a listening endpoint.
+  private val unreachableEndpoint = new InetSocketAddress("127.0.0.1", 0)
 
   override implicit val patienceConfig: PatienceConfig = PatienceConfig(5.seconds, Span(10, org.scalatest.time.Millis))
 
@@ -123,15 +125,15 @@ class LoadBalancingIntegrationSpec(config: Config = ConfigFactory.load())
       service2.greetings.get should be(requestsPerServer)
     }
 
-    "select the right endpoint among invalid ones" in {
+    "select the reachable endpoint among unreachable ones" in {
       val service = new CountingGreeterServiceImpl()
       val server = Http().newServerAt("127.0.0.1", 0).bind(GreeterServiceHandler(service)).futureValue
       val discovery =
         new MutableServiceDiscovery(
           List(
-            new InetSocketAddress("example.invalid", 80),
+            unreachableEndpoint,
             server.localAddress,
-            new InetSocketAddress("example.invalid", 80)))
+            unreachableEndpoint))
       val client = GreeterServiceClient(
         GrpcClientSettings
           .usingServiceDiscovery("greeter", discovery)
@@ -145,10 +147,10 @@ class LoadBalancingIntegrationSpec(config: Config = ConfigFactory.load())
       service.greetings.get should be(100)
     }
 
-    "fail when no valid endpoints are provided (don't retry) when max attempts is set to '1'" in {
+    "fail when no reachable endpoints are provided (don't retry) when max attempts is set to '1'" in {
       val discovery =
         new MutableServiceDiscovery(
-          List(new InetSocketAddress("example.invalid", 80), new InetSocketAddress("example.invalid", 80)))
+          List(unreachableEndpoint, unreachableEndpoint))
       val client = GreeterServiceClient(
         GrpcClientSettings
           .usingServiceDiscovery("greeter", discovery)
@@ -164,10 +166,10 @@ class LoadBalancingIntegrationSpec(config: Config = ConfigFactory.load())
       client.closed.failed.futureValue shouldBe a[ClientConnectionException]
     }
 
-    "not fail when no valid endpoints are provided (retry indefinitely) when max attempts is set to another positive value" in {
+    "not fail when no reachable endpoints are provided (retry indefinitely) when max attempts is set to another positive value" in {
       val discovery =
         new MutableServiceDiscovery(
-          List(new InetSocketAddress("example.invalid", 80), new InetSocketAddress("example.invalid", 80)))
+          List(unreachableEndpoint, unreachableEndpoint))
       val client = GreeterServiceClient(
         GrpcClientSettings
           .usingServiceDiscovery("greeter", discovery)
@@ -180,12 +182,8 @@ class LoadBalancingIntegrationSpec(config: Config = ConfigFactory.load())
         client.sayHello(HelloRequest(s"Hello friend")).failed.futureValue.asInstanceOf[StatusRuntimeException]
       failure.getStatus.getCode should be(Code.UNAVAILABLE)
 
-      try {
-        client.closed.failed.futureValue
-        // Yes, we actually expect the future to timeout!
-        fail("The `client.closed`future should not have completed. A Timeout was expected instead.")
-      } catch {
-        case _: TestFailedException => // that's what we're hoping for.
+      intercept[java.util.concurrent.TimeoutException] {
+        Await.ready(client.closed, 5.seconds)
       }
 
     }
