@@ -122,6 +122,29 @@ class GrpcClientSettingsSpec extends AnyWordSpec with Matchers with ScalaFutures
       ActorSystem("test", clientConfig.withFallback(defaultConfig).withFallback(clientWithServiceDiscovery))
     }
 
+    "convert a Java deadline" in {
+      val settings = GrpcClientSettings.connectToServiceAt("host.com", 8080)
+
+      settings.withDeadline(java.time.Duration.ofMillis(1500)).deadline should be(1500.millis)
+      settings.withDeadline(java.time.Duration.ofNanos(1)).deadline should be(1.nano)
+      settings.withDeadline(null: java.time.Duration).deadline should be(Duration.Inf)
+    }
+
+    "treat a Java deadline too long for a FiniteDuration as no deadline" in {
+      val settings = GrpcClientSettings.connectToServiceAt("host.com", 8080)
+
+      settings.withDeadline(java.time.Duration.ofDays(365L * 1000)).deadline should be(Duration.Inf)
+      settings.withDeadline(java.time.Duration.ofSeconds(Long.MaxValue)).deadline should be(Duration.Inf)
+      internal.RequestBuilderImpl.toScalaDeadline(java.time.Duration.ofSeconds(Long.MaxValue)) should be(Duration.Inf)
+    }
+
+    "treat a Java deadline too negative for a FiniteDuration as already expired" in {
+      GrpcClientSettings
+        .connectToServiceAt("host.com", 8080)
+        .withDeadline(java.time.Duration.ofSeconds(Long.MinValue))
+        .deadline should be(Duration.Zero)
+    }
+
     "default to the same maximum inbound message size as grpc-java" in {
       GrpcClientSettings.connectToServiceAt("host.com", 8080).maxInboundMessageSize should be(4 * 1024 * 1024)
     }

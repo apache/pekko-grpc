@@ -131,7 +131,7 @@ object NettyClientUtils {
           descriptor: MethodDescriptor[I, O],
           options: CallOptions): Future[O] = {
         val listener = new UnaryCallAdapter[O]
-        val call = channel.newCall(descriptor, callOptionsWithDeadline(options, settings))
+        val call = channel.newCall(descriptor, options)
         call.start(listener, headers.toGoogleGrpcMetadata())
         call.sendMessage(request)
         call.halfClose()
@@ -145,7 +145,7 @@ object NettyClientUtils {
           descriptor: MethodDescriptor[I, O],
           options: CallOptions): Future[GrpcSingleResponse[O]] = {
         val listener = new UnaryCallWithMetadataAdapter[O]
-        val call = channel.newCall(descriptor, callOptionsWithDeadline(options, settings))
+        val call = channel.newCall(descriptor, options)
         call.start(listener, headers.toGoogleGrpcMetadata())
         call.sendMessage(request)
         call.halfClose()
@@ -160,7 +160,7 @@ object NettyClientUtils {
           streamingResponse: Boolean,
           options: CallOptions) = {
         val flow =
-          createFlow(headers, descriptor, streamingResponse, callOptionsWithDeadline(options, settings))
+          createFlow(headers, descriptor, streamingResponse, options)
         source.viaMat(flow)(Keep.right)
       }
 
