@@ -20,6 +20,11 @@ import sbtdynver.DynVerPlugin
 import sbtdynver.DynVerPlugin.autoImport.dynverSonatypeSnapshots
 
 object Common extends AutoPlugin {
+  object autoImport {
+    val checkReleaseNotesPom = taskKey[Unit]("Verify release notes metadata in the generated POM")
+  }
+  import autoImport._
+
   override def trigger = allRequirements
 
   override def requires = JvmPlugin && ApacheSonatypePlugin && DynVerPlugin
@@ -51,6 +56,19 @@ object Common extends AutoPlugin {
         "Apache Pekko gRPC - Support for building streaming gRPC servers and clients on top of Pekko Streams.")
 
   override lazy val projectSettings = Seq(
+    releaseNotesURL := (
+      // Included builds such as benchmark-java do not necessarily define isSnapshot.
+      if (version.value.endsWith("SNAPSHOT")) None
+      else Some(url("https://pekko.apache.org/docs/pekko-grpc/current/release-notes/index.html"))),
+    checkReleaseNotesPom := {
+      val pom = scala.xml.XML.loadFile(makePom.value)
+      val actual = (pom \ "properties" \ "info.releaseNotesUrl").map(_.text)
+      val v = version.value
+      val expected =
+        if (v.endsWith("SNAPSHOT")) Seq.empty
+        else Seq("https://pekko.apache.org/docs/pekko-grpc/current/release-notes/index.html")
+      require(actual == expected, s"Unexpected release notes metadata for $v: $actual (expected $expected)")
+    },
     projectInfoVersion := (if (isSnapshot.value) "snapshot" else version.value),
     scalacOptions ++=
       (if (!isScala3.value)
