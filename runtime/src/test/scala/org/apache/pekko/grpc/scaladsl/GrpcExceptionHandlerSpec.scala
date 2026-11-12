@@ -20,6 +20,7 @@ import pekko.grpc.internal.{ GrpcProtocolNative, GrpcResponseHelpers, Identity }
 import pekko.grpc.scaladsl.GrpcExceptionHandler.defaultMapper
 import pekko.http.scaladsl.model.HttpEntity._
 import pekko.http.scaladsl.model.HttpResponse
+import pekko.testkit.TestKit
 import io.grpc.{ Status, StatusRuntimeException }
 import org.scalatest._
 import org.scalatest.concurrent.ScalaFutures
@@ -122,7 +123,7 @@ class GrpcExceptionHandlerSpec extends AnyWordSpec with Matchers with ScalaFutur
     }).futureValue
 
   override def afterAll(): Unit = {
+    TestKit.shutdownActorSystem(system)
     super.afterAll()
-    system.terminate()
   }
 }

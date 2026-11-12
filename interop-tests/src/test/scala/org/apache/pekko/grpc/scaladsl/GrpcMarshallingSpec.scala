@@ -23,20 +23,28 @@ import pekko.http.scaladsl.model.{ HttpEntity, HttpRequest }
 import pekko.stream.scaladsl.Sink
 import pekko.stream.testkit.TestPublisher
 import pekko.stream.testkit.scaladsl.TestSource
+import pekko.testkit.TestKit
 import io.grpc.{ Status, StatusException }
 import io.grpc.testing.integration.messages.{ BoolValue, SimpleRequest }
 import io.grpc.testing.integration.test.TestService
+import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
 import scala.concurrent.{ Await, Future, Promise }
 import scala.concurrent.duration._
 
-class GrpcMarshallingSpec extends AnyWordSpec with Matchers {
+class GrpcMarshallingSpec extends AnyWordSpec with Matchers with BeforeAndAfterAll {
+  private implicit val system: ActorSystem = ActorSystem("GrpcMarshallingSpec")
+
+  override def afterAll(): Unit = {
+    TestKit.shutdownActorSystem(system)
+    super.afterAll()
+  }
+
   "The scaladsl GrpcMarshalling" should {
     val message = SimpleRequest(responseCompressed = Some(BoolValue(true)))
     implicit val serializer: ScalapbProtobufSerializer[SimpleRequest] = TestService.Serializers.SimpleRequestSerializer
-    implicit val system: ActorSystem = ActorSystem()
     val awaitTimeout = 10.seconds
     val zippedBytes =
       AbstractGrpcProtocol.encodeFrameData(

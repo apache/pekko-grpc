@@ -25,6 +25,7 @@ import pekko.testkit.TestKit
 
 import example.myapp.helloworld.grpc.helloworld.{ GreeterService, GreeterServiceHandler, HelloRequest }
 
+import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
@@ -38,7 +39,13 @@ class TelemetrySpec
           .withFallback(ConfigFactory.load())))
     with AnyWordSpecLike
     with Matchers
-    with ScalaFutures {
+    with ScalaFutures
+    with BeforeAndAfterAll {
+  override def afterAll(): Unit = {
+    TestKit.shutdownActorSystem(system)
+    super.afterAll()
+  }
+
   "The client-side telemetry hook" should {
     "pick up matched requests" in {
       val handler = GreeterServiceHandler(new CountingGreeterServiceImpl)

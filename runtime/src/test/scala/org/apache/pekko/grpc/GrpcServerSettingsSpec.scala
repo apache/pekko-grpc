@@ -22,10 +22,15 @@ import pekko.actor.ActorSystem
 import pekko.grpc.internal.AbstractGrpcProtocol
 import pekko.testkit.TestKit
 import com.typesafe.config.ConfigFactory
+import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 
-class GrpcServerSettingsSpec extends TestKit(ActorSystem()) with AnyWordSpecLike with Matchers {
+class GrpcServerSettingsSpec extends TestKit(ActorSystem()) with AnyWordSpecLike with Matchers with BeforeAndAfterAll {
+  override def afterAll(): Unit = {
+    TestKit.shutdownActorSystem(system)
+    super.afterAll()
+  }
 
   "GrpcServerSettings" should {
 

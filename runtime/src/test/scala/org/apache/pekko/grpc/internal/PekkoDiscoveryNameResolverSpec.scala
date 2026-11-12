@@ -20,6 +20,7 @@ import pekko.actor.ActorSystem
 import pekko.grpc.{ GrpcClientSettings, GrpcServiceException }
 import pekko.testkit.TestKit
 import io.grpc.Status
+import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.time.{ Millis, Seconds, Span }
@@ -32,7 +33,13 @@ class PekkoDiscoveryNameResolverSpec
     extends TestKit(ActorSystem())
     with AnyWordSpecLike
     with Matchers
-    with ScalaFutures {
+    with ScalaFutures
+    with BeforeAndAfterAll {
+  override def afterAll(): Unit = {
+    TestKit.shutdownActorSystem(system)
+    super.afterAll()
+  }
+
   implicit val ex: ExecutionContext = system.dispatcher
   implicit override val patienceConfig: PatienceConfig =
     PatienceConfig(timeout = scaled(Span(2, Seconds)), interval = scaled(Span(5, Millis)))

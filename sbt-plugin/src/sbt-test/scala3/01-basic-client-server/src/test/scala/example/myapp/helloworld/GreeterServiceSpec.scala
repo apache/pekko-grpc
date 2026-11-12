@@ -19,12 +19,13 @@ import pekko.grpc.GrpcClientSettings
 
 import example.myapp.helloworld.grpc._
 
+import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.time.{ Millis, Seconds, Span }
 import org.scalatest.wordspec.AnyWordSpec
 
-class GreeterServiceSpec extends AnyWordSpec with Matchers with ScalaFutures {
+class GreeterServiceSpec extends AnyWordSpec with Matchers with ScalaFutures with BeforeAndAfterAll {
   implicit val patience: PatienceConfig =
     PatienceConfig(timeout = Span(10, Seconds), interval = Span(100, Millis))
 
@@ -39,6 +40,16 @@ class GreeterServiceSpec extends AnyWordSpec with Matchers with ScalaFutures {
     GrpcClientSettings.connectToServiceAt(
       "localhost",
       binding.localAddress.getPort).withTls(false))
+
+  override def afterAll(): Unit = {
+    try {
+      client.close().futureValue
+      binding.terminate(5.seconds).futureValue
+    } finally {
+      system.terminate().futureValue
+      super.afterAll()
+    }
+  }
 
   "A GreeterService" should {
     "respond to a unary request" in {

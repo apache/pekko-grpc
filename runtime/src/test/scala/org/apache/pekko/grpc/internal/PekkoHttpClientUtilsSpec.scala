@@ -28,12 +28,19 @@ import pekko.stream.scaladsl.{ Sink, Source }
 import pekko.testkit.TestKit
 import pekko.util.ByteString
 import io.grpc.{ CallOptions, Deadline, Metadata, Status, StatusRuntimeException }
+import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.time.Span
 import org.scalatest.wordspec.AnyWordSpecLike
 
-class PekkoHttpClientUtilsSpec extends TestKit(ActorSystem()) with AnyWordSpecLike with Matchers with ScalaFutures {
+class PekkoHttpClientUtilsSpec extends TestKit(ActorSystem()) with AnyWordSpecLike with Matchers with ScalaFutures
+    with BeforeAndAfterAll {
+  override def afterAll(): Unit = {
+    TestKit.shutdownActorSystem(system)
+    super.afterAll()
+  }
+
   implicit val ec: ExecutionContext = system.dispatcher
   implicit val patience: PatienceConfig =
     PatienceConfig(5.seconds, Span(100, org.scalatest.time.Millis))

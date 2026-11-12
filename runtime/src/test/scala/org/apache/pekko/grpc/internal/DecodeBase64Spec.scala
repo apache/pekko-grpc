@@ -19,9 +19,14 @@ import pekko.stream.scaladsl.Source
 import pekko.stream.testkit.scaladsl.TestSink
 import pekko.testkit.TestKit
 import pekko.util.ByteString
+import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike
 
-class DecodeBase64Spec extends TestKit(ActorSystem()) with AnyWordSpecLike {
+class DecodeBase64Spec extends TestKit(ActorSystem()) with AnyWordSpecLike with BeforeAndAfterAll {
+  override def afterAll(): Unit = {
+    TestKit.shutdownActorSystem(system)
+    super.afterAll()
+  }
 
   private val data = ByteString(Range(-128, 128).map(_.toByte).toArray)
 

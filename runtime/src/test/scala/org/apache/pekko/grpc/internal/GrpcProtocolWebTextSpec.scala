@@ -20,9 +20,14 @@ import pekko.stream.scaladsl.Source
 import pekko.stream.testkit.scaladsl.TestSink
 import pekko.testkit.TestKit
 import pekko.util.ByteString
+import org.scalatest.BeforeAndAfterAll
 import org.scalatest.wordspec.AnyWordSpecLike
 
-class GrpcProtocolWebTextSpec extends TestKit(ActorSystem()) with AnyWordSpecLike {
+class GrpcProtocolWebTextSpec extends TestKit(ActorSystem()) with AnyWordSpecLike with BeforeAndAfterAll {
+  override def afterAll(): Unit = {
+    TestKit.shutdownActorSystem(system)
+    super.afterAll()
+  }
 
   "GrpcProtocolWebText" should {
     val reader = GrpcProtocolWebText.newReader(Identity)

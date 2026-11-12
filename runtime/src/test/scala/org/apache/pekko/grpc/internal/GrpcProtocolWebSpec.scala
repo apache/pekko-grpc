@@ -26,10 +26,15 @@ import pekko.stream.scaladsl.Source
 import pekko.stream.testkit.scaladsl.TestSink
 import pekko.testkit.TestKit
 import pekko.util.ByteString
+import org.scalatest.BeforeAndAfterAll
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
 
-class GrpcProtocolWebSpec extends TestKit(ActorSystem()) with AnyWordSpecLike with Matchers {
+class GrpcProtocolWebSpec extends TestKit(ActorSystem()) with AnyWordSpecLike with Matchers with BeforeAndAfterAll {
+  override def afterAll(): Unit = {
+    TestKit.shutdownActorSystem(system)
+    super.afterAll()
+  }
 
   val reader = GrpcProtocolWeb.newReader(Identity)
   val writer = GrpcProtocolWeb.newWriter(Identity)
