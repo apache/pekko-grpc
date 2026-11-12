@@ -96,10 +96,9 @@ explicit by duplicating the proto definitions in your project.
 
 This is supported by `protobuf-gradle-plugin` and explained [here](https://github.com/google/protobuf-gradle-plugin#protos-in-dependencies).
 
-## JDK 8 support
+## JDK support
 
-If you want to use TLS-based negotiation on JDK 8, Pekko gRPC requires JDK 8 update 252 or later. JVM support for ALPN has been backported to JDK 8u252 which is now widely available.
-Support for using the Jetty ALPN agent has been in Pekko HTTP, and therefore is not supported by Pekko gRPC.
+Pekko gRPC requires JDK 17 or later. ALPN support is built into the supported JDKs; no external ALPN agent is required.
 
 ## Starting your Pekko gRPC server from gradle
 

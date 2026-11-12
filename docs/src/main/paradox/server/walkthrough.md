@@ -223,7 +223,7 @@ methods to create partial functions that are combined by `concatOrNotFound`.]
 ## Running the server
 
 See the detailed chapters on @ref[sbt](../buildtools/sbt.md#starting-your-pekko-grpc-server-from-sbt), @ref[Gradle](../buildtools/gradle.md#starting-your-pekko-grpc-server-from-gradle)
-and @ref[Maven](../buildtools/maven.md#starting-your-pekko-grpc-server-from-maven) for details on adding the agent.
+and @ref[Maven](../buildtools/maven.md#starting-your-pekko-grpc-server-from-maven) for details on starting your server.
 
 ## Stateful services
 
