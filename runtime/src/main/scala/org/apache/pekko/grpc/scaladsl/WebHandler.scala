@@ -14,7 +14,7 @@
 package org.apache.pekko.grpc.scaladsl
 
 import scala.concurrent.Future
-import com.typesafe.config.ConfigFactory
+
 import org.apache.pekko
 import pekko.actor.{ ActorSystem, ClassicActorSystemProvider }
 import pekko.annotation.{ ApiMayChange, InternalApi }
@@ -22,10 +22,12 @@ import pekko.http.cors.scaladsl.CorsDirectives.cors
 import pekko.http.cors.scaladsl.model.{ HttpHeaderRange, HttpOriginMatcher }
 import pekko.http.cors.scaladsl.settings.CorsSettings
 import pekko.http.javadsl.{ model => jmodel }
-import pekko.http.scaladsl.model.{ HttpMethods, HttpRequest, HttpResponse }
 import pekko.http.scaladsl.model.headers._
+import pekko.http.scaladsl.model.{ HttpMethods, HttpRequest, HttpResponse }
 import pekko.http.scaladsl.server.Route
 import pekko.http.scaladsl.server.directives.MarshallingDirectives.handleWith
+
+import com.typesafe.config.ConfigFactory
 
 @ApiMayChange
 object WebHandler {

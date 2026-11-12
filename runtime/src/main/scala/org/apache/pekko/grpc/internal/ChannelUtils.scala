@@ -13,17 +13,16 @@
 
 package org.apache.pekko.grpc.internal
 
+import scala.concurrent.{ Future, Promise }
+
+import io.grpc.{ ConnectivityState, ManagedChannel }
+
 import org.apache.pekko
 import pekko.Done
-
 import pekko.actor.ClassicActorSystemProvider
 import pekko.annotation.InternalApi
 import pekko.event.LoggingAdapter
 import pekko.grpc.GrpcClientSettings
-
-import io.grpc.{ ConnectivityState, ManagedChannel }
-
-import scala.concurrent.{ Future, Promise }
 
 /**
  * Used to indicate that a gRPC client can not establish a connection

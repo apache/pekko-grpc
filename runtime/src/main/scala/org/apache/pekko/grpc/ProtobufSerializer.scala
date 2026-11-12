@@ -13,12 +13,12 @@
 
 package org.apache.pekko.grpc
 
+import java.io.InputStream
+
 import org.apache.pekko
 import pekko.grpc.GrpcProtocol.DeferredDataFrame
 import pekko.grpc.internal.ByteStringUtils
 import pekko.util.ByteString
-
-import java.io.InputStream
 
 trait ProtobufSerializer[T] {
   def serialize(t: T): ByteString

@@ -15,13 +15,13 @@ package org.apache.pekko.grpc.internal
 
 import java.util.concurrent.CompletionStage
 
+import scala.concurrent.{ Future, Promise }
+
 import org.apache.pekko
 import pekko.annotation.InternalApi
 import pekko.stream.scaladsl.Sink
-import pekko.stream.{ javadsl, AbruptStageTerminationException, Attributes, Inlet, SinkShape }
 import pekko.stream.stage.{ GraphStageLogic, GraphStageWithMaterializedValue, InHandler }
-
-import scala.concurrent.{ Future, Promise }
+import pekko.stream.{ AbruptStageTerminationException, Attributes, Inlet, SinkShape, javadsl }
 
 /**
  * Stage that reads a single parameter from the stream

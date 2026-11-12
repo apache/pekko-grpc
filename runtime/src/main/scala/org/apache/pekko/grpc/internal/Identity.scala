@@ -13,8 +13,9 @@
 
 package org.apache.pekko.grpc.internal
 
-import org.apache.pekko.util.ByteString
 import io.grpc.{ Status, StatusException }
+
+import org.apache.pekko.util.ByteString
 
 object Identity extends Codec {
   override val name = "identity"

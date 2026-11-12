@@ -13,6 +13,8 @@
 
 package org.apache.pekko.grpc.internal
 
+import scala.annotation.nowarn
+
 import org.apache.pekko
 import pekko.grpc.GrpcProtocol._
 import pekko.http.scaladsl.model.HttpEntity.{ Chunk, ChunkStreamPart, LastChunk }
@@ -27,8 +29,6 @@ import pekko.http.scaladsl.model.{
   Trailer
 }
 import pekko.util.ByteString
-
-import scala.annotation.nowarn
 
 /**
  * Implementation of the gRPC (`application/grpc+proto`) protocol:

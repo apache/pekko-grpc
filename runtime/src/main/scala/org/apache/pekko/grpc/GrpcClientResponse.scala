@@ -15,10 +15,10 @@ package org.apache.pekko.grpc
 
 import java.util.concurrent.CompletionStage
 
+import scala.concurrent.Future
+
 import org.apache.pekko
 import pekko.annotation.{ ApiMayChange, DoNotInherit }
-
-import scala.concurrent.Future
 
 /**
  * Represents the metadata related to a gRPC call with a streaming response

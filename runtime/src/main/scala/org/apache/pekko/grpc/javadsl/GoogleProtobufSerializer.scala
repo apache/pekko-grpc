@@ -13,14 +13,15 @@
 
 package org.apache.pekko.grpc.javadsl
 
+import java.io.InputStream
+
+import com.google.protobuf.CodedOutputStream
+import com.google.protobuf.Parser
+
 import org.apache.pekko
 import pekko.annotation.ApiMayChange
 import pekko.grpc.ProtobufFrameSerializer
 import pekko.util.ByteString
-import com.google.protobuf.CodedOutputStream
-import com.google.protobuf.Parser
-
-import java.io.InputStream
 
 @ApiMayChange
 class GoogleProtobufSerializer[T <: com.google.protobuf.Message](parser: Parser[T]) extends ProtobufFrameSerializer[T] {

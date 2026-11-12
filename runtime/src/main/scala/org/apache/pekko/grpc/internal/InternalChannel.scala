@@ -14,12 +14,14 @@
 package org.apache.pekko.grpc.internal
 
 import scala.concurrent.Future
+
+import io.grpc.{ CallOptions, MethodDescriptor }
+
 import org.apache.pekko
-import pekko.{ Done, NotUsed }
 import pekko.annotation.InternalApi
 import pekko.grpc.{ GrpcResponseMetadata, GrpcSingleResponse }
 import pekko.stream.scaladsl.Source
-import io.grpc.{ CallOptions, MethodDescriptor }
+import pekko.{ Done, NotUsed }
 
 /**
  * INTERNAL API

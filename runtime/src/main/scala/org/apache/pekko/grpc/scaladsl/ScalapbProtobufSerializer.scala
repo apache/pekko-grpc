@@ -13,15 +13,16 @@
 
 package org.apache.pekko.grpc.scaladsl
 
+import java.io.InputStream
+
+import com.google.protobuf.CodedInputStream
+import com.google.protobuf.CodedOutputStream
+import scalapb.{ GeneratedMessage, GeneratedMessageCompanion }
+
 import org.apache.pekko
 import pekko.annotation.ApiMayChange
 import pekko.grpc.ProtobufFrameSerializer
 import pekko.util.ByteString
-import com.google.protobuf.CodedOutputStream
-import com.google.protobuf.CodedInputStream
-import scalapb.{ GeneratedMessage, GeneratedMessageCompanion }
-
-import java.io.InputStream
 
 @ApiMayChange
 class ScalapbProtobufSerializer[T <: GeneratedMessage](

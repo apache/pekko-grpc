@@ -15,16 +15,17 @@ package org.apache.pekko.grpc.internal
 
 import java.net.{ InetAddress, InetSocketAddress, UnknownHostException }
 
+import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.{ ExecutionContext, Promise }
+import scala.util.{ Failure, Success }
+
+import io.grpc.NameResolver.Listener
+import io.grpc.{ Attributes, EquivalentAddressGroup, NameResolver, Status }
+
 import org.apache.pekko
 import pekko.discovery.ServiceDiscovery.ResolvedTarget
 import pekko.discovery.{ Lookup, ServiceDiscovery }
 import pekko.grpc.GrpcClientSettings
-import io.grpc.{ Attributes, EquivalentAddressGroup, NameResolver, Status }
-import io.grpc.NameResolver.Listener
-
-import scala.concurrent.duration.FiniteDuration
-import scala.concurrent.{ ExecutionContext, Promise }
-import scala.util.{ Failure, Success }
 
 class PekkoDiscoveryNameResolver(
     discovery: ServiceDiscovery,

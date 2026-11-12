@@ -13,16 +13,17 @@
 
 package org.apache.pekko.grpc.scaladsl.headers
 
-import org.apache.pekko
-import pekko.annotation.ApiMayChange
-import pekko.http.scaladsl.model.HttpHeader
-import pekko.http.scaladsl.model.headers.{ ModeledCustomHeader, ModeledCustomHeaderCompanion }
-import pekko.http.javadsl.{ model => jm }
+import java.util.concurrent.TimeUnit
 
 import scala.annotation.nowarn
-import scala.util.Try
 import scala.concurrent.duration.FiniteDuration
-import java.util.concurrent.TimeUnit
+import scala.util.Try
+
+import org.apache.pekko
+import pekko.annotation.ApiMayChange
+import pekko.http.javadsl.{ model => jm }
+import pekko.http.scaladsl.model.HttpHeader
+import pekko.http.scaladsl.model.headers.{ ModeledCustomHeader, ModeledCustomHeaderCompanion }
 
 /**
  * Simple CSV parser for HTTP header values. Not meant to be a full CSV parser,

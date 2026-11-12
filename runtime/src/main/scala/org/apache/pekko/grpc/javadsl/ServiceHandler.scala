@@ -15,13 +15,13 @@ package org.apache.pekko.grpc.javadsl
 
 import java.util.concurrent.{ CompletableFuture, CompletionStage }
 
+import scala.annotation.varargs
+
 import org.apache.pekko
 import pekko.annotation.ApiMayChange
 import pekko.annotation.InternalApi
 import pekko.http.javadsl.model.{ HttpRequest, HttpResponse, StatusCodes }
 import pekko.japi.function.{ Function => JFunction }
-
-import scala.annotation.varargs
 
 @ApiMayChange
 object ServiceHandler {

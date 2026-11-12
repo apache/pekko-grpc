@@ -15,8 +15,8 @@ package org.apache.pekko.grpc.scaladsl
 
 import org.apache.pekko
 import pekko.annotation.ApiMayChange
-import pekko.util.ByteString
 import pekko.grpc.javadsl
+import pekko.util.ByteString
 
 /**
  * Represents a entry (value) in a collection of Metadata.

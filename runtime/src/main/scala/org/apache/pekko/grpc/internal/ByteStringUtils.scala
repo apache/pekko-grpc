@@ -13,12 +13,13 @@
 
 package org.apache.pekko.grpc.internal
 
+import java.io.InputStream
+
+import io.grpc.KnownLength
+
 import org.apache.pekko
 import pekko.annotation.InternalApi
 import pekko.util.ByteString
-import io.grpc.KnownLength
-
-import java.io.InputStream
 
 @InternalApi
 private[grpc] object ByteStringUtils {

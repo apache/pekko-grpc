@@ -15,11 +15,12 @@ package org.apache.pekko.grpc.internal
 
 import java.net.URI
 
-import org.apache.pekko.discovery.ServiceDiscovery
-import io.grpc.{ NameResolver, NameResolverProvider }
-
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.FiniteDuration
+
+import io.grpc.{ NameResolver, NameResolverProvider }
+
+import org.apache.pekko.discovery.ServiceDiscovery
 
 class PekkoDiscoveryNameResolverProvider(
     discovery: ServiceDiscovery,

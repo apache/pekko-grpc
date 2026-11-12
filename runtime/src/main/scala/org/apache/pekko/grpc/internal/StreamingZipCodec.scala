@@ -19,12 +19,13 @@ package org.apache.pekko.grpc.internal
 
 import java.io.{ InputStream, OutputStream }
 
+import scala.annotation.nowarn
+
+import io.grpc.{ Status, StatusException }
+
 import org.apache.pekko
 import pekko.annotation.InternalApi
 import pekko.util.ByteString
-import io.grpc.{ Status, StatusException }
-
-import scala.annotation.nowarn
 
 /**
  * INTERNAL API

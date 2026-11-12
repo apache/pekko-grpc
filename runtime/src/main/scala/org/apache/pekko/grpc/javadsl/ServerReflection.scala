@@ -15,14 +15,14 @@ package org.apache.pekko.grpc.javadsl
 
 import java.util.concurrent.CompletionStage
 
+import io.grpc.reflection.v1.reflection.ServerReflectionHandler
+
 import org.apache.pekko
 import pekko.actor.ClassicActorSystemProvider
 import pekko.annotation.ApiMayChange
 import pekko.grpc.ServiceDescription
 import pekko.grpc.internal.ServerReflectionImpl
 import pekko.http.javadsl.model.{ HttpRequest, HttpResponse }
-
-import io.grpc.reflection.v1.reflection.ServerReflectionHandler
 
 @ApiMayChange(issue = "https://github.com/akka/akka-grpc/issues/850")
 object ServerReflection {

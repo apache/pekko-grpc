@@ -13,10 +13,11 @@
 
 package org.apache.pekko.grpc.scaladsl
 
+import com.google.protobuf.any
+
 import org.apache.pekko
 import pekko.annotation.{ ApiMayChange, DoNotInherit, InternalApi }
 import pekko.util.ByteString
-import com.google.protobuf.any
 
 /**
  * Immutable representation of the metadata in a call

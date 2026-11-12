@@ -13,15 +13,16 @@
 
 package org.apache.pekko.grpc.internal
 
+import io.grpc.{ Status, StatusException }
+
 import org.apache.pekko
 import pekko.NotUsed
 import pekko.grpc.GrpcProtocol._
-import pekko.http.scaladsl.model._
 import pekko.http.scaladsl.model.HttpEntity.{ Chunk, ChunkStreamPart }
+import pekko.http.scaladsl.model._
 import pekko.http.scaladsl.model.headers.RawHeader
 import pekko.stream.scaladsl.Flow
 import pekko.util.{ ByteString, ByteStringBuilder }
-import io.grpc.{ Status, StatusException }
 
 abstract class GrpcProtocolWebBase(subType: String) extends AbstractGrpcProtocol(subType) {
   protected def postEncode(frame: ByteString): ByteString

@@ -16,6 +16,7 @@ package org.apache.pekko.grpc.internal
 import java.io.{ ByteArrayInputStream, InputStream }
 
 import io.grpc.KnownLength
+
 import org.apache.pekko
 import pekko.annotation.InternalStableApi
 import pekko.grpc.ProtobufSerializer

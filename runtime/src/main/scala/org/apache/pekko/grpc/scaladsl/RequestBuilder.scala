@@ -13,15 +13,15 @@
 
 package org.apache.pekko.grpc.scaladsl
 
+import scala.concurrent.Future
+import scala.concurrent.duration.Duration
+
 import org.apache.pekko
 import pekko.NotUsed
 import pekko.annotation.{ ApiMayChange, DoNotInherit }
 import pekko.grpc.{ GrpcResponseMetadata, GrpcSingleResponse }
 import pekko.stream.scaladsl.Source
 import pekko.util.ByteString
-
-import scala.concurrent.Future
-import scala.concurrent.duration.Duration
 
 /**
  * Request builder for requests providing per call specific metadata capabilities in

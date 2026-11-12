@@ -14,8 +14,8 @@
 package org.apache.pekko.grpc.internal
 
 import org.apache.pekko
-import pekko.stream.{ Attributes, FlowShape, Inlet, Outlet }
 import pekko.stream.stage.{ GraphStage, GraphStageLogic, InHandler, OutHandler }
+import pekko.stream.{ Attributes, FlowShape, Inlet, Outlet }
 
 /**
  * 'barrier' that makes sure that, even when downstream is cancelled,

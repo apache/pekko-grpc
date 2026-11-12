@@ -13,17 +13,19 @@
 
 package org.apache.pekko.grpc.internal
 
+import java.util.concurrent.ConcurrentHashMap
+
+import scala.collection.concurrent
+import scala.jdk.CollectionConverters._
+
 import com.google.protobuf.ByteString
 import com.google.protobuf.Descriptors.FileDescriptor
+import io.grpc.reflection.v1.reflection._
+
 import org.apache.pekko
 import pekko.NotUsed
 import pekko.annotation.InternalApi
 import pekko.stream.scaladsl._
-import io.grpc.reflection.v1.reflection._
-
-import java.util.concurrent.ConcurrentHashMap
-import scala.collection.concurrent
-import scala.jdk.CollectionConverters._
 
 /**
  * INTERNAL API

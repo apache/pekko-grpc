@@ -292,3 +292,21 @@ pekko-grpc currently uses Github Actions for Continuous Integration. See the `Ch
 
 * [Apache Contributor License Agreement](https://www.apache.org/licenses/contributor-agreements.html)
 * [Pekko gRPC Issue Tracker](https://github.com/apache/pekko-grpc/issues)
+
+### Organizing Scala imports
+
+Run `sbt sortImports` to organize Scala imports with Scalafix and then format
+them with Scalafmt. The command enables SemanticDB for the current sbt session;
+it does not change the normal build or require globally enabled compiler plugins.
+Relative Pekko imports are grouped with their fully qualified counterparts.
+Generated sources are not rewritten by Scalafix. When an import depends on an
+object imported earlier in the same block, qualify that object from its package
+(e.g. `pekko.http.scaladsl.model.Uri.Path` rather than `Uri.Path`) so sorting
+does not move it before the prerequisite import. Recompile after organizing.
+
+Run `scripts/check-organize-imports.sh` to verify grouping, unused-import removal,
+and idempotence in an isolated fixture. Set `SCALA_VERSION` to test another
+supported Scala version, or pass an sbt launcher command to the script.
+
+`sortImports` covers the root aggregate. Nested scripted-test builds and
+standalone example builds are separate sbt builds and are not traversed.

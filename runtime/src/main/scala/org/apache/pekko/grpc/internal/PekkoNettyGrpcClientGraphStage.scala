@@ -13,17 +13,19 @@
 
 package org.apache.pekko.grpc.internal
 
-import org.apache.pekko
-import pekko.annotation.InternalApi
-import pekko.grpc.{ javadsl, scaladsl, GrpcResponseMetadata }
-import pekko.stream
-import pekko.stream.{ Attributes => _, _ }
-import pekko.stream.stage._
-import io.grpc._
-
 import java.util.concurrent.CompletionStage
+
 import scala.concurrent.{ ExecutionContext, Future, Promise }
 import scala.jdk.FutureConverters._
+
+import io.grpc._
+
+import org.apache.pekko
+import pekko.annotation.InternalApi
+import pekko.grpc.{ GrpcResponseMetadata, javadsl, scaladsl }
+import pekko.stream
+import pekko.stream.stage._
+import pekko.stream.{ Attributes => _, _ }
 
 @InternalApi
 private object PekkoNettyGrpcClientGraphStage {

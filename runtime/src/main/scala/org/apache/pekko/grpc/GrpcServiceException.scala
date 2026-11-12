@@ -13,14 +13,16 @@
 
 package org.apache.pekko.grpc
 
-import io.grpc.{ Status, StatusRuntimeException }
-import org.apache.pekko
-import pekko.annotation.ApiMayChange
-import pekko.grpc.scaladsl.{ Metadata, MetadataBuilder }
-import pekko.grpc.internal.{ JavaMetadataImpl, RichGrpcMetadataImpl }
+import scala.jdk.CollectionConverters._
+
 import com.google.protobuf.any.Any
 import io.grpc.protobuf.StatusProto
-import scala.jdk.CollectionConverters._
+import io.grpc.{ Status, StatusRuntimeException }
+
+import org.apache.pekko
+import pekko.annotation.ApiMayChange
+import pekko.grpc.internal.{ JavaMetadataImpl, RichGrpcMetadataImpl }
+import pekko.grpc.scaladsl.{ Metadata, MetadataBuilder }
 
 object GrpcServiceException {
 

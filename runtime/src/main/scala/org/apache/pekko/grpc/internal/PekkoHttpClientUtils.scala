@@ -16,9 +16,18 @@ package org.apache.pekko.grpc.internal
 import java.net.InetSocketAddress
 import java.security.SecureRandom
 import java.util.concurrent.CompletionStage
+import java.util.concurrent.TimeUnit
+import javax.net.ssl.{ KeyManager, SSLContext, SSLEngine, TrustManager }
+
+import scala.concurrent.duration.{ DurationLong, FiniteDuration }
+import scala.concurrent.{ ExecutionContext, Future, Promise }
+import scala.jdk.FutureConverters._
+import scala.util.control.NonFatal
+import scala.util.{ Failure, Success }
+
+import io.grpc.{ CallOptions, MethodDescriptor, Status, StatusRuntimeException }
 
 import org.apache.pekko
-import pekko.{ Done, NotUsed }
 import pekko.actor.ClassicActorSystemProvider
 import pekko.annotation.InternalApi
 import pekko.event.LoggingAdapter
@@ -27,23 +36,15 @@ import pekko.grpc.scaladsl.headers
 import pekko.grpc.scaladsl.headers.PercentEncoding
 import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, GrpcSingleResponse, ProtobufSerializer, SSLContextUtils }
 import pekko.http.scaladsl.model.HttpEntity.{ Chunk, Chunked, LastChunk, Strict }
-import pekko.http.scaladsl.{ ClientTransport, ConnectionContext, Http, HttpsConnectionContext }
 import pekko.http.scaladsl.model._
 import pekko.http.scaladsl.model.headers.RawHeader
 import pekko.http.scaladsl.settings.ClientConnectionSettings
 import pekko.http.scaladsl.util.FastFuture
-import pekko.stream.{ Materializer, QueueOfferResult }
+import pekko.http.scaladsl.{ ClientTransport, ConnectionContext, Http, HttpsConnectionContext }
 import pekko.stream.scaladsl.{ Keep, Sink, Source }
+import pekko.stream.{ Materializer, QueueOfferResult }
 import pekko.util.ByteString
-import io.grpc.{ CallOptions, MethodDescriptor, Status, StatusRuntimeException }
-
-import javax.net.ssl.{ KeyManager, SSLContext, SSLEngine, TrustManager }
-import scala.concurrent.{ ExecutionContext, Future, Promise }
-import scala.concurrent.duration.{ DurationLong, FiniteDuration }
-import java.util.concurrent.TimeUnit
-import scala.jdk.FutureConverters._
-import scala.util.{ Failure, Success }
-import scala.util.control.NonFatal
+import pekko.{ Done, NotUsed }
 
 /**
  * INTERNAL API

@@ -137,7 +137,18 @@ object Common extends AutoPlugin {
     apiURL := Some(url(s"https://pekko.apache.org/api/pekko-grpc/${projectInfoVersion.value}/")),
     (Test / testOptions) += Tests.Argument(TestFrameworks.ScalaTest, "-oDF"),
     crossScalaVersions := Seq(scala212, scala213, scala3),
-    mimaReportSignatureProblems := true)
+    mimaReportSignatureProblems := true) ++ Seq(Compile, Test).map { config =>
+    config / scalacOptions := {
+      val options = (config / scalacOptions).value
+      if (semanticdbEnabled.value) {
+        // OrganizeImports needs unused-import diagnostics, but must be able to repair them before warnings fail the build.
+        options.filterNot(option =>
+          Set("-Xfatal-warnings", "-Werror").contains(option) ||
+          (option.startsWith("-Wconf:") && option.toLowerCase.contains("unused import"))) :+
+        (if (scalaVersion.value.startsWith("2.12.")) "-Ywarn-unused:imports" else "-Wunused:imports")
+      } else options
+    }
+  }
 
   override lazy val buildSettings = Seq(
     dynverSonatypeSnapshots := true)
