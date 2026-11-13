@@ -189,7 +189,12 @@ object PekkoHttpClientUtils {
           GrpcEntityHelpers.metadataHeaders(headers.entries) ++ timeoutHeader(options),
           source)
         applyDeadline(
-          responseToSource(singleRequest(httpRequest), deserializer, settings.maxInboundMessageSize, streamingResponse),
+          responseToSource(
+            httpRequest.uri,
+            singleRequest(httpRequest),
+            deserializer,
+            settings.maxInboundMessageSize,
+            streamingResponse),
           options)
       }
     }
@@ -336,6 +341,7 @@ object PekkoHttpClientUtils {
    */
   @InternalApi
   def responseToSource[O](
+      requestUri: Uri,
       response: Future[HttpResponse],
       deserializer: ProtobufSerializer[O],
       maxInboundMessageSize: Int = AbstractGrpcProtocol.DefaultMaxInboundMessageSize,
@@ -347,7 +353,7 @@ object PekkoHttpClientUtils {
         {
           if (response.status != StatusCodes.OK) {
             response.entity.discardBytes()
-            val failure = mapToStatusException(response, Seq.empty)
+            val failure = mapToStatusException(requestUri, response, Seq.empty)
             Source.failed(failure).mapMaterializedValue(_ => FastFuture.failed(failure))
           } else {
             Codecs.detect(response) match {
@@ -357,7 +363,7 @@ object PekkoHttpClientUtils {
                 val trailerPromise = Promise[Seq[HttpHeader]]()
                 // Completed with success or failure based on grpc-status and grpc-message trailing headers
                 val completionFuture: Future[Unit] =
-                  trailerPromise.future.flatMap(trailers => parseResponseStatus(response, trailers))
+                  trailerPromise.future.flatMap(trailers => parseResponseStatus(requestUri, response, trailers))
 
                 val responseData =
                   response.entity match {
@@ -380,7 +386,7 @@ object PekkoHttpClientUtils {
                       Source.single[ByteString](data)
                     case _ =>
                       response.entity.discardBytes()
-                      throw mapToStatusException(response, Seq.empty)
+                      throw mapToStatusException(requestUri, response, Seq.empty)
                   }
                 val baseFlow = responseData
                   // This never adds any data to the stream, but makes sure it fails with the correct error code if applicable
@@ -425,37 +431,44 @@ object PekkoHttpClientUtils {
     })
   }.mapMaterializedValue(_.flatten)
 
-  private def parseResponseStatus(response: HttpResponse, trailers: Seq[HttpHeader]): Future[Unit] = {
+  private def parseResponseStatus(requestUri: Uri, response: HttpResponse, trailers: Seq[HttpHeader]): Future[Unit] = {
     val allHeaders = response.headers ++ trailers
     allHeaders.find(_.name == "grpc-status").map(_.value) match {
       case Some("0") =>
         FastFuture.successful(())
       case _ =>
-        FastFuture.failed(mapToStatusException(response, trailers))
+        FastFuture.failed(mapToStatusException(requestUri, response, trailers))
     }
   }
 
-  private def mapToStatusException(response: HttpResponse, trailers: Seq[HttpHeader]): StatusRuntimeException = {
+  private def mapToStatusException(
+      requestUri: Uri,
+      response: HttpResponse,
+      trailers: Seq[HttpHeader]): StatusRuntimeException = {
     val allHeaders = response.headers ++ trailers
     val metadata: io.grpc.Metadata = metadataOf(allHeaders)
     allHeaders.find(_.name == "grpc-status").map(_.value) match {
       case None =>
-        new StatusRuntimeException(mapHttpStatus(response).withDescription("No grpc-status found"), metadata)
+        new StatusRuntimeException(
+          mapHttpStatus(response)
+            .withDescription("No grpc-status found")
+            .augmentDescription(s"When calling rpc service: ${requestUri.toString()}"),
+          metadata)
       case Some(statusCode) =>
         // grpc-message travels UTF-8 percent-encoded on the wire, so it has to be decoded
         // before it reaches the caller. The server side encodes it in `Status-Message`.
         val description =
           allHeaders.find(_.name == "grpc-message").map(h => PercentEncoding.Decoder.decode(h.value))
-        statusCodeOf(statusCode) match {
+        val status = statusCodeOf(statusCode) match {
           case Some(code) =>
-            new StatusRuntimeException(Status.fromCodeValue(code).withDescription(description.orNull), metadata)
+            Status.fromCodeValue(code).withDescription(description.orNull)
           case None =>
             // a peer that sends a non-numeric grpc-status is broken, but that is a protocol
             // error to report, not an exception to throw at the caller
-            new StatusRuntimeException(
-              Status.INTERNAL.withDescription(s"Invalid grpc-status [$statusCode] in response"),
-              metadata)
+            Status.INTERNAL.withDescription(s"Invalid grpc-status [$statusCode] in response")
         }
+        new StatusRuntimeException(status.augmentDescription(s"When calling rpc service: ${requestUri.toString()}"),
+          metadata)
     }
   }
 
