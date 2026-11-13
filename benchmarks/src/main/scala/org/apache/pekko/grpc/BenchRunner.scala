@@ -26,12 +26,14 @@ object BenchRunner {
     val args2 = args.toList.flatMap {
       case "quick"    => "-i 1 -wi 1 -f1 -t1".split(" ").toList
       case "full"     => "-i 10 -wi 4 -f3 -t1".split(" ").toList
+      case "alloc"    => "-prof gc".split(" ").toList
       case "jitwatch" => "-jvmArgs=-XX:+UnlockDiagnosticVMOptions -XX:+TraceClassLoading -XX:+LogCompilation" :: Nil
       case other      => other :: Nil
     }
     // @formatter:on
 
     val opts = new CommandLineOptions(args2 *)
+
     val results = new Runner(opts).run()
 
     val report = results.asScala.map { (result: RunResult) =>
@@ -40,10 +42,10 @@ object BenchRunner {
         result.getParams.getParamsKeys.asScala.map(key => s"$key=${result.getParams.getParam(key)}").mkString("_")
       val score = result.getAggregatedResult.getPrimaryResult.getScore.round
       val unit = result.getAggregatedResult.getPrimaryResult.getScoreUnit
-      s"\t${bench}_$params\t$score\t$unit"
+      s"\t${bench}\t$params\t$score\t$unit"
     }
 
+    println("\nSorted results:")
     report.toList.sorted.foreach(println)
-
   }
 }
