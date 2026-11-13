@@ -46,6 +46,7 @@ lazy val mkBatAssemblyTask = taskKey[File]("Create a Windows bat assembly")
 (ThisBuild / dynverSeparator) := "-"
 
 ThisBuild / javafmtFormatterCompatibleJavaVersion := 17
+ThisBuild / javafmtSortImports := false
 
 addCommandAlias("checkCodeStyle", "scalafmtCheckAll; scalafmtSbtCheck; javafmtCheckAll; +headerCheckAll")
 addCommandAlias("applyCodeStyle", "+headerCreateAll; scalafmtAll; scalafmtSbt; javafmtAll")
@@ -253,7 +254,6 @@ lazy val interopTests = Project(id = "interop-tests", base = file("interop-tests
   .pluginTestingSettings
   .settings(
     name := s"$pekkoPrefix-interop-tests",
-    javafmtSortImports := false,
     // All io.grpc servers want to bind to port :8080
     parallelExecution := false,
     ReflectiveCodeGen.generatedLanguages := Seq("Scala", "Java"),
@@ -399,7 +399,6 @@ lazy val pluginTesterJava = Project(id = "plugin-tester-java", base = file("plug
   .settings(Dependencies.pluginTester)
   .settings(
     name := s"$pekkoPrefix-plugin-tester-java",
-    javafmtSortImports := false,
     fork := true,
     PB.protocVersion := Dependencies.Versions.googleProtoc,
     ReflectiveCodeGen.generatedLanguages := Seq("Java"),

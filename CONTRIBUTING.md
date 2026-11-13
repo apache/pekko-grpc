@@ -231,18 +231,24 @@ git config blame.ignoreRevsFile .git-blame-ignore-revs
 
 ## Source style
 
+### Formatter alignment with Pekko core
+
+The build aligns its import-selector layout with Pekko core: one selector per
+line for multiline imports (`binPack.importSelectors = unfold`). Project-specific
+exclusions and dialect overrides remain in `.scalafmt.conf`. Run
+`sbt scalafmtAll scalafmtSbt javafmtAll` to apply formatting and
+`sbt scalafmtCheckAll scalafmtSbtCheck javafmtCheckAll` to check it. Java formatting
+requires JDK 17 and preserves import ordering.
+
 ### Scala style 
 
 Pekko gRPC uses [scalafmt](https://scalameta.org/scalafmt) to enforce some of the code style rules.
 
 ### Java style
 
-Java code is currently not automatically reformatted by sbt (expecting to have a plugin to do this soon).
-Thus we ask Java contributions to follow these simple guidelines:
-
-- 2 spaces
-- `{` on same line as method name
-- in all other aspects, follow the [Oracle Java Style Guide](https://www.oracle.com/technetwork/java/codeconvtoc-136057.html)
+Java code is formatted by sbt-java-formatter. Use JDK 17 and run `sbt javafmtAll`
+to apply formatting, or `sbt javafmtCheckAll` to check it. Import ordering is
+preserved in every project, matching Pekko core.
 
 ### Preferred ways to use timeouts in tests
 
