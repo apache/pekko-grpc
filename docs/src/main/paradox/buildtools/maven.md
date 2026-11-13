@@ -142,9 +142,9 @@ proto files from a dependency and then adding the unpacked directory as a `proto
 All configured `protoPaths` are passed as `-I` import parameters to `protoc`, allowing proto files
 in your project to import definitions from the unpacked artifact.
 
-## JDK 8 support
+## JDK support
 
-If you want to use TLS-based negotiation on JDK 8, Pekko gRPC requires JDK 8 update 252 or later. JVM support for ALPN has been backported to JDK 8u252 which is now widely available. Support for using the Jetty ALPN agent has been dropped in Pekko HTTP and therefore is not supported by Pekko gRPC.
+Pekko gRPC requires JDK 17 or later. ALPN support is built into the supported JDKs; no external ALPN agent is required.
 
 ## Starting your Pekko gRPC server from Maven
 
