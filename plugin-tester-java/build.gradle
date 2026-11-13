@@ -28,7 +28,7 @@ def scalaFullVersion = "2.13.18"
 def scalaVersion = org.gradle.util.VersionNumber.parse(scalaFullVersion)
 def scalaBinaryVersion = "${scalaVersion.major}.${scalaVersion.minor}"
 def pekkoVersion = "2.0.0"
-def pekkoHttpVersion = "2.0.0-M1"
+def pekkoHttpVersion = "2.0.0"
 
 dependencies {
   implementation "org.apache.pekko:pekko-http-cors_${scalaBinaryVersion}:${pekkoHttpVersion}"
