@@ -65,16 +65,30 @@ class PekkoDiscoveryNameResolver(
     }
   }
 
+  /**
+   * Resolves each target to an address group. Targets whose host cannot be resolved are skipped,
+   * so that one unresolvable host does not prevent the remaining targets from being used. Only
+   * when every target fails to resolve is the first failure rethrown.
+   */
   @throws[UnknownHostException]
   private def addresses(addresses: Seq[ResolvedTarget]) = {
     import scala.jdk.CollectionConverters._
-    addresses
-      .map(target => {
-        val port = target.port.getOrElse(defaultPort)
+    var firstFailure: Option[UnknownHostException] = None
+    val groups = addresses.flatMap { target =>
+      val port = target.port.getOrElse(defaultPort)
+      try {
         val address = target.address.getOrElse(InetAddress.getByName(target.host))
-        new EquivalentAddressGroup(new InetSocketAddress(address, port))
-      })
-      .asJava
+        Some(new EquivalentAddressGroup(new InetSocketAddress(address, port)))
+      } catch {
+        case e: UnknownHostException =>
+          if (firstFailure.isEmpty) firstFailure = Some(e)
+          None
+      }
+    }
+    firstFailure match {
+      case Some(e) if groups.isEmpty => throw e
+      case _                         => groups.asJava
+    }
   }
 
   override def shutdown(): Unit = ()
