@@ -153,3 +153,40 @@ running it, and only its result is discarded. A streamed response is different, 
 A request that carries no `grpc-timeout`, or one whose value is malformed, is served without a
 deadline. A malformed value is deliberately ignored rather than rejected: the timeout is a hint
 from the peer, and refusing the request outright would be a worse outcome than serving it.
+
+### Turning deadline enforcement off
+
+Handlers before 2.0.0 ignored `grpc-timeout` and always ran a call to completion. To keep that
+behaviour, for example for a service that relies on a streamed response running to its end, turn
+enforcement off for every service in `application.conf`:
+
+```
+pekko.grpc.server.enforce-deadline = off
+```
+
+or for a single service by passing @apidoc[GrpcServerSettings] to the generated handler:
+
+Scala
+:   ```scala
+    val settings = GrpcServerSettings(system).withEnforceDeadline(false)
+    val handler = GreeterServiceHandler.partial(
+      new GreeterServiceImpl(),
+      settings = Some(settings))
+    ```
+
+Java
+:   ```java
+    GrpcServerSettings settings = GrpcServerSettings.create(system).withEnforceDeadline(false);
+    Function<HttpRequest, CompletionStage<HttpResponse>> handler =
+        GreeterServiceHandlerFactory.partial(
+            new GreeterServiceImpl(),
+            GreeterService.name,
+            SystemMaterializer.get(system).materializer(),
+            GrpcExceptionHandler.defaultMapper(),
+            settings,
+            system);
+    ```
+
+With enforcement off, the `grpc-timeout` header is ignored: a call that outlives the client's
+deadline is not answered with `DEADLINE_EXCEEDED` and a streamed response is not cancelled. The
+client still stops waiting at its own deadline.

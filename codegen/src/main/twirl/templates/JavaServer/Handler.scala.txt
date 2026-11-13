@@ -178,8 +178,8 @@ public class @{serviceName}HandlerFactory {
     private static CompletionStage<org.apache.pekko.http.javadsl.model.HttpResponse> handle(org.apache.pekko.http.javadsl.model.HttpRequest request, String method, @serviceName implementation, Materializer mat, org.apache.pekko.japi.function.Function<ActorSystem, org.apache.pekko.japi.function.Function<Throwable, Trailers>> eHandler, GrpcServerSettings settings, ClassicActorSystemProvider system) {
       return GrpcMarshalling.negotiated(request, settings, (reader, writer) -> {
         // bounds the call by the client's grpc-timeout, so a reply the client has stopped
-        // waiting for is not kept open
-        return GrpcMarshalling.withServerDeadline(request, negotiate(request, method, implementation, mat, eHandler, system, reader, writer), system, writer);
+        // waiting for is not kept open, unless the settings turn that off
+        return GrpcMarshalling.withServerDeadline(request, settings, negotiate(request, method, implementation, mat, eHandler, system, reader, writer), system, writer);
       })
       .orElseGet(() -> unsupportedMediaType);
     }

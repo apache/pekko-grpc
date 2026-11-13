@@ -69,29 +69,32 @@ object GrpcMarshalling {
    * the stream producing it is cancelled, which stops the server-side work.
    *
    * The deadline's timer is cancelled as soon as it is no longer needed. A request with no
-   * `grpc-timeout`, or an unparseable one, is left unbounded.
+   * `grpc-timeout`, or an unparseable one, is left unbounded, as is every request when
+   * `settings.enforceDeadline` is off.
    */
   @InternalApi
-  def withServerDeadline(request: HttpRequest, response: Future[HttpResponse])(
+  def withServerDeadline(request: HttpRequest, settings: GrpcServerSettings, response: Future[HttpResponse])(
       implicit system: ClassicActorSystemProvider,
       writer: GrpcProtocolWriter,
       ec: ExecutionContext): Future[HttpResponse] =
-    headers.`Timeout`.findIn(request.headers) match {
-      case None           => response
-      case Some(deadline) =>
-        val start = System.nanoTime()
-        val deadlineExceeded = Status.DEADLINE_EXCEEDED.withDescription(s"Deadline of $deadline exceeded")
-        val result = Promise[HttpResponse]()
-        val timer = system.classicSystem.scheduler.scheduleOnce(deadline) {
-          result.trySuccess(GrpcResponseHelpers.status(Trailers(deadlineExceeded)))
-        }
-        response.onComplete { completed =>
-          timer.cancel()
-          val remaining = deadline - (System.nanoTime() - start).nanos
-          result.tryComplete(completed.map(boundBody(_, remaining, deadlineExceeded)))
-        }
-        result.future
-    }
+    if (!settings.enforceDeadline) response
+    else
+      headers.`Timeout`.findIn(request.headers) match {
+        case None           => response
+        case Some(deadline) =>
+          val start = System.nanoTime()
+          val deadlineExceeded = Status.DEADLINE_EXCEEDED.withDescription(s"Deadline of $deadline exceeded")
+          val result = Promise[HttpResponse]()
+          val timer = system.classicSystem.scheduler.scheduleOnce(deadline) {
+            result.trySuccess(GrpcResponseHelpers.status(Trailers(deadlineExceeded)))
+          }
+          response.onComplete { completed =>
+            timer.cancel()
+            val remaining = deadline - (System.nanoTime() - start).nanos
+            result.tryComplete(completed.map(boundBody(_, remaining, deadlineExceeded)))
+          }
+          result.future
+      }
 
   /**
    * Ends a chunked gRPC body with `DEADLINE_EXCEEDED` trailers once `remaining` has passed,

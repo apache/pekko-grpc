@@ -25,6 +25,7 @@ import org.apache.pekko
 import pekko.{ Done, NotUsed }
 import pekko.actor.ActorSystem
 import pekko.grpc.GrpcProtocol.GrpcProtocolWriter
+import pekko.grpc.GrpcServerSettings
 import pekko.grpc.internal.{ GrpcProtocolNative, GrpcResponseHelpers, Identity }
 import pekko.grpc.scaladsl.headers.`Timeout`
 import pekko.http.scaladsl.model.{ HttpEntity, HttpRequest, HttpResponse, StatusCodes }
@@ -56,6 +57,9 @@ class ServerDeadlineSpec
   implicit val serializer: ScalapbProtobufSerializer[StringValue] =
     new ScalapbProtobufSerializer(StringValue.messageCompanion)
 
+  private val enforced = GrpcServerSettings.defaults
+  private val notEnforced = GrpcServerSettings.defaults.withEnforceDeadline(false)
+
   private def statusOf(response: HttpResponse): Option[String] =
     response.headers.collectFirst { case h if h.is("grpc-status") => h.value }
 
@@ -65,7 +69,7 @@ class ServerDeadlineSpec
       val request = HttpRequest()
       val slow = pekko.pattern.after(300.millis)(Future.successful(HttpResponse()))(system)
 
-      val response = GrpcMarshalling.withServerDeadline(request, slow).futureValue
+      val response = GrpcMarshalling.withServerDeadline(request, enforced, slow).futureValue
 
       response.status shouldBe StatusCodes.OK
       statusOf(response) shouldBe None
@@ -74,7 +78,8 @@ class ServerDeadlineSpec
     "complete a response that beats the deadline unchanged" in {
       val request = HttpRequest().withHeaders(`Timeout`(5.seconds))
 
-      val response = GrpcMarshalling.withServerDeadline(request, Future.successful(HttpResponse())).futureValue
+      val response =
+        GrpcMarshalling.withServerDeadline(request, enforced, Future.successful(HttpResponse())).futureValue
 
       response.status shouldBe StatusCodes.OK
       statusOf(response) shouldBe None
@@ -85,7 +90,7 @@ class ServerDeadlineSpec
       // never completes, standing in for a handler that outlives the client
       val stuck = Promise[HttpResponse]().future
 
-      val response = GrpcMarshalling.withServerDeadline(request, stuck).futureValue
+      val response = GrpcMarshalling.withServerDeadline(request, enforced, stuck).futureValue
 
       statusOf(response) shouldBe Some(Status.Code.DEADLINE_EXCEEDED.value.toString)
     }
@@ -95,7 +100,7 @@ class ServerDeadlineSpec
       val slow = pekko.pattern.after(5.seconds)(Future.successful(HttpResponse()))(system)
 
       val started = System.nanoTime()
-      val response = GrpcMarshalling.withServerDeadline(request, slow).futureValue
+      val response = GrpcMarshalling.withServerDeadline(request, enforced, slow).futureValue
       val elapsed = (System.nanoTime() - started).nanos
 
       statusOf(response) shouldBe Some(Status.Code.DEADLINE_EXCEEDED.value.toString)
@@ -117,7 +122,7 @@ class ServerDeadlineSpec
         }
 
       val response =
-        GrpcMarshalling.withServerDeadline(request, Future.successful(GrpcResponseHelpers(body))).futureValue
+        GrpcMarshalling.withServerDeadline(request, enforced, Future.successful(GrpcResponseHelpers(body))).futureValue
       val chunks = response.entity.asInstanceOf[HttpEntity.Chunked].chunks.runWith(Sink.seq).futureValue
 
       chunks should have size 2
@@ -135,7 +140,36 @@ class ServerDeadlineSpec
       val body = Source(List(StringValue("first"), StringValue("second")))
 
       val response =
-        GrpcMarshalling.withServerDeadline(request, Future.successful(GrpcResponseHelpers(body))).futureValue
+        GrpcMarshalling.withServerDeadline(request, enforced, Future.successful(GrpcResponseHelpers(body))).futureValue
+      val chunks = response.entity.asInstanceOf[HttpEntity.Chunked].chunks.runWith(Sink.seq).futureValue
+
+      chunks should have size 3
+      chunks.last match {
+        case HttpEntity.LastChunk(_, trailer) =>
+          trailer.collectFirst { case h if h.is("grpc-status") => h.value } shouldBe
+          Some(Status.Code.OK.value.toString)
+        case other => fail(s"Expected trailers but got $other")
+      }
+    }
+
+    "leave a request unbounded when enforcing the deadline is turned off" in {
+      val request = HttpRequest().withHeaders(`Timeout`(100.millis))
+      val slow = pekko.pattern.after(300.millis)(Future.successful(HttpResponse()))(system)
+
+      val response = GrpcMarshalling.withServerDeadline(request, notEnforced, slow).futureValue
+
+      // the handler's own reply, not DEADLINE_EXCEEDED, even though it arrived after the deadline
+      response.status shouldBe StatusCodes.OK
+      statusOf(response) shouldBe None
+    }
+
+    "leave a streamed body unbounded when enforcing the deadline is turned off" in {
+      val request = HttpRequest().withHeaders(`Timeout`(100.millis))
+      val body = Source(List(StringValue("first"), StringValue("second"))).initialDelay(300.millis)
+
+      val response =
+        GrpcMarshalling.withServerDeadline(request, notEnforced,
+          Future.successful(GrpcResponseHelpers(body))).futureValue
       val chunks = response.entity.asInstanceOf[HttpEntity.Chunked].chunks.runWith(Sink.seq).futureValue
 
       chunks should have size 3
@@ -150,7 +184,8 @@ class ServerDeadlineSpec
     "ignore a malformed grpc-timeout rather than refusing to serve" in {
       val request = HttpRequest().withHeaders(RawHeader("grpc-timeout", "not a timeout"))
 
-      val response = GrpcMarshalling.withServerDeadline(request, Future.successful(HttpResponse())).futureValue
+      val response =
+        GrpcMarshalling.withServerDeadline(request, enforced, Future.successful(HttpResponse())).futureValue
 
       response.status shouldBe StatusCodes.OK
       statusOf(response) shouldBe None
