@@ -16,6 +16,7 @@
  * [Deployment](deploy.md)
  * [mTLS](mtls.md)
  * [Troubleshooting](troubleshooting.md)
+ * [Migration Guide 1.x to 2.x](migration-guide-1.x-2.x.md)
  * [Release Notes](release-notes/index.md)
  * [License Report](license-report.md)
 
