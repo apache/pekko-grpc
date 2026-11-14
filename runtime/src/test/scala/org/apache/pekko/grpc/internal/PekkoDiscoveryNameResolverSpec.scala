@@ -17,6 +17,8 @@ import java.net.InetSocketAddress
 
 import org.apache.pekko
 import pekko.actor.ActorSystem
+import pekko.discovery.{ Lookup, ServiceDiscovery }
+import pekko.discovery.ServiceDiscovery.{ Resolved, ResolvedTarget }
 import pekko.grpc.{ GrpcClientSettings, GrpcServiceException }
 import pekko.testkit.TestKit
 import io.grpc.Status
@@ -27,7 +29,13 @@ import org.scalatest.time.{ Millis, Seconds, Span }
 import org.scalatest.wordspec.AnyWordSpecLike
 
 import scala.jdk.CollectionConverters._
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.duration._
+
+class StaticDiscovery(targets: ResolvedTarget*) extends ServiceDiscovery {
+  def lookup(lookup: Lookup, resolveTimeout: FiniteDuration): Future[Resolved] =
+    Future.successful(Resolved(lookup.serviceName, targets.toList))
+}
 
 class PekkoDiscoveryNameResolverSpec
     extends TestKit(ActorSystem())
@@ -54,9 +62,41 @@ class PekkoDiscoveryNameResolverSpec
 
       val exception = probe.future.failed.futureValue.asInstanceOf[GrpcServiceException]
       exception shouldBe an[GrpcServiceException]
-      exception.status.getCode == Status.UNKNOWN.getCode
+      exception.status.getCode shouldBe Status.UNKNOWN.getCode
       // FIXME: This description is not portable - it arises from native function response, which differs by OS
       // exception.status.getDescription should equal(host + ": Name or service not known")
+    }
+
+    "skip unresolvable hosts and keep the resolvable ones" in {
+      val discovery = new StaticDiscovery(
+        ResolvedTarget("example.invalid", Some(1234), None),
+        ResolvedTarget("localhost", Some(4040), None))
+      val resolver = new PekkoDiscoveryNameResolver(discovery, 80, "service", None, None, 1.second)
+      val probe = new NameResolverListenerProbe()
+
+      resolver.start(probe)
+
+      val addresses = probe.future.futureValue.flatMap(_.getAddresses.asScala)
+      addresses match {
+        case Seq(address: InetSocketAddress) =>
+          address.getPort should be(4040)
+          address.getAddress.getHostName should be("localhost")
+        case other =>
+          fail(s"Expected only the resolvable address, got $other")
+      }
+    }
+
+    "report an error when no host can be resolved" in {
+      val discovery = new StaticDiscovery(
+        ResolvedTarget("example.invalid", Some(1234), None),
+        ResolvedTarget("other.invalid", Some(5678), None))
+      val resolver = new PekkoDiscoveryNameResolver(discovery, 80, "service", None, None, 1.second)
+      val probe = new NameResolverListenerProbe()
+
+      resolver.start(probe)
+
+      val exception = probe.future.failed.futureValue.asInstanceOf[GrpcServiceException]
+      exception.status.getCode shouldBe Status.UNKNOWN.getCode
     }
 
     "support serving a static host/port" in {
