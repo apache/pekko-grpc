@@ -14,18 +14,18 @@
 package org.apache.pekko.grpc.internal
 
 import org.apache.pekko
+import pekko.NotUsed
 import pekko.actor.ActorSystem
 import pekko.actor.ClassicActorSystemProvider
-import pekko.grpc.{ ProtobufSerializer, Trailers }
-import pekko.grpc.GrpcProtocol.GrpcProtocolWriter
-import pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
-import pekko.stream.scaladsl.Source
-import pekko.NotUsed
 import pekko.annotation.InternalApi
+import pekko.grpc.GrpcProtocol.GrpcProtocolWriter
 import pekko.grpc.scaladsl.GrpcExceptionHandler
 import pekko.grpc.scaladsl.headers._
+import pekko.grpc.{ ProtobufSerializer, Trailers }
 import pekko.http.scaladsl.model
+import pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
 import pekko.http.scaladsl.model.{ HttpEntity, HttpHeader, HttpMethods, HttpRequest, TransferEncodings, Uri }
+import pekko.stream.scaladsl.Source
 
 @InternalApi
 object GrpcRequestHelpers {

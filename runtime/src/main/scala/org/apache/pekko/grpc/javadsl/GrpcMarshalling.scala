@@ -13,25 +13,25 @@
 
 package org.apache.pekko.grpc.javadsl
 
-import java.util.concurrent.{ CompletableFuture, CompletionStage }
 import java.util.Optional
+import java.util.concurrent.{ CompletableFuture, CompletionStage }
+
+import scala.annotation.nowarn
+import scala.util.control.NonFatal
 
 import org.apache.pekko
 import pekko.NotUsed
 import pekko.actor.ActorSystem
 import pekko.actor.ClassicActorSystemProvider
 import pekko.annotation.InternalApi
+import pekko.grpc.GrpcProtocol.{ GrpcProtocolReader, GrpcProtocolWriter }
 import pekko.grpc._
 import pekko.grpc.internal._
-import pekko.grpc.GrpcProtocol.{ GrpcProtocolReader, GrpcProtocolWriter }
 import pekko.http.javadsl.model.{ HttpEntity, HttpRequest, HttpResponse }
 import pekko.japi.function.{ Function => JFunction }
 import pekko.stream.Materializer
 import pekko.stream.javadsl.Source
 import pekko.util.ByteString
-
-import scala.annotation.nowarn
-import scala.util.control.NonFatal
 
 object GrpcMarshalling {
 

@@ -20,15 +20,15 @@ import pekko.NotUsed
 import pekko.actor.ClassicActorSystemProvider
 import pekko.annotation.ApiMayChange
 import pekko.grpc.javadsl.ServiceHandler.{ concatOrNotFound, unsupportedMediaType }
+import pekko.grpc.scaladsl
+import pekko.http.cors.javadsl.CorsDirectives
 import pekko.http.cors.javadsl.settings.CorsSettings
 import pekko.http.cors.scaladsl.settings.{ CorsSettings => sCorsSettings }
-import pekko.http.cors.javadsl.CorsDirectives
 import pekko.http.javadsl.marshalling.Marshaller
 import pekko.http.javadsl.model.{ HttpRequest, HttpResponse }
 import pekko.http.javadsl.server.Route
 import pekko.http.javadsl.server.directives.RouteAdapter
 import pekko.http.scaladsl.marshalling.{ Marshaller => sMarshaller, ToResponseMarshaller }
-import pekko.grpc.scaladsl
 import pekko.http.scaladsl.server.directives.MarshallingDirectives
 import pekko.japi.function.{ Function => JFunction }
 import pekko.stream.Materializer

@@ -13,6 +13,7 @@ val sbtProtocV = "1.1.0-RC2"
 
 buildInfoKeys := Seq[BuildInfoKey]("sbtProtocVersion" -> sbtProtocV)
 
+addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.14.10")
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.6.2")
 addSbtPlugin("com.github.sbt" % "sbt-java-formatter" % "0.14.0")
 addSbtPlugin("com.github.sbt" % "sbt-header" % "5.11.0")

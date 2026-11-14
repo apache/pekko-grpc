@@ -48,6 +48,8 @@ lazy val mkBatAssemblyTask = taskKey[File]("Create a Windows bat assembly")
 ThisBuild / javafmtFormatterCompatibleJavaVersion := 17
 ThisBuild / javafmtSortImports := false
 
+addCommandAlias("sortImports", ";scalafixEnable; scalafixAll OrganizeImports; scalafmtAll")
+
 addCommandAlias("checkCodeStyle", "scalafmtCheckAll; scalafmtSbtCheck; javafmtCheckAll; +headerCheckAll")
 addCommandAlias("applyCodeStyle", "+headerCreateAll; scalafmtAll; scalafmtSbt; javafmtAll")
 addCommandAlias(

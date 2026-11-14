@@ -13,12 +13,14 @@
 
 package org.apache.pekko.grpc
 
+import scala.util.Try
+
 import org.apache.pekko
 import pekko.NotUsed
 import pekko.annotation.InternalApi
 import pekko.annotation.InternalStableApi
-import pekko.grpc.GrpcProtocol.{ GrpcProtocolReader, GrpcProtocolWriter }
 import pekko.grpc.GrpcProtocol.DeferredDataFrame.DeferredDataWriter
+import pekko.grpc.GrpcProtocol.{ GrpcProtocolReader, GrpcProtocolWriter }
 import pekko.grpc.internal.{
   AbstractGrpcProtocol,
   Codec,
@@ -28,12 +30,10 @@ import pekko.grpc.internal.{
   GrpcProtocolWebText
 }
 import pekko.http.javadsl.{ model => jmodel }
-import pekko.http.scaladsl.model.{ ContentType, HttpHeader, HttpResponse, Trailer }
 import pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
+import pekko.http.scaladsl.model.{ ContentType, HttpHeader, HttpResponse, Trailer }
 import pekko.stream.scaladsl.Flow
 import pekko.util.ByteString
-
-import scala.util.Try
 
 /**
  * A variant of the gRPC protocol - e.g. gRPC and gRPC-Web

@@ -12,9 +12,12 @@
  */
 
 package org.apache.pekko.grpc.internal
+import io.grpc.{ Status, StatusException }
+
 import org.apache.pekko
 import pekko.NotUsed
 import pekko.grpc.GrpcProtocol
+import pekko.grpc.GrpcProtocol.DeferredDataFrame.DeferredDataWriter
 import pekko.grpc.GrpcProtocol.{
   DataFrame,
   DeferredDataFrame,
@@ -24,7 +27,6 @@ import pekko.grpc.GrpcProtocol.{
   OutboundDataFrame,
   OutboundFrame
 }
-import pekko.grpc.GrpcProtocol.DeferredDataFrame.DeferredDataWriter
 import pekko.http.javadsl.{ model => jmodel }
 import pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
 import pekko.http.scaladsl.model.{ ContentType, HttpHeader, HttpResponse, MediaType, Trailer }
@@ -34,7 +36,6 @@ import pekko.stream.impl.io.ByteStringParser.{ ByteReader, ParseResult, ParseSte
 import pekko.stream.scaladsl.Flow
 import pekko.stream.stage.GraphStageLogic
 import pekko.util.ByteString
-import io.grpc.{ Status, StatusException }
 
 abstract class AbstractGrpcProtocol(subType: String) extends GrpcProtocol {
 

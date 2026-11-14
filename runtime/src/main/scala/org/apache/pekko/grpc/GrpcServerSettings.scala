@@ -13,6 +13,7 @@ import org.apache.pekko
 import pekko.actor.ClassicActorSystemProvider
 import pekko.annotation.{ ApiMayChange, InternalApi }
 import pekko.grpc.internal.AbstractGrpcProtocol
+
 import com.typesafe.config.{ Config, ConfigFactory }
 
 object GrpcServerSettings {

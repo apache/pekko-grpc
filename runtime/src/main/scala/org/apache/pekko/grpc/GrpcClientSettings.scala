@@ -13,21 +13,24 @@
 
 package org.apache.pekko.grpc
 
-import org.apache.pekko
-import pekko.actor.ClassicActorSystemProvider
-import pekko.annotation.{ ApiMayChange, InternalApi }
-import pekko.discovery.{ Discovery, ServiceDiscovery }
-import pekko.discovery.ServiceDiscovery.{ Resolved, ResolvedTarget }
-import pekko.grpc.internal.{ AbstractGrpcProtocol, Codecs, HardcodedServiceDiscovery, Identity }
-import pekko.util.Helpers
-import com.typesafe.config.{ Config, ConfigValueFactory }
-import io.grpc.CallCredentials
-import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder
-import io.grpc.netty.shaded.io.netty.handler.ssl.SslProvider
 import javax.net.ssl.{ SSLContext, TrustManager }
 
 import scala.concurrent.duration.{ Duration, _ }
 import scala.jdk.DurationConverters._
+
+import io.grpc.CallCredentials
+import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder
+import io.grpc.netty.shaded.io.netty.handler.ssl.SslProvider
+
+import org.apache.pekko
+import pekko.actor.ClassicActorSystemProvider
+import pekko.annotation.{ ApiMayChange, InternalApi }
+import pekko.discovery.ServiceDiscovery.{ Resolved, ResolvedTarget }
+import pekko.discovery.{ Discovery, ServiceDiscovery }
+import pekko.grpc.internal.{ AbstractGrpcProtocol, Codecs, HardcodedServiceDiscovery, Identity }
+import pekko.util.Helpers
+
+import com.typesafe.config.{ Config, ConfigValueFactory }
 
 object GrpcClientSettings {
 

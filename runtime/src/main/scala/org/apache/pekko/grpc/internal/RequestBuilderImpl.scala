@@ -16,20 +16,21 @@ package org.apache.pekko.grpc.internal
 import java.time.{ Duration => JDuration }
 import java.util.concurrent.CompletionStage
 
+import scala.concurrent.duration.Duration
+import scala.concurrent.{ ExecutionContext, Future }
+import scala.jdk.FutureConverters._
+
+import io.grpc._
+
 import org.apache.pekko
 import pekko.NotUsed
 import pekko.annotation.{ InternalApi, InternalStableApi }
 import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, GrpcServiceException, GrpcSingleResponse }
 import pekko.http.scaladsl.util.FastFuture
-import pekko.stream.{ Graph, Materializer, SourceShape }
 import pekko.stream.javadsl.{ Source => JavaSource }
 import pekko.stream.scaladsl.{ Keep, Sink, Source }
+import pekko.stream.{ Graph, Materializer, SourceShape }
 import pekko.util.ByteString
-import io.grpc._
-
-import scala.concurrent.{ ExecutionContext, Future }
-import scala.concurrent.duration.Duration
-import scala.jdk.FutureConverters._
 
 /**
  * INTERNAL API

@@ -15,14 +15,15 @@ package org.apache.pekko.grpc.internal
 
 import java.util.concurrent.CompletionStage
 
+import scala.concurrent.{ ExecutionContext, Future, Promise }
+import scala.jdk.FutureConverters._
+
+import io.grpc._
+
 import org.apache.pekko
 import pekko.annotation.InternalApi
 import pekko.grpc.GrpcSingleResponse
 import pekko.util.OptionVal
-import io.grpc._
-
-import scala.concurrent.{ ExecutionContext, Future, Promise }
-import scala.jdk.FutureConverters._
 
 /**
  * gRPC Netty based client listener transforming callbacks into a future response

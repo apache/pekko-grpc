@@ -13,11 +13,12 @@
 
 package org.apache.pekko.grpc.internal
 
+import io.grpc.Status
+
 import org.apache.pekko
 import pekko.NotUsed
 import pekko.actor.{ ActorSystem, ClassicActorSystemProvider }
 import pekko.annotation.InternalApi
-import pekko.grpc.{ GrpcServiceException, ProtobufFrameSerializer, ProtobufSerializer, Trailers }
 import pekko.grpc.GrpcProtocol.{
   DataFrame,
   DeferredDataFrame,
@@ -26,12 +27,12 @@ import pekko.grpc.GrpcProtocol.{
   OutboundFrame,
   TrailerFrame
 }
-import pekko.grpc.scaladsl.{ headers, BytesEntry, Metadata, MetadataEntry, StringEntry }
+import pekko.grpc.scaladsl.{ BytesEntry, Metadata, MetadataEntry, StringEntry, headers }
+import pekko.grpc.{ GrpcServiceException, ProtobufFrameSerializer, ProtobufSerializer, Trailers }
 import pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
 import pekko.http.scaladsl.model.HttpHeader
 import pekko.http.scaladsl.model.headers.RawHeader
 import pekko.stream.scaladsl.Source
-import io.grpc.Status
 
 /** INTERNAL API */
 @InternalApi

@@ -13,23 +13,23 @@
 
 package org.apache.pekko.grpc.scaladsl
 
-import io.grpc.Status
-
 import scala.annotation.nowarn
-import scala.concurrent.{ ExecutionContext, Future, Promise }
 import scala.concurrent.duration._
+import scala.concurrent.{ ExecutionContext, Future, Promise }
 import scala.util.{ Failure, Success, Try }
+
+import io.grpc.Status
 
 import org.apache.pekko
 import pekko.NotUsed
 import pekko.actor.ActorSystem
 import pekko.actor.ClassicActorSystemProvider
 import pekko.annotation.InternalApi
-import pekko.grpc._
 import pekko.grpc.GrpcProtocol.{ GrpcProtocolReader, GrpcProtocolWriter }
+import pekko.grpc._
 import pekko.grpc.internal._
-import pekko.http.scaladsl.model.{ HttpEntity, HttpRequest, HttpResponse, Uri }
 import pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
+import pekko.http.scaladsl.model.{ HttpEntity, HttpRequest, HttpResponse, Uri }
 import pekko.http.scaladsl.util.FastFuture
 import pekko.stream.Materializer
 import pekko.stream.scaladsl.Source

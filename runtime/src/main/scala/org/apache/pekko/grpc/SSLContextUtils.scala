@@ -16,10 +16,9 @@ package org.apache.pekko.grpc
 import java.io.{ BufferedInputStream, IOException, InputStream }
 import java.security.KeyStore
 import java.security.cert.{ CertificateFactory, X509Certificate }
+import javax.net.ssl.{ SSLContext, SSLContextSpi, SSLEngine, SSLParameters, TrustManager, TrustManagerFactory }
 
 import org.apache.pekko.annotation.InternalApi
-
-import javax.net.ssl.{ SSLContext, SSLContextSpi, SSLEngine, SSLParameters, TrustManager, TrustManagerFactory }
 
 object SSLContextUtils {
   def trustManagerFromStream(certStream: InputStream): TrustManager = {

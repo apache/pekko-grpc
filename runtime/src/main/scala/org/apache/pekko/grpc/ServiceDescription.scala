@@ -13,9 +13,9 @@
 
 package org.apache.pekko.grpc
 
-import org.apache.pekko.annotation.ApiMayChange
-
 import com.google.protobuf.Descriptors.FileDescriptor
+
+import org.apache.pekko.annotation.ApiMayChange
 
 @ApiMayChange
 trait ServiceDescription {

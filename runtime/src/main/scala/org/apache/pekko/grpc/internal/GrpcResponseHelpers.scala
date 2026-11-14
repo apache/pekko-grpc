@@ -13,22 +13,23 @@
 
 package org.apache.pekko.grpc.internal
 
+import scala.concurrent.{ ExecutionContext, Future }
+import scala.util.control.NonFatal
+
+import io.grpc.Status
+
 import org.apache.pekko
 import pekko.NotUsed
 import pekko.actor.{ ActorSystem, ClassicActorSystemProvider }
 import pekko.annotation.InternalApi
 import pekko.grpc.GrpcProtocol.{ GrpcProtocolWriter, TrailerFrame }
-import pekko.grpc.scaladsl.{ headers, GrpcExceptionHandler }
+import pekko.grpc.scaladsl.{ GrpcExceptionHandler, headers }
 import pekko.grpc.{ ProtobufSerializer, Trailers }
-import pekko.http.scaladsl.model.headers.{ Trailer => TrailerHeader }
 import pekko.http.scaladsl.model.HttpEntity.ChunkStreamPart
+import pekko.http.scaladsl.model.headers.{ Trailer => TrailerHeader }
 import pekko.http.scaladsl.model.{ HttpEntity, HttpHeader, HttpResponse, Trailer }
 import pekko.stream.Materializer
 import pekko.stream.scaladsl.Source
-import io.grpc.Status
-
-import scala.concurrent.{ ExecutionContext, Future }
-import scala.util.control.NonFatal
 
 /**
  * Some helpers for creating HTTP entities for use with gRPC.

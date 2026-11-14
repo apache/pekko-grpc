@@ -17,9 +17,9 @@ import java.util.{ List, Map, Optional }
 
 import org.apache.pekko
 import pekko.annotation.{ ApiMayChange, DoNotInherit }
-import pekko.util.ByteString
-import pekko.japi.Pair
 import pekko.grpc.scaladsl
+import pekko.japi.Pair
+import pekko.util.ByteString
 
 /**
  * Immutable representation of the metadata in a call

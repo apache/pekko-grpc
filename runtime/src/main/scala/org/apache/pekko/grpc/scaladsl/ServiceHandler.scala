@@ -13,6 +13,8 @@
 
 package org.apache.pekko.grpc.scaladsl
 
+import scala.concurrent.Future
+
 import org.apache.pekko
 import pekko.annotation.ApiMayChange
 import pekko.grpc.GrpcProtocol
@@ -20,8 +22,6 @@ import pekko.grpc.internal.{ GrpcProtocolWeb, GrpcProtocolWebText }
 import pekko.http.javadsl.{ model => jmodel }
 import pekko.http.scaladsl.model.{ HttpRequest, HttpResponse, StatusCodes }
 import pekko.http.scaladsl.util.FastFuture
-
-import scala.concurrent.Future
 
 @ApiMayChange
 object ServiceHandler {

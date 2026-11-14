@@ -13,14 +13,16 @@
 
 package org.apache.pekko.grpc.internal
 
+import scala.util.{ Failure, Success, Try }
+
+import io.grpc.Status
+
 import org.apache.pekko
+import pekko.grpc.GrpcServiceException
+import pekko.grpc.scaladsl.headers.{ `Message-Accept-Encoding`, `Message-Encoding` }
+import pekko.grpc.scaladsl.{ Metadata, MetadataBuilder }
 import pekko.http.javadsl.{ model => jm }
 import pekko.http.scaladsl.{ model => sm }
-import pekko.grpc.GrpcServiceException
-import pekko.grpc.scaladsl.{ Metadata, MetadataBuilder }
-import pekko.grpc.scaladsl.headers.{ `Message-Accept-Encoding`, `Message-Encoding` }
-import io.grpc.Status
-import scala.util.{ Failure, Success, Try }
 
 object Codecs {
   // TODO should this list be made user-extensible?

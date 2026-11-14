@@ -13,10 +13,11 @@
 
 package org.apache.pekko.grpc.internal
 
-import org.apache.pekko.util.ByteString
+import scala.annotation.nowarn
+
 import io.grpc.{ Status, StatusException }
 
-import scala.annotation.nowarn
+import org.apache.pekko.util.ByteString
 
 abstract class Codec {
   val name: String

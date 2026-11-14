@@ -13,12 +13,13 @@
 
 package org.apache.pekko.grpc
 
+import io.grpc.Status
+
 import org.apache.pekko
 import pekko.annotation.ApiMayChange
-import io.grpc.Status
 import pekko.grpc.internal.JavaMetadataImpl
-import pekko.grpc.scaladsl.{ Metadata, MetadataBuilder }
 import pekko.grpc.javadsl.{ Metadata => jMetadata }
+import pekko.grpc.scaladsl.{ Metadata, MetadataBuilder }
 
 @ApiMayChange
 class Trailers(val status: Status, val metadata: Metadata) {

@@ -15,25 +15,26 @@ package org.apache.pekko.grpc.internal
 
 import java.io.{ InputStream, OutputStream }
 import java.util.concurrent.TimeUnit
-
 import javax.net.ssl.SSLContext
-import org.apache.pekko
-import pekko.{ Done, NotUsed }
-import pekko.annotation.InternalApi
-import pekko.event.LoggingAdapter
-import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, GrpcSingleResponse, SSLContextUtils }
-import pekko.stream.scaladsl.{ Flow, Keep, Source }
-import io.grpc.{ CallOptions, Codec => GrpcCodec, CompressorRegistry, DecompressorRegistry, MethodDescriptor }
-import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts
-import io.grpc.netty.shaded.io.grpc.netty.NegotiationType
-import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder
-import io.grpc.netty.shaded.io.netty.handler.ssl.{ SslContext, SslContextBuilder }
 
 import scala.annotation.nowarn
 import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.{ ExecutionContext, Future, Promise }
 import scala.jdk.CollectionConverters._
 import scala.util.{ Failure, Success }
+
+import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts
+import io.grpc.netty.shaded.io.grpc.netty.NegotiationType
+import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder
+import io.grpc.netty.shaded.io.netty.handler.ssl.{ SslContext, SslContextBuilder }
+import io.grpc.{ CallOptions, Codec => GrpcCodec, CompressorRegistry, DecompressorRegistry, MethodDescriptor }
+
+import org.apache.pekko
+import pekko.annotation.InternalApi
+import pekko.event.LoggingAdapter
+import pekko.grpc.{ GrpcClientSettings, GrpcResponseMetadata, GrpcSingleResponse, SSLContextUtils }
+import pekko.stream.scaladsl.{ Flow, Keep, Source }
+import pekko.{ Done, NotUsed }
 
 /**
  * INTERNAL API

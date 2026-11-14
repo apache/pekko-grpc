@@ -13,6 +13,8 @@
 
 package org.apache.pekko.grpc.internal
 
+import scala.annotation.nowarn
+
 import org.apache.pekko
 import pekko.actor.{
   ActorSystem,
@@ -24,8 +26,6 @@ import pekko.actor.{
 }
 import pekko.annotation.{ InternalApi, InternalStableApi }
 import pekko.http.javadsl.model.HttpRequest
-
-import scala.annotation.nowarn
 
 /** INTERNAL API */
 @InternalStableApi
