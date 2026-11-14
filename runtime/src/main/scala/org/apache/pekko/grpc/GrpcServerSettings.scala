@@ -48,7 +48,10 @@ object GrpcServerSettings {
     new GrpcServerSettings(
       maxInboundMessageSize =
         if (config.hasPath("max-inbound-message-size")) config.getInt("max-inbound-message-size")
-        else AbstractGrpcProtocol.DefaultMaxInboundMessageSize)
+        else AbstractGrpcProtocol.DefaultMaxInboundMessageSize,
+      enforceDeadline =
+        if (config.hasPath("enforce-deadline")) config.getBoolean("enforce-deadline")
+        else true)
 }
 
 /**
@@ -60,7 +63,8 @@ object GrpcServerSettings {
  */
 @ApiMayChange
 final class GrpcServerSettings private (
-    val maxInboundMessageSize: Int) {
+    val maxInboundMessageSize: Int,
+    val enforceDeadline: Boolean) {
 
   require(
     maxInboundMessageSize > 0,
@@ -73,9 +77,25 @@ final class GrpcServerSettings private (
    * @since 2.0.0
    */
   def withMaxInboundMessageSize(value: Int): GrpcServerSettings =
-    new GrpcServerSettings(
-      maxInboundMessageSize = value)
+    copy(maxInboundMessageSize = value)
+
+  /**
+   * Whether generated handlers bound a call by the deadline the client sent in `grpc-timeout`.
+   *
+   * When enabled (the default), a call that is still running when the deadline passes is
+   * completed with `DEADLINE_EXCEEDED`, and a streamed response is ended and its `Source`
+   * cancelled. When disabled, the header is ignored and the call runs to completion, as it did
+   * before 2.0.0.
+   * @since 2.0.0
+   */
+  def withEnforceDeadline(value: Boolean): GrpcServerSettings =
+    copy(enforceDeadline = value)
+
+  private def copy(
+      maxInboundMessageSize: Int = maxInboundMessageSize,
+      enforceDeadline: Boolean = enforceDeadline): GrpcServerSettings =
+    new GrpcServerSettings(maxInboundMessageSize = maxInboundMessageSize, enforceDeadline = enforceDeadline)
 
   override def toString: String =
-    s"GrpcServerSettings(maxInboundMessageSize=$maxInboundMessageSize)"
+    s"GrpcServerSettings(maxInboundMessageSize=$maxInboundMessageSize, enforceDeadline=$enforceDeadline)"
 }

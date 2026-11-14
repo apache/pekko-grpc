@@ -62,6 +62,23 @@ class GrpcServerSettingsSpec extends TestKit(ActorSystem()) with AnyWordSpecLike
         GrpcServerSettings.fromConfig(ConfigFactory.parseString("max-inbound-message-size = 0")))
     }
 
+    "enforce the client's deadline by default" in {
+      GrpcServerSettings(system).enforceDeadline shouldBe true
+      GrpcServerSettings.fromConfig(ConfigFactory.empty()).enforceDeadline shouldBe true
+    }
+
+    "read whether to enforce the client's deadline from config" in {
+      GrpcServerSettings.fromConfig(ConfigFactory.parseString("enforce-deadline = off")).enforceDeadline shouldBe false
+    }
+
+    "support turning off enforcing the client's deadline" in {
+      val settings = GrpcServerSettings(system).withMaxInboundMessageSize(1234).withEnforceDeadline(false)
+
+      settings.enforceDeadline shouldBe false
+      settings.maxInboundMessageSize shouldBe 1234
+      settings.withEnforceDeadline(true).enforceDeadline shouldBe true
+    }
+
     "expose the same value via the Java API" in {
       GrpcServerSettings.create(system).maxInboundMessageSize shouldBe GrpcServerSettings(system).maxInboundMessageSize
     }

@@ -27,6 +27,7 @@ import example.myapp.helloworld.grpc._
 import io.grpc.Status
 import org.apache.pekko
 import pekko.actor.ActorSystem
+import pekko.grpc.GrpcServerSettings
 import pekko.grpc.scaladsl.headers.`Timeout`
 import pekko.http.scaladsl.model.{ HttpRequest, HttpResponse }
 import pekko.stream.scaladsl.Source
@@ -106,6 +107,22 @@ class ServerTimeoutSpec extends Matchers with AnyWordSpecLike with BeforeAndAfte
 
       // nothing bounds it, so it is still pending well after the deadline above would have hit
       pekko.pattern.after(500.millis)(Future.successful(()))(system).futureValue
+      response.isCompleted shouldBe false
+    }
+
+    "not answer early when enforcing the deadline is turned off" in {
+      val service = new StuckGreeter
+      val handler = GreeterServiceHandler.partial(
+        service,
+        settings = Some(GrpcServerSettings(system).withEnforceDeadline(false)))
+
+      val response = handler(request(Some(200.millis)))
+
+      // the grpc-timeout is ignored, so it is still pending well after the deadline has passed
+      pekko.pattern.after(500.millis)(Future.successful(()))(system).futureValue
+      withClue("the handler should have been entered, so this is not a routing miss: ") {
+        service.entered.get() shouldBe true
+      }
       response.isCompleted shouldBe false
     }
   }
