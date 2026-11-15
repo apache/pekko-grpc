@@ -17,7 +17,8 @@
 
 package example.myapp.helloworld
 
-import java.util.concurrent.{ CompletableFuture, CompletionStage, TimeUnit }
+import java.util.concurrent.{ CompletableFuture, CompletionStage }
+import java.util.concurrent.atomic.AtomicBoolean
 
 import scala.concurrent.duration._
 import scala.concurrent.{ Await, Future }
@@ -63,12 +64,17 @@ class JavaServerTimeoutSpec extends AnyWordSpec with Matchers with ScalaFutures 
 
   private val mat: Materializer = SystemMaterializer(system).materializer
 
-  /** A service whose reply arrives well after the client's grpc-timeout has expired. */
-  private class SlowGreeter extends GreeterService {
-    override def sayHello(in: HelloRequest): CompletionStage[HelloReply] =
-      CompletableFuture.supplyAsync(
-        () => HelloReply.newBuilder().setMessage("Hello, " + in.getName).build(),
-        CompletableFuture.delayedExecutor(600, TimeUnit.MILLISECONDS))
+  /**
+   * A service whose reply is held back until the test completes `reply`, so the test decides whether
+   * it arrives after the client's grpc-timeout rather than racing a timer.
+   */
+  private class HeldGreeter extends GreeterService {
+    val entered = new AtomicBoolean(false)
+    val reply = new CompletableFuture[HelloReply]()
+    override def sayHello(in: HelloRequest): CompletionStage[HelloReply] = {
+      entered.set(true)
+      reply
+    }
     override def itKeepsTalking(in: Source[HelloRequest, NotUsed]): CompletionStage[HelloReply] =
       new CompletableFuture[HelloReply]()
     override def itKeepsReplying(in: HelloRequest): Source[HelloReply, NotUsed] = Source.empty()
@@ -86,9 +92,9 @@ class JavaServerTimeoutSpec extends AnyWordSpec with Matchers with ScalaFutures 
       writer,
       system)
 
-  private def handle(settings: GrpcServerSettings): Future[HttpResponse] = {
+  private def handle(service: HeldGreeter, settings: GrpcServerSettings): Future[HttpResponse] = {
     val handler = GreeterServiceHandlerFactory.partial(
-      new SlowGreeter,
+      service,
       GreeterService.name,
       mat,
       GrpcExceptionHandler.defaultMapper,
@@ -114,18 +120,27 @@ class JavaServerTimeoutSpec extends AnyWordSpec with Matchers with ScalaFutures 
   "A generated Java handler" should {
 
     "answer DEADLINE_EXCEEDED once the client's grpc-timeout expires" in {
-      val response = handle(GrpcServerSettings(system)).futureValue
+      val service = new HeldGreeter
+      val response = handle(service, GrpcServerSettings(system)).futureValue
 
+      withClue("the handler should have been entered, so this is the deadline and not a routing miss: ") {
+        service.entered.get() shouldBe true
+      }
       statusOf(response) shouldBe Some(Status.Code.DEADLINE_EXCEEDED.value.toString)
     }
 
     "complete the reply after the grpc-timeout when enforcing the deadline is turned off" in {
-      val response = handle(GrpcServerSettings(system).withEnforceDeadline(false))
+      val service = new HeldGreeter
+      val response = handle(service, GrpcServerSettings(system).withEnforceDeadline(false))
 
-      // still pending once the deadline has passed, since the grpc-timeout is ignored
+      // the reply is still held back, so the call stays pending well past its 200 ms deadline
       pekko.pattern.after(400.millis)(Future.successful(()))(system).futureValue
+      withClue("the handler should have been entered, so this is not a routing miss: ") {
+        service.entered.get() shouldBe true
+      }
       response.isCompleted shouldBe false
 
+      service.reply.complete(HelloReply.newBuilder().setMessage("Hello, Alice").build())
       statusOf(response.futureValue) shouldBe Some(Status.Code.OK.value.toString)
     }
   }
