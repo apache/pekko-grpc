@@ -47,6 +47,19 @@ See the @ref:[2.0 release notes](release-notes/releases-2.0.md) for the full lis
 * With the `scala3_sources` generator option, the generated Scala sources use Scala 3 syntax (`using`/`given`
   and `*` wildcard imports) ([PR597](https://github.com/apache/pekko-grpc/pull/597),
   [PR770](https://github.com/apache/pekko-grpc/pull/770)). The Gradle plugin has a new `scala3Sources` option.
+* This is not source compatible with code that passes an implicit argument to the generated code explicitly. For
+  example, the generated client factories take the actor system in a `using` clause, so a call such as
+  `GreeterServiceClient(settings)(system)` fails to compile on Scala 3 with
+  `No given instance of type ClassicActorSystemProvider was found`.
+
+Bring the actor system into implicit scope instead, which compiles on both Scala 2.13 and Scala 3:
+
+```scala
+implicit val sys: ClassicActorSystemProvider = system
+val client = GreeterServiceClient(settings)
+```
+
+In Scala 3-only code, `GreeterServiceClient(settings)(using system)` also works.
 
 ## API changes
 

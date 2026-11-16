@@ -44,7 +44,7 @@ configuration changes, including the changed default values.
 * `deflate` message compression ([PR926](https://github.com/apache/pekko-grpc/pull/926))
 * `minimum-tls-version` client setting ([PR823](https://github.com/apache/pekko-grpc/pull/823))
 * `max-inbound-message-size` client and server settings ([PR818](https://github.com/apache/pekko-grpc/pull/818), [PR877](https://github.com/apache/pekko-grpc/pull/877))
-* Generated Scala sources can use Scala 3 syntax with the `scala3_sources` option, and the Gradle plugin has a `scala3Sources` option ([PR597](https://github.com/apache/pekko-grpc/pull/597), [PR770](https://github.com/apache/pekko-grpc/pull/770))
+* Generated Scala sources can use Scala 3 syntax with the `scala3_sources` option, and the Gradle plugin has a `scala3Sources` option ([PR597](https://github.com/apache/pekko-grpc/pull/597), [PR770](https://github.com/apache/pekko-grpc/pull/770)). Code that passes the actor system to generated clients explicitly needs a change on Scala 3, see the @ref:[migration guide](../migration-guide-1.x-2.x.md#scala-3-sources)
 
 ### Java DSL improvements
 
