@@ -47,8 +47,8 @@ import pekko.grpc.PekkoGrpcGenerated
       def handle(request: model.HttpRequest, method: String): scala.concurrent.Future[model.HttpResponse] =
         GrpcMarshalling.negotiated(request, serverSettings, (reader, writer) =>
           @* bounds the call by the client's grpc-timeout, so a reply the client has stopped
-             waiting for is not kept open *@
-          GrpcMarshalling.withServerDeadline(request,
+             waiting for is not kept open, unless the settings turn that off *@
+          GrpcMarshalling.withServerDeadline(request, serverSettings,
           method match {
             @for(method <- service.methods) {
             case "@method.grpcName" =>
