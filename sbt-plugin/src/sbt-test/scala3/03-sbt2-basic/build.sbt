@@ -23,7 +23,7 @@ Compile / PB.protoSources += baseDirectory.value / "custom-protobuf"
 
 lazy val checkProtoInputs = taskKey[Unit]("Check that protobuf files are watched recursively")
 
-checkProtoInputs := {
+checkProtoInputs := Def.uncached {
   val base = baseDirectory.value
   val cases = Seq(
     (Compile / PB.generate / sbt.nio.Keys.fileInputs).value -> Seq(

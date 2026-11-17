@@ -21,7 +21,6 @@ import pekko.grpc.gen.{ BuildInfo, Logger => GenLogger, ProtocSettings }
 import protocbridge.Generator
 import sbt.Keys._
 import sbt._
-import sbtcompat.PluginCompat._
 import sbtprotoc.ProtocPlugin
 import scalapb.ScalaPbCodeGenerator
 
