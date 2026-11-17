@@ -98,6 +98,10 @@ inConfig(Compile)(Seq(
 ))
 ```
 
+The directories in `PB.protoSources` are registered as inputs to code generation.
+Continuous compilation (`~compile`) watches these directories recursively,
+including newly added `.proto` files.
+
 ## Loading proto files from artifacts
 
 Instead of duplicating the `.proto` definitions between server and client projects, you can add artifacts

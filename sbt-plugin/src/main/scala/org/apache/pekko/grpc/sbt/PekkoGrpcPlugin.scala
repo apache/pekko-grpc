@@ -134,9 +134,8 @@ object PekkoGrpcPlugin extends AutoPlugin {
         },
         unmanagedResourceDirectories :=
           (unmanagedResourceDirectories.value ++ (PB.recompile / unmanagedResourceDirectories).value).distinct,
-        Defaults.ConfigZero / watchSources ++= Def.uncached {
-          (PB.recompile / sources).value.map(f => WatchSource(f))
-        },
+        PB.generate / sbt.nio.Keys.fileInputs ++=
+          (PB.generate / PB.protoSources).value.map(dir => sbt.nio.file.Glob(dir, "**/*.proto")),
         pekkoGrpcGenerators := {
           generatorsFor(
             pekkoGrpcGeneratedSources.value,
