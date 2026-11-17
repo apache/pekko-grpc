@@ -2,6 +2,8 @@
 
 To get started with Pekko gRPC read the @ref[client](../client/index.md) or @ref[server](../server/index.md) introductions.
 
+The sbt 2 plugin is built against sbt 2.1.0 using Scala 3.9.0.
+
 ## Configuring what to generate
 
 It can be configured to just generate either server or client like so:
