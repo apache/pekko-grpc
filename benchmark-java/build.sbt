@@ -38,7 +38,7 @@ val root = project
       "org.apache.commons" % "commons-math3" % "3.6.1",
       "org.scalatest" %% "scalatest" % "3.2.20" % Test,
       "org.junit.jupiter" % "junit-jupiter" % "6.1.1" % Test,
-      "com.github.sbt.junit" % "jupiter-interface" % "0.19.0" % Test),
+      "com.github.sbt.junit" % "jupiter-interface" % "0.20.0" % Test),
     PB.artifactResolver := PB.artifactResolver.dependsOn(codeGenProject / Compile / publishLocal).value)
 
 compile / javacOptions += "-Xlint:deprecation"
