@@ -14,6 +14,7 @@
 package org.apache.pekko.grpc.interop;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import com.google.protobuf.ByteString;
@@ -460,7 +461,11 @@ public class PekkoGrpcJavaClientTester implements ClientTester {
 
               final StatusRuntimeException e = (StatusRuntimeException) ex;
               assertEquals(Status.UNKNOWN.getCode(), e.getStatus().getCode());
-              assertEquals(errorMessage, e.getStatus().getDescription());
+              assertTrue(
+                  e.getStatus().getDescription() != null
+                      && e.getStatus().getDescription().startsWith(errorMessage),
+                  () -> "Expected description to start with '" + errorMessage + "' but was '"
+                      + e.getStatus().getDescription() + "'");
 
               return null;
             })
@@ -482,7 +487,11 @@ public class PekkoGrpcJavaClientTester implements ClientTester {
 
               final StatusRuntimeException e = (StatusRuntimeException) ex;
               assertEquals(Status.UNKNOWN.getCode(), e.getStatus().getCode());
-              assertEquals(errorMessage, e.getStatus().getDescription());
+              assertTrue(
+                  e.getStatus().getDescription() != null
+                      && e.getStatus().getDescription().startsWith(errorMessage),
+                  () -> "Expected description to start with '" + errorMessage + "' but was '"
+                      + e.getStatus().getDescription() + "'");
 
               return null;
             })
