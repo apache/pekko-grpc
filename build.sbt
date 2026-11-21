@@ -200,7 +200,7 @@ lazy val sbtPlugin = Project(id = "sbt-plugin", base = file("sbt-plugin"))
       else {
         scalaBinaryVersion.value match {
           case "2.12" => "1.12.15"
-          case _      => "2.0.0"
+          case _      => "2.1.0"
         }
       }
     },

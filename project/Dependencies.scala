@@ -22,10 +22,10 @@ object Dependencies {
     val scala3 = "3.3.9"
     val scala3Next = "3.9.0"
     // The Scala 3 version used to build the sbt 2.x plugin. It must not be newer than the
-    // Scala version sbt 2.x itself is built with (sbt 2.0.x uses 3.8.4), otherwise sbt cannot
+    // Scala version sbt 2.x itself is built with, otherwise sbt cannot
     // read the plugin's TASTy files and loading a build that uses the plugin fails with
     // "Forward incompatible TASTy file". Keep in sync with sbt 2.x, not with scala3Next.
-    val scala3ForSbtPlugin = "3.8.4"
+    val scala3ForSbtPlugin = "3.9.0"
 
     // the order in the list is important because the head will be considered the default.
     val CrossScalaForLib = Seq(scala213, scala3)
