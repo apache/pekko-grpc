@@ -102,7 +102,8 @@ lazy val codegen = Project(id = "codegen", base = file("codegen"))
   .settings(addArtifact(Compile / assembly / artifact, assembly))
   .settings(addArtifact(sbt.Artifact(pekkoGrpcCodegenId, "bat", "bat", "bat"), mkBatAssemblyTask))
 
-val mimaCompareVersion = "1.0.2"
+// MiMa filters for changes made after 2.0.0 go in src/main/mima-filters/2.1.x.backwards.excludes (or a later 2.x directory)
+val mimaCompareVersion = "2.0.0"
 
 lazy val runtime = Project(id = "runtime", base = file("runtime"))
   .addPekkoModuleDependency("pekko-stream", "", PekkoCoreDependency.default)

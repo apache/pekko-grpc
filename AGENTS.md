@@ -146,7 +146,7 @@ PR_TARGET_BRANCH=origin/example sbt validatePullRequest
 sbt +runtime/mimaReportBinaryIssues
 ```
 
-- Current MiMa baseline is 1.0.2.
+- Current MiMa baseline is 2.0.0.
 - Do not mark a PR ready while the local MiMa run or the GitHub `Check / Binary Compatibility` job is failing.
 - ALL reported MiMa issues must be fixed before creating or updating a PR. Do not ignore or suppress MiMa warnings without explicit maintainer approval.
 - Run sbt scripted tests for sbt plugin changes.
