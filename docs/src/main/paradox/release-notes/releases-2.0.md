@@ -1,5 +1,14 @@
 # Release Notes (2.0.x)
 
+## Unreleased
+
+### sbt 2 compatibility
+
+The sbt 2 variant of the Pekko gRPC plugin now requires sbt 2.1.0 or newer.
+It is compiled with Scala 3.9.0, so sbt 2.0.x, which uses Scala 3.8.4, can no longer load it.
+Projects using sbt 2.0.x must update `sbt.version` in `project/build.properties` to `2.1.0` or newer
+before upgrading the plugin. The sbt 1 variant remains supported.
+
 ## 2.0.0-M2
 
 Release notes for Apache Pekko gRPC 2.0.0-M2. See [GitHub Milestone for 2.0.0-M2](https://github.com/apache/pekko-grpc/milestone/11?closed=1) for a fuller list of changes.

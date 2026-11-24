@@ -2,7 +2,8 @@
 
 To get started with Pekko gRPC read the @ref[client](../client/index.md) or @ref[server](../server/index.md) introductions.
 
-The sbt 2 plugin is built against sbt 2.1.0 using Scala 3.9.0.
+The sbt 2 variant of the plugin requires sbt 2.1.0 or newer and is compiled with Scala 3.9.0.
+sbt 2.0.x uses Scala 3.8.4 and cannot load this plugin variant. The sbt 1 variant remains supported.
 
 ## Configuring what to generate
 
