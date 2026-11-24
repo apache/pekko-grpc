@@ -1,3 +1,4 @@
+> checkProtoInputs
 > compile
 
 $ exists target/scala-2.13/pekko-grpc
