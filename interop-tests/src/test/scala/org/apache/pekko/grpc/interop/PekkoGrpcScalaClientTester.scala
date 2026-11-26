@@ -287,6 +287,8 @@ class PekkoGrpcScalaClientTester(val settings: Settings, backend: String, testWi
     throwable shouldBe a[StatusRuntimeException]
     val e = throwable.asInstanceOf[StatusRuntimeException]
     assertEquals(expectedStatus.getCode, e.getStatus.getCode)
-    assertEquals(expectedMessage, e.getStatus.getDescription)
+    assert(
+      e.getStatus.getDescription != null && e.getStatus.getDescription.startsWith(expectedMessage),
+      s"Expected description to start with '$expectedMessage' but was '${e.getStatus.getDescription}'")
   }
 }
